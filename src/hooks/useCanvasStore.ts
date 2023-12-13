@@ -1,23 +1,24 @@
 import { create } from "zustand";
 
-type Path = [number, number];
+export type Path = [number, number];
+export type Tool = "pencil" | "line" | "rectangle" | "ellipse";
 
-interface Element {
+export interface Element {
     offsetX: number;
     offsetY: number;
+    path?: Path[];
     width?: number;
     height?: number;
-    path?: Path[];
     stroke: string;
-    tool: string;
+    tool: Tool;
 }
 
-interface CanvasStore {
+export interface CanvasStore {
     stroke: string;
-    tool: string;
+    tool: Tool;
     elements: Element[];
     setStroke: (stroke: string) => void;
-    setTool: (tool: string) => void;
+    setTool: (tool: Tool) => void;
     setElements: (element: Element) => void;
     updateElements: (element: Element[]) => void;
 }

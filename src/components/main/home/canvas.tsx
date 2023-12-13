@@ -35,94 +35,64 @@ export default function Canvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasE
         const roughCanvas = rough.canvas(canvasRef.current);
         if (elements.length > 0) context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
-        elements.forEach((ele) => {
-            if (ele.tool === "rectangle") {
-                roughCanvas.draw(
-                    generator.rectangle(ele.offsetX, ele.offsetY, ele.width!, ele.height!, {
-                        stroke: ele.stroke,
-                        roughness: 0,
-                        strokeWidth: 5,
-                    }),
-                );
-            } else if (ele.tool === "line") {
-                roughCanvas.draw(
-                    generator.line(ele.offsetX, ele.offsetY, ele.width!, ele.height!, {
-                        stroke: ele.stroke,
-                        roughness: 0,
-                        strokeWidth: 5,
-                    }),
-                );
-            } else if (ele.tool === "pencil") {
-                roughCanvas.linearPath(ele.path!, {
-                    stroke: ele.stroke,
-                    roughness: 0,
-                    strokeWidth: 5,
-                });
+        // Show all of my elements on ui
+        elements.forEach(({ offsetX, offsetY, width, height, path, stroke, tool }) => {
+            switch (tool) {
+                case "pencil":
+                    roughCanvas.linearPath(path!, { stroke, roughness: 0, strokeWidth: 5 });
+                    break;
+                case "line":
+                    roughCanvas.draw(generator.line(offsetX, offsetY, width!, height!, { stroke, roughness: 0, strokeWidth: 5 }));
+                    break;
+                case "rectangle":
+                    roughCanvas.draw(generator.rectangle(offsetX, offsetY, width!, height!, { stroke, roughness: 0, strokeWidth: 5 }));
+                    break;
+                case "ellipse":
+                    roughCanvas.draw(generator.ellipse(offsetX, offsetY, width!, height!, { stroke, roughness: 0, strokeWidth: 5 }));
+                    break;
             }
         });
-        const canvasImage = canvasRef.current.toDataURL();
-        console.log(canvasImage);
     }, [canvasRef, elements]);
 
     const handleMouseDown = (e: MouseEvent<HTMLElement>) => {
         const { offsetX, offsetY } = e.nativeEvent;
 
-        if (tool === "pencil") {
-            setElements({ offsetX, offsetY, path: [[offsetX, offsetY]], stroke, tool });
-        } else {
-            setElements({ offsetX, offsetY, stroke, tool });
+        // On Mouse Set the Element
+        switch (tool) {
+            case "pencil":
+                setElements({ offsetX, offsetY, path: [[offsetX, offsetY]], stroke, tool });
+                break;
+            default:
+                setElements({ offsetX, offsetY, stroke, tool });
+                break;
         }
 
         setDrawing(true);
     };
+
     const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
         if (!drawing) return;
         const { offsetX, offsetY } = e.nativeEvent;
 
-        if (tool === "rectangle") {
-            updateElements(
-                elements.map((ele, index) =>
-                    index === elements.length - 1
-                        ? {
-                              offsetX: ele.offsetX,
-                              offsetY: ele.offsetY,
-                              width: offsetX - ele.offsetX,
-                              height: offsetY - ele.offsetY,
-                              stroke: ele.stroke,
-                              tool: ele.tool,
-                          }
-                        : ele,
-                ),
-            );
-        } else if (tool === "line") {
-            updateElements(
-                elements.map((ele, index) =>
-                    index === elements.length - 1
-                        ? {
-                              offsetX: ele.offsetX,
-                              offsetY: ele.offsetY,
-                              width: offsetX,
-                              height: offsetY,
-                              stroke: ele.stroke,
-                              tool: ele.tool,
-                          }
-                        : ele,
-                ),
-            );
-        } else if (tool === "pencil") {
-            updateElements(
-                elements.map((ele, index) =>
-                    index === elements.length - 1
-                        ? {
-                              offsetX: ele.offsetX,
-                              offsetY: ele.offsetY,
-                              path: [...ele.path!, [offsetX, offsetY]],
-                              stroke: ele.stroke,
-                              tool: ele.tool,
-                          }
-                        : ele,
-                ),
-            );
+        // On Mouse Move Update The Elements
+        switch (tool) {
+            case "pencil":
+                updateElements(
+                    elements.map((ele, idx) => (idx === elements.length - 1 ? { ...ele, path: [...ele.path!, [offsetX, offsetY]] } : ele)),
+                );
+                break;
+            case "line":
+                updateElements(
+                    elements.map((ele, idx) => (idx === elements.length - 1 ? { ...ele, width: offsetX, height: offsetY } : ele)),
+                );
+                break;
+            default:
+                updateElements(
+                    elements.map((ele, idx) =>
+                        idx === elements.length - 1 ? { ...ele, width: offsetX - ele.offsetX, height: offsetY - ele.offsetY } : ele,
+                    ),
+                );
+                break;
         }
     };
 

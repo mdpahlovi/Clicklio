@@ -21,7 +21,7 @@ const FormInput = ({ type = "text", name, label, placeholder, textarea, disabled
             ) : type === "password" ? (
                 <>
                     <Input type={show ? "text" : "password"} {...config} />
-                    <button className="absolute top-8 right-2.5 text-input" onClick={() => setShow(!show)}>
+                    <button type="button" className="absolute top-8 right-2.5 text-input" onClick={() => setShow(!show)}>
                         {show ? <Eye size={20} /> : <EyeOff size={20} />}
                     </button>
                 </>
