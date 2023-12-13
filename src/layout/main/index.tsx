@@ -1,3 +1,13 @@
+import { Outlet } from "react-router-dom";
+import Navbar from "./navbar";
+import Footer from "./footer";
+
 export default function Main() {
-    return <div>Main</div>;
+    return (
+        <>
+            <Navbar />
+            <Outlet />
+            <Footer />
+        </>
+    );
 }
