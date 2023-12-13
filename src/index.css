@@ -74,7 +74,7 @@
         @apply bg-background text-foreground;
     }
     section {
-        @apply container mt-12 sm:mt-14 lg:mt-16;
+        @apply container mt-12;
     }
     h1 {
         @apply text-4xl leading-[44px] lg:text-[40px] lg:leading-[48px] font-bold;

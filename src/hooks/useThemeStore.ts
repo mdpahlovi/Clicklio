@@ -14,7 +14,7 @@ const useThemeStore = create<ThemeStore>()(
                 mode: "light",
                 setMode: (payload) => set({ mode: payload }),
             }),
-            { name: "bearStore" },
+            { name: "ebay-retail" },
         ),
     ),
 );

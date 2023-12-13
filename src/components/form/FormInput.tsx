@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useField } from "formik";
-import { FromInputProps } from "@/types/form";
+import { FormInputProps } from "@/types/form";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Label } from "../ui/label";
 
-const FormInput = ({ type = "text", name, label, placeholder, textarea, disabled }: FromInputProps) => {
+const FormInput = ({ type = "text", name, label, placeholder, textarea, disabled }: FormInputProps) => {
     const [field, meta] = useField(name);
     const [show, setShow] = useState(false);
     const config = { id: name, ...field, placeholder, disabled };
