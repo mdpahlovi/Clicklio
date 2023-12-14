@@ -20,7 +20,7 @@ export default function Home() {
     const { loading, data } = useQuery(GET_CANVASES);
 
     return (
-        <section className="min-h-[calc(100vh_-_244px)]">
+        <section className="min-h-[calc(100vh_-_244px)] space-y-8">
             <h1>All Canvas</h1>
             <div className="grid xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
                 {loading

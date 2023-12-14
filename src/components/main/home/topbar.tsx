@@ -18,9 +18,10 @@ const DELETE_CANVAS = gql`
     }
 `;
 
+type TopBarProps = { handleUpdate: () => void; uploadLoading: boolean; clearCanvas: () => void };
 const stokeTypes = ["pencil", "line", "rectangle", "ellipse"];
 
-export default function TopBar({ clearCanvas }: { clearCanvas: () => void }) {
+export default function TopBar({ handleUpdate, uploadLoading, clearCanvas }: TopBarProps) {
     const params = useParams();
     const navigate = useNavigate();
     const { stroke, tool, setStroke, setTool } = useCanvasStore();
@@ -49,6 +50,9 @@ export default function TopBar({ clearCanvas }: { clearCanvas: () => void }) {
                 ))}
             </RadioGroup>
             <div className="flex gap-4">
+                <Button size="sm" onClick={handleUpdate}>
+                    {uploadLoading ? "Loading" : "Save"}
+                </Button>
                 <Button variant="destructive" size="sm" onClick={clearCanvas}>
                     Clear Canvas
                 </Button>

@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const CREATE_CANVAS = gql`
-    mutation Delete_Canvas($code: String!, $name: String!) {
+    mutation Create_Canvas($code: String!, $name: String!) {
         createCanvas(code: $code, name: $name) {
             code
         }
