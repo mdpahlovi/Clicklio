@@ -24,7 +24,7 @@ const createCanvasSchema = yup.object().shape({
 
 export default function CreateRoom() {
     const navigate = useNavigate();
-    const [createCanvas, { loading }] = useMutation(CREATE_CANVAS, { refetchQueries: [GET_CANVASES, "GetCanvases"] });
+    const [createCanvas, { loading }] = useMutation(CREATE_CANVAS, { refetchQueries: [GET_CANVASES] });
 
     return (
         <section className="my-0 h-screen flex justify-center items-center">

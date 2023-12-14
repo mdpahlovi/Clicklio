@@ -6,6 +6,7 @@ import useCanvasStore from "@/hooks/useCanvasStore";
 import { useParams } from "react-router-dom";
 import { useQuery, gql, useMutation } from "@apollo/client";
 import Loader from "@/components/ui/loader";
+import { GET_CANVASES } from "./home";
 
 const GET_CANVAS = gql`
     query GetCanvas($code: String!) {
@@ -37,7 +38,7 @@ const UPDATE_CANVAS = gql`
 export default function CanvasPage() {
     const params = useParams();
     const { loading, data } = useQuery(GET_CANVAS, { variables: { code: params?.id } });
-    const [updateCanvas, { error }] = useMutation(UPDATE_CANVAS);
+    const [updateCanvas, { loading: uploadLoading }] = useMutation(UPDATE_CANVAS, { refetchQueries: [GET_CANVASES] });
     const { elements, image, updateElements } = useCanvasStore();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -57,13 +58,12 @@ export default function CanvasPage() {
     };
 
     const handleUpdate = () => {
-        console.log(error);
         updateCanvas({ variables: { code: params?.id, data: { image, elements } } });
     };
 
     return (
         <section className="space-y-6">
-            <TopBar handleUpdate={handleUpdate} uploadLoading={false} clearCanvas={clearCanvas} />
+            <TopBar handleUpdate={handleUpdate} uploadLoading={uploadLoading} clearCanvas={clearCanvas} />
             <Canvas canvasRef={canvasRef} />
         </section>
     );

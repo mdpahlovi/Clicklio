@@ -25,7 +25,7 @@ export default function TopBar({ handleUpdate, uploadLoading, clearCanvas }: Top
     const params = useParams();
     const navigate = useNavigate();
     const { stroke, tool, setStroke, setTool } = useCanvasStore();
-    const [deleteCanvas] = useMutation(DELETE_CANVAS, { refetchQueries: [GET_CANVASES, "GetCanvases"] });
+    const [deleteCanvas] = useMutation(DELETE_CANVAS, { refetchQueries: [GET_CANVASES] });
 
     const handleDelete = () => {
         deleteCanvas({ variables: { code: params?.id } });
