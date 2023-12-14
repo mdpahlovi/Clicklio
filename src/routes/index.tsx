@@ -1,5 +1,5 @@
 import Main from "@/layout/main";
-import Login from "@/pages/auth/login";
+import CreateRoom from "@/pages/auth/create-room";
 import CanvasPage from "@/pages/main/canvas";
 import Home from "@/pages/main/home";
 import { createBrowserRouter } from "react-router-dom";
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         ],
     },
     { path: "*" },
-    { path: "/login", element: <Login /> },
+    { path: "/create-room", element: <CreateRoom /> },
 ]);
 
 export default router;

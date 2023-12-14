@@ -1,16 +1,31 @@
+import * as yup from "yup";
 import Form from "@/components/form";
 import FormInput from "@/components/form/FormInput";
 import FormGenerateCode from "@/components/form/FormGenerateCode";
-import * as yup from "yup";
 import FormSubmit from "@/components/form/FormSubmit";
+import { gql, useMutation } from "@apollo/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GET_CANVASES } from "../main/home";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+const CREATE_CANVAS = gql`
+    mutation Delete_Canvas($code: String!, $name: String!) {
+        createCanvas(code: $code, name: $name) {
+            code
+        }
+    }
+`;
 
 const createCanvasSchema = yup.object().shape({
     name: yup.string().required("Canvas name is required"),
     code: yup.string().required("Canvas code is required").min(24, "Canvas code must be 24 characters"),
 });
 
-export default function Login() {
+export default function CreateRoom() {
+    const navigate = useNavigate();
+    const [createCanvas, { loading }] = useMutation(CREATE_CANVAS, { refetchQueries: [GET_CANVASES, "GetCanvases"] });
+
     return (
         <section className="my-0 h-screen flex justify-center items-center">
             <Card className="max-w-lg">
@@ -22,11 +37,15 @@ export default function Login() {
                     <Form
                         initialValues={{ name: "", code: "" }}
                         validationSchema={createCanvasSchema}
-                        onSubmit={(value) => console.log(value)}
+                        onSubmit={(value) => {
+                            createCanvas({ variables: value });
+                            toast.success("Canvas Created Successfully");
+                            navigate(`/canvas/${value?.code}`);
+                        }}
                     >
                         <FormInput name="name" placeholder="Enter Canvas Name" label="Canvas Name" />
                         <FormGenerateCode name="code" placeholder="Generate Canvas Code" label="Canvas Code" />
-                        <FormSubmit>Create Canvas</FormSubmit>
+                        <FormSubmit loading={loading}>Create Canvas</FormSubmit>
                     </Form>
                 </CardContent>
             </Card>

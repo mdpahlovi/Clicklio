@@ -8,6 +8,7 @@ import { Delete } from "lucide-react";
 import { gql, useMutation } from "@apollo/client";
 import { GET_CANVASES } from "@/pages/main/home";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const DELETE_CANVAS = gql`
     mutation Delete_Canvas($code: String!) {
@@ -27,6 +28,7 @@ export default function TopBar({ clearCanvas }: { clearCanvas: () => void }) {
 
     const handleDelete = () => {
         deleteCanvas({ variables: { code: params?.id } });
+        toast.success("Canvas Deleted Successfully");
         navigate("/");
     };
 

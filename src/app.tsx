@@ -1,7 +1,10 @@
+import "react-toastify/dist/ReactToastify.css";
+
 import router from "./routes";
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import useThemeStore from "./hooks/useThemeStore";
+import { ToastContainer } from "react-toastify";
 
 export default function App() {
     const { mode, setMode } = useThemeStore();
@@ -19,5 +22,10 @@ export default function App() {
         root.classList.add(mode);
     }, [mode, setMode]);
 
-    return <RouterProvider router={router} />;
+    return (
+        <>
+            <RouterProvider router={router} />
+            <ToastContainer position="top-right" autoClose={1500} theme={mode} />
+        </>
+    );
 }

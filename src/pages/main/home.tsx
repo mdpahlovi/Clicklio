@@ -26,7 +26,7 @@ export default function Home() {
                 {loading
                     ? [...Array(4)].map((_, idx) => <Skeleton key={idx} className="h-48 rounded-lg" />)
                     : data?.canvases?.map(({ code, image, name, createdAt }: Canvas) => (
-                          <Link to={`/canvas/${code}`} className="group">
+                          <Link key={code} to={`/canvas/${code}`} className="group">
                               <img src={image} alt="" className="w-full h-48 bg-muted object-cover object-center rounded-lg" />
                               <div className="flex flex-wrap justify-between items-center p-2">
                                   <h5 className="group-hover:underline md:text-lg">{name}</h5>
