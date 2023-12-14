@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const generator = rough.generator();
 
 export default function Canvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement> }) {
-    const { stroke, tool, elements, setElements, updateElements } = useCanvasStore();
+    const { stroke, tool, elements, setElements, updateElements, setImage } = useCanvasStore();
     const [drawing, setDrawing] = useState(false);
 
     useEffect(() => {
@@ -32,8 +32,8 @@ export default function Canvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasE
         const context = canvas.getContext("2d");
         if (!context) throw new Error("Failed to get context");
 
-        const roughCanvas = rough.canvas(canvasRef.current);
-        if (elements.length > 0) context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        const roughCanvas = rough.canvas(canvas);
+        if (elements.length > 0) context.clearRect(0, 0, canvas.width, canvas.height);
 
         // Show all of my elements on ui
         elements.forEach(({ offsetX, offsetY, width, height, path, stroke, tool }) => {
@@ -52,7 +52,8 @@ export default function Canvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasE
                     break;
             }
         });
-    }, [canvasRef, elements]);
+        setImage(canvas.toDataURL());
+    }, [canvasRef, elements, setImage]);
 
     const handleMouseDown = (e: MouseEvent<HTMLElement>) => {
         const { offsetX, offsetY } = e.nativeEvent;
