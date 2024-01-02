@@ -3,19 +3,11 @@ import Form from "@/components/form";
 import FormInput from "@/components/form/FormInput";
 import FormGenerateCode from "@/components/form/FormGenerateCode";
 import FormSubmit from "@/components/form/FormSubmit";
-import { gql, useMutation } from "@apollo/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GET_CANVASES } from "../main/home";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
-const CREATE_CANVAS = gql`
-    mutation Create_Canvas($code: String!, $name: String!) {
-        createCanvas(code: $code, name: $name) {
-            code
-        }
-    }
-`;
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { CREATE_CANVAS } from "@/graphql/mutations";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const createCanvasSchema = yup.object().shape({
     name: yup.string().required("Canvas name is required"),
@@ -24,7 +16,7 @@ const createCanvasSchema = yup.object().shape({
 
 export default function CreateRoom() {
     const navigate = useNavigate();
-    const [createCanvas, { loading }] = useMutation(CREATE_CANVAS, { refetchQueries: [GET_CANVASES] });
+    const [createCanvas, { loading }] = useMutation(CREATE_CANVAS);
 
     return (
         <section className="my-0 h-screen flex justify-center items-center">

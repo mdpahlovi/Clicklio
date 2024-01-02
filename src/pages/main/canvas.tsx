@@ -1,44 +1,18 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+import { toast } from "react-toastify";
 import { useEffect, useRef } from "react";
 import Canvas from "@/components/main/home/canvas";
 import TopBar from "@/components/main/home/topbar";
 import useCanvasStore from "@/hooks/useCanvasStore";
 import { useParams } from "react-router-dom";
-import { useQuery, gql, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import Loader from "@/components/ui/loader";
-import { GET_CANVASES } from "./home";
-
-const GET_CANVAS = gql`
-    query GetCanvas($code: String!) {
-        canvas(code: $code) {
-            code
-            name
-            elements {
-                offsetX
-                offsetY
-                path
-                width
-                height
-                stroke
-                tool
-            }
-            createdAt
-        }
-    }
-`;
-
-const UPDATE_CANVAS = gql`
-    mutation UpdateCanvas($code: String!, $data: CanvasInput!) {
-        updateCanvas(code: $code, data: $data) {
-            code
-        }
-    }
-`;
+import { GET_CANVAS } from "@/graphql/queries";
+import { UPDATE_CANVAS } from "@/graphql/mutations";
 
 export default function CanvasPage() {
     const params = useParams();
-    const { loading, data } = useQuery(GET_CANVAS, { variables: { code: params?.id } });
-    const [updateCanvas, { loading: uploadLoading }] = useMutation(UPDATE_CANVAS, { refetchQueries: [GET_CANVASES] });
+    const { loading, data, refetch } = useQuery(GET_CANVAS, { variables: { code: params?.id }, fetchPolicy: "no-cache" });
+    const [updateCanvas, { loading: uploadLoading }] = useMutation(UPDATE_CANVAS);
     const { elements, image, updateElements } = useCanvasStore();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -58,7 +32,9 @@ export default function CanvasPage() {
     };
 
     const handleUpdate = () => {
-        updateCanvas({ variables: { code: params?.id, data: { image, elements } } });
+        updateCanvas({ variables: { code: params?.id, data: { image, elements } } })
+            .then(() => refetch())
+            .catch(({ message }) => toast.error(message));
     };
 
     return (

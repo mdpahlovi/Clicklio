@@ -1,23 +1,12 @@
-/* eslint-disable react-refresh/only-export-components */
+import moment from "moment";
 import { Canvas } from "@/types";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import { GET_CANVASES } from "@/graphql/queries";
 import { Link } from "react-router-dom";
-import { formatDistance } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const GET_CANVASES = gql`
-    query GetCanvases {
-        canvases {
-            code
-            name
-            image
-            createdAt
-        }
-    }
-`;
-
 export default function Home() {
-    const { loading, data } = useQuery(GET_CANVASES);
+    const { loading, data } = useQuery(GET_CANVASES, { fetchPolicy: "no-cache" });
 
     return (
         <section className="min-h-[calc(100vh_-_244px)] space-y-8">
@@ -30,7 +19,7 @@ export default function Home() {
                               <img src={image} alt="" className="w-full h-48 bg-muted object-cover object-center rounded-lg" />
                               <div className="flex flex-wrap justify-between items-center p-2">
                                   <h5 className="group-hover:underline md:text-lg">{name}</h5>
-                                  <h6>{formatDistance(new Date(), new Date(Number(createdAt)))}</h6>
+                                  <h6>{moment(createdAt).fromNow(true)}</h6>
                               </div>
                           </Link>
                       ))}

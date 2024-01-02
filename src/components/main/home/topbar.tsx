@@ -1,22 +1,14 @@
 import { Tool } from "@/types";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useCanvasStore from "@/hooks/useCanvasStore";
 import { capitalizeFirstWord } from "@/lib/capitalizeFirstWord";
 import { Delete } from "lucide-react";
-import { gql, useMutation } from "@apollo/client";
-import { GET_CANVASES } from "@/pages/main/home";
+import { useMutation } from "@apollo/client";
+import { DELETE_CANVAS } from "@/graphql/mutations";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-
-const DELETE_CANVAS = gql`
-    mutation Delete_Canvas($code: String!) {
-        deleteCanvas(code: $code) {
-            code
-        }
-    }
-`;
 
 type TopBarProps = { handleUpdate: () => void; uploadLoading: boolean; clearCanvas: () => void };
 const stokeTypes = ["pencil", "line", "rectangle", "ellipse"];
@@ -25,7 +17,7 @@ export default function TopBar({ handleUpdate, uploadLoading, clearCanvas }: Top
     const params = useParams();
     const navigate = useNavigate();
     const { stroke, tool, setStroke, setTool } = useCanvasStore();
-    const [deleteCanvas] = useMutation(DELETE_CANVAS, { refetchQueries: [GET_CANVASES] });
+    const [deleteCanvas] = useMutation(DELETE_CANVAS);
 
     const handleDelete = () => {
         deleteCanvas({ variables: { code: params?.id } });
