@@ -19,7 +19,7 @@ export default function Home() {
                               <img src={image} alt="" className="w-full h-48 bg-muted object-cover object-center rounded-lg" />
                               <div className="flex flex-wrap justify-between items-center p-2">
                                   <h5 className="group-hover:underline md:text-lg">{name}</h5>
-                                  <h6>{moment(createdAt).fromNow(true)}</h6>
+                                  <h6>{moment(Number(createdAt)).fromNow(true)}</h6>
                               </div>
                           </Link>
                       ))}
