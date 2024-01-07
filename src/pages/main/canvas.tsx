@@ -17,7 +17,7 @@ export default function CanvasPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (data) updateElements(data?.canvas?.elements);
+        if (data?.canvas?.elements) updateElements(data.canvas.elements);
     }, [data, updateElements]);
     if (loading) return <Loader />;
 

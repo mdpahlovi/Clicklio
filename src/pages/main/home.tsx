@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client";
 import { GET_CANVASES } from "@/graphql/queries";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Image } from "@/components/ui/avatar";
 
 export default function Home() {
     const { loading, data } = useQuery(GET_CANVASES, { fetchPolicy: "no-cache" });
@@ -16,7 +17,7 @@ export default function Home() {
                     ? [...Array(4)].map((_, idx) => <Skeleton key={idx} className="h-48 rounded-lg" />)
                     : data?.canvases?.map(({ code, image, name, createdAt }: Canvas) => (
                           <Link key={code} to={`/canvas/${code}`} className="group">
-                              <img src={image} alt="" className="w-full h-48 bg-muted object-cover object-center rounded-lg" />
+                              <Image src={image} className="h-48 bg-muted" />
                               <div className="flex flex-wrap justify-between items-center p-2">
                                   <h5 className="group-hover:underline md:text-lg">{name}</h5>
                                   <h6>{moment(Number(createdAt)).fromNow(true)}</h6>
