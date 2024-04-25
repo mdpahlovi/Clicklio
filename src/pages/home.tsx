@@ -15,7 +15,7 @@ export default function HomePage() {
                     <Toolbar />
                     <Button>Share</Button>
                 </div>
-                <div className="bg-red-500">Middle</div>
+                <div className="h-80 w-60 rounded bg-foreground"></div>
                 <div className="mt-auto">
                     <BottomToolbar />
                 </div>
