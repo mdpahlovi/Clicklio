@@ -7,9 +7,7 @@ export const createRectangle = (pointer: PointerEvent) => {
     return new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
-        width: 100,
-        height: 100,
-        fill: "#aabbcc",
+        fill: "#000000",
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Rect);
 };
@@ -18,9 +16,7 @@ export const createTriangle = (pointer: PointerEvent) => {
     return new fabric.Triangle({
         left: pointer.x,
         top: pointer.y,
-        width: 100,
-        height: 100,
-        fill: "#aabbcc",
+        fill: "#000000",
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Triangle);
 };
@@ -29,15 +25,14 @@ export const createCircle = (pointer: PointerEvent) => {
     return new fabric.Circle({
         left: pointer.x,
         top: pointer.y,
-        radius: 100,
-        fill: "#aabbcc",
+        fill: "#000000",
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Circle);
 };
 
 export const createLine = (pointer: PointerEvent) => {
-    return new fabric.Line([pointer.x, pointer.y, pointer.x + 100, pointer.y + 100], {
-        stroke: "#aabbcc",
+    return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
+        stroke: "#000000",
         strokeWidth: 2,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Line);
@@ -47,7 +42,7 @@ export const createText = (pointer: PointerEvent, text: string) => {
     return new fabric.IText(text, {
         left: pointer.x,
         top: pointer.y,
-        fill: "#aabbcc",
+        fill: "#000000",
         fontFamily: "Helvetica",
         fontSize: 36,
         fontWeight: "400",
@@ -70,7 +65,7 @@ export const createSpecificShape = (shapeType: string, pointer: PointerEvent) =>
             return createLine(pointer);
 
         case "text":
-            return createText(pointer, "Tap to Type");
+            return createText(pointer, "Tap To Type");
 
         default:
             return null;
@@ -81,19 +76,20 @@ export const handleImageUpload = ({ file, canvas, shapeRef }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
-        fabric.Image.fromURL(reader.result as string, (img) => {
-            img.scaleToWidth(200);
-            img.scaleToHeight(200);
+        fabric.Image.fromURL(reader.result as string, (image) => {
+            image.scaleToWidth(200);
+            image.scaleToHeight(200);
+            image.set({ top: 160, left: 320 });
 
-            canvas.current.add(img);
+            canvas.current.add(image);
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            img.objectId = uuidv4();
+            image.objectId = uuidv4();
 
-            shapeRef.current = img;
+            shapeRef.current = image;
 
-            console.log({ img });
+            console.log({ image });
             canvas.current.requestRenderAll();
         });
     };

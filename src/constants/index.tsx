@@ -1,6 +1,5 @@
 import { TfiPencil } from "react-icons/tfi";
 import { CiImageOn, CiText } from "react-icons/ci";
-import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus } from "react-icons/pi";
 
 export const defaultAttributes = {
@@ -9,8 +8,8 @@ export const defaultAttributes = {
     fontSize: "",
     fontFamily: "",
     fontWeight: "",
-    fill: "#aabbcc",
-    stroke: "#aabbcc",
+    fill: "#000000",
+    stroke: "#000000",
 };
 
 export const navElements = [
@@ -33,11 +32,6 @@ export const navElements = [
         icon: <PiCircle />,
         name: "Circle",
         value: "circle",
-    },
-    {
-        icon: <LiaLongArrowAltRightSolid />,
-        name: "Arrow",
-        value: "arrow",
     },
     {
         icon: <PiMinus />,

@@ -9,22 +9,10 @@ export enum CursorMode {
 }
 
 export type CursorState =
-    | {
-          mode: CursorMode.Hidden;
-      }
-    | {
-          mode: CursorMode.Chat;
-          message: string;
-          previousMessage: string | null;
-      }
-    | {
-          mode: CursorMode.ReactionSelector;
-      }
-    | {
-          mode: CursorMode.Reaction;
-          reaction: string;
-          isPressed: boolean;
-      };
+    | { mode: CursorMode.Hidden }
+    | { mode: CursorMode.Chat; message: string; previousMessage: string | null }
+    | { mode: CursorMode.ReactionSelector }
+    | { mode: CursorMode.Reaction; reaction: string; isPressed: boolean };
 
 export type Reaction = {
     value: string;
@@ -90,25 +78,6 @@ export type RightSidebarProps = {
     isEditingRef: React.MutableRefObject<boolean>;
 };
 
-export type NavbarProps = {
-    activeElement: ActiveElement;
-    imageInputRef: React.MutableRefObject<HTMLInputElement | null>;
-    handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleActiveElement: (element: ActiveElement) => void;
-};
-
-export type ShapesMenuProps = {
-    item: {
-        name: string;
-        icon: string;
-        value: Array<ActiveElement>;
-    };
-    activeElement: any;
-    handleActiveElement: any;
-    handleImageUpload: any;
-    imageInputRef: any;
-};
-
 export type Presence = any;
 
 export type CanvasMouseDown = {
@@ -133,7 +102,6 @@ export type CanvasMouseUp = {
     shapeRef: any;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     selectedShapeRef: any;
-
     setActiveElement: any;
 };
 

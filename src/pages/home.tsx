@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
 import { useEffect, useRef, useState } from "react";
+import { defaultAttributes } from "@/constants";
 import MenuButton from "@/components/home/menu";
 import Toolbar from "@/components/home/toolbar";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ import {
 } from "@/utils/canvas";
 
 import type { ActiveElement, Attributes } from "@/types";
-import { defaultAttributes } from "@/constants";
+import { handleImageUpload } from "@/utils/shapes";
 
 export default function HomePage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,6 +28,7 @@ export default function HomePage() {
 
     const isDrawing = useRef(false);
     const shapeRef = useRef<fabric.Object | null>(null);
+    const imageInputRef = useRef<HTMLInputElement>(null);
     const selectedShapeRef = useRef<string | null>(null);
 
     const activeObjectRef = useRef<fabric.Object | null>(null);
@@ -40,7 +42,27 @@ export default function HomePage() {
     const handleActiveElement = (element: ActiveElement) => {
         setActiveElement(element);
 
-        selectedShapeRef.current = element.value;
+        switch (element.value) {
+            case "image":
+                // trigger the click event on the input element which opens the file dialog
+                imageInputRef.current?.click();
+                /**
+                 * set drawing mode to false
+                 * If the user is drawing on the canvas, we want to stop the
+                 * drawing mode when clicked on the image item from the dropdown.
+                 */
+                isDrawing.current = false;
+
+                if (fabricRef.current) {
+                    // disable the drawing mode of canvas
+                    fabricRef.current.isDrawingMode = false;
+                }
+                break;
+
+            default:
+                selectedShapeRef.current = element.value;
+                break;
+        }
     };
 
     const [menuOpen, setMenuOpen] = useState(false);
@@ -107,6 +129,18 @@ export default function HomePage() {
             <div id="canvas" className="h-screen w-full">
                 <canvas ref={canvasRef} />
             </div>
+
+            <input
+                hidden
+                type="file"
+                accept="image/*"
+                ref={imageInputRef}
+                onChange={(e) => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    if (e?.target?.files?.length) handleImageUpload({ file: e.target.files[0], canvas: fabricRef, shapeRef });
+                }}
+            />
         </>
     );
 }
