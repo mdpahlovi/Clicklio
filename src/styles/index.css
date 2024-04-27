@@ -48,7 +48,7 @@
         @apply border-border;
     }
     body {
-        @apply bg-background text-content;
+        @apply size-full overflow-hidden bg-background text-content;
     }
 }
 

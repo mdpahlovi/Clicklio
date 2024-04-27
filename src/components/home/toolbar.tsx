@@ -1,14 +1,20 @@
 import { useState } from "react";
-import { TfiPencil } from "react-icons/tfi";
+import { navElements } from "@/constants";
 import Separator from "@/components/ui/separator";
-import { IoSquareOutline } from "react-icons/io5";
 import IconButton from "@/components/ui/icon-button";
-import { GoDiamond, GoCircle } from "react-icons/go";
-import { PiCursor, PiMinus, PiCirclesThreePlus } from "react-icons/pi";
-import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
-import { CiLock, CiUnlock, CiText, CiImageOn, CiEraser } from "react-icons/ci";
 
-export default function Toolbar() {
+import { LiaHandPaper } from "react-icons/lia";
+import { PiCirclesThreePlus } from "react-icons/pi";
+import { CiLock, CiUnlock, CiEraser } from "react-icons/ci";
+
+import type { ActiveElement } from "@/types";
+
+type ToolbarProps = {
+    activeElement: ActiveElement;
+    handleActiveElement: (element: ActiveElement) => void;
+};
+
+export default function Toolbar({ activeElement, handleActiveElement }: ToolbarProps) {
     const [lock, setLock] = useState(false);
 
     return (
@@ -18,33 +24,17 @@ export default function Toolbar() {
             <IconButton active>
                 <LiaHandPaper />
             </IconButton>
-            <IconButton>
-                <PiCursor />
-            </IconButton>
-            <IconButton>
-                <IoSquareOutline />
-            </IconButton>
-            <IconButton>
-                <GoDiamond />
-            </IconButton>
-            <IconButton>
-                <GoCircle />
-            </IconButton>
-            <IconButton>
-                <LiaLongArrowAltRightSolid />
-            </IconButton>
-            <IconButton>
-                <PiMinus />
-            </IconButton>
-            <IconButton>
-                <TfiPencil />
-            </IconButton>
-            <IconButton>
-                <CiText />
-            </IconButton>
-            <IconButton>
-                <CiImageOn />
-            </IconButton>
+            {navElements.map((element) => {
+                return (
+                    <IconButton
+                        key={element.value}
+                        onClick={() => handleActiveElement(element)}
+                        active={element.value === activeElement?.value}
+                    >
+                        {element.icon}
+                    </IconButton>
+                );
+            })}
             <IconButton>
                 <CiEraser />
             </IconButton>
