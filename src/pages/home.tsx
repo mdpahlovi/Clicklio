@@ -21,6 +21,7 @@ import {
 
 import type { ActiveElement, Attributes } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";
+import { handleKeyDown } from "@/utils/key-events";
 
 export default function HomePage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,20 +44,16 @@ export default function HomePage() {
         setActiveElement(element);
 
         switch (element.value) {
+            case "panning":
+                fabricRef.current?.forEachObject(function (object) {
+                    object.evented = false;
+                    object.selectable = false;
+                });
+                break;
             case "image":
-                // trigger the click event on the input element which opens the file dialog
                 imageInputRef.current?.click();
-                /**
-                 * set drawing mode to false
-                 * If the user is drawing on the canvas, we want to stop the
-                 * drawing mode when clicked on the image item from the dropdown.
-                 */
                 isDrawing.current = false;
-
-                if (fabricRef.current) {
-                    // disable the drawing mode of canvas
-                    fabricRef.current.isDrawingMode = false;
-                }
+                if (fabricRef.current) fabricRef.current.isDrawingMode = false;
                 break;
 
             default:
@@ -64,8 +61,6 @@ export default function HomePage() {
                 break;
         }
     };
-
-    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
         const canvas = initializeFabric({ canvasRef, fabricRef });
@@ -107,23 +102,25 @@ export default function HomePage() {
         });
 
         window.addEventListener("resize", () => handleResize({ canvas: fabricRef.current }));
+        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas: fabricRef.current }));
 
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
+            window.removeEventListener("keydown", (e) => handleKeyDown({ e, canvas: null }));
         };
     }, [canvasRef]);
 
     return (
         <>
             <div className="fixed top-6 z-10 grid w-full grid-cols-[4.25rem_1fr_4.25rem] items-center px-6">
-                <MenuButton {...{ menuOpen, setMenuOpen }} />
+                <MenuButton />
                 <Toolbar {...{ activeElement, handleActiveElement }} />
                 <Button>Share</Button>
             </div>
-            <div className="fixed left-6 top-24 z-10 h-80 w-60 rounded bg-foreground"></div>
+            {/* <div className="fixed left-6 top-24 z-10 h-80 w-60 rounded bg-foreground"></div> */}
             <div className="fixed bottom-6 left-6 z-10">
-                <BottomToolbar />
+                <BottomToolbar canvas={fabricRef} />
             </div>
 
             <div id="canvas" className="h-screen w-full">

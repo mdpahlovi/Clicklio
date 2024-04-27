@@ -1,4 +1,5 @@
 import { TfiPencil } from "react-icons/tfi";
+import { LiaHandPaper } from "react-icons/lia";
 import { CiImageOn, CiText } from "react-icons/ci";
 import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus } from "react-icons/pi";
 
@@ -13,6 +14,11 @@ export const defaultAttributes = {
 };
 
 export const navElements = [
+    {
+        icon: <LiaHandPaper />,
+        name: "Panning",
+        value: "panning",
+    },
     {
         icon: <PiCursor />,
         name: "Select",

@@ -12,6 +12,7 @@ import {
     RenderCanvas,
 } from "@/types";
 import { createSpecificShape } from "@/utils/shapes";
+import { defaultNavElement } from "@/constants";
 
 // initialize fabric canvas
 export const initializeFabric = ({
@@ -145,10 +146,24 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, selectedShap
 };
 
 // handle mouse up event on canvas to stop drawing shapes
-export const handleCanvasMouseUp = ({ isDrawing, shapeRef }: CanvasMouseUp) => {
+export const handleCanvasMouseUp = ({
+    canvas,
+    isDrawing,
+    shapeRef,
+    activeObjectRef,
+    selectedShapeRef,
+    setActiveElement,
+}: CanvasMouseUp) => {
     isDrawing.current = false;
+    if (selectedShapeRef.current === "freeform") return;
 
-    console.log(shapeRef.current);
+    // set everything to null
+    shapeRef.current = null;
+    activeObjectRef.current = null;
+    selectedShapeRef.current = null;
+
+    // if canvas is not in drawing mode, set active element to default nav element after 700ms
+    if (!canvas.isDrawingMode) setActiveElement(defaultNavElement);
 };
 
 // update shape in storage when object is modified
