@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
 import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";
 import IconButton from "@/components/ui/icon-button";
 
-export default function BottomToolbar({ canvas }: { canvas: React.RefObject<fabric.Canvas | null> }) {
-    const [zoom, setZoom] = useState(1);
+type BottomToolbarProps = {
+    zoom: number;
+    setZoom: React.Dispatch<React.SetStateAction<number>>;
+    canvas: React.RefObject<fabric.Canvas | null>;
+};
 
-    useEffect(() => setZoom(canvas.current ? canvas.current.getZoom() : 1), [canvas]);
-
+export default function BottomToolbar({ zoom, setZoom, canvas }: BottomToolbarProps) {
     return (
         <div className="flex gap-6">
             <div className="flex">

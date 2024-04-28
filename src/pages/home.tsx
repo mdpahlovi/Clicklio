@@ -24,6 +24,7 @@ import { handleImageUpload } from "@/utils/shapes";
 import { handleKeyDown } from "@/utils/key-events";
 
 export default function HomePage() {
+    const [zoom, setZoom] = useState(1);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
@@ -61,6 +62,8 @@ export default function HomePage() {
     useEffect(() => {
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
+        setZoom(canvas.getZoom());
+
         canvas.on("mouse:down", (options) => {
             handleCanvasMouseDown({ options, canvas, isDrawing, shapeRef, selectedShapeRef });
         });
@@ -94,7 +97,7 @@ export default function HomePage() {
         });
 
         canvas.on("mouse:wheel", (options) => {
-            handleCanvasZoom({ options, canvas });
+            handleCanvasZoom({ options, canvas, setZoom });
         });
 
         window.addEventListener("resize", () => handleResize({ canvas: fabricRef.current }));
@@ -116,7 +119,7 @@ export default function HomePage() {
             </div>
             {/* <div className="fixed left-6 top-24 z-10 h-80 w-60 rounded bg-foreground"></div> */}
             <div className="fixed bottom-6 left-6 z-10">
-                <BottomToolbar canvas={fabricRef} />
+                <BottomToolbar canvas={fabricRef} {...{ zoom, setZoom }} />
             </div>
 
             <div id="canvas" className="h-screen w-full">

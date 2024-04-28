@@ -130,6 +130,12 @@ export type RenderCanvas = {
     activeObjectRef: any;
 };
 
+export type CanvasZoom = {
+    options: fabric.IEvent & { e: WheelEvent };
+    canvas: fabric.Canvas;
+    setZoom: React.Dispatch<React.SetStateAction<number>>;
+};
+
 export type CursorChatProps = {
     cursor: { x: number; y: number };
     cursorState: CursorState;

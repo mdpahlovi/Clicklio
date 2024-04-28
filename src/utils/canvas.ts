@@ -1,7 +1,9 @@
 import { fabric } from "fabric";
 import { v4 as uuid4 } from "uuid";
+import { defaultNavElement } from "@/constants";
+import { createSpecificShape } from "@/utils/shapes";
 
-import {
+import type {
     CanvasMouseDown,
     CanvasMouseMove,
     CanvasMouseUp,
@@ -9,10 +11,9 @@ import {
     CanvasObjectScaling,
     CanvasPathCreated,
     CanvasSelectionCreated,
+    CanvasZoom,
     RenderCanvas,
 } from "@/types";
-import { createSpecificShape } from "@/utils/shapes";
-import { defaultNavElement } from "@/constants";
 
 // initialize fabric canvas
 export const initializeFabric = ({
@@ -319,7 +320,7 @@ export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
 };
 
 // zoom canvas on mouse scroll
-export const handleCanvasZoom = ({ options, canvas }: { options: fabric.IEvent & { e: WheelEvent }; canvas: fabric.Canvas }) => {
+export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
     const delta = options.e?.deltaY;
     let zoom = canvas.getZoom();
 
@@ -333,6 +334,7 @@ export const handleCanvasZoom = ({ options, canvas }: { options: fabric.IEvent &
 
     // set zoom to canvas
     // zoomToPoint: http://fabricjs.com/docs/fabric.Canvas.html#zoomToPoint
+    setZoom(zoom);
     canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom);
 
     options.e.preventDefault();
