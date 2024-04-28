@@ -45,10 +45,6 @@ export default function HomePage() {
 
         switch (element.value) {
             case "panning":
-                fabricRef.current?.forEachObject(function (object) {
-                    object.evented = false;
-                    object.selectable = false;
-                });
                 break;
             case "image":
                 imageInputRef.current?.click();
@@ -109,7 +105,7 @@ export default function HomePage() {
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
             window.removeEventListener("keydown", (e) => handleKeyDown({ e, canvas: null }));
         };
-    }, [canvasRef]);
+    }, []);
 
     return (
         <>
