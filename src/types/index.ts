@@ -26,7 +26,7 @@ export type ReactionEvent = {
     value: string;
 };
 
-export type Panning = { x: number; y: number };
+export type Pointer = { x: number; y: number };
 
 export type ShapeData = {
     type: string;
@@ -92,7 +92,7 @@ export type CanvasMouseDown = {
     canvas: fabric.Canvas;
     selectedShapeRef: any;
     isDrawing: React.MutableRefObject<boolean>;
-    isPanning: React.MutableRefObject<Panning | null>;
+    isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
 };
 
@@ -100,7 +100,7 @@ export type CanvasMouseMove = {
     options: fabric.IEvent;
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
-    isPanning: React.MutableRefObject<Panning | null>;
+    isPanning: React.MutableRefObject<Pointer | null>;
     selectedShapeRef: any;
     shapeRef: any;
 };
@@ -108,7 +108,7 @@ export type CanvasMouseMove = {
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
-    isPanning: React.MutableRefObject<Panning | null>;
+    isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: any;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     selectedShapeRef: any;

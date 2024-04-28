@@ -1,9 +1,9 @@
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 
-import type { ElementDirection, ImageUpload, ModifyShape } from "@/types";
+import type { Pointer, ElementDirection, ImageUpload, ModifyShape } from "@/types";
 
-export const createRectangle = (pointer: PointerEvent) => {
+export const createRectangle = (pointer: Pointer) => {
     return new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
@@ -12,7 +12,7 @@ export const createRectangle = (pointer: PointerEvent) => {
     } as { objectId: string } & fabric.Rect);
 };
 
-export const createTriangle = (pointer: PointerEvent) => {
+export const createTriangle = (pointer: Pointer) => {
     return new fabric.Triangle({
         left: pointer.x,
         top: pointer.y,
@@ -21,7 +21,7 @@ export const createTriangle = (pointer: PointerEvent) => {
     } as { objectId: string } & fabric.Triangle);
 };
 
-export const createCircle = (pointer: PointerEvent) => {
+export const createCircle = (pointer: Pointer) => {
     return new fabric.Circle({
         left: pointer.x,
         top: pointer.y,
@@ -30,7 +30,7 @@ export const createCircle = (pointer: PointerEvent) => {
     } as { objectId: string } & fabric.Circle);
 };
 
-export const createLine = (pointer: PointerEvent) => {
+export const createLine = (pointer: Pointer) => {
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
         stroke: "#000000",
         strokeWidth: 2,
@@ -38,7 +38,7 @@ export const createLine = (pointer: PointerEvent) => {
     } as { objectId: string } & fabric.Line);
 };
 
-export const createText = (pointer: PointerEvent, text: string) => {
+export const createText = (pointer: Pointer, text: string) => {
     return new fabric.IText(text, {
         left: pointer.x,
         top: pointer.y,
@@ -47,10 +47,10 @@ export const createText = (pointer: PointerEvent, text: string) => {
         fontSize: 36,
         fontWeight: "400",
         objectId: uuidv4(),
-    } as fabric.ITextOptions);
+    } as { objectId: string } & fabric.IText);
 };
 
-export const createSpecificShape = (shapeType: string, pointer: PointerEvent) => {
+export const createSpecificShape = (shapeType: string, pointer: Pointer) => {
     switch (shapeType) {
         case "rectangle":
             return createRectangle(pointer);

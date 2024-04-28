@@ -21,7 +21,7 @@ import {
     initializeFabric,
 } from "@/utils/canvas";
 
-import type { Panning, ActiveElement, Attributes } from "@/types";
+import type { Pointer, ActiveElement, Attributes } from "@/types";
 
 export default function HomePage() {
     const [zoom, setZoom] = useState(1);
@@ -29,7 +29,7 @@ export default function HomePage() {
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const isDrawing = useRef(false);
-    const isPanning = useRef<Panning | null>(null);
+    const isPanning = useRef<Pointer | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
     const imageInputRef = useRef<HTMLInputElement>(null);
     const selectedShapeRef = useRef<string | null>(null);
