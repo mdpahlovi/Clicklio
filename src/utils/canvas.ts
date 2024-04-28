@@ -4,6 +4,7 @@ import { defaultNavElement } from "@/constants";
 import { createSpecificShape } from "@/utils/shapes";
 
 import type {
+    InitializeFabric,
     CanvasMouseDown,
     CanvasMouseMove,
     CanvasMouseUp,
@@ -16,13 +17,7 @@ import type {
 } from "@/types";
 
 // initialize fabric canvas
-export const initializeFabric = ({
-    fabricRef,
-    canvasRef,
-}: {
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
-}) => {
+export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => {
     // get canvas element
     const canvasElement = document.getElementById("canvas");
 
@@ -39,7 +34,7 @@ export const initializeFabric = ({
 };
 
 // instantiate creation of custom fabric object/shape and add it to canvas
-export const handleCanvasMouseDown = ({ options, canvas, selectedShapeRef, isDrawing, shapeRef }: CanvasMouseDown) => {
+export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseDown) => {
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
 
@@ -53,6 +48,15 @@ export const handleCanvasMouseDown = ({ options, canvas, selectedShapeRef, isDra
 
     // set canvas drawing mode to false
     canvas.isDrawingMode = false;
+
+    // if selected shape is panning, set panning points
+    if (selectedShapeRef.current === "panning") {
+        isDrawing.current = true;
+        canvas.selection = false;
+        isPanning.current = pointer;
+
+        return;
+    }
 
     // if selected shape is freeform, set drawing mode to true and return
     if (selectedShapeRef.current === "freeform") {
@@ -91,7 +95,7 @@ export const handleCanvasMouseDown = ({ options, canvas, selectedShapeRef, isDra
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
-export const handleCanvasMouseMove = ({ options, canvas, isDrawing, selectedShapeRef, shapeRef }: CanvasMouseMove) => {
+export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseMove) => {
     // if selected shape is freeform, return
     if (!isDrawing.current) return;
     if (selectedShapeRef.current === "freeform") return;
@@ -101,11 +105,27 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, selectedShap
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
 
+    if (selectedShapeRef.current === "panning" && isPanning.current) {
+        const deltaX = pointer.x - isPanning.current.x;
+        const deltaY = pointer.y - isPanning.current.y;
+
+        canvas.relativePan({ x: deltaX, y: deltaY });
+        isPanning.current = pointer;
+        return;
+    }
+
     // depending on the selected shape, set the dimensions of the shape stored in shapeRef in previous step of handelCanvasMouseDown
     // calculate shape dimensions based on pointer coordinates
     switch (selectedShapeRef?.current) {
         case "rectangle":
-            shapeRef.current?.set({
+            shapeRef.current.set({
+                width: pointer.x - (shapeRef.current?.left || 0),
+                height: pointer.y - (shapeRef.current?.top || 0),
+            });
+            break;
+
+        case "triangle":
+            shapeRef.current.set({
                 width: pointer.x - (shapeRef.current?.left || 0),
                 height: pointer.y - (shapeRef.current?.top || 0),
             });
@@ -117,22 +137,15 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, selectedShap
             });
             break;
 
-        case "triangle":
-            shapeRef.current?.set({
-                width: pointer.x - (shapeRef.current?.left || 0),
-                height: pointer.y - (shapeRef.current?.top || 0),
-            });
-            break;
-
         case "line":
-            shapeRef.current?.set({
+            shapeRef.current.set({
                 x2: pointer.x,
                 y2: pointer.y,
             });
             break;
 
         case "image":
-            shapeRef.current?.set({
+            shapeRef.current.set({
                 width: pointer.x - (shapeRef.current?.left || 0),
                 height: pointer.y - (shapeRef.current?.top || 0),
             });
@@ -150,6 +163,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, selectedShap
 export const handleCanvasMouseUp = ({
     canvas,
     isDrawing,
+    isPanning,
     shapeRef,
     activeObjectRef,
     selectedShapeRef,
@@ -158,12 +172,19 @@ export const handleCanvasMouseUp = ({
     isDrawing.current = false;
     if (selectedShapeRef.current === "freeform") return;
 
+    // set panning to null
+    if (selectedShapeRef.current === "panning") {
+        canvas.selection = true;
+        isPanning.current = null;
+        return;
+    }
+
     // set everything to null
     shapeRef.current = null;
     activeObjectRef.current = null;
     selectedShapeRef.current = null;
 
-    // if canvas is not in drawing mode, set active element to default nav element after 700ms
+    // if canvas is not in drawing mode, set active element to default nav element
     if (!canvas.isDrawingMode) setActiveElement(defaultNavElement);
 };
 

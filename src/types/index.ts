@@ -26,6 +26,8 @@ export type ReactionEvent = {
     value: string;
 };
 
+export type Panning = { x: number; y: number };
+
 export type ShapeData = {
     type: string;
     width: number;
@@ -80,11 +82,17 @@ export type RightSidebarProps = {
 
 export type Presence = any;
 
+export type InitializeFabric = {
+    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+};
+
 export type CanvasMouseDown = {
     options: fabric.IEvent;
     canvas: fabric.Canvas;
     selectedShapeRef: any;
     isDrawing: React.MutableRefObject<boolean>;
+    isPanning: React.MutableRefObject<Panning | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
 };
 
@@ -92,6 +100,7 @@ export type CanvasMouseMove = {
     options: fabric.IEvent;
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
+    isPanning: React.MutableRefObject<Panning | null>;
     selectedShapeRef: any;
     shapeRef: any;
 };
@@ -99,6 +108,7 @@ export type CanvasMouseMove = {
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
+    isPanning: React.MutableRefObject<Panning | null>;
     shapeRef: any;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     selectedShapeRef: any;

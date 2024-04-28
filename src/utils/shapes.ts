@@ -97,15 +97,6 @@ export const handleImageUpload = ({ file, canvas, shapeRef }: ImageUpload) => {
     reader.readAsDataURL(file);
 };
 
-export const createShape = (canvas: fabric.Canvas, pointer: PointerEvent, shapeType: string) => {
-    if (shapeType === "freeform") {
-        canvas.isDrawingMode = true;
-        return null;
-    }
-
-    return createSpecificShape(shapeType, pointer);
-};
-
 export const modifyShape = ({ canvas, property, value, activeObjectRef }: ModifyShape) => {
     const selectedElement = canvas.getActiveObject();
 

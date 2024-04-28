@@ -1,5 +1,7 @@
 import { fabric } from "fabric";
 import { useEffect, useRef, useState } from "react";
+import { handleKeyDown } from "@/utils/key-events";
+import { handleImageUpload } from "@/utils/shapes";
 import { defaultAttributes } from "@/constants";
 import MenuButton from "@/components/home/menu";
 import Toolbar from "@/components/home/toolbar";
@@ -19,9 +21,7 @@ import {
     initializeFabric,
 } from "@/utils/canvas";
 
-import type { ActiveElement, Attributes } from "@/types";
-import { handleImageUpload } from "@/utils/shapes";
-import { handleKeyDown } from "@/utils/key-events";
+import type { Panning, ActiveElement, Attributes } from "@/types";
 
 export default function HomePage() {
     const [zoom, setZoom] = useState(1);
@@ -29,6 +29,7 @@ export default function HomePage() {
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const isDrawing = useRef(false);
+    const isPanning = useRef<Panning | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
     const imageInputRef = useRef<HTMLInputElement>(null);
     const selectedShapeRef = useRef<string | null>(null);
@@ -45,8 +46,6 @@ export default function HomePage() {
         setActiveElement(element);
 
         switch (element.value) {
-            case "panning":
-                break;
             case "image":
                 imageInputRef.current?.click();
                 isDrawing.current = false;
@@ -65,15 +64,15 @@ export default function HomePage() {
         setZoom(canvas.getZoom());
 
         canvas.on("mouse:down", (options) => {
-            handleCanvasMouseDown({ options, canvas, isDrawing, shapeRef, selectedShapeRef });
+            handleCanvasMouseDown({ options, canvas, isDrawing, isPanning, shapeRef, selectedShapeRef });
         });
 
         canvas.on("mouse:move", (options) => {
-            handleCanvasMouseMove({ options, canvas, isDrawing, selectedShapeRef, shapeRef });
+            handleCanvasMouseMove({ options, canvas, isDrawing, isPanning, shapeRef, selectedShapeRef });
         });
 
         canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({ canvas, isDrawing, shapeRef, activeObjectRef, selectedShapeRef, setActiveElement });
+            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, activeObjectRef, selectedShapeRef, setActiveElement });
         });
 
         canvas.on("path:created", (options) => {
