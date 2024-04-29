@@ -35,6 +35,9 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 
 // instantiate creation of custom fabric object/shape and add it to canvas
 export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseDown) => {
+    // if selected shape is freeform, return
+    if (!selectedShapeRef.current) return;
+
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
 
@@ -46,9 +49,6 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
      */
     const target = canvas.findTarget(options.e, false);
 
-    // set canvas drawing mode to false
-    canvas.isDrawingMode = false;
-
     // if selected shape is panning, set panning points
     if (selectedShapeRef.current === "panning") {
         isDrawing.current = true;
@@ -57,17 +57,6 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
 
         return;
     }
-
-    // if selected shape is freeform, set drawing mode to true and return
-    if (selectedShapeRef.current === "freeform") {
-        isDrawing.current = true;
-        canvas.isDrawingMode = true;
-        canvas.freeDrawingBrush.width = 5;
-
-        return;
-    }
-
-    canvas.isDrawingMode = false;
 
     // if target is the selected shape or active selection, set isDrawing to false
     if (target && (target.type === selectedShapeRef.current || target.type === "activeSelection")) {
@@ -94,9 +83,7 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
 export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseMove) => {
     // if selected shape is freeform, return
     if (!isDrawing.current) return;
-    if (selectedShapeRef.current === "freeform") return;
-
-    canvas.isDrawingMode = false;
+    if (!selectedShapeRef.current) return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
@@ -173,7 +160,7 @@ export const handleCanvasMouseUp = ({
     setActiveElement,
 }: CanvasMouseUp) => {
     isDrawing.current = false;
-    if (selectedShapeRef.current === "freeform") return;
+    if (!selectedShapeRef.current) return;
 
     // set panning to null
     if (selectedShapeRef.current === "panning") {

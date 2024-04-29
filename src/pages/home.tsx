@@ -43,12 +43,26 @@ export default function HomePage() {
 
     const handleActiveElement = (element: NavElement) => {
         setActiveElement(element);
+        if (fabricRef.current) {
+            fabricRef.current.isDrawingMode = false;
+            fabricRef.current.defaultCursor = "default";
+        }
 
         switch (element.value) {
+            case "panning":
+                selectedShapeRef.current = "panning";
+                if (fabricRef.current) fabricRef.current.defaultCursor = "grab";
+                break;
+
+            case "freeform":
+                if (fabricRef.current) {
+                    fabricRef.current.isDrawingMode = true;
+                    fabricRef.current.freeDrawingBrush.width = 5;
+                }
+                break;
+
             case "image":
                 imageInputRef.current?.click();
-                isDrawing.current = false;
-                if (fabricRef.current) fabricRef.current.isDrawingMode = false;
                 break;
 
             default:
