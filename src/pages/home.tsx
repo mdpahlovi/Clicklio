@@ -2,10 +2,9 @@ import { fabric } from "fabric";
 import { useEffect, useRef, useState } from "react";
 import { handleKeyDown } from "@/utils/key-events";
 import { handleImageUpload } from "@/utils/shapes";
-import { defaultAttributes } from "@/constants";
-import MenuButton from "@/components/home/menu";
-import Toolbar from "@/components/home/toolbar";
 import { Button } from "@/components/ui/button";
+import Toolbar from "@/components/home/toolbar";
+import MenuButton from "@/components/home/menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
 import {
     handleCanvasMouseDown,
@@ -21,7 +20,7 @@ import {
     initializeFabric,
 } from "@/utils/canvas";
 
-import type { Pointer, ActiveElement, Attributes } from "@/types";
+import type { Pointer, NavElement, Attributes, Shape } from "@/types";
 
 export default function HomePage() {
     const [zoom, setZoom] = useState(1);
@@ -32,17 +31,17 @@ export default function HomePage() {
     const isPanning = useRef<Pointer | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
     const imageInputRef = useRef<HTMLInputElement>(null);
-    const selectedShapeRef = useRef<string | null>(null);
+    const selectedShapeRef = useRef<Shape | null>(null);
 
     const activeObjectRef = useRef<fabric.Object | null>(null);
     const isEditingRef = useRef(false);
 
-    const [activeElement, setActiveElement] = useState<ActiveElement>({ icon: null, name: "", value: "" });
-    const [elementAttributes, setElementAttributes] = useState<Attributes>(defaultAttributes);
+    const [activeElement, setActiveElement] = useState<NavElement | null>(null);
+    const [elementAttributes, setElementAttributes] = useState<Attributes | null>(null);
 
     console.log(elementAttributes);
 
-    const handleActiveElement = (element: ActiveElement) => {
+    const handleActiveElement = (element: NavElement) => {
         setActiveElement(element);
 
         switch (element.value) {

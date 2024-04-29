@@ -39,8 +39,8 @@ export type ShapeData = {
 };
 
 export type Attributes = {
-    width: string;
-    height: string;
+    width: number;
+    height: number;
     fontSize: string;
     fontFamily: string;
     fontWeight: string;
@@ -48,9 +48,11 @@ export type Attributes = {
     stroke: string;
 };
 
-export type ActiveElement = {
+export type Shape = "panning" | "select" | "rectangle" | "triangle" | "circle" | "line" | "freeform" | "text" | "image";
+
+export type NavElement = {
+    value: Shape;
     name: string;
-    value: string;
     icon: React.ReactNode;
 };
 
@@ -75,12 +77,10 @@ export type ImageUpload = {
 export type RightSidebarProps = {
     elementAttributes: Attributes;
     setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
-    fabricRef: React.RefObject<fabric.Canvas | null>;
-    activeObjectRef: React.RefObject<fabric.Object | null>;
+    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     isEditingRef: React.MutableRefObject<boolean>;
 };
-
-export type Presence = any;
 
 export type InitializeFabric = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
@@ -90,7 +90,7 @@ export type InitializeFabric = {
 export type CanvasMouseDown = {
     options: fabric.IEvent;
     canvas: fabric.Canvas;
-    selectedShapeRef: any;
+    selectedShapeRef: React.MutableRefObject<Shape | null>;
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
@@ -101,18 +101,18 @@ export type CanvasMouseMove = {
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
-    selectedShapeRef: any;
-    shapeRef: any;
+    selectedShapeRef: React.MutableRefObject<Shape | null>;
+    shapeRef: React.MutableRefObject<fabric.Object | null>;
 };
 
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
-    shapeRef: any;
+    shapeRef: React.MutableRefObject<fabric.Object | null>;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
-    selectedShapeRef: any;
-    setActiveElement: any;
+    selectedShapeRef: React.MutableRefObject<Shape | null>;
+    setActiveElement: React.Dispatch<React.SetStateAction<NavElement | null>>;
 };
 
 export type CanvasObjectModified = {
@@ -126,18 +126,18 @@ export type CanvasPathCreated = {
 export type CanvasSelectionCreated = {
     options: fabric.IEvent;
     isEditingRef: React.MutableRefObject<boolean>;
-    setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
+    setElementAttributes: React.Dispatch<React.SetStateAction<Attributes | null>>;
 };
 
 export type CanvasObjectScaling = {
     options: fabric.IEvent;
-    setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
+    setElementAttributes: React.Dispatch<React.SetStateAction<Attributes | null>>;
 };
 
 export type RenderCanvas = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     canvasObjects: any;
-    activeObjectRef: any;
+    activeObjectRef: React.MutableRefObject<fabric.Object | null>;
 };
 
 export type CanvasZoom = {

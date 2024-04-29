@@ -6,11 +6,11 @@ import IconButton from "@/components/ui/icon-button";
 import { PiCirclesThreePlus } from "react-icons/pi";
 import { CiLock, CiUnlock, CiEraser } from "react-icons/ci";
 
-import type { ActiveElement } from "@/types";
+import type { NavElement } from "@/types";
 
 type ToolbarProps = {
-    activeElement: ActiveElement;
-    handleActiveElement: (element: ActiveElement) => void;
+    activeElement: NavElement | null;
+    handleActiveElement: (element: NavElement) => void;
 };
 
 export default function Toolbar({ activeElement, handleActiveElement }: ToolbarProps) {

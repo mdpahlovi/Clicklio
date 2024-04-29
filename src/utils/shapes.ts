@@ -1,12 +1,14 @@
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Pointer, ElementDirection, ImageUpload, ModifyShape } from "@/types";
+import type { Pointer, ElementDirection, ImageUpload, ModifyShape, Shape } from "@/types";
 
 export const createRectangle = (pointer: Pointer) => {
     return new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
+        width: 0,
+        height: 0,
         fill: "#000000",
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Rect);
@@ -16,6 +18,8 @@ export const createTriangle = (pointer: Pointer) => {
     return new fabric.Triangle({
         left: pointer.x,
         top: pointer.y,
+        width: 0,
+        height: 0,
         fill: "#000000",
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Triangle);
@@ -25,6 +29,7 @@ export const createCircle = (pointer: Pointer) => {
     return new fabric.Circle({
         left: pointer.x,
         top: pointer.y,
+        radius: 0,
         fill: "#000000",
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Circle);
@@ -50,8 +55,8 @@ export const createText = (pointer: Pointer, text: string) => {
     } as { objectId: string } & fabric.IText);
 };
 
-export const createSpecificShape = (shapeType: string, pointer: Pointer) => {
-    switch (shapeType) {
+export const createSpecificShape = (shape: Shape | null, pointer: Pointer) => {
+    switch (shape) {
         case "rectangle":
             return createRectangle(pointer);
 

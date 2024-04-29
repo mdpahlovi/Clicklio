@@ -63,6 +63,7 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
         isDrawing.current = true;
         canvas.isDrawingMode = true;
         canvas.freeDrawingBrush.width = 5;
+
         return;
     }
 
@@ -109,41 +110,46 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
         return;
     }
 
+    // if no shape.current, then return
+    if (shapeRef.current === null) return;
+    const { left, top } = shapeRef.current;
+
     // depending on the selected shape, set the dimensions of the shape stored in shapeRef in previous step of handelCanvasMouseDown
     // calculate shape dimensions based on pointer coordinates
     switch (selectedShapeRef?.current) {
         case "rectangle":
-            shapeRef.current.set({
-                width: pointer.x - (shapeRef.current?.left || 0),
-                height: pointer.y - (shapeRef.current?.top || 0),
+            (shapeRef.current as fabric.Rect).set({
+                width: pointer.x - (left || 0),
+                height: pointer.y - (top || 0),
             });
             break;
 
         case "triangle":
-            shapeRef.current.set({
-                width: pointer.x - (shapeRef.current?.left || 0),
-                height: pointer.y - (shapeRef.current?.top || 0),
+            (shapeRef.current as fabric.Triangle).set({
+                width: pointer.x - (left || 0),
+                height: pointer.y - (top || 0),
             });
             break;
 
         case "circle":
-            shapeRef.current.set({
-                radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2,
+            (shapeRef.current as fabric.Circle).set({
+                radius: Math.abs(pointer.x - (left || 0)) / 2,
             });
             break;
 
         case "line":
-            shapeRef.current.set({
+            (shapeRef.current as fabric.Line).set({
                 x2: pointer.x,
                 y2: pointer.y,
             });
             break;
 
         case "image":
-            shapeRef.current.set({
-                width: pointer.x - (shapeRef.current?.left || 0),
-                height: pointer.y - (shapeRef.current?.top || 0),
+            (shapeRef.current as fabric.Image).set({
+                width: pointer.x - (left || 0),
+                height: pointer.y - (top || 0),
             });
+            break;
     }
 
     // render objects on canvas
@@ -151,6 +157,8 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
     canvas.renderAll();
 
     // sync shape in storage
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (shapeRef.current?.objectId) console.log(shapeRef.current);
 };
 
@@ -171,6 +179,7 @@ export const handleCanvasMouseUp = ({
     if (selectedShapeRef.current === "panning") {
         canvas.selection = true;
         isPanning.current = null;
+
         return;
     }
 
@@ -238,48 +247,29 @@ export const handleCanvasSelectionCreated = ({ options, isEditingRef, setElement
     // if no element is selected, return
     if (!options?.selected) return;
 
-    // get the selected element
-    const selectedElement = options?.selected[0] as fabric.Object;
-
     // if only one element is selected, set element attributes
-    if (selectedElement && options.selected.length === 1) {
+    if (options.selected.length === 1) {
+        const { scaleX, scaleY, width, height } = options.selected[0];
+
         // calculate scaled dimensions of the object
-        const scaledWidth = selectedElement?.scaleX ? selectedElement.width! * selectedElement?.scaleX : selectedElement?.width;
+        const scaledWidth = scaleX ? width! * scaleX : width;
+        const scaledHeight = scaleY ? height! * scaleY : height;
 
-        const scaledHeight = selectedElement?.scaleY ? selectedElement.height! * selectedElement?.scaleY : selectedElement?.height;
-
-        setElementAttributes({
-            width: scaledWidth?.toFixed(0).toString() || "",
-            height: scaledHeight?.toFixed(0).toString() || "",
-            fill: selectedElement?.fill?.toString() || "",
-            stroke: selectedElement?.stroke || "",
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            fontSize: selectedElement?.fontSize || "",
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            fontFamily: selectedElement?.fontFamily || "",
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            fontWeight: selectedElement?.fontWeight || "",
-        });
+        setElementAttributes((rest) => (rest ? { ...rest, width: scaledWidth || 0, height: scaledHeight || 0 } : null));
     }
 };
 
 // update element attributes when element is scaled
 export const handleCanvasObjectScaling = ({ options, setElementAttributes }: CanvasObjectScaling) => {
-    const selectedElement = options.target;
+    // if no target element, return
+    if (!options.target) return;
+    const { scaleX, scaleY, width, height } = options.target;
 
     // calculate scaled dimensions of the object
-    const scaledWidth = selectedElement?.scaleX ? selectedElement.width! * selectedElement?.scaleX : selectedElement?.width;
+    const scaledWidth = scaleX ? width! * scaleX : width;
+    const scaledHeight = scaleY ? height! * scaleY : height;
 
-    const scaledHeight = selectedElement?.scaleY ? selectedElement.height! * selectedElement?.scaleY : selectedElement?.height;
-
-    setElementAttributes((prev) => ({
-        ...prev,
-        width: scaledWidth?.toFixed(0).toString() || "",
-        height: scaledHeight?.toFixed(0).toString() || "",
-    }));
+    setElementAttributes((rest) => (rest ? { ...rest, width: scaledWidth || 0, height: scaledHeight || 0 } : null));
 };
 
 // render canvas objects coming from storage on canvas
@@ -303,6 +293,8 @@ export const renderCanvas = ({ fabricRef, canvasObjects, activeObjectRef }: Rend
             (enlivenedObjects: fabric.Object[]) => {
                 enlivenedObjects.forEach((enlivenedObj) => {
                     // if element is active, keep it in active state so that it can be edited further
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     if (activeObjectRef.current?.objectId === objectId) {
                         fabricRef.current?.setActiveObject(enlivenedObj);
                     }
