@@ -77,7 +77,7 @@ export const createSpecificShape = (shape: Shape | null, pointer: Pointer) => {
     }
 };
 
-export const handleImageUpload = ({ file, canvas, shapeRef }: ImageUpload) => {
+export const handleImageUpload = ({ file, canvas, shapeRef, setShape }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -88,13 +88,14 @@ export const handleImageUpload = ({ file, canvas, shapeRef }: ImageUpload) => {
 
             canvas.current.add(image);
 
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             image.objectId = uuidv4();
 
             shapeRef.current = image;
 
-            console.log({ image });
+            // sync shape in storage
+            // @ts-ignore
+            if (shapeRef.current?.objectId) setShape(shapeRef.current);
             canvas.current.requestRenderAll();
         });
     };

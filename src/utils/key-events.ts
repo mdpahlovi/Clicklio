@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
+import { WindowKeyDown } from "@/types";
 
 export const handleCopy = (canvas: fabric.Canvas) => {
     const activeObjects = canvas.getActiveObjects();
@@ -13,7 +14,7 @@ export const handleCopy = (canvas: fabric.Canvas) => {
     return activeObjects;
 };
 
-export const handlePaste = (canvas: fabric.Canvas) => {
+export const handlePaste = (canvas: fabric.Canvas, setShape: (shape: fabric.Object) => void) => {
     if (!canvas || !(canvas instanceof fabric.Canvas)) {
         console.error("Invalid canvas object. Aborting paste operation.");
         return;
@@ -35,7 +36,7 @@ export const handlePaste = (canvas: fabric.Canvas) => {
                             enlivenedObj.set({
                                 left: enlivenedObj.left! + 20,
                                 top: enlivenedObj.top! + 20,
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
                                 // @ts-ignore
                                 objectId: uuidv4(),
                                 fill: "#000000",
@@ -43,6 +44,7 @@ export const handlePaste = (canvas: fabric.Canvas) => {
 
                             canvas.add(enlivenedObj);
                             // sync in storage
+                            setShape(enlivenedObj);
                         });
                         canvas.renderAll();
                     },
@@ -55,7 +57,7 @@ export const handlePaste = (canvas: fabric.Canvas) => {
     }
 };
 
-export const handleDelete = (canvas: fabric.Canvas) => {
+export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) => void) => {
     const activeObjects = canvas.getActiveObjects();
     if (!activeObjects || activeObjects.length === 0) return;
 
@@ -63,6 +65,8 @@ export const handleDelete = (canvas: fabric.Canvas) => {
         activeObjects.forEach((object) => {
             canvas.remove(object);
             // sync in storage
+            // @ts-ignore
+            deleteShape(object.objectId);
         });
     }
 
@@ -71,7 +75,7 @@ export const handleDelete = (canvas: fabric.Canvas) => {
 };
 
 // create a handleKeyDown function that listen to different keydown events
-export const handleKeyDown = ({ e, canvas }: { e: KeyboardEvent; canvas: fabric.Canvas | null }) => {
+export const handleKeyDown = ({ e, canvas, setShape, deleteShape }: WindowKeyDown) => {
     // Check if the key pressed is ctrl/cmd + c (copy)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67) {
         handleCopy(canvas);
@@ -79,17 +83,17 @@ export const handleKeyDown = ({ e, canvas }: { e: KeyboardEvent; canvas: fabric.
 
     // Check if the key pressed is ctrl/cmd + v (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas);
+        handlePaste(canvas, setShape);
     }
 
-    // Check if the key pressed is delete/backspace (delete)
-    if (canvas && (e.keyCode === 8 || e.keyCode === 46)) {
-        handleDelete(canvas);
+    // Check if the key pressed is delete (delete)
+    if (canvas && e.keyCode === 46) {
+        handleDelete(canvas, deleteShape);
     }
 
     // check if the key pressed is ctrl/cmd + x (cut)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
         handleCopy(canvas);
-        handleDelete(canvas);
+        handleDelete(canvas, deleteShape);
     }
 };

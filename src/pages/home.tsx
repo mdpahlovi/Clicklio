@@ -18,12 +18,19 @@ import {
     handlePathCreated,
     handleResize,
     initializeFabric,
+    renderCanvas,
 } from "@/utils/canvas";
 
 import type { Pointer, NavElement, Attributes, Shape } from "@/types";
+import { useShapeState } from "@/hooks/useShapeState";
 
 export default function HomePage() {
     const [zoom, setZoom] = useState(1);
+
+    const { shapes, setShape, updateShape, deleteShape } = useShapeState();
+
+    console.log({ shapes: JSON.parse(JSON.stringify(shapes)) });
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
@@ -39,7 +46,7 @@ export default function HomePage() {
     const [activeElement, setActiveElement] = useState<NavElement | null>(null);
     const [elementAttributes, setElementAttributes] = useState<Attributes | null>(null);
 
-    console.log(elementAttributes);
+    console.log({ elementAttributes });
 
     const handleActiveElement = (element: NavElement) => {
         setActiveElement(element);
@@ -85,15 +92,15 @@ export default function HomePage() {
         });
 
         canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, activeObjectRef, selectedShapeRef, setActiveElement });
+            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, activeObjectRef, selectedShapeRef, setActiveElement, setShape });
         });
 
         canvas.on("path:created", (options) => {
-            handlePathCreated({ options });
+            handlePathCreated({ options, setShape });
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options });
+            handleCanvasObjectModified({ options, updateShape });
         });
 
         canvas.on("object:moving", (options) => {
@@ -113,13 +120,17 @@ export default function HomePage() {
         });
 
         window.addEventListener("resize", () => handleResize({ canvas: fabricRef.current }));
-        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas: fabricRef.current }));
+        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas: fabricRef.current, setShape, deleteShape }));
 
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
-            window.removeEventListener("keydown", (e) => handleKeyDown({ e, canvas: null }));
+            window.removeEventListener("keydown", (e) => handleKeyDown({ e, canvas: null, setShape, deleteShape }));
         };
+    }, []);
+
+    useEffect(() => {
+        if (shapes.length) renderCanvas({ shapes, fabricRef, activeObjectRef });
     }, []);
 
     return (
@@ -144,9 +155,8 @@ export default function HomePage() {
                 accept="image/*"
                 ref={imageInputRef}
                 onChange={(e) => {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
-                    if (e?.target?.files?.length) handleImageUpload({ file: e.target.files[0], canvas: fabricRef, shapeRef });
+                    if (e?.target?.files?.length) handleImageUpload({ file: e.target.files[0], canvas: fabricRef, shapeRef, setShape });
                 }}
             />
         </>

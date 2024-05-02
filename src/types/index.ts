@@ -61,6 +61,7 @@ export type ModifyShape = {
     property: string;
     value: any;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
+    setShape: (shape: fabric.Object) => void;
 };
 
 export type ElementDirection = {
@@ -72,6 +73,7 @@ export type ImageUpload = {
     file: File;
     canvas: React.MutableRefObject<fabric.Canvas>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
+    setShape: (shape: fabric.Object) => void;
 };
 
 export type RightSidebarProps = {
@@ -113,13 +115,16 @@ export type CanvasMouseUp = {
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     selectedShapeRef: React.MutableRefObject<Shape | null>;
     setActiveElement: React.Dispatch<React.SetStateAction<NavElement | null>>;
+    setShape: (shape: fabric.Object) => void;
 };
 
 export type CanvasObjectModified = {
     options: fabric.IEvent;
+    updateShape: (shape: fabric.Object) => void;
 };
 
 export type CanvasPathCreated = {
+    setShape: (shape: fabric.Object) => void;
     options: (fabric.IEvent & { path: { objectId: string } & fabric.Path }) | any;
 };
 
@@ -135,8 +140,8 @@ export type CanvasObjectScaling = {
 };
 
 export type RenderCanvas = {
+    shapes: fabric.Object[];
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    canvasObjects: any;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
 };
 
@@ -144,6 +149,13 @@ export type CanvasZoom = {
     options: fabric.IEvent & { e: WheelEvent };
     canvas: fabric.Canvas;
     setZoom: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export type WindowKeyDown = {
+    e: KeyboardEvent;
+    canvas: fabric.Canvas | null;
+    setShape: (shape: fabric.Object) => void;
+    deleteShape: (id: string) => void;
 };
 
 export type CursorChatProps = {

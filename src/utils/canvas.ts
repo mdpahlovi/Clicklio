@@ -27,6 +27,13 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
         height: canvasElement?.clientHeight,
     });
 
+    // define the custom method
+    fabric.Object.prototype.toObject = (function (toObject) {
+        return function (this: { objectId: string } & fabric.Object) {
+            return fabric.util.object.extend(toObject.call(this), { objectId: this.objectId });
+        };
+    })(fabric.Object.prototype.toObject);
+
     // set canvas reference to fabricRef so we can use it later anywhere outside canvas listener
     fabricRef.current = canvas;
 
@@ -142,11 +149,6 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
     // render objects on canvas
     // renderAll: http://fabricjs.com/docs/fabric.Canvas.html#renderAll
     canvas.renderAll();
-
-    // sync shape in storage
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (shapeRef.current?.objectId) console.log(shapeRef.current);
 };
 
 // handle mouse up event on canvas to stop drawing shapes
@@ -158,9 +160,14 @@ export const handleCanvasMouseUp = ({
     activeObjectRef,
     selectedShapeRef,
     setActiveElement,
+    setShape,
 }: CanvasMouseUp) => {
     isDrawing.current = false;
     if (!selectedShapeRef.current) return;
+
+    // sync shape in storage
+    // @ts-ignore
+    if (shapeRef.current?.objectId) setShape(shapeRef.current);
 
     // set panning to null
     if (selectedShapeRef.current === "panning") {
@@ -180,19 +187,21 @@ export const handleCanvasMouseUp = ({
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options }: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, updateShape }: CanvasObjectModified) => {
     const target = options.target;
     if (!target) return;
 
     if (target?.type == "activeSelection") {
         // fix this
     } else {
-        console.log({ target });
+        // sync shape in storage
+        // @ts-ignore
+        if (target?.objectId) updateShape(target);
     }
 };
 
 // update shape in storage when path is created when in freeform mode
-export const handlePathCreated = ({ options }: CanvasPathCreated) => {
+export const handlePathCreated = ({ options, setShape }: CanvasPathCreated) => {
     // get path object
     const path = options.path;
     if (!path) return;
@@ -201,7 +210,8 @@ export const handlePathCreated = ({ options }: CanvasPathCreated) => {
     path.set({ objectId: uuid4() });
 
     // sync shape in storage
-    console.log({ path });
+    // @ts-ignore
+    if (path?.objectId) setShape(path);
 };
 
 // check how object is moving on canvas and restrict it to canvas boundaries
@@ -260,12 +270,13 @@ export const handleCanvasObjectScaling = ({ options, setElementAttributes }: Can
 };
 
 // render canvas objects coming from storage on canvas
-export const renderCanvas = ({ fabricRef, canvasObjects, activeObjectRef }: RenderCanvas) => {
+export const renderCanvas = ({ fabricRef, shapes, activeObjectRef }: RenderCanvas) => {
     // clear canvas
     fabricRef.current?.clear();
 
     // render all objects on canvas
-    Array.from(canvasObjects, ([objectId, objectData]) => {
+    // @ts-ignore
+    shapes.forEach((object) => {
         /**
          * enlivenObjects() is used to render objects on canvas.
          * It takes two arguments:
@@ -276,13 +287,12 @@ export const renderCanvas = ({ fabricRef, canvasObjects, activeObjectRef }: Rend
          * enlivenObjects: http://fabricjs.com/docs/fabric.util.html#.enlivenObjectEnlivables
          */
         fabric.util.enlivenObjects(
-            [objectData],
+            [object],
             (enlivenedObjects: fabric.Object[]) => {
                 enlivenedObjects.forEach((enlivenedObj) => {
                     // if element is active, keep it in active state so that it can be edited further
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
-                    if (activeObjectRef.current?.objectId === objectId) {
+                    if (activeObjectRef.current?.objectId === object?.objectId) {
                         fabricRef.current?.setActiveObject(enlivenedObj);
                     }
 
