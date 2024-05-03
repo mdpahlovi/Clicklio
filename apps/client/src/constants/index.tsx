@@ -18,7 +18,7 @@ export const navElements: NavElement[] = [
     {
         icon: <PiSquare />,
         name: "Rectangle",
-        value: "rectangle",
+        value: "rect",
     },
     {
         icon: <PiTriangle />,
@@ -38,12 +38,12 @@ export const navElements: NavElement[] = [
     {
         icon: <TfiPencil />,
         name: "Free Drawing",
-        value: "freeform",
+        value: "path",
     },
     {
         icon: <CiText />,
-        value: "text",
         name: "Text",
+        value: "i-text",
     },
     {
         icon: <CiImageOn />,

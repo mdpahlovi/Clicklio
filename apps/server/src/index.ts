@@ -6,6 +6,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import mongoose from "mongoose";
+import { Server } from "socket.io";
 import bodyParser from "body-parser";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -23,7 +24,18 @@ const server = new ApolloServer({
 });
 await server.start();
 await mongoose.connect(config.mongodb_url);
-cloudinary.config({ cloud_name: config.cloud.name, api_key: config.cloud.api_key, api_secret: config.cloud.api_secret });
+
+const { name, api_key, api_secret } = config.cloud;
+cloudinary.config({ cloud_name: name, api_key, api_secret });
 
 app.use(cors(), bodyParser.json({ limit: "64mb" }), expressMiddleware(server));
+
+const io = new Server(httpServer, { cors: { origin: "*" } });
+
+io.on("connection", (socket) => {
+    socket.on("ShapeUpdate", (shape) => {
+        socket.broadcast.emit(`ShapeUpdate`, shape);
+    });
+});
+
 httpServer.listen(config.port, () => console.log(`🚀 Server Running On http://localhost:${config.port}`));

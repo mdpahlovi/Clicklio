@@ -61,7 +61,7 @@ export default function HomePage() {
                 if (fabricRef.current) fabricRef.current.defaultCursor = "grab";
                 break;
 
-            case "freeform":
+            case "path":
                 if (fabricRef.current) {
                     fabricRef.current.isDrawingMode = true;
                     fabricRef.current.freeDrawingBrush.width = 5;

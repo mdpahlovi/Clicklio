@@ -42,7 +42,7 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 
 // instantiate creation of custom fabric object/shape and add it to canvas
 export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseDown) => {
-    // if selected shape is freeform, return
+    // if selected shape is path, return
     if (!selectedShapeRef.current) return;
 
     // get pointer coordinates
@@ -88,7 +88,7 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
 
 // handle mouse move event on canvas to draw shapes with different dimensions
 export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseMove) => {
-    // if selected shape is freeform, return
+    // if selected shape is path, return
     if (!isDrawing.current) return;
     if (!selectedShapeRef.current) return;
 
@@ -111,7 +111,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
     // depending on the selected shape, set the dimensions of the shape stored in shapeRef in previous step of handelCanvasMouseDown
     // calculate shape dimensions based on pointer coordinates
     switch (selectedShapeRef?.current) {
-        case "rectangle":
+        case "rect":
             (shapeRef.current as fabric.Rect).set({
                 width: pointer.x - (left || 0),
                 height: pointer.y - (top || 0),
@@ -200,7 +200,7 @@ export const handleCanvasObjectModified = ({ options, updateShape }: CanvasObjec
     }
 };
 
-// update shape in storage when path is created when in freeform mode
+// update shape in storage when path is created when in path mode
 export const handlePathCreated = ({ options, setShape }: CanvasPathCreated) => {
     // get path object
     const path = options.path;

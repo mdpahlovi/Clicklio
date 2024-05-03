@@ -48,7 +48,7 @@ export type Attributes = {
     stroke: string;
 };
 
-export type Shape = "panning" | "select" | "rectangle" | "triangle" | "circle" | "line" | "freeform" | "text" | "image";
+export type Shape = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image";
 
 export type NavElement = {
     value: Shape;

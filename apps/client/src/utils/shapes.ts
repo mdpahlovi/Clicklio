@@ -57,7 +57,7 @@ export const createText = (pointer: Pointer, text: string) => {
 
 export const createSpecificShape = (shape: Shape | null, pointer: Pointer) => {
     switch (shape) {
-        case "rectangle":
+        case "rect":
             return createRectangle(pointer);
 
         case "triangle":
@@ -69,7 +69,7 @@ export const createSpecificShape = (shape: Shape | null, pointer: Pointer) => {
         case "line":
             return createLine(pointer);
 
-        case "text":
+        case "i-text":
             return createText(pointer, "Tap To Type");
 
         default:
