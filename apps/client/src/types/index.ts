@@ -50,12 +50,6 @@ export type Attributes = {
 
 export type Shape = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image";
 
-export type NavElement = {
-    value: Shape;
-    name: string;
-    icon: React.ReactNode;
-};
-
 export type ModifyShape = {
     canvas: fabric.Canvas;
     property: string;
@@ -71,8 +65,7 @@ export type ElementDirection = {
 
 export type ImageUpload = {
     file: File;
-    canvas: React.MutableRefObject<fabric.Canvas>;
-    shapeRef: React.MutableRefObject<fabric.Object | null>;
+    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     setShape: (shape: fabric.Object) => void;
 };
 
@@ -114,7 +107,7 @@ export type CanvasMouseUp = {
     shapeRef: React.MutableRefObject<fabric.Object | null>;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     selectedShapeRef: React.MutableRefObject<Shape | null>;
-    setActiveElement: React.Dispatch<React.SetStateAction<NavElement | null>>;
+    setTool: (tool: Shape) => void;
     setShape: (shape: fabric.Object) => void;
 };
 
@@ -148,7 +141,7 @@ export type RenderCanvas = {
 export type CanvasZoom = {
     options: fabric.IEvent & { e: WheelEvent };
     canvas: fabric.Canvas;
-    setZoom: React.Dispatch<React.SetStateAction<number>>;
+    setZoom: (zoom: number) => void;
 };
 
 export type WindowKeyDown = {

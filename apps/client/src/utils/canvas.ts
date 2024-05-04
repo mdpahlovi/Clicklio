@@ -1,6 +1,5 @@
 import { fabric } from "fabric";
 import { v4 as uuid4 } from "uuid";
-import { defaultNavElement } from "@/constants";
 import { createSpecificShape } from "@/utils/shapes";
 
 import type {
@@ -137,13 +136,6 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
                 y2: pointer.y,
             });
             break;
-
-        case "image":
-            (shapeRef.current as fabric.Image).set({
-                width: pointer.x - (left || 0),
-                height: pointer.y - (top || 0),
-            });
-            break;
     }
 
     // render objects on canvas
@@ -159,7 +151,7 @@ export const handleCanvasMouseUp = ({
     shapeRef,
     activeObjectRef,
     selectedShapeRef,
-    setActiveElement,
+    setTool,
     setShape,
 }: CanvasMouseUp) => {
     isDrawing.current = false;
@@ -182,8 +174,8 @@ export const handleCanvasMouseUp = ({
     activeObjectRef.current = null;
     selectedShapeRef.current = null;
 
-    // if canvas is not in drawing mode, set active element to default nav element
-    if (!canvas.isDrawingMode) setActiveElement(defaultNavElement);
+    // if canvas is not in drawing mode, set active element to select
+    if (!canvas.isDrawingMode) setTool("select");
 };
 
 // update shape in storage when object is modified

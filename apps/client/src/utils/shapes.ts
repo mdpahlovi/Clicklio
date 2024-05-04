@@ -77,7 +77,7 @@ export const createSpecificShape = (shape: Shape | null, pointer: Pointer) => {
     }
 };
 
-export const handleImageUpload = ({ file, canvas, shapeRef, setShape }: ImageUpload) => {
+export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -86,17 +86,15 @@ export const handleImageUpload = ({ file, canvas, shapeRef, setShape }: ImageUpl
             image.scaleToHeight(200);
             image.set({ top: 160, left: 320 });
 
-            canvas.current.add(image);
+            if (fabricRef?.current) fabricRef.current.add(image);
 
             // @ts-ignore
             image.objectId = uuidv4();
 
-            shapeRef.current = image;
-
             // sync shape in storage
             // @ts-ignore
-            if (shapeRef.current?.objectId) setShape(shapeRef.current);
-            canvas.current.requestRenderAll();
+            if (image?.objectId) setShape(image);
+            if (fabricRef?.current) fabricRef.current.requestRenderAll();
         });
     };
 

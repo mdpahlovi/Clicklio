@@ -1,22 +1,24 @@
+import { useEffect } from "react";
 import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";
 import IconButton from "@/components/ui/icon-button";
+import { useCanvasState } from "@/hooks/useCanvasState";
 
-type BottomToolbarProps = {
-    zoom: number;
-    setZoom: React.Dispatch<React.SetStateAction<number>>;
-    canvas: React.RefObject<fabric.Canvas | null>;
-};
+export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
+    const { zoom, setZoom } = useCanvasState();
 
-export default function BottomToolbar({ zoom, setZoom, canvas }: BottomToolbarProps) {
+    useEffect(() => {
+        if (fabricRef?.current) setZoom(fabricRef.current.getZoom());
+    }, []);
+
     return (
         <div className="flex gap-6">
             <div className="flex">
                 <IconButton
                     onClick={() => {
-                        if (canvas.current && zoom > 0.3) {
+                        if (fabricRef.current && zoom > 0.3) {
                             setZoom(zoom - 0.1);
-                            canvas.current.setZoom(zoom - 0.1);
+                            fabricRef.current.setZoom(zoom - 0.1);
                         }
                     }}
                     className="rounded-r-none"
@@ -26,20 +28,20 @@ export default function BottomToolbar({ zoom, setZoom, canvas }: BottomToolbarPr
                 </IconButton>
                 <button
                     onClick={() => {
-                        if (canvas.current) {
+                        if (fabricRef.current) {
                             setZoom(1);
-                            canvas.current.setZoom(1);
+                            fabricRef.current.setZoom(1);
                         }
                     }}
-                    className="flex w-16 select-none items-center justify-center bg-foreground px-2.5"
+                    className="bg-foreground flex w-16 select-none items-center justify-center px-2.5"
                 >
                     {Math.round(zoom * 100)}%
                 </button>
                 <IconButton
                     onClick={() => {
-                        if (canvas.current && zoom < 1) {
+                        if (fabricRef.current && zoom < 1) {
                             setZoom(zoom + 0.1);
-                            canvas.current.setZoom(zoom + 0.1);
+                            fabricRef.current.setZoom(zoom + 0.1);
                         }
                     }}
                     className="rounded-l-none"
