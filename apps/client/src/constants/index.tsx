@@ -2,9 +2,10 @@ import { TfiPencil } from "react-icons/tfi";
 import { LiaHandPaper } from "react-icons/lia";
 import { CiImageOn, CiText } from "react-icons/ci";
 import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus } from "react-icons/pi";
-import type { Shape } from "@/types";
 
-export const navElements: { value: Shape; name: string; icon: React.ReactNode }[] = [
+import type { Tool } from "@/types";
+
+export const navElements: { value: Tool; name: string; icon: React.ReactNode }[] = [
     { icon: <LiaHandPaper />, name: "Panning", value: "panning" },
     { icon: <PiCursor />, name: "Select", value: "select" },
     { icon: <PiSquare />, name: "Rectangle", value: "rect" },

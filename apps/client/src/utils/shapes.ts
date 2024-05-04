@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Pointer, ElementDirection, ImageUpload, ModifyShape, Shape } from "@/types";
+import type { Pointer, ElementDirection, ImageUpload, ModifyShape, Tool } from "@/types";
 
 export const createRectangle = (pointer: Pointer) => {
     return new fabric.Rect({
@@ -55,7 +55,7 @@ export const createText = (pointer: Pointer, text: string) => {
     } as { objectId: string } & fabric.IText);
 };
 
-export const createSpecificShape = (shape: Shape | null, pointer: Pointer) => {
+export const createSpecificShape = (shape: Tool | null, pointer: Pointer) => {
     switch (shape) {
         case "rect":
             return createRectangle(pointer);

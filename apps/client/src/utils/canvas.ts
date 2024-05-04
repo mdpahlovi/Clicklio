@@ -40,9 +40,9 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 };
 
 // instantiate creation of custom fabric object/shape and add it to canvas
-export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseDown) => {
+export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedToolRef, shapeRef }: CanvasMouseDown) => {
     // if selected shape is path, return
-    if (!selectedShapeRef.current) return;
+    if (!selectedToolRef.current) return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
@@ -56,7 +56,7 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
     const target = canvas.findTarget(options.e, false);
 
     // if selected shape is panning, set panning points
-    if (selectedShapeRef.current === "panning") {
+    if (selectedToolRef.current === "panning") {
         isDrawing.current = true;
         canvas.selection = false;
         isPanning.current = pointer;
@@ -65,7 +65,7 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
     }
 
     // if target is the selected shape or active selection, set isDrawing to false
-    if (target && (target.type === selectedShapeRef.current || target.type === "activeSelection")) {
+    if (target && (target.type === selectedToolRef.current || target.type === "activeSelection")) {
         isDrawing.current = false;
 
         // set active object to target
@@ -80,21 +80,21 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
         isDrawing.current = true;
 
         // create custom fabric object/shape and add it to canvas
-        shapeRef.current = createSpecificShape(selectedShapeRef.current, pointer);
+        shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
         if (shapeRef.current) canvas.add(shapeRef.current);
     }
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
-export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, selectedShapeRef, shapeRef }: CanvasMouseMove) => {
+export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, selectedToolRef, shapeRef }: CanvasMouseMove) => {
     // if selected shape is path, return
     if (!isDrawing.current) return;
-    if (!selectedShapeRef.current) return;
+    if (!selectedToolRef.current) return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
 
-    if (selectedShapeRef.current === "panning" && isPanning.current) {
+    if (selectedToolRef.current === "panning" && isPanning.current) {
         const deltaX = pointer.x - isPanning.current.x;
         const deltaY = pointer.y - isPanning.current.y;
 
@@ -109,7 +109,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
 
     // depending on the selected shape, set the dimensions of the shape stored in shapeRef in previous step of handelCanvasMouseDown
     // calculate shape dimensions based on pointer coordinates
-    switch (selectedShapeRef?.current) {
+    switch (selectedToolRef?.current) {
         case "rect":
             (shapeRef.current as fabric.Rect).set({
                 width: pointer.x - (left || 0),
@@ -150,19 +150,19 @@ export const handleCanvasMouseUp = ({
     isPanning,
     shapeRef,
     activeObjectRef,
-    selectedShapeRef,
+    selectedToolRef,
     setTool,
     setShape,
 }: CanvasMouseUp) => {
     isDrawing.current = false;
-    if (!selectedShapeRef.current) return;
+    if (!selectedToolRef.current) return;
 
     // sync shape in storage
     // @ts-ignore
     if (shapeRef.current?.objectId) setShape(shapeRef.current);
 
     // set panning to null
-    if (selectedShapeRef.current === "panning") {
+    if (selectedToolRef.current === "panning") {
         canvas.selection = true;
         isPanning.current = null;
 
@@ -172,7 +172,7 @@ export const handleCanvasMouseUp = ({
     // set everything to null
     shapeRef.current = null;
     activeObjectRef.current = null;
-    selectedShapeRef.current = null;
+    selectedToolRef.current = null;
 
     // if canvas is not in drawing mode, set active element to select
     if (!canvas.isDrawingMode) setTool("select");

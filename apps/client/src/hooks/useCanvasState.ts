@@ -1,10 +1,10 @@
-import { Shape } from "@/types";
+import { Tool } from "@/types";
 import { create } from "zustand";
 
 type CanvasStateStore = {
-    tool: Shape;
+    tool: Tool;
     zoom: number;
-    setTool: (tool: Shape) => void;
+    setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
 };
 

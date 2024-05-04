@@ -1,28 +1,28 @@
 import { useRef, useState } from "react";
 import { navElements } from "@/constants";
+import { handleImageUpload } from "@/utils/shapes";
+import { useShapeState } from "@/hooks/useShapeState";
 import Separator from "@/components/ui/separator";
 import IconButton from "@/components/ui/icon-button";
 
 import { PiCirclesThreePlus } from "react-icons/pi";
 import { CiLock, CiUnlock, CiEraser } from "react-icons/ci";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import type { Shape } from "@/types";
-import { handleImageUpload } from "@/utils/shapes";
-import { useShapeState } from "@/hooks/useShapeState";
+import type { Tool } from "@/types";
 
 type ToolbarProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    selectedShapeRef: React.MutableRefObject<Shape | null>;
+    selectedToolRef: React.MutableRefObject<Tool | null>;
 };
 
-export default function Toolbar({ fabricRef, selectedShapeRef }: ToolbarProps) {
+export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const [lock, setLock] = useState(false);
 
     const { setShape } = useShapeState();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement>(null);
 
-    const handleActiveElement = (value: Shape) => {
+    const handleActiveElement = (value: Tool) => {
         setTool(value);
 
         if (fabricRef.current) {
@@ -32,7 +32,7 @@ export default function Toolbar({ fabricRef, selectedShapeRef }: ToolbarProps) {
 
         switch (value) {
             case "panning":
-                selectedShapeRef.current = "panning";
+                selectedToolRef.current = "panning";
                 if (fabricRef.current) fabricRef.current.defaultCursor = "grab";
                 break;
 
@@ -48,7 +48,7 @@ export default function Toolbar({ fabricRef, selectedShapeRef }: ToolbarProps) {
                 break;
 
             default:
-                selectedShapeRef.current = value;
+                selectedToolRef.current = value;
                 break;
         }
     };

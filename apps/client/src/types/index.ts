@@ -48,7 +48,7 @@ export type Attributes = {
     stroke: string;
 };
 
-export type Shape = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image";
+export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image";
 
 export type ModifyShape = {
     canvas: fabric.Canvas;
@@ -85,7 +85,7 @@ export type InitializeFabric = {
 export type CanvasMouseDown = {
     options: fabric.IEvent;
     canvas: fabric.Canvas;
-    selectedShapeRef: React.MutableRefObject<Shape | null>;
+    selectedToolRef: React.MutableRefObject<Tool | null>;
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
@@ -96,7 +96,7 @@ export type CanvasMouseMove = {
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
-    selectedShapeRef: React.MutableRefObject<Shape | null>;
+    selectedToolRef: React.MutableRefObject<Tool | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
 };
 
@@ -106,8 +106,8 @@ export type CanvasMouseUp = {
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
-    selectedShapeRef: React.MutableRefObject<Shape | null>;
-    setTool: (tool: Shape) => void;
+    selectedToolRef: React.MutableRefObject<Tool | null>;
+    setTool: (tool: Tool) => void;
     setShape: (shape: fabric.Object) => void;
 };
 

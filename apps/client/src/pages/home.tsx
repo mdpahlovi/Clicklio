@@ -22,7 +22,7 @@ import {
 
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import type { Pointer, Attributes, Shape } from "@/types";
+import type { Pointer, Attributes, Tool } from "@/types";
 
 export default function HomePage() {
     const { setTool, setZoom } = useCanvasState();
@@ -36,7 +36,7 @@ export default function HomePage() {
     const isDrawing = useRef(false);
     const isPanning = useRef<Pointer | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
-    const selectedShapeRef = useRef<Shape | null>(null);
+    const selectedToolRef = useRef<Tool | null>(null);
 
     const activeObjectRef = useRef<fabric.Object | null>(null);
     const isEditingRef = useRef(false);
@@ -49,15 +49,15 @@ export default function HomePage() {
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
         canvas.on("mouse:down", (options) => {
-            handleCanvasMouseDown({ options, canvas, isDrawing, isPanning, shapeRef, selectedShapeRef });
+            handleCanvasMouseDown({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef });
         });
 
         canvas.on("mouse:move", (options) => {
-            handleCanvasMouseMove({ options, canvas, isDrawing, isPanning, shapeRef, selectedShapeRef });
+            handleCanvasMouseMove({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef });
         });
 
         canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, activeObjectRef, selectedShapeRef, setTool, setShape });
+            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, activeObjectRef, selectedToolRef, setTool, setShape });
         });
 
         canvas.on("path:created", (options) => {
@@ -102,7 +102,7 @@ export default function HomePage() {
         <>
             <div className="fixed top-6 z-10 grid w-full grid-cols-[4.25rem_1fr_4.25rem] items-center px-6">
                 <MenuButton />
-                <Toolbar {...{ fabricRef, selectedShapeRef }} />
+                <Toolbar {...{ fabricRef, selectedToolRef }} />
                 <Button>Share</Button>
             </div>
 
