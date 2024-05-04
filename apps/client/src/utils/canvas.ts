@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
 import { v4 as uuid4 } from "uuid";
+import { socket } from "@/utils/socket";
 import { createSpecificShape } from "@/utils/shapes";
 
 import type {
@@ -152,7 +153,12 @@ export const handleCanvasMouseUp = ({
 
     // sync shape in storage
     // @ts-ignore
-    if (shapeRef.current?.objectId) setShape(shapeRef.current);
+    if (shapeRef.current?.objectId) {
+        // @ts-ignore
+        setShape({ objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
+        // @ts-ignore
+        socket.emit("set:shape", { objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
+    }
 
     // set panning to null
     if (selectedToolRef.current === "panning") {
@@ -181,7 +187,12 @@ export const handleCanvasObjectModified = ({ options, updateShape }: CanvasObjec
     } else {
         // sync shape in storage
         // @ts-ignore
-        if (target?.objectId) updateShape(target);
+        if (target?.objectId) {
+            // @ts-ignore
+            updateShape({ objectId: target.objectId, ...target.toJSON() });
+            // @ts-ignore
+            socket.emit("update:shape", { objectId: target.objectId, ...target.toJSON() });
+        }
     }
 };
 
@@ -192,11 +203,17 @@ export const handlePathCreated = ({ options, setShape }: CanvasPathCreated) => {
     if (!path) return;
 
     // set unique id to path object
+    // @ts-ignore
     path.set({ objectId: uuid4() });
 
     // sync shape in storage
     // @ts-ignore
-    if (path?.objectId) setShape(path);
+    if (path?.objectId) {
+        // @ts-ignore
+        setShape({ objectId: path.objectId, ...path.toJSON() });
+        // @ts-ignore
+        socket.emit("set:shape", { objectId: path.objectId, ...path.toJSON() });
+    }
 };
 
 // check how object is moving on canvas and restrict it to canvas boundaries
@@ -260,7 +277,6 @@ export const renderCanvas = ({ fabricRef, shapes, activeObjectRef }: RenderCanva
     fabricRef.current?.clear();
 
     // render all objects on canvas
-    // @ts-ignore
     shapes.forEach((object) => {
         /**
          * enlivenObjects() is used to render objects on canvas.

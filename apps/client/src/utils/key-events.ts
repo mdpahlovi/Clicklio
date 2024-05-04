@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import { WindowKeyDown } from "@/types";
+import { socket } from "@/utils/socket";
 
 export const handleCopy = (canvas: fabric.Canvas) => {
     const activeObjects = canvas.getActiveObjects();
@@ -45,7 +46,12 @@ export const handlePaste = (canvas: fabric.Canvas, setShape: (shape: fabric.Obje
                             canvas.add(enlivenedObj);
                             // sync in storage
                             // @ts-ignore
-                            if (enlivenedObj?.objectId) setShape(enlivenedObj);
+                            if (enlivenedObj?.objectId) {
+                                // @ts-ignore
+                                setShape({ objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
+                                // @ts-ignore
+                                socket.emit("set:shape", { objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
+                            }
                         });
                         canvas.renderAll();
                     },
@@ -68,6 +74,8 @@ export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) =>
             // sync in storage
             // @ts-ignore
             deleteShape(object.objectId);
+            // @ts-ignore
+            socket.emit("delete:shape", { objectId: object.objectId });
         });
     }
 

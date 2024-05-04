@@ -2,6 +2,7 @@ import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 
 import type { Pointer, ElementDirection, ImageUpload, ModifyShape, Tool } from "@/types";
+import { socket } from "./socket";
 
 export const createRectangle = (pointer: Pointer) => {
     return new fabric.Rect({
@@ -93,7 +94,13 @@ export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) =>
 
             // sync shape in storage
             // @ts-ignore
-            if (image?.objectId) setShape(image);
+            if (image?.objectId) {
+                // @ts-ignore
+                setShape({ objectId: image.objectId, ...image.toJSON() });
+                // @ts-ignore
+                socket.emit("set:shape", { objectId: image.objectId, ...image.toJSON() });
+            }
+
             if (fabricRef?.current) fabricRef.current.requestRenderAll();
         });
     };

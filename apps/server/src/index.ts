@@ -33,8 +33,14 @@ app.use(cors(), bodyParser.json({ limit: "64mb" }), expressMiddleware(server));
 const io = new Server(httpServer, { cors: { origin: "*" } });
 
 io.on("connection", (socket) => {
-    socket.on("ShapeUpdate", (shape) => {
-        socket.broadcast.emit(`ShapeUpdate`, shape);
+    socket.on("set:shape", (shape) => {
+        socket.broadcast.emit("set:shape", shape);
+    });
+    socket.on("update:shape", (shape) => {
+        socket.broadcast.emit("update:shape", shape);
+    });
+    socket.on("delete:shape", ({ objectId }) => {
+        socket.broadcast.emit("delete:shape", { objectId });
     });
 });
 
