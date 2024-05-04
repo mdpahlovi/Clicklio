@@ -15,9 +15,17 @@ export const useShapeState = create<ShapeStateStore, [["zustand/devtools", never
         persist(
             (set) => ({
                 shapes: [],
-                setShape: (shape) => set(({ shapes }) => ({ shapes: [...shapes, shape] })),
                 // @ts-ignore
-                updateShape: (shape) => set(({ shapes }) => ({ shapes: shapes.map((s) => (s.objectId === shape.objectId ? shape : s)) })),
+                setShape: (shape) => set(({ shapes }) => ({ shapes: [...shapes, { objectId: shape.objectId, ...shape.toJSON() }] })),
+                // @ts-ignore
+                updateShape: (shape) =>
+                    // @ts-ignore
+                    set(({ shapes }) => ({
+                        shapes: shapes.map((previous) =>
+                            // @ts-ignore
+                            previous.objectId === shape.objectId ? { objectId: shape.objectId, ...shape.toJSON() } : previous,
+                        ),
+                    })),
                 // @ts-ignore
                 deleteShape: (id) => set(({ shapes }) => ({ shapes: shapes.filter(({ objectId }) => objectId !== id) })),
             }),

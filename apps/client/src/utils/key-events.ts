@@ -44,7 +44,8 @@ export const handlePaste = (canvas: fabric.Canvas, setShape: (shape: fabric.Obje
 
                             canvas.add(enlivenedObj);
                             // sync in storage
-                            setShape(enlivenedObj);
+                            // @ts-ignore
+                            if (enlivenedObj?.objectId) setShape(enlivenedObj);
                         });
                         canvas.renderAll();
                     },

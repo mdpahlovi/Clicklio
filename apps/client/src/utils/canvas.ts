@@ -26,13 +26,6 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
         height: canvasElement?.clientHeight,
     });
 
-    // define the custom method
-    fabric.Object.prototype.toObject = (function (toObject) {
-        return function (this: { objectId: string } & fabric.Object) {
-            return fabric.util.object.extend(toObject.call(this), { objectId: this.objectId });
-        };
-    })(fabric.Object.prototype.toObject);
-
     // set canvas reference to fabricRef so we can use it later anywhere outside canvas listener
     fabricRef.current = canvas;
 
