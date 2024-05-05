@@ -16,13 +16,13 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
             <div className="flex">
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && zoom > 0.3) {
+                        if (fabricRef.current && Number(zoom.toFixed(1)) >= 0.1) {
                             setZoom(zoom - 0.1);
                             fabricRef.current.setZoom(zoom - 0.1);
                         }
                     }}
                     className="rounded-r-none"
-                    disabled={Number(zoom.toFixed(1)) <= 0.2}
+                    disabled={Number(zoom.toFixed(1)) <= 0.1}
                 >
                     <PiMinus />
                 </IconButton>
@@ -39,13 +39,13 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 </button>
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && zoom < 1) {
+                        if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {
                             setZoom(zoom + 0.1);
                             fabricRef.current.setZoom(zoom + 0.1);
                         }
                     }}
                     className="rounded-l-none"
-                    disabled={Number(zoom.toFixed(1)) >= 1}
+                    disabled={Number(zoom.toFixed(1)) >= 10}
                 >
                     <PiPlus />
                 </IconButton>

@@ -24,16 +24,25 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 
     const handleActiveElement = (value: Tool) => {
         setTool(value);
-
         if (fabricRef.current) {
             fabricRef.current.isDrawingMode = false;
             fabricRef.current.defaultCursor = "default";
+            fabricRef.current.forEachObject((object) => {
+                object.evented = true;
+                object.selectable = true;
+            });
         }
 
         switch (value) {
             case "panning":
                 selectedToolRef.current = "panning";
-                if (fabricRef.current) fabricRef.current.defaultCursor = "grab";
+                if (fabricRef.current) {
+                    fabricRef.current.defaultCursor = "grab";
+                    fabricRef.current.forEachObject((object) => {
+                        object.evented = false;
+                        object.selectable = false;
+                    });
+                }
                 break;
 
             case "path":

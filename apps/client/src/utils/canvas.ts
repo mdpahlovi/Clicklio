@@ -330,9 +330,9 @@ export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
     const delta = options.e?.deltaY;
     let zoom = canvas.getZoom();
 
-    // allow zooming to min 20% and max 100%
-    const minZoom = 0.2;
-    const maxZoom = 1;
+    // allow zooming to min 10% and max 1000%
+    const minZoom = 0.1;
+    const maxZoom = 10;
     const zoomStep = 0.001;
 
     // calculate zoom based on mouse scroll wheel with min and max zoom
