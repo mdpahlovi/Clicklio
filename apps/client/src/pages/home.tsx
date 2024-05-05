@@ -45,7 +45,7 @@ export default function HomePage() {
     }, []);
 
     useEffect(() => {
-        if (shapes.length) renderCanvas({ shapes, fabricRef, activeObjectRef });
+        renderCanvas({ shapes, fabricRef, activeObjectRef });
     }, [refresh]);
 
     return (
