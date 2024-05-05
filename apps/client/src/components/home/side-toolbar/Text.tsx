@@ -15,29 +15,27 @@ type TextProps = {
 };
 
 const Text = ({ fontFamily, fontSize, fontWeight, handleInputChange }: TextProps) => (
-    <div className="border-primary-grey-200 flex flex-col gap-3 border-b px-5 py-3">
-        <h3 className="text-[10px] uppercase">Text</h3>
+    <div className="flex flex-col gap-2.5 p-4">
+        <p className="text-sm">Text</p>
 
-        <div className="flex flex-col gap-3">
-            {RenderSelect({
-                config: selectConfigs[0],
-                fontSize,
-                fontWeight,
-                fontFamily,
-                handleInputChange,
-            })}
+        {RenderSelect({
+            config: selectConfigs[0],
+            fontSize,
+            fontWeight,
+            fontFamily,
+            handleInputChange,
+        })}
 
-            <div className="flex gap-2">
-                {selectConfigs.slice(1).map((config) =>
-                    RenderSelect({
-                        config,
-                        fontSize,
-                        fontWeight,
-                        fontFamily,
-                        handleInputChange,
-                    }),
-                )}
-            </div>
+        <div className="flex gap-2.5">
+            {selectConfigs.slice(1).map((config) =>
+                RenderSelect({
+                    config,
+                    fontSize,
+                    fontWeight,
+                    fontFamily,
+                    handleInputChange,
+                }),
+            )}
         </div>
     </div>
 );
@@ -56,14 +54,14 @@ const RenderSelect = ({ config, fontSize, fontWeight, fontFamily, handleInputCha
         onValueChange={(value) => handleInputChange(config.property, value)}
         value={config.property === "fontFamily" ? fontFamily : config.property === "fontSize" ? fontSize : fontWeight}
     >
-        <SelectTrigger className="no-ring border-primary-grey-200 w-full rounded-sm border">
+        <SelectTrigger>
             <SelectValue
                 placeholder={config.property === "fontFamily" ? "Choose a font" : config.property === "fontSize" ? "30" : "Semibold"}
             />
         </SelectTrigger>
-        <SelectContent className="border-primary-grey-200 bg-primary-black text-primary-grey-300">
+        <SelectContent>
             {config.options.map((option) => (
-                <SelectItem key={option.value} value={option.value} className=" hover:bg-primary-green hover:text-primary-black">
+                <SelectItem key={option.value} value={option.value}>
                     {option.label}
                 </SelectItem>
             ))}

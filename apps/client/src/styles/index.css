@@ -41,6 +41,11 @@
         --content-light: 249 17% 85%;
         --content-lighter: 252 17% 65%;
     }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+        @apply h-0 w-0;
+    }
 }
 
 @layer base {
@@ -48,7 +53,7 @@
         @apply border-border;
     }
     body {
-        @apply size-full overflow-hidden bg-background text-content;
+        @apply bg-background text-content size-full overflow-hidden;
     }
 }
 

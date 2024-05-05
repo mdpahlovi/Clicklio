@@ -3,7 +3,6 @@ import { modifyShape } from "@/utils/shapes";
 
 import Text from "./Text";
 import Color from "./Color";
-import Export from "./Export";
 import Dimensions from "./Dimensions";
 import { useShapeState } from "@/hooks/useShapeState";
 
@@ -16,8 +15,6 @@ export default function SideToolbar({
     activeObjectRef,
     isEditingRef,
 }: RightSidebarProps) {
-    // return <div className="bg-foreground fixed left-6 top-24 z-10 h-80 w-60 rounded">Pahlovi</div>;
-
     const colorInputRef = useRef(null);
     const strokeInputRef = useRef(null);
     const { updateShape } = useShapeState();
@@ -34,12 +31,10 @@ export default function SideToolbar({
     // memoize the content of the right sidebar to avoid re-rendering on every mouse actions
     const memoizedContent = useMemo(
         () => (
-            <section className="bg-foreground fixed left-6 top-24 z-10 h-[calc(100vh-12rem)] w-60 overflow-scroll rounded">
-                <h3 className=" px-5 pt-4 text-xs uppercase">Design</h3>
-                <span className="text-primary-grey-300 border-primary-grey-200 mt-3 border-b px-5 pb-4 text-xs">
-                    Make changes to canvas as you like
-                </span>
-
+            <section
+                style={{ maxHeight: "calc(100vh - 12rem)", overflowY: "scroll" }}
+                className="bg-foreground fixed left-6 top-24 z-10 w-60 divide-y rounded"
+            >
                 <Dimensions
                     isEditingRef={isEditingRef}
                     width={elementAttributes.width}
@@ -57,7 +52,7 @@ export default function SideToolbar({
                 <Color
                     inputRef={colorInputRef}
                     attribute={elementAttributes.fill}
-                    placeholder="color"
+                    placeholder="Color"
                     attributeType="fill"
                     handleInputChange={handleInputChange}
                 />
@@ -65,12 +60,10 @@ export default function SideToolbar({
                 <Color
                     inputRef={strokeInputRef}
                     attribute={elementAttributes.stroke}
-                    placeholder="stroke"
+                    placeholder="Stroke"
                     attributeType="stroke"
                     handleInputChange={handleInputChange}
                 />
-
-                <Export />
             </section>
         ),
         [elementAttributes],
