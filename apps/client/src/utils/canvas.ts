@@ -10,6 +10,7 @@ import type {
     CanvasMouseUp,
     CanvasObjectModified,
     CanvasObjectScaling,
+    CanvasObjectMoving,
     CanvasPathCreated,
     CanvasSelectionCreated,
     CanvasZoom,
@@ -138,16 +139,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
 };
 
 // handle mouse up event on canvas to stop drawing shapes
-export const handleCanvasMouseUp = ({
-    canvas,
-    isDrawing,
-    isPanning,
-    shapeRef,
-    activeObjectRef,
-    selectedToolRef,
-    setTool,
-    setShape,
-}: CanvasMouseUp) => {
+export const handleCanvasMouseUp = ({ canvas, isDrawing, isPanning, shapeRef, selectedToolRef, setTool, setShape }: CanvasMouseUp) => {
     isDrawing.current = false;
     if (!selectedToolRef.current) return;
 
@@ -170,7 +162,6 @@ export const handleCanvasMouseUp = ({
 
     // set everything to null
     shapeRef.current = null;
-    activeObjectRef.current = null;
     selectedToolRef.current = null;
 
     // if canvas is not in drawing mode, set active element to select
@@ -217,62 +208,62 @@ export const handlePathCreated = ({ options, setShape }: CanvasPathCreated) => {
 };
 
 // check how object is moving on canvas and restrict it to canvas boundaries
-export const handleCanvasObjectMoving = ({ options }: { options: fabric.IEvent }) => {
+export const handleCanvasObjectMoving = ({ options, updateAttributes }: CanvasObjectMoving) => {
     // get target object which is moving
-    const target = options.target as fabric.Object;
+    const target = options.target;
 
     // target.canvas is the canvas on which the object is moving
-    const canvas = target.canvas as fabric.Canvas;
+    const canvas = target?.canvas;
+
+    // if no target element, return
+    if (!target || !canvas) return;
 
     // set coordinates of target object
     target.setCoords();
 
     // restrict object to canvas boundaries (horizontal)
-    if (target && target.left) {
+    if (target.left) {
         target.left = Math.max(0, Math.min(target.left, (canvas.width || 0) - (target.getScaledWidth() || target.width || 0)));
+
+        updateAttributes("left", (target.left || 0).toString());
     }
 
     // restrict object to canvas boundaries (vertical)
-    if (target && target.top) {
+    if (target.top) {
         target.top = Math.max(0, Math.min(target.top, (canvas.height || 0) - (target.getScaledHeight() || target.height || 0)));
+
+        updateAttributes("top", (target.top || 0).toString());
     }
 };
 
-// set element attributes when element is selected
-export const handleCanvasSelectionCreated = ({ options, isEditingRef, setElementAttributes }: CanvasSelectionCreated) => {
+// set selectShape when element is selected
+export const handleCanvasSelectionCreated = ({ options, isEditingRef, setAttributes }: CanvasSelectionCreated) => {
     // if user is editing manually, return
     if (isEditingRef.current) return;
 
     // if no element is selected, return
     if (!options?.selected) return;
 
-    // if only one element is selected, set element attributes
-    if (options.selected.length === 1) {
-        const { scaleX, scaleY, width, height } = options.selected[0];
-
-        // calculate scaled dimensions of the object
-        const scaledWidth = scaleX ? width! * scaleX : width;
-        const scaledHeight = scaleY ? height! * scaleY : height;
-
-        setElementAttributes((rest) => (rest ? { ...rest, width: scaledWidth || 0, height: scaledHeight || 0 } : null));
-    }
+    // if only one element is selected, set attributes
+    // @ts-ignore
+    if (options.selected.length === 1) setAttributes({ ...options.selected[0].toJSON() });
 };
 
-// update element attributes when element is scaled
-export const handleCanvasObjectScaling = ({ options, setElementAttributes }: CanvasObjectScaling) => {
+// update selectShape when element is scaled
+export const handleCanvasObjectScaling = ({ options, updateAttributes }: CanvasObjectScaling) => {
     // if no target element, return
     if (!options.target) return;
     const { scaleX, scaleY, width, height } = options.target;
+    const w = width ? width : 0;
+    const h = height ? height : 0;
 
     // calculate scaled dimensions of the object
-    const scaledWidth = scaleX ? width! * scaleX : width;
-    const scaledHeight = scaleY ? height! * scaleY : height;
-
-    setElementAttributes((rest) => (rest ? { ...rest, width: scaledWidth || 0, height: scaledHeight || 0 } : null));
+    updateAttributes("width", (scaleX ? w * scaleX : w).toString());
+    updateAttributes("height", (scaleY ? h * scaleY : h).toString());
 };
 
 // render canvas objects coming from storage on canvas
-export const renderCanvas = ({ fabricRef, shapes, activeObjectRef }: RenderCanvas) => {
+export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
     // clear canvas
     fabricRef.current?.clear();
 
@@ -291,12 +282,6 @@ export const renderCanvas = ({ fabricRef, shapes, activeObjectRef }: RenderCanva
             [object],
             (enlivenedObjects: fabric.Object[]) => {
                 enlivenedObjects.forEach((enlivenedObj) => {
-                    // if element is active, keep it in active state so that it can be edited further
-                    // @ts-ignore
-                    if (activeObjectRef.current?.objectId === object?.objectId) {
-                        fabricRef.current?.setActiveObject(enlivenedObj);
-                    }
-
                     // add object to canvas
                     fabricRef.current?.add(enlivenedObj);
                 });

@@ -1,31 +1,26 @@
 import { useMemo, useRef } from "react";
 import { modifyShape } from "@/utils/shapes";
+import { useShapeState } from "@/hooks/useShapeState";
+import { useCanvasState } from "@/hooks/useCanvasState";
 
 import Text from "./Text";
 import Color from "./Color";
 import Dimensions from "./Dimensions";
-import { useShapeState } from "@/hooks/useShapeState";
 
-import type { RightSidebarProps } from "@/types";
+import type { Attributes, RightSidebarProps } from "@/types";
 
-export default function SideToolbar({
-    elementAttributes,
-    setElementAttributes,
-    fabricRef,
-    activeObjectRef,
-    isEditingRef,
-}: RightSidebarProps) {
+export default function SideToolbar({ fabricRef, isEditingRef }: RightSidebarProps) {
     const colorInputRef = useRef(null);
     const strokeInputRef = useRef(null);
     const { updateShape } = useShapeState();
+    const { attributes, updateAttributes } = useCanvasState();
 
-    const handleInputChange = (property: string, value: string) => {
+    const handleInputChange = (property: keyof Attributes, value: string) => {
         if (!fabricRef.current) return;
         if (!isEditingRef.current) isEditingRef.current = true;
 
-        setElementAttributes((prev) => ({ ...prev, [property]: value }));
-
-        modifyShape({ fabricRef, property, value, activeObjectRef, updateShape });
+        updateAttributes(property, value);
+        modifyShape({ fabricRef, property, value, updateShape });
     };
 
     // memoize the content of the right sidebar to avoid re-rendering on every mouse actions
@@ -35,39 +30,14 @@ export default function SideToolbar({
                 style={{ maxHeight: "calc(100vh - 12rem)", overflowY: "scroll" }}
                 className="bg-foreground fixed left-6 top-24 z-10 w-60 divide-y rounded"
             >
-                <Dimensions
-                    isEditingRef={isEditingRef}
-                    width={elementAttributes.width}
-                    height={elementAttributes.height}
-                    handleInputChange={handleInputChange}
-                />
-
-                <Text
-                    fontFamily={elementAttributes.fontFamily}
-                    fontSize={elementAttributes.fontSize}
-                    fontWeight={elementAttributes.fontWeight}
-                    handleInputChange={handleInputChange}
-                />
-
-                <Color
-                    inputRef={colorInputRef}
-                    attribute={elementAttributes.fill}
-                    placeholder="Color"
-                    attributeType="fill"
-                    handleInputChange={handleInputChange}
-                />
-
-                <Color
-                    inputRef={strokeInputRef}
-                    attribute={elementAttributes.stroke}
-                    placeholder="Stroke"
-                    attributeType="stroke"
-                    handleInputChange={handleInputChange}
-                />
+                <Dimensions isEditingRef={isEditingRef} handleInputChange={handleInputChange} />
+                <Text handleInputChange={handleInputChange} />
+                <Color inputRef={colorInputRef} placeholder="Color" attributeType="fill" handleInputChange={handleInputChange} />
+                <Color inputRef={strokeInputRef} placeholder="Stroke" attributeType="stroke" handleInputChange={handleInputChange} />
             </section>
         ),
-        [elementAttributes],
-    ); // only re-render when elementAttributes changes
+        [attributes],
+    ); // only re-render when attributes changes
 
     return memoizedContent;
 }

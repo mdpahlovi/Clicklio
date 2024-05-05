@@ -39,8 +39,10 @@ export type ShapeData = {
 };
 
 export type Attributes = {
-    width: number;
-    height: number;
+    top: string;
+    left: string;
+    width: string;
+    height: string;
     fontSize: string;
     fontFamily: string;
     fontWeight: string;
@@ -52,9 +54,8 @@ export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line
 
 export type ModifyShape = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    property: string;
+    property: keyof Attributes;
     value: string;
-    activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     updateShape: (shape: fabric.Object) => void;
 };
 
@@ -70,10 +71,7 @@ export type ImageUpload = {
 };
 
 export type RightSidebarProps = {
-    elementAttributes: Attributes;
-    setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     isEditingRef: React.MutableRefObject<boolean>;
 };
 
@@ -105,7 +103,6 @@ export type CanvasMouseUp = {
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
-    activeObjectRef: React.MutableRefObject<fabric.Object | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
     setTool: (tool: Tool) => void;
     setShape: (shape: fabric.Object) => void;
@@ -124,18 +121,22 @@ export type CanvasPathCreated = {
 export type CanvasSelectionCreated = {
     options: fabric.IEvent;
     isEditingRef: React.MutableRefObject<boolean>;
-    setElementAttributes: React.Dispatch<React.SetStateAction<Attributes | null>>;
+    setAttributes: (attributes: Attributes) => void;
 };
 
 export type CanvasObjectScaling = {
     options: fabric.IEvent;
-    setElementAttributes: React.Dispatch<React.SetStateAction<Attributes | null>>;
+    updateAttributes: (key: keyof Attributes, value: string) => void;
+};
+
+export type CanvasObjectMoving = {
+    options: fabric.IEvent;
+    updateAttributes: (key: keyof Attributes, value: string) => void;
 };
 
 export type RenderCanvas = {
     shapes: fabric.Object[];
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    activeObjectRef: React.MutableRefObject<fabric.Object | null>;
 };
 
 export type CanvasZoom = {

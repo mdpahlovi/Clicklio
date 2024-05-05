@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { handleKeyDown } from "@/utils/key-events";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
@@ -17,34 +17,20 @@ import {
     initializeFabric,
 } from "@/utils/canvas";
 
-import type { Attributes, Pointer, Tool } from "@/types";
+import type { Pointer, Tool } from "@/types";
 
 export function useCanvas() {
-    const { setTool, setZoom } = useCanvasState();
     const { setShape, updateShape, deleteShape } = useShapeState();
+    const { setTool, setZoom, setAttributes, updateAttributes } = useCanvasState();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const isDrawing = useRef(false);
+    const isEditingRef = useRef(false);
     const isPanning = useRef<Pointer | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
     const selectedToolRef = useRef<Tool | null>(null);
-
-    const activeObjectRef = useRef<fabric.Object | null>(null);
-    const isEditingRef = useRef(false);
-
-    const [elementAttributes, setElementAttributes] = useState<Attributes>({
-        width: "",
-        height: "",
-        fontSize: "",
-        fontFamily: "",
-        fontWeight: "",
-        fill: "#aabbcc",
-        stroke: "#aabbcc",
-    });
-
-    console.log({ elementAttributes });
 
     useEffect(() => {
         const canvas = initializeFabric({ canvasRef, fabricRef });
@@ -58,7 +44,7 @@ export function useCanvas() {
         });
 
         canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, activeObjectRef, selectedToolRef, setTool, setShape });
+            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, selectedToolRef, setTool, setShape });
         });
 
         canvas.on("path:created", (options) => {
@@ -70,15 +56,15 @@ export function useCanvas() {
         });
 
         canvas.on("object:moving", (options) => {
-            handleCanvasObjectMoving({ options });
+            handleCanvasObjectMoving({ options, updateAttributes });
         });
 
         canvas.on("selection:created", (options) => {
-            handleCanvasSelectionCreated({ options, isEditingRef, setElementAttributes });
+            handleCanvasSelectionCreated({ options, isEditingRef, setAttributes });
         });
 
         canvas.on("object:scaling", (options) => {
-            handleCanvasObjectScaling({ options, setElementAttributes });
+            handleCanvasObjectScaling({ options, updateAttributes });
         });
 
         canvas.on("mouse:wheel", (options) => {
@@ -95,5 +81,5 @@ export function useCanvas() {
         };
     }, []);
 
-    return { canvasRef, fabricRef, isEditingRef, selectedToolRef, activeObjectRef, elementAttributes, setElementAttributes };
+    return { canvasRef, fabricRef, isEditingRef, selectedToolRef };
 }

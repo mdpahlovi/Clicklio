@@ -108,7 +108,7 @@ export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) =>
     reader.readAsDataURL(file);
 };
 
-export const modifyShape = ({ fabricRef, property, value, activeObjectRef }: ModifyShape) => {
+export const modifyShape = ({ fabricRef, property, value, updateShape }: ModifyShape) => {
     if (!fabricRef.current) return;
     const selectedElement = fabricRef.current.getActiveObject();
 
@@ -126,10 +126,14 @@ export const modifyShape = ({ fabricRef, property, value, activeObjectRef }: Mod
         selectedElement.set(property as keyof object, value as never);
     }
 
-    // set selectedElement to activeObjectRef
-    activeObjectRef.current = selectedElement;
-
-    console.log({ selectedElement });
+    // sync shape in storage
+    // @ts-ignore
+    if (selectedElement?.objectId) {
+        // @ts-ignore
+        updateShape({ objectId: selectedElement.objectId, ...selectedElement.toJSON() });
+        // @ts-ignore
+        socket.emit("update:shape", { objectId: selectedElement.objectId, ...selectedElement.toJSON() });
+    }
 };
 
 export const bringElement = ({ canvas, direction }: ElementDirection) => {

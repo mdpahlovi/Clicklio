@@ -1,37 +1,41 @@
-const dimensionsOptions = [
-    { label: "X", property: "width" },
-    { label: "Y", property: "height" },
+import { useCanvasState } from "@/hooks/useCanvasState";
+import type { Attributes } from "@/types";
+
+type Property = "top" | "left" | "width" | "height";
+const dimensionsOptions: { label: string; property: Property }[] = [
+    { label: "X", property: "top" },
+    { label: "Y", property: "left" },
     { label: "W", property: "width" },
     { label: "H", property: "height" },
 ];
 
-type Props = {
-    width: number;
-    height: number;
+type DimensionsProps = {
     isEditingRef: React.MutableRefObject<boolean>;
-    handleInputChange: (property: string, value: string) => void;
+    handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
-const Dimensions = ({ width, height, isEditingRef, handleInputChange }: Props) => (
-    <div className="grid grid-cols-2 gap-2.5 p-4">
-        <div className="col-span-full">
-            <p className="text-sm">Dimensions</p>
-        </div>
-        {dimensionsOptions.map((item) => (
-            <label key={item.label} htmlFor={item.property} className="bg-background flex items-center">
-                <span className="flex size-8 items-center justify-center text-sm">{item.label}</span>
-                <input
-                    type="number"
-                    id={item.property}
-                    placeholder="100"
-                    className="bg-background h-8 w-full text-sm focus:outline-none"
-                    onBlur={() => (isEditingRef.current = false)}
-                    value={item.property === "width" ? width : height}
-                    onChange={(e) => handleInputChange(item.property, e.target.value)}
-                />
-            </label>
-        ))}
-    </div>
-);
+export default function Dimensions({ isEditingRef, handleInputChange }: DimensionsProps) {
+    const { attributes } = useCanvasState();
 
-export default Dimensions;
+    return (
+        <div className="grid grid-cols-2 gap-2.5 p-4">
+            <div className="col-span-full">
+                <p className="text-sm">Dimensions</p>
+            </div>
+            {dimensionsOptions.map(({ label, property }) => (
+                <label key={label} htmlFor={property} className="bg-background flex items-center">
+                    <span className="flex size-8 items-center justify-center text-sm">{label}</span>
+                    <input
+                        type="number"
+                        id={property}
+                        placeholder="100"
+                        onBlur={() => (isEditingRef.current = false)}
+                        value={attributes ? Number(attributes[property]).toFixed(2) : ""}
+                        onChange={(e) => handleInputChange(property, e.target.value)}
+                        className="bg-background h-8 w-full text-sm focus:outline-none"
+                    />
+                </label>
+            ))}
+        </div>
+    );
+}
