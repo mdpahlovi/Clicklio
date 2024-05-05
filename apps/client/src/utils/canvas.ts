@@ -318,9 +318,7 @@ export const renderCanvas = ({ fabricRef, shapes, activeObjectRef }: RenderCanva
 // resize canvas dimensions on window resize
 export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
     const canvasElement = document.getElementById("canvas");
-    if (!canvasElement) return;
-
-    if (!canvas) return;
+    if (!canvas || !canvasElement) return;
 
     canvas.setDimensions({ width: canvasElement.clientWidth, height: canvasElement.clientHeight });
 };

@@ -51,11 +51,11 @@ export type Attributes = {
 export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image";
 
 export type ModifyShape = {
-    canvas: fabric.Canvas;
+    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     property: string;
-    value: any;
+    value: string;
     activeObjectRef: React.MutableRefObject<fabric.Object | null>;
-    setShape: (shape: fabric.Object) => void;
+    updateShape: (shape: fabric.Object) => void;
 };
 
 export type ElementDirection = {

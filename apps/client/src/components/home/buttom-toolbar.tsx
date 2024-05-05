@@ -12,7 +12,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     }, []);
 
     return (
-        <div className="flex gap-6">
+        <div className="fixed bottom-6 left-6 z-10 flex gap-6">
             <div className="flex">
                 <IconButton
                     onClick={() => {

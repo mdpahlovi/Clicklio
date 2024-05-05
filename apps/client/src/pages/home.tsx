@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import Toolbar from "@/components/home/toolbar";
 import MenuButton from "@/components/home/menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
+import SideToolbar from "@/components/home/side-toolbar";
 
 export default function HomePage() {
     const [refresh, setRefresh] = useState<number>();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
-    const { canvasRef, fabricRef, selectedToolRef, activeObjectRef } = useCanvas();
+    const { canvasRef, fabricRef, selectedToolRef, activeObjectRef, isEditingRef, elementAttributes, setElementAttributes } = useCanvas();
 
     useEffect(() => {
         socket.on("set:shape", (shape) => {
@@ -56,11 +57,8 @@ export default function HomePage() {
                 <Button>Share</Button>
             </div>
 
-            {/* <div className="fixed left-6 top-24 z-10 h-80 w-60 rounded bg-foreground"></div> */}
-
-            <div className="fixed bottom-6 left-6 z-10">
-                <BottomToolbar {...{ fabricRef }} />
-            </div>
+            <SideToolbar {...{ elementAttributes, setElementAttributes, fabricRef, activeObjectRef, isEditingRef }} />
+            <BottomToolbar {...{ fabricRef }} />
 
             <div id="canvas" className="h-screen w-full">
                 <canvas ref={canvasRef} />

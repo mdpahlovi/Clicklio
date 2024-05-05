@@ -34,7 +34,15 @@ export function useCanvas() {
     const activeObjectRef = useRef<fabric.Object | null>(null);
     const isEditingRef = useRef(false);
 
-    const [elementAttributes, setElementAttributes] = useState<Attributes | null>(null);
+    const [elementAttributes, setElementAttributes] = useState<Attributes>({
+        width: "",
+        height: "",
+        fontSize: "",
+        fontFamily: "",
+        fontWeight: "",
+        fill: "#aabbcc",
+        stroke: "#aabbcc",
+    });
 
     console.log({ elementAttributes });
 
@@ -77,8 +85,8 @@ export function useCanvas() {
             handleCanvasZoom({ options, canvas, setZoom });
         });
 
-        window.addEventListener("resize", () => handleResize({ canvas: fabricRef.current }));
-        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas: fabricRef.current, setShape, deleteShape }));
+        window.addEventListener("resize", () => handleResize({ canvas }));
+        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, setShape, deleteShape }));
 
         return () => {
             canvas.dispose();
@@ -87,5 +95,5 @@ export function useCanvas() {
         };
     }, []);
 
-    return { canvasRef, fabricRef, selectedToolRef, activeObjectRef };
+    return { canvasRef, fabricRef, isEditingRef, selectedToolRef, activeObjectRef, elementAttributes, setElementAttributes };
 }

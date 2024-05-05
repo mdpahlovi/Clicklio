@@ -108,21 +108,22 @@ export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) =>
     reader.readAsDataURL(file);
 };
 
-export const modifyShape = ({ canvas, property, value, activeObjectRef }: ModifyShape) => {
-    const selectedElement = canvas.getActiveObject();
+export const modifyShape = ({ fabricRef, property, value, activeObjectRef }: ModifyShape) => {
+    if (!fabricRef.current) return;
+    const selectedElement = fabricRef.current.getActiveObject();
 
     if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
     // if  property is width or height, set the scale of the selected element
     if (property === "width") {
         selectedElement.set("scaleX", 1);
-        selectedElement.set("width", value);
+        selectedElement.set("width", Number(value));
     } else if (property === "height") {
         selectedElement.set("scaleY", 1);
-        selectedElement.set("height", value);
+        selectedElement.set("height", Number(value));
     } else {
         if (selectedElement[property as keyof object] === value) return;
-        selectedElement.set(property as keyof object, value);
+        selectedElement.set(property as keyof object, value as never);
     }
 
     // set selectedElement to activeObjectRef
