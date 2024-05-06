@@ -30,7 +30,7 @@ export default function Dimensions({ isEditingRef, handleInputChange }: Dimensio
                         id={property}
                         placeholder={placeholder}
                         onBlur={() => (isEditingRef.current = false)}
-                        value={attributes ? Number(attributes[property]).toFixed(2) : ""}
+                        value={attributes ? attributes[property] : ""}
                         onChange={(e) => handleInputChange(property, e.target.value)}
                         className="bg-background placeholder:text-content-lighter h-8 w-full text-sm focus:outline-none"
                     />

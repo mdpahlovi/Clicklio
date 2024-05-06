@@ -223,12 +223,12 @@ export const handleCanvasObjectMoving = ({ options, updateAttributes }: CanvasOb
 
     if (target.left) {
         target.left = Math.min(target.left, (canvas.width || 0) - (target.getScaledWidth() || target.width || 0));
-        updateAttributes("left", (target.left || 0).toString());
+        updateAttributes("left", (target.left || 0).toFixed(2));
     }
 
     if (target.top) {
         target.top = Math.min(target.top, (canvas.height || 0) - (target.getScaledHeight() || target.height || 0));
-        updateAttributes("top", (target.top || 0).toString());
+        updateAttributes("top", (target.top || 0).toFixed(2));
     }
 };
 
@@ -257,8 +257,8 @@ export const handleCanvasObjectScaling = ({ options, updateAttributes }: CanvasO
     const h = height ? height : 0;
 
     // calculate scaled dimensions of the object
-    updateAttributes("width", (scaleX ? w * scaleX : w).toString());
-    updateAttributes("height", (scaleY ? h * scaleY : h).toString());
+    updateAttributes("width", (scaleX ? w * scaleX : w).toFixed(2));
+    updateAttributes("height", (scaleY ? h * scaleY : h).toFixed(2));
 };
 
 // render canvas objects coming from storage on canvas
