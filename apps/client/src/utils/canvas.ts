@@ -221,28 +221,27 @@ export const handleCanvasObjectMoving = ({ options, updateAttributes }: CanvasOb
     // set coordinates of target object
     target.setCoords();
 
-    // restrict object to canvas boundaries (horizontal)
     if (target.left) {
-        target.left = Math.max(0, Math.min(target.left, (canvas.width || 0) - (target.getScaledWidth() || target.width || 0)));
-
+        target.left = Math.min(target.left, (canvas.width || 0) - (target.getScaledWidth() || target.width || 0));
         updateAttributes("left", (target.left || 0).toString());
     }
 
-    // restrict object to canvas boundaries (vertical)
     if (target.top) {
-        target.top = Math.max(0, Math.min(target.top, (canvas.height || 0) - (target.getScaledHeight() || target.height || 0)));
-
+        target.top = Math.min(target.top, (canvas.height || 0) - (target.getScaledHeight() || target.height || 0));
         updateAttributes("top", (target.top || 0).toString());
     }
 };
 
 // set selectShape when element is selected
-export const handleCanvasSelectionCreated = ({ options, isEditingRef, setAttributes }: CanvasSelectionCreated) => {
+export const handleCanvasSelectionCreated = ({ options, isEditingRef, pasteTimeRef, setAttributes }: CanvasSelectionCreated) => {
     // if user is editing manually, return
     if (isEditingRef.current) return;
 
     // if no element is selected, return
     if (!options?.selected) return;
+
+    // set pasteTime forEach selection
+    pasteTimeRef.current = 1;
 
     // if only one element is selected, set attributes
     // @ts-ignore

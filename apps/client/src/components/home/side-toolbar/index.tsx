@@ -6,10 +6,11 @@ import { useCanvasState } from "@/hooks/useCanvasState";
 import Text from "./Text";
 import Color from "./Color";
 import Dimensions from "./Dimensions";
+import Action from "./Action";
 
 import type { Attributes, RightSidebarProps } from "@/types";
 
-export default function SideToolbar({ fabricRef, isEditingRef }: RightSidebarProps) {
+export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }: RightSidebarProps) {
     const colorInputRef = useRef(null);
     const strokeInputRef = useRef(null);
     const { updateShape } = useShapeState();
@@ -30,10 +31,11 @@ export default function SideToolbar({ fabricRef, isEditingRef }: RightSidebarPro
                 style={{ maxHeight: "calc(100vh - 12rem)", overflowY: "scroll" }}
                 className="bg-foreground fixed left-6 top-24 z-10 w-60 divide-y rounded"
             >
-                <Dimensions isEditingRef={isEditingRef} handleInputChange={handleInputChange} />
-                <Text handleInputChange={handleInputChange} />
-                <Color inputRef={colorInputRef} placeholder="Color" attributeType="fill" handleInputChange={handleInputChange} />
-                <Color inputRef={strokeInputRef} placeholder="Stroke" attributeType="stroke" handleInputChange={handleInputChange} />
+                <Dimensions {...{ isEditingRef, handleInputChange }} />
+                <Text {...{ handleInputChange }} />
+                <Color inputRef={colorInputRef} placeholder="Color" attribute="fill" {...{ handleInputChange }} />
+                <Color inputRef={strokeInputRef} placeholder="Stroke" attribute="stroke" {...{ handleInputChange }} />
+                <Action {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
             </section>
         ),
         [attributes],

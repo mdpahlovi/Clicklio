@@ -2,11 +2,11 @@ import { useCanvasState } from "@/hooks/useCanvasState";
 import type { Attributes } from "@/types";
 
 type Property = "top" | "left" | "width" | "height";
-const dimensionsOptions: { label: string; property: Property }[] = [
-    { label: "X", property: "top" },
-    { label: "Y", property: "left" },
-    { label: "W", property: "width" },
-    { label: "H", property: "height" },
+const dimensionsOptions: { label: string; property: Property; placeholder: string }[] = [
+    { label: "X", property: "top", placeholder: "Top" },
+    { label: "Y", property: "left", placeholder: "Left" },
+    { label: "W", property: "width", placeholder: "Width" },
+    { label: "H", property: "height", placeholder: "Height" },
 ];
 
 type DimensionsProps = {
@@ -22,17 +22,17 @@ export default function Dimensions({ isEditingRef, handleInputChange }: Dimensio
             <div className="col-span-full">
                 <p className="text-sm">Dimensions</p>
             </div>
-            {dimensionsOptions.map(({ label, property }) => (
+            {dimensionsOptions.map(({ label, property, placeholder }) => (
                 <label key={label} htmlFor={property} className="bg-background flex items-center">
                     <span className="flex size-8 items-center justify-center text-sm">{label}</span>
                     <input
                         type="number"
                         id={property}
-                        placeholder="100"
+                        placeholder={placeholder}
                         onBlur={() => (isEditingRef.current = false)}
                         value={attributes ? Number(attributes[property]).toFixed(2) : ""}
                         onChange={(e) => handleInputChange(property, e.target.value)}
-                        className="bg-background h-8 w-full text-sm focus:outline-none"
+                        className="bg-background placeholder:text-content-lighter h-8 w-full text-sm focus:outline-none"
                     />
                 </label>
             ))}

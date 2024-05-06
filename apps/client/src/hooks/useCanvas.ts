@@ -32,6 +32,9 @@ export function useCanvas() {
     const shapeRef = useRef<fabric.Object | null>(null);
     const selectedToolRef = useRef<Tool | null>(null);
 
+    const pasteTimeRef = useRef<number | null>(null);
+    const copiedObjectRef = useRef<fabric.Object[] | null>(null);
+
     useEffect(() => {
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
@@ -60,7 +63,7 @@ export function useCanvas() {
         });
 
         canvas.on("selection:created", (options) => {
-            handleCanvasSelectionCreated({ options, isEditingRef, setAttributes });
+            handleCanvasSelectionCreated({ options, isEditingRef, pasteTimeRef, setAttributes });
         });
 
         canvas.on("object:scaling", (options) => {
@@ -72,14 +75,16 @@ export function useCanvas() {
         });
 
         window.addEventListener("resize", () => handleResize({ canvas }));
-        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, setShape, deleteShape }));
+        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape }));
 
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
-            window.removeEventListener("keydown", (e) => handleKeyDown({ e, canvas: null, setShape, deleteShape }));
+            window.removeEventListener("keydown", (e) =>
+                handleKeyDown({ e, canvas: null, pasteTimeRef, copiedObjectRef, setShape, deleteShape }),
+            );
         };
     }, []);
 
-    return { canvasRef, fabricRef, isEditingRef, selectedToolRef };
+    return { canvasRef, fabricRef, isEditingRef, selectedToolRef, pasteTimeRef, copiedObjectRef };
 }

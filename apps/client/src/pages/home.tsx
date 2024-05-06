@@ -13,7 +13,7 @@ import SideToolbar from "@/components/home/side-toolbar";
 export default function HomePage() {
     const [refresh, setRefresh] = useState<number>();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
-    const { canvasRef, fabricRef, selectedToolRef, isEditingRef } = useCanvas();
+    const { canvasRef, fabricRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
 
     useEffect(() => {
         socket.on("set:shape", (shape) => {
@@ -57,7 +57,7 @@ export default function HomePage() {
                 <Button>Share</Button>
             </div>
 
-            <SideToolbar {...{ fabricRef, isEditingRef }} />
+            <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
             <BottomToolbar {...{ fabricRef }} />
 
             <div id="canvas" className="h-screen w-full">

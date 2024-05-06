@@ -3,65 +3,54 @@ import { v4 as uuidv4 } from "uuid";
 import { WindowKeyDown } from "@/types";
 import { socket } from "@/utils/socket";
 
-export const handleCopy = (canvas: fabric.Canvas) => {
+export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>) => {
     const activeObjects = canvas.getActiveObjects();
-    if (activeObjects.length > 0) {
-        // Serialize the selected objects
-        const serializedObjects = activeObjects.map((obj) => obj.toObject());
-        // Store the serialized objects in the clipboard
-        localStorage.setItem("clipboard", JSON.stringify(serializedObjects));
-    }
 
-    return activeObjects;
+    // set copied objects in the copiedObjectRef
+    if (activeObjects.length > 0) copiedObjectRef.current = activeObjects;
 };
 
-export const handlePaste = (canvas: fabric.Canvas, setShape: (shape: fabric.Object) => void) => {
-    if (!canvas || !(canvas instanceof fabric.Canvas)) {
-        console.error("Invalid canvas object. Aborting paste operation.");
-        return;
-    }
+export const handlePaste = (
+    canvas: fabric.Canvas,
+    pasteTimeRef: React.MutableRefObject<number | null>,
+    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>,
+    setShape: (shape: fabric.Object) => void,
+) => {
+    // if no pasteTime or copiedObject, return
+    if (!pasteTimeRef.current || !copiedObjectRef.current || !copiedObjectRef.current.length) return;
 
-    // Retrieve serialized objects from the clipboard
-    const clipboardData = localStorage.getItem("clipboard");
+    copiedObjectRef.current.forEach((object) => {
+        // convert the plain javascript objects into fabric.js objects (deserialization)
+        fabric.util.enlivenObjects(
+            [object],
+            (enlivenedObjects: fabric.Object[]) => {
+                enlivenedObjects.forEach((enlivenedObj) => {
+                    // Offset the pasted objects to avoid overlap with existing objects
+                    enlivenedObj.set({
+                        top: enlivenedObj.top! + 20 * pasteTimeRef.current!,
+                        left: enlivenedObj.left! + 20 * pasteTimeRef.current!,
 
-    if (clipboardData) {
-        try {
-            const parsedObjects = JSON.parse(clipboardData);
-            parsedObjects.forEach((objData: fabric.Object) => {
-                // convert the plain javascript objects retrieved from localStorage into fabricjs objects (deserialization)
-                fabric.util.enlivenObjects(
-                    [objData],
-                    (enlivenedObjects: fabric.Object[]) => {
-                        enlivenedObjects.forEach((enlivenedObj) => {
-                            // Offset the pasted objects to avoid overlap with existing objects
-                            enlivenedObj.set({
-                                left: enlivenedObj.left! + 20,
-                                top: enlivenedObj.top! + 20,
+                        // @ts-ignore
+                        objectId: uuidv4(),
+                    });
 
-                                // @ts-ignore
-                                objectId: uuidv4(),
-                                fill: "#000000",
-                            });
+                    canvas.add(enlivenedObj);
+                    // sync in storage
+                    // @ts-ignore
+                    if (enlivenedObj?.objectId) {
+                        // @ts-ignore
+                        setShape({ objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
+                        // @ts-ignore
+                        socket.emit("set:shape", { objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
+                    }
+                });
+                canvas.renderAll();
+            },
+            "fabric",
+        );
+    });
 
-                            canvas.add(enlivenedObj);
-                            // sync in storage
-                            // @ts-ignore
-                            if (enlivenedObj?.objectId) {
-                                // @ts-ignore
-                                setShape({ objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
-                                // @ts-ignore
-                                socket.emit("set:shape", { objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
-                            }
-                        });
-                        canvas.renderAll();
-                    },
-                    "fabric",
-                );
-            });
-        } catch (error) {
-            console.error("Error parsing clipboard data:", error);
-        }
-    }
+    pasteTimeRef.current = pasteTimeRef.current + 1;
 };
 
 export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) => void) => {
@@ -84,15 +73,15 @@ export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) =>
 };
 
 // create a handleKeyDown function that listen to different keydown events
-export const handleKeyDown = ({ e, canvas, setShape, deleteShape }: WindowKeyDown) => {
+export const handleKeyDown = ({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape }: WindowKeyDown) => {
     // Check if the key pressed is ctrl/cmd + c (copy)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67) {
-        handleCopy(canvas);
+        handleCopy(canvas, copiedObjectRef);
     }
 
     // Check if the key pressed is ctrl/cmd + v (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas, setShape);
+        handlePaste(canvas, pasteTimeRef, copiedObjectRef, setShape);
     }
 
     // Check if the key pressed is delete (delete)
@@ -102,7 +91,7 @@ export const handleKeyDown = ({ e, canvas, setShape, deleteShape }: WindowKeyDow
 
     // check if the key pressed is ctrl/cmd + x (cut)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
-        handleCopy(canvas);
+        handleCopy(canvas, copiedObjectRef);
         handleDelete(canvas, deleteShape);
     }
 };

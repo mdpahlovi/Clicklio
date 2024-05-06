@@ -73,6 +73,8 @@ export type ImageUpload = {
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     isEditingRef: React.MutableRefObject<boolean>;
+    pasteTimeRef: React.MutableRefObject<number | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
 };
 
 export type InitializeFabric = {
@@ -121,6 +123,7 @@ export type CanvasPathCreated = {
 export type CanvasSelectionCreated = {
     options: fabric.IEvent;
     isEditingRef: React.MutableRefObject<boolean>;
+    pasteTimeRef: React.MutableRefObject<number | null>;
     setAttributes: (attributes: Attributes) => void;
 };
 
@@ -148,6 +151,8 @@ export type CanvasZoom = {
 export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
+    pasteTimeRef: React.MutableRefObject<number | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
     setShape: (shape: fabric.Object) => void;
     deleteShape: (id: string) => void;
 };
