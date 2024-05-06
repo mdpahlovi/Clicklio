@@ -7,7 +7,10 @@ export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.Mutable
     const activeObjects = canvas.getActiveObjects();
 
     // set copied objects in the copiedObjectRef
-    if (activeObjects.length > 0) copiedObjectRef.current = activeObjects;
+    if (activeObjects.length > 0) {
+        // @ts-ignore
+        copiedObjectRef.current = activeObjects.map((object) => object.toJSON());
+    }
 };
 
 export const handlePaste = (
