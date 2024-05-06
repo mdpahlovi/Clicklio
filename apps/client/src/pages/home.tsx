@@ -4,6 +4,7 @@ import { renderCanvas } from "@/utils/canvas";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useShapeState } from "@/hooks/useShapeState";
 
+import { RxCursorArrow } from "react-icons/rx";
 import { Button } from "@/components/ui/button";
 import Toolbar from "@/components/home/toolbar";
 import MenuButton from "@/components/home/menu";
@@ -13,6 +14,7 @@ import SideToolbar from "@/components/home/side-toolbar";
 export default function HomePage() {
     const [refresh, setRefresh] = useState<number>();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
+    const [position, setPosition] = useState<{ x: number; y: number } | null>();
     const { canvasRef, fabricRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
 
     useEffect(() => {
@@ -28,6 +30,7 @@ export default function HomePage() {
             deleteShape(objectId);
             setRefresh(Math.random() * 100);
         });
+        socket.on("cursor", (position) => setPosition(position));
 
         return () => {
             socket.off("set:shape", (shape) => {
@@ -42,6 +45,7 @@ export default function HomePage() {
                 deleteShape(objectId);
                 setRefresh(Math.random() * 100);
             });
+            socket.off("cursor", (position) => setPosition(position));
         };
     }, []);
 
@@ -56,6 +60,8 @@ export default function HomePage() {
                 <Toolbar {...{ fabricRef, selectedToolRef }} />
                 <Button>Share</Button>
             </div>
+
+            <RxCursorArrow style={position ? { position: "fixed", top: position.y, left: position.x } : { display: "none" }} />
 
             <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
             <BottomToolbar {...{ fabricRef }} />

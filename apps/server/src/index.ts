@@ -42,6 +42,10 @@ io.on("connection", (socket) => {
     socket.on("delete:shape", ({ objectId }) => {
         socket.broadcast.emit("delete:shape", { objectId });
     });
+
+    socket.on("cursor", (position) => {
+        socket.broadcast.emit("cursor", position);
+    });
 });
 
 httpServer.listen(config.port, () => console.log(`🚀 Server Running On http://localhost:${config.port}`));

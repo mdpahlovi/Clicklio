@@ -1,3 +1,4 @@
+import { socket } from "@/utils/socket";
 import { useEffect, useRef } from "react";
 import { handleKeyDown } from "@/utils/key-events";
 import { useShapeState } from "@/hooks/useShapeState";
@@ -75,11 +76,13 @@ export function useCanvas() {
         });
 
         window.addEventListener("resize", () => handleResize({ canvas }));
+        window.addEventListener("mousemove", (e) => socket.emit("cursor", { x: e.x, y: e.y }));
         window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape }));
 
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
+            window.removeEventListener("mousemove", (e) => socket.emit("cursor", { x: e.x, y: e.y }));
             window.removeEventListener("keydown", (e) =>
                 handleKeyDown({ e, canvas: null, pasteTimeRef, copiedObjectRef, setShape, deleteShape }),
             );
