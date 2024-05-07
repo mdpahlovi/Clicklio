@@ -42,6 +42,12 @@ io.on("connection", (socket) => {
     socket.on("delete:shape", ({ objectId }) => {
         socket.broadcast.emit("delete:shape", { objectId });
     });
+    socket.on("undo:shape", ({ status }) => {
+        socket.broadcast.emit("undo:shape", { status });
+    });
+    socket.on("redo:shape", ({ status }) => {
+        socket.broadcast.emit("redo:shape", { status });
+    });
 
     socket.on("cursor", (position) => {
         socket.broadcast.emit("cursor", position);

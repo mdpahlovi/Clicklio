@@ -1,11 +1,14 @@
 import { useEffect } from "react";
+import { socket } from "@/utils/socket";
 import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";
 import IconButton from "@/components/ui/icon-button";
 import { useCanvasState } from "@/hooks/useCanvasState";
+import { useShapeState } from "@/hooks/useShapeState";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const { zoom, setZoom } = useCanvasState();
+    const { undo, redo } = useShapeState.temporal.getState();
 
     useEffect(() => {
         if (fabricRef?.current) setZoom(fabricRef.current.getZoom());
@@ -51,10 +54,22 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 </IconButton>
             </div>
             <div>
-                <IconButton className="rounded-r-none">
+                <IconButton
+                    onClick={() => {
+                        undo();
+                        socket.emit("undo:shape", { status: true });
+                    }}
+                    className="rounded-r-none"
+                >
                     <GrUndo />
                 </IconButton>
-                <IconButton className="rounded-l-none">
+                <IconButton
+                    onClick={() => {
+                        redo();
+                        socket.emit("redo:shape", { status: true });
+                    }}
+                    className="rounded-l-none"
+                >
                     <GrRedo />
                 </IconButton>
             </div>

@@ -12,46 +12,32 @@ import BottomToolbar from "@/components/home/buttom-toolbar";
 import SideToolbar from "@/components/home/side-toolbar";
 
 export default function HomePage() {
-    const [refresh, setRefresh] = useState<number>();
+    const { undo, redo } = useShapeState.temporal.getState();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
     const [position, setPosition] = useState<{ x: number; y: number } | null>();
     const { canvasRef, fabricRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
 
     useEffect(() => {
-        socket.on("set:shape", (shape) => {
-            setShape(shape);
-            setRefresh(Math.random() * 100);
-        });
-        socket.on("update:shape", (shape) => {
-            updateShape(shape);
-            setRefresh(Math.random() * 100);
-        });
-        socket.on("delete:shape", ({ objectId }) => {
-            deleteShape(objectId);
-            setRefresh(Math.random() * 100);
-        });
+        socket.on("set:shape", (shape) => setShape(shape));
+        socket.on("update:shape", (shape) => updateShape(shape));
+        socket.on("delete:shape", ({ objectId }) => deleteShape(objectId));
+        socket.on("undo:shape", ({ status }) => status && undo());
+        socket.on("redo:shape", ({ status }) => status && redo());
         socket.on("cursor", (position) => setPosition(position));
 
         return () => {
-            socket.off("set:shape", (shape) => {
-                setShape(shape);
-                setRefresh(Math.random() * 100);
-            });
-            socket.off("update:shape", (shape) => {
-                updateShape(shape);
-                setRefresh(Math.random() * 100);
-            });
-            socket.off("delete:shape", ({ objectId }) => {
-                deleteShape(objectId);
-                setRefresh(Math.random() * 100);
-            });
+            socket.off("set:shape", (shape) => setShape(shape));
+            socket.off("update:shape", (shape) => updateShape(shape));
+            socket.off("delete:shape", ({ objectId }) => deleteShape(objectId));
+            socket.off("undo:shape", ({ status }) => status && undo());
+            socket.off("redo:shape", ({ status }) => status && redo());
             socket.off("cursor", (position) => setPosition(position));
         };
     }, []);
 
     useEffect(() => {
         renderCanvas({ shapes, fabricRef });
-    }, [refresh]);
+    }, [shapes]);
 
     return (
         <>

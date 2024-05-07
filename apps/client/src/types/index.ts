@@ -155,6 +155,9 @@ export type WindowKeyDown = {
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
     setShape: (shape: fabric.Object) => void;
     deleteShape: (id: string) => void;
+    undo: (steps?: number) => void;
+    redo: (steps?: number) => void;
+    setTool: (tool: Tool) => void;
 };
 
 export type CursorChatProps = {

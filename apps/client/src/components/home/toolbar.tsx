@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { navElements } from "@/constants";
 import { handleImageUpload } from "@/utils/shapes";
 import { useShapeState } from "@/hooks/useShapeState";
@@ -22,8 +22,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement>(null);
 
-    const handleActiveElement = (value: Tool) => {
-        setTool(value);
+    useEffect(() => {
         if (fabricRef.current) {
             fabricRef.current.isDrawingMode = false;
             fabricRef.current.defaultCursor = "default";
@@ -33,7 +32,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
             });
         }
 
-        switch (value) {
+        switch (tool) {
             case "panning":
                 selectedToolRef.current = "panning";
                 if (fabricRef.current) {
@@ -57,10 +56,10 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 break;
 
             default:
-                selectedToolRef.current = value;
+                selectedToolRef.current = tool;
                 break;
         }
-    };
+    }, [tool]);
 
     return (
         <div className="bg-foreground mx-auto flex w-max gap-1 rounded p-1">
@@ -68,7 +67,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
             <Separator className="h-7" vertical />
             {navElements.map(({ value, icon }) => {
                 return (
-                    <IconButton key={value} onClick={() => handleActiveElement(value)} active={value === tool}>
+                    <IconButton key={value} onClick={() => setTool(value)} active={value === tool}>
                         {icon}
                     </IconButton>
                 );

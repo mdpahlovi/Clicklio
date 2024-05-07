@@ -24,6 +24,7 @@
         "tailwind-merge": "^2.3.0",
         "tailwindcss-animate": "^1.0.7",
         "uuid": "^9.0.1",
+        "zundo": "^2.1.0",
         "zustand": "^4.5.2"
     },
     "devDependencies": {

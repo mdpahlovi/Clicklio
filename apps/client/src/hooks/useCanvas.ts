@@ -21,6 +21,7 @@ import {
 import type { Pointer, Tool } from "@/types";
 
 export function useCanvas() {
+    const { undo, redo } = useShapeState.temporal.getState();
     const { setShape, updateShape, deleteShape } = useShapeState();
     const { setTool, setZoom, setAttributes, updateAttributes } = useCanvasState();
 
@@ -77,14 +78,22 @@ export function useCanvas() {
 
         window.addEventListener("resize", () => handleResize({ canvas }));
         window.addEventListener("mousemove", (e) => socket.emit("cursor", { x: e.x, y: e.y }));
-        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape }));
+
+        // check if the keyup is space (panning)
+        window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
+        window.addEventListener("keydown", (e) =>
+            handleKeyDown({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool }),
+        );
 
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
             window.removeEventListener("mousemove", (e) => socket.emit("cursor", { x: e.x, y: e.y }));
+
+            // check if the keyup is space (panning)
+            window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
-                handleKeyDown({ e, canvas: null, pasteTimeRef, copiedObjectRef, setShape, deleteShape }),
+                handleKeyDown({ e, canvas: null, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool }),
             );
         };
     }, []);

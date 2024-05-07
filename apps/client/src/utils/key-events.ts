@@ -76,7 +76,7 @@ export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) =>
 };
 
 // create a handleKeyDown function that listen to different keydown events
-export const handleKeyDown = ({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape }: WindowKeyDown) => {
+export const handleKeyDown = ({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool }: WindowKeyDown) => {
     // Check if the key pressed is ctrl/cmd + c (copy)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67) {
         handleCopy(canvas, copiedObjectRef);
@@ -97,4 +97,19 @@ export const handleKeyDown = ({ e, canvas, pasteTimeRef, copiedObjectRef, setSha
         handleCopy(canvas, copiedObjectRef);
         handleDelete(canvas, deleteShape);
     }
+
+    // check if the key pressed is ctrl/cmd + z (undo)
+    if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90) {
+        undo();
+        socket.emit("undo:shape", { status: true });
+    }
+
+    // check if the key pressed is ctrl/cmd + y (redo)
+    if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 89) {
+        redo();
+        socket.emit("redo:shape", { status: true });
+    }
+
+    // check if the key pressed is space (panning)
+    if (e.keyCode === 32) setTool("panning");
 };
