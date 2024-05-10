@@ -6,7 +6,7 @@ export default function MenuButton() {
     const { menu, toggleMenu } = useBasicState();
 
     return (
-        <IconButton variant="solid" onClick={toggleMenu}>
+        <IconButton variant="solid" onClick={toggleMenu} sx={{ ml: 3 }}>
             {!menu ? <CgMenuLeft size={16} /> : <CgClose size={16} />}
         </IconButton>
     );

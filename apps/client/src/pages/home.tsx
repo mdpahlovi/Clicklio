@@ -41,10 +41,10 @@ export default function HomePage() {
 
     return (
         <>
-            <Stack direction="row" alignItems="center" position="fixed" top={24} width="100%" zIndex={1} px={3}>
+            <Stack direction="row" alignItems="center" position="fixed" top={24} width="100%" zIndex={1}>
                 <MenuButton />
                 <Toolbar {...{ fabricRef, selectedToolRef }} />
-                <Button>Share</Button>
+                <Button sx={{ mr: 3 }}>Share</Button>
             </Stack>
 
             <RxCursorArrow style={position ? { position: "fixed", top: position.y, left: position.x } : { display: "none" }} />

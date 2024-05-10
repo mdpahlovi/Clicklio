@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 
 import { PiCirclesThreePlus } from "react-icons/pi";
-import { Stack, IconButton, Divider } from "@mui/joy";
+import { Sheet, IconButton, Divider } from "@mui/joy";
 import { CiLock, CiUnlock, CiEraser } from "react-icons/ci";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import type { Tool } from "@/types";
@@ -61,7 +61,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     }, [tool]);
 
     return (
-        <Stack direction="row" spacing={0.5} width="max-content" mx="auto" p={0.5} borderRadius={2}>
+        <Sheet variant="soft" sx={{ display: "flex", gap: 0.5, mx: "auto", p: 0.5, borderRadius: 6 }}>
             <IconButton onChange={() => setLock(!lock)}>{!lock ? <CiUnlock /> : <CiLock />}</IconButton>
             <Divider orientation="vertical" />
             {navElements.map(({ value, icon }) => {
@@ -86,6 +86,6 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 ref={imageInputRef}
                 onChange={(e) => e?.target?.files?.length && handleImageUpload({ file: e.target.files[0], fabricRef, setShape })}
             />
-        </Stack>
+        </Sheet>
     );
 }

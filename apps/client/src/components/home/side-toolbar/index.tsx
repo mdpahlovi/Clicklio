@@ -7,9 +7,9 @@ import Text from "./Text";
 import Color from "./Color";
 import Dimensions from "./Dimensions";
 import Action from "./Action";
+import { Divider, Sheet } from "@mui/joy";
 
 import type { Attributes, RightSidebarProps } from "@/types";
-import { Divider } from "@mui/joy";
 
 export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }: RightSidebarProps) {
     const colorInputRef = useRef(null);
@@ -28,16 +28,10 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
     // memoize the content of the right sidebar to avoid re-rendering on every mouse actions
     const memoizedContent = useMemo(
         () => (
-            <section
-                style={{
-                    maxHeight: "calc(100vh - 12rem)",
-                    overflowY: "scroll",
-                    position: "fixed",
-                    left: 24,
-                    top: 96,
-                    width: 240,
-                    zIndex: 1,
-                }}
+            <Sheet
+                variant="soft"
+                style={{ overflowY: "auto", maxHeight: "calc(100vh - 12rem)" }}
+                sx={{ position: "fixed", top: 96, left: 24, zIndex: 1, width: 240, borderRadius: 6 }}
             >
                 <Dimensions {...{ isEditingRef, handleInputChange }} />
                 <Divider />
@@ -48,9 +42,9 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
                 <Color inputRef={strokeInputRef} placeholder="Stroke" attribute="stroke" {...{ handleInputChange }} />
                 <Divider />
                 <Action {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
-            </section>
+            </Sheet>
         ),
-        [attributes],
+        [attributes]
     ); // only re-render when attributes changes
 
     return memoizedContent;
