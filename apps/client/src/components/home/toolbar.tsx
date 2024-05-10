@@ -1,12 +1,10 @@
 import { navElements } from "@/constants";
+import { useEffect, useRef } from "react";
 import { handleImageUpload } from "@/utils/shapes";
-import { useEffect, useRef, useState } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
-
-import { PiCirclesThreePlus } from "react-icons/pi";
-import { Sheet, IconButton, Divider } from "@mui/joy";
-import { CiLock, CiUnlock, CiEraser } from "react-icons/ci";
 import { useCanvasState } from "@/hooks/useCanvasState";
+
+import { Sheet, IconButton, Stack } from "@mui/joy";
 import type { Tool } from "@/types";
 
 type ToolbarProps = {
@@ -15,8 +13,6 @@ type ToolbarProps = {
 };
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
-    const [lock, setLock] = useState(false);
-
     const { setShape } = useShapeState();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement>(null);
@@ -61,31 +57,29 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     }, [tool]);
 
     return (
-        <Sheet variant="soft" sx={{ display: "flex", gap: 0.5, mx: "auto", p: 0.5, borderRadius: 6 }}>
-            <IconButton onChange={() => setLock(!lock)}>{!lock ? <CiUnlock /> : <CiLock />}</IconButton>
-            <Divider orientation="vertical" />
-            {navElements.map(({ value, icon }) => {
-                return (
-                    <IconButton key={value} variant={value === tool ? "solid" : "plain"} onClick={() => setTool(value)}>
-                        {icon}
-                    </IconButton>
-                );
-            })}
-            <IconButton>
-                <CiEraser />
-            </IconButton>
-            <Divider orientation="vertical" />
-            <IconButton>
-                <PiCirclesThreePlus />
-            </IconButton>
+        <Stack justifyContent="center" sx={{ width: 48, position: "absolute", zIndex: 1, inset: 0 }}>
+            <Sheet style={{ borderLeft: 0, display: "grid", gap: 4, padding: 4, borderRadius: "0 16px 16px 0" }}>
+                {navElements.map(({ value, icon, type }) => {
+                    switch (type) {
+                        case "tool":
+                            return (
+                                <IconButton key={value} variant={value === tool ? "solid" : "plain"} onClick={() => setTool(value as Tool)}>
+                                    {icon}
+                                </IconButton>
+                            );
+                        case "divider":
+                            return icon;
+                    }
+                })}
 
-            <input
-                hidden
-                type="file"
-                accept="image/*"
-                ref={imageInputRef}
-                onChange={(e) => e?.target?.files?.length && handleImageUpload({ file: e.target.files[0], fabricRef, setShape })}
-            />
-        </Sheet>
+                <input
+                    hidden
+                    type="file"
+                    accept="image/*"
+                    ref={imageInputRef}
+                    onChange={(e) => e?.target?.files?.length && handleImageUpload({ file: e.target.files[0], fabricRef, setShape })}
+                />
+            </Sheet>
+        </Stack>
     );
 }

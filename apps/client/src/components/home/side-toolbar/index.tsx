@@ -29,9 +29,8 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
     const memoizedContent = useMemo(
         () => (
             <Sheet
-                variant="soft"
                 style={{ overflowY: "auto", maxHeight: "calc(100vh - 12rem)" }}
-                sx={{ position: "fixed", top: 96, left: 24, zIndex: 1, width: 240, borderRadius: 6 }}
+                sx={{ position: "fixed", top: 89, right: 24, zIndex: 1, width: 240, borderRadius: 16 }}
             >
                 <Dimensions {...{ isEditingRef, handleInputChange }} />
                 <Divider />

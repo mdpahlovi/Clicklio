@@ -50,7 +50,7 @@ export type Attributes = {
     stroke: string;
 };
 
-export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image";
+export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image" | "eraser";
 
 export type ModifyShape = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
@@ -169,6 +169,6 @@ export type CursorChatProps = {
             cursor: { x: number; y: number };
             cursorColor: string;
             message: string;
-        }>,
+        }>
     ) => void;
 };

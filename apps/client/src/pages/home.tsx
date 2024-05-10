@@ -4,10 +4,10 @@ import { renderCanvas } from "@/utils/canvas";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useShapeState } from "@/hooks/useShapeState";
 
-import { Stack, Button } from "@mui/joy";
+import { Stack } from "@mui/joy";
+import Navbar from "@/components/home/navbar";
 import { RxCursorArrow } from "react-icons/rx";
 import Toolbar from "@/components/home/toolbar";
-import MenuButton from "@/components/home/menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
 import SideToolbar from "@/components/home/side-toolbar";
 
@@ -16,6 +16,8 @@ export default function HomePage() {
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
     const [position, setPosition] = useState<{ x: number; y: number } | null>();
     const { canvasRef, fabricRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
+
+    useEffect(() => renderCanvas({ shapes, fabricRef }), [shapes]);
 
     useEffect(() => {
         socket.on("set:shape", (shape) => setShape(shape));
@@ -35,26 +37,40 @@ export default function HomePage() {
         };
     }, []);
 
-    useEffect(() => {
-        renderCanvas({ shapes, fabricRef });
-    }, [shapes]);
-
     return (
         <>
-            <Stack direction="row" alignItems="center" position="fixed" top={24} width="100%" zIndex={1}>
-                <MenuButton />
-                <Toolbar {...{ fabricRef, selectedToolRef }} />
-                <Button sx={{ mr: 3 }}>Share</Button>
+            <Navbar />
+            <Stack direction="row">
+                <Stack
+                    py={3}
+                    width={64}
+                    height="calc(100vh - 113px)"
+                    position="relative"
+                    borderRight={1}
+                    borderColor={({ palette }) => palette.divider}
+                ></Stack>
+
+                <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
+
+                <div id="canvas" style={{ position: "relative", width: "100%", height: "calc(100vh - 65px)" }}>
+                    <RxCursorArrow
+                        style={position ? { position: "absolute", zIndex: 1, top: position.y, left: position.x } : { display: "none" }}
+                    />
+                    <Toolbar {...{ fabricRef, selectedToolRef }} />
+                    <BottomToolbar {...{ fabricRef }} />
+                    <canvas ref={canvasRef} />
+                </div>
             </Stack>
-
-            <RxCursorArrow style={position ? { position: "fixed", top: position.y, left: position.x } : { display: "none" }} />
-
-            <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
-            <BottomToolbar {...{ fabricRef }} />
-
-            <div id="canvas" style={{ width: "100%", height: "100vh" }}>
-                <canvas ref={canvasRef} />
-            </div>
         </>
     );
+}
+
+{
+    /* 
+
+           
+
+          
+         
+ */
 }

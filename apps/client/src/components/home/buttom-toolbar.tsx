@@ -4,7 +4,7 @@ import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Stack, ButtonGroup, Button, IconButton } from "@mui/joy";
+import { Stack, Sheet, Button, IconButton, Divider } from "@mui/joy";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const { zoom, setZoom } = useCanvasState();
@@ -15,30 +15,31 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     }, []);
 
     return (
-        <Stack direction="row" spacing={3} position="fixed" bottom={24} left={24} zIndex={1}>
-            <ButtonGroup variant="soft">
+        <Stack
+            direction="row"
+            justifyContent="space-between"
+            sx={{ width: "100%", height: 48, position: "absolute", zIndex: 1, left: 0, bottom: 0 }}
+        >
+            <Sheet style={{ borderLeft: 0, display: "flex", gap: 4, padding: 4, borderRadius: "0 16px 0 0" }}>
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && Number(zoom.toFixed(1)) >= 0.1) {
-                            setZoom(zoom - 0.1);
-                            fabricRef.current.setZoom(zoom - 0.1);
-                        }
+                        undo();
+                        socket.emit("undo:shape", { status: true });
                     }}
-                    disabled={Number(zoom.toFixed(1)) <= 0.1}
                 >
-                    <PiMinus />
+                    <GrUndo />
                 </IconButton>
-                <Button
-                    sx={{ width: 96 }}
+                <Divider orientation="vertical" />
+                <IconButton
                     onClick={() => {
-                        if (fabricRef.current) {
-                            setZoom(1);
-                            fabricRef.current.setZoom(1);
-                        }
+                        redo();
+                        socket.emit("redo:shape", { status: true });
                     }}
                 >
-                    {Math.round(zoom * 100)}%
-                </Button>
+                    <GrRedo />
+                </IconButton>
+            </Sheet>
+            <Sheet style={{ borderRight: 0, display: "flex", gap: 4, padding: 4, borderRadius: "16px 0 0 0" }}>
                 <IconButton
                     onClick={() => {
                         if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {
@@ -50,25 +51,34 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 >
                     <PiPlus />
                 </IconButton>
-            </ButtonGroup>
-            <ButtonGroup variant="soft">
-                <IconButton
+
+                <Divider orientation="vertical" />
+                <Button
+                    color="neutral"
+                    variant="plain"
+                    sx={{ width: 96 }}
                     onClick={() => {
-                        undo();
-                        socket.emit("undo:shape", { status: true });
+                        if (fabricRef.current) {
+                            setZoom(1);
+                            fabricRef.current.setZoom(1);
+                        }
                     }}
                 >
-                    <GrUndo />
-                </IconButton>
+                    {Math.round(zoom * 100)}%
+                </Button>
+                <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
-                        redo();
-                        socket.emit("redo:shape", { status: true });
+                        if (fabricRef.current && Number(zoom.toFixed(1)) >= 0.1) {
+                            setZoom(zoom - 0.1);
+                            fabricRef.current.setZoom(zoom - 0.1);
+                        }
                     }}
+                    disabled={Number(zoom.toFixed(1)) <= 0.1}
                 >
-                    <GrRedo />
+                    <PiMinus />
                 </IconButton>
-            </ButtonGroup>
+            </Sheet>
         </Stack>
     );
 }
