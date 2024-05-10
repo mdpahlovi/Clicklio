@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from "react";
 import { navElements } from "@/constants";
 import { handleImageUpload } from "@/utils/shapes";
+import { useEffect, useRef, useState } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
-import Separator from "@/components/ui/separator";
-import IconButton from "@/components/ui/icon-button";
 
 import { PiCirclesThreePlus } from "react-icons/pi";
+import { Stack, IconButton, Divider } from "@mui/joy";
 import { CiLock, CiUnlock, CiEraser } from "react-icons/ci";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import type { Tool } from "@/types";
@@ -62,12 +61,12 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     }, [tool]);
 
     return (
-        <div className="bg-foreground mx-auto flex w-max gap-1 rounded p-1">
+        <Stack direction="row" spacing={0.5} width="max-content" mx="auto" p={0.5} borderRadius={2}>
             <IconButton onChange={() => setLock(!lock)}>{!lock ? <CiUnlock /> : <CiLock />}</IconButton>
-            <Separator className="h-7" vertical />
+            <Divider orientation="vertical" />
             {navElements.map(({ value, icon }) => {
                 return (
-                    <IconButton key={value} onClick={() => setTool(value)} active={value === tool}>
+                    <IconButton key={value} variant={value === tool ? "solid" : "plain"} onClick={() => setTool(value)}>
                         {icon}
                     </IconButton>
                 );
@@ -75,7 +74,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
             <IconButton>
                 <CiEraser />
             </IconButton>
-            <Separator className="h-7" vertical />
+            <Divider orientation="vertical" />
             <IconButton>
                 <PiCirclesThreePlus />
             </IconButton>
@@ -85,10 +84,8 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 type="file"
                 accept="image/*"
                 ref={imageInputRef}
-                onChange={(e) => {
-                    if (e?.target?.files?.length) handleImageUpload({ file: e.target.files[0], fabricRef, setShape });
-                }}
+                onChange={(e) => e?.target?.files?.length && handleImageUpload({ file: e.target.files[0], fabricRef, setShape })}
             />
-        </div>
+        </Stack>
     );
 }

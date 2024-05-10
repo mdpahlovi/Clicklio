@@ -1,5 +1,7 @@
+import { Section } from "@/components/home/side-toolbar/components";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import type { Attributes } from "@/types";
+import { Typography } from "@mui/joy";
 
 type ColorProps = {
     placeholder: string;
@@ -13,24 +15,37 @@ export default function Color({ inputRef, placeholder, attribute, handleInputCha
     const value = attributes && attributes[attribute];
 
     return (
-        <div className="flex flex-col gap-2.5 p-4">
-            <p className="text-sm">{placeholder}</p>
+        <Section title={placeholder}>
             <div
-                className="bg-background flex h-8 items-center gap-2"
+                style={{
+                    backgroundColor: "#F3F4F6", // bg-background
+                    display: "flex",
+                    height: "2rem", // h-8
+                    alignItems: "center", // items-center
+                    gap: "0.5rem", // gap-2
+                }}
                 onClick={() => (inputRef?.current ? inputRef.current.click() : undefined)}
             >
                 <input
                     type="color"
                     ref={inputRef}
-                    className="h-8"
+                    style={{ height: "2rem" }}
                     value={value || ""}
                     onChange={(e) => handleInputChange(attribute, e.target.value)}
                 />
-                <div style={!value ? { color: "hsl(251, 17%, 55%)" } : undefined} className="flex-1 text-sm">
-                    {value || "No Color"}
+                <Typography sx={!value ? { color: "hsl(251, 17%, 55%)" } : undefined}>{value || "No Color"}</Typography>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0.25rem 0.5rem",
+                        fontSize: "0.875rem",
+                    }}
+                >
+                    100%
                 </div>
-                <div className="flex items-center justify-center px-2 text-sm">100%</div>
             </div>
-        </div>
+        </Section>
     );
 }

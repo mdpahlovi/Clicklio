@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { socket } from "@/utils/socket";
 import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";
-import IconButton from "@/components/ui/icon-button";
-import { useCanvasState } from "@/hooks/useCanvasState";
 import { useShapeState } from "@/hooks/useShapeState";
+import { useCanvasState } from "@/hooks/useCanvasState";
+import { Stack, ButtonGroup, Button, IconButton } from "@mui/joy";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const { zoom, setZoom } = useCanvasState();
@@ -15,8 +15,8 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     }, []);
 
     return (
-        <div className="fixed bottom-6 left-6 z-10 flex gap-6">
-            <div className="flex">
+        <Stack direction="row" spacing={3} position="fixed" bottom={24} left={24} zIndex={1}>
+            <ButtonGroup variant="soft">
                 <IconButton
                     onClick={() => {
                         if (fabricRef.current && Number(zoom.toFixed(1)) >= 0.1) {
@@ -24,22 +24,21 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                             fabricRef.current.setZoom(zoom - 0.1);
                         }
                     }}
-                    className="rounded-r-none"
                     disabled={Number(zoom.toFixed(1)) <= 0.1}
                 >
                     <PiMinus />
                 </IconButton>
-                <button
+                <Button
+                    sx={{ width: 96 }}
                     onClick={() => {
                         if (fabricRef.current) {
                             setZoom(1);
                             fabricRef.current.setZoom(1);
                         }
                     }}
-                    className="bg-foreground flex w-16 select-none items-center justify-center px-2.5"
                 >
                     {Math.round(zoom * 100)}%
-                </button>
+                </Button>
                 <IconButton
                     onClick={() => {
                         if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {
@@ -47,19 +46,17 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                             fabricRef.current.setZoom(zoom + 0.1);
                         }
                     }}
-                    className="rounded-l-none"
                     disabled={Number(zoom.toFixed(1)) >= 10}
                 >
                     <PiPlus />
                 </IconButton>
-            </div>
-            <div>
+            </ButtonGroup>
+            <ButtonGroup variant="soft">
                 <IconButton
                     onClick={() => {
                         undo();
                         socket.emit("undo:shape", { status: true });
                     }}
-                    className="rounded-r-none"
                 >
                     <GrUndo />
                 </IconButton>
@@ -68,11 +65,10 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                         redo();
                         socket.emit("redo:shape", { status: true });
                     }}
-                    className="rounded-l-none"
                 >
                     <GrRedo />
                 </IconButton>
-            </div>
-        </div>
+            </ButtonGroup>
+        </Stack>
     );
 }

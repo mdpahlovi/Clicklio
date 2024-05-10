@@ -4,8 +4,8 @@ import { renderCanvas } from "@/utils/canvas";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useShapeState } from "@/hooks/useShapeState";
 
+import { Stack, Button } from "@mui/joy";
 import { RxCursorArrow } from "react-icons/rx";
-import { Button } from "@/components/ui/button";
 import Toolbar from "@/components/home/toolbar";
 import MenuButton from "@/components/home/menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
@@ -41,18 +41,18 @@ export default function HomePage() {
 
     return (
         <>
-            <div className="fixed top-6 z-10 grid w-full grid-cols-[4.25rem_1fr_4.25rem] items-center px-6">
+            <Stack direction="row" alignItems="center" position="fixed" top={24} width="100%" zIndex={1} px={3}>
                 <MenuButton />
                 <Toolbar {...{ fabricRef, selectedToolRef }} />
                 <Button>Share</Button>
-            </div>
+            </Stack>
 
             <RxCursorArrow style={position ? { position: "fixed", top: position.y, left: position.x } : { display: "none" }} />
 
             <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
             <BottomToolbar {...{ fabricRef }} />
 
-            <div id="canvas" className="h-screen w-full">
+            <div id="canvas" style={{ width: "100%", height: "100vh" }}>
                 <canvas ref={canvasRef} />
             </div>
         </>

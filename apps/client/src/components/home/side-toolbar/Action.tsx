@@ -1,4 +1,6 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@mui/joy";
+import { Section, DoubleColumn } from "@/components/home/side-toolbar/components";
+
 import { useShapeState } from "@/hooks/useShapeState";
 import { handleCopy, handleDelete, handlePaste } from "@/utils/key-events";
 
@@ -12,12 +14,10 @@ export default function Action({ fabricRef, pasteTimeRef, copiedObjectRef }: Act
     const { setShape, deleteShape } = useShapeState();
 
     return (
-        <div className="flex flex-col gap-2.5 p-4">
-            <p className="text-sm">Actions</p>
-            <div className="grid grid-cols-2 gap-2.5">
+        <Section title="Actions">
+            <DoubleColumn>
                 <Button
-                    variant="outline"
-                    size="sm"
+                    variant="outlined"
                     onClick={() => {
                         if (fabricRef.current) {
                             handleCopy(fabricRef.current, copiedObjectRef);
@@ -28,14 +28,17 @@ export default function Action({ fabricRef, pasteTimeRef, copiedObjectRef }: Act
                     Duplicate
                 </Button>
                 <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-error text-error hover:bg-error"
-                    onClick={() => fabricRef.current && handleDelete(fabricRef.current, deleteShape)}
+                    color="danger"
+                    variant="outlined"
+                    onClick={() => {
+                        if (fabricRef.current) {
+                            handleDelete(fabricRef.current, deleteShape);
+                        }
+                    }}
                 >
                     Delete
                 </Button>
-            </div>
-        </div>
+            </DoubleColumn>
+        </Section>
     );
 }

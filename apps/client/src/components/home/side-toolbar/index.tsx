@@ -9,6 +9,7 @@ import Dimensions from "./Dimensions";
 import Action from "./Action";
 
 import type { Attributes, RightSidebarProps } from "@/types";
+import { Divider } from "@mui/joy";
 
 export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }: RightSidebarProps) {
     const colorInputRef = useRef(null);
@@ -28,13 +29,24 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
     const memoizedContent = useMemo(
         () => (
             <section
-                style={{ maxHeight: "calc(100vh - 12rem)", overflowY: "scroll" }}
-                className="bg-foreground fixed left-6 top-24 z-10 w-60 divide-y rounded"
+                style={{
+                    maxHeight: "calc(100vh - 12rem)",
+                    overflowY: "scroll",
+                    position: "fixed",
+                    left: 24,
+                    top: 96,
+                    width: 240,
+                    zIndex: 1,
+                }}
             >
                 <Dimensions {...{ isEditingRef, handleInputChange }} />
+                <Divider />
                 <Text {...{ handleInputChange }} />
+                <Divider />
                 <Color inputRef={colorInputRef} placeholder="Color" attribute="fill" {...{ handleInputChange }} />
+                <Divider />
                 <Color inputRef={strokeInputRef} placeholder="Stroke" attribute="stroke" {...{ handleInputChange }} />
+                <Divider />
                 <Action {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
             </section>
         ),

@@ -1,3 +1,6 @@
+import { Input } from "@mui/joy";
+import { DoubleColumn, Section } from "@/components/home/side-toolbar/components";
+
 import { useCanvasState } from "@/hooks/useCanvasState";
 import type { Attributes } from "@/types";
 
@@ -18,24 +21,19 @@ export default function Dimensions({ isEditingRef, handleInputChange }: Dimensio
     const { attributes } = useCanvasState();
 
     return (
-        <div className="grid grid-cols-2 gap-2.5 p-4">
-            <div className="col-span-full">
-                <p className="text-sm">Dimensions</p>
-            </div>
-            {dimensionsOptions.map(({ label, property, placeholder }) => (
-                <label key={label} htmlFor={property} className="bg-background flex items-center">
-                    <span className="flex size-8 items-center justify-center text-sm">{label}</span>
-                    <input
-                        type="number"
-                        id={property}
+        <Section title="Dimensions">
+            <DoubleColumn>
+                {dimensionsOptions.map(({ label, property, placeholder }) => (
+                    <Input
+                        key={property}
+                        startDecorator={label}
                         placeholder={placeholder}
                         onBlur={() => (isEditingRef.current = false)}
-                        value={attributes ? attributes[property] : ""}
+                        defaultValue={attributes ? attributes[property] : ""}
                         onChange={(e) => handleInputChange(property, e.target.value)}
-                        className="bg-background placeholder:text-content-lighter h-8 w-full text-sm focus:outline-none"
                     />
-                </label>
-            ))}
-        </div>
+                ))}
+            </DoubleColumn>
+        </Section>
     );
 }
