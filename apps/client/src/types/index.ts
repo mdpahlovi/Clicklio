@@ -43,6 +43,8 @@ export type Attributes = {
     left: string;
     width: string;
     height: string;
+    scaleX: string;
+    scaleY: string;
     fontSize: string;
     fontFamily: string;
     fontWeight: string;

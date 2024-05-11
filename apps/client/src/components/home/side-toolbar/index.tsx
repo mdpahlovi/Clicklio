@@ -12,8 +12,6 @@ import { Divider, Sheet } from "@mui/joy";
 import type { Attributes, RightSidebarProps } from "@/types";
 
 export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }: RightSidebarProps) {
-    const colorInputRef = useRef(null);
-    const strokeInputRef = useRef(null);
     const { updateShape } = useShapeState();
     const { attributes, updateAttributes } = useCanvasState();
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -22,7 +20,19 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
         if (!fabricRef.current) return;
         if (!isEditingRef.current) isEditingRef.current = true;
 
-        updateAttributes(property, value);
+        switch (property) {
+            case "width":
+                updateAttributes("scaleX", "1");
+                updateAttributes(property, value);
+                break;
+            case "height":
+                updateAttributes("scaleY", "1");
+                updateAttributes(property, value);
+                break;
+            default:
+                updateAttributes(property, value);
+                break;
+        }
 
         if (property === "top" || property === "left" || property === "width" || property === "height") {
             clearTimeout(timerRef.current);
@@ -45,9 +55,9 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
                 <Divider />
                 <Text {...{ handleInputChange }} />
                 <Divider />
-                <Color inputRef={colorInputRef} placeholder="Color" attribute="fill" {...{ handleInputChange }} />
+                <Color placeholder="Color" attribute="fill" {...{ handleInputChange }} />
                 <Divider />
-                <Color inputRef={strokeInputRef} placeholder="Stroke" attribute="stroke" {...{ handleInputChange }} />
+                <Color placeholder="Stroke" attribute="stroke" {...{ handleInputChange }} />
                 <Divider />
                 <Action {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
             </Sheet>

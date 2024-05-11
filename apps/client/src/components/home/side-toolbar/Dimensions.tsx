@@ -1,7 +1,8 @@
+import { useCanvasState } from "@/hooks/useCanvasState";
+
 import { Input } from "@mui/joy";
 import { DoubleColumn, Section } from "@/components/home/side-toolbar/components";
 
-import { useCanvasState } from "@/hooks/useCanvasState";
 import type { Attributes } from "@/types";
 
 type Property = "top" | "left" | "width" | "height";
@@ -23,16 +24,30 @@ export default function Dimensions({ isEditingRef, handleInputChange }: Dimensio
     return (
         <Section title="Dimensions">
             <DoubleColumn>
-                {dimensionsOptions.map(({ label, property, placeholder }) => (
-                    <Input
-                        key={property}
-                        startDecorator={label}
-                        placeholder={placeholder}
-                        onBlur={() => (isEditingRef.current = false)}
-                        value={attributes ? attributes[property] : ""}
-                        onChange={(e) => handleInputChange(property, e.target.value)}
-                    />
-                ))}
+                {dimensionsOptions.map(({ label, property, placeholder }) => {
+                    // calculate width & height value based on scaling
+                    const value = (attributes: Attributes) => {
+                        switch (property) {
+                            case "width":
+                                return Number(attributes[property]) * Number(attributes.scaleX);
+                            case "height":
+                                return Number(attributes[property]) * Number(attributes.scaleY);
+                            default:
+                                return attributes[property];
+                        }
+                    };
+
+                    return (
+                        <Input
+                            key={property}
+                            startDecorator={label}
+                            placeholder={placeholder}
+                            onBlur={() => (isEditingRef.current = false)}
+                            value={attributes ? value(attributes) : ""}
+                            onChange={(e) => handleInputChange(property, e.target.value)}
+                        />
+                    );
+                })}
             </DoubleColumn>
         </Section>
     );
