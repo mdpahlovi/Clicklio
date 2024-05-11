@@ -100,6 +100,7 @@ export type CanvasMouseMove = {
     isPanning: React.MutableRefObject<Pointer | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
+    deleteObjectRef: React.MutableRefObject<fabric.Object[]>;
 };
 
 export type CanvasMouseUp = {
@@ -108,8 +109,10 @@ export type CanvasMouseUp = {
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
+    deleteObjectRef: React.MutableRefObject<fabric.Object[]>;
     setTool: (tool: Tool) => void;
     setShape: (shape: fabric.Object) => void;
+    deleteShape: (id: string) => void;
 };
 
 export type CanvasObjectModified = {

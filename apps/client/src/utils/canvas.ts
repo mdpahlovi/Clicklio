@@ -34,11 +34,16 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 
 // instantiate creation of custom fabric object/shape and add it to canvas
 export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedToolRef, shapeRef }: CanvasMouseDown) => {
-    // if selected shape is path, return
+    // set canvas drawing mode
+    isDrawing.current = true;
+    // if no selectedToolRef, return
     if (!selectedToolRef.current) return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
+
+    // if selected shape is panning, set panning points
+    if (selectedToolRef.current === "panning") return (isPanning.current = pointer);
 
     /**
      * get target object i.e., the object that is clicked
@@ -47,15 +52,6 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
      * findTarget: http://fabricjs.com/docs/fabric.Canvas.html#findTarget
      */
     const target = canvas.findTarget(options.e, false);
-
-    // if selected shape is panning, set panning points
-    if (selectedToolRef.current === "panning") {
-        isDrawing.current = true;
-        canvas.selection = false;
-        isPanning.current = pointer;
-
-        return;
-    }
 
     // if target is the selected shape or active selection, set isDrawing to false
     if (target && (target.type === selectedToolRef.current || target.type === "activeSelection")) {
@@ -70,8 +66,6 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
          */
         target.setCoords();
     } else {
-        isDrawing.current = true;
-
         // create custom fabric object/shape and add it to canvas
         shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
         if (shapeRef.current) canvas.add(shapeRef.current);
@@ -79,14 +73,23 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
-export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, selectedToolRef, shapeRef }: CanvasMouseMove) => {
-    // if selected shape is path, return
+export const handleCanvasMouseMove = ({
+    options,
+    canvas,
+    isDrawing,
+    isPanning,
+    selectedToolRef,
+    deleteObjectRef,
+    shapeRef,
+}: CanvasMouseMove) => {
+    // if canvas is not in isDrawing and no selectedToolRef, return
     if (!isDrawing.current) return;
     if (!selectedToolRef.current) return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
 
+    // calculate deltaX and deltaY points for panning
     if (selectedToolRef.current === "panning" && isPanning.current) {
         const deltaX = pointer.x - isPanning.current.x;
         const deltaY = pointer.y - isPanning.current.y;
@@ -94,6 +97,20 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
         canvas.relativePan({ x: deltaX, y: deltaY });
         isPanning.current = pointer;
         return;
+    }
+
+    // set target object to deleteObjectRef for eraser
+    if (selectedToolRef.current === "eraser") {
+        // @ts-ignore
+        if (!options.target?.objectId) return;
+        // @ts-ignore
+        if (!deleteObjectRef.current.find(({ objectId }) => objectId === options.target?.objectId)) {
+            options.target.set({ opacity: 0.25 });
+            deleteObjectRef.current.push(options.target);
+
+            canvas.renderAll();
+            return;
+        }
     }
 
     // if no shape.current, then return
@@ -137,9 +154,38 @@ export const handleCanvasMouseMove = ({ options, canvas, isDrawing, isPanning, s
 };
 
 // handle mouse up event on canvas to stop drawing shapes
-export const handleCanvasMouseUp = ({ canvas, isDrawing, isPanning, shapeRef, selectedToolRef, setTool, setShape }: CanvasMouseUp) => {
+export const handleCanvasMouseUp = ({
+    canvas,
+    isDrawing,
+    isPanning,
+    shapeRef,
+    selectedToolRef,
+    deleteObjectRef,
+    setTool,
+    setShape,
+    deleteShape,
+}: CanvasMouseUp) => {
+    // set canvas drawing mode
     isDrawing.current = false;
+    // if no selectedToolRef, return
     if (!selectedToolRef.current) return;
+    // set panning to null
+    if (selectedToolRef.current === "panning") return (isPanning.current = null);
+
+    // eraser all shape from deleteObjectRef
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current.length > 0) {
+        deleteObjectRef.current.forEach((object) => {
+            canvas.remove(object);
+            // sync in storage
+            // @ts-ignore
+            deleteShape(object.objectId);
+            // @ts-ignore
+            socket.emit("delete:shape", { objectId: object.objectId });
+        });
+
+        canvas.requestRenderAll();
+        return;
+    }
 
     // sync shape in storage
     // @ts-ignore
@@ -148,14 +194,6 @@ export const handleCanvasMouseUp = ({ canvas, isDrawing, isPanning, shapeRef, se
         setShape({ objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
         // @ts-ignore
         socket.emit("set:shape", { objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
-    }
-
-    // set panning to null
-    if (selectedToolRef.current === "panning") {
-        canvas.selection = true;
-        isPanning.current = null;
-
-        return;
     }
 
     // set everything to null

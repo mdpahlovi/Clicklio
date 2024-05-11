@@ -1,6 +1,6 @@
-import { navElements } from "@/constants";
-import { Fragment, useEffect, useRef } from "react";
+import { circle, navElements } from "@/constants";
 import { handleImageUpload } from "@/utils/shapes";
+import { Fragment, useEffect, useRef } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 
@@ -19,40 +19,40 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 
     useEffect(() => {
         if (fabricRef.current) {
+            fabricRef.current.selection = false;
             fabricRef.current.isDrawingMode = false;
             fabricRef.current.defaultCursor = "default";
-            fabricRef.current.forEachObject((object) => {
-                object.evented = true;
-                object.selectable = true;
-            });
-        }
 
-        switch (tool) {
-            case "panning":
-                selectedToolRef.current = "panning";
-                if (fabricRef.current) {
+            switch (tool) {
+                case "panning":
+                    selectedToolRef.current = "panning";
                     fabricRef.current.defaultCursor = "grab";
-                    fabricRef.current.forEachObject((object) => {
-                        object.evented = false;
-                        object.selectable = false;
-                    });
-                }
-                break;
+                    break;
 
-            case "path":
-                if (fabricRef.current) {
+                case "select":
+                    selectedToolRef.current = "select";
+                    fabricRef.current.selection = true;
+                    break;
+
+                case "path":
                     fabricRef.current.isDrawingMode = true;
                     fabricRef.current.freeDrawingBrush.width = 5;
-                }
-                break;
+                    break;
 
-            case "image":
-                imageInputRef.current?.click();
-                break;
+                case "image":
+                    imageInputRef.current?.click();
+                    break;
 
-            default:
-                selectedToolRef.current = tool;
-                break;
+                case "eraser":
+                    selectedToolRef.current = "eraser";
+                    fabricRef.current.defaultCursor = circle;
+                    break;
+
+                default:
+                    selectedToolRef.current = tool;
+                    fabricRef.current.defaultCursor = "crosshair";
+                    break;
+            }
         }
     }, [tool]);
 

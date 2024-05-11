@@ -33,6 +33,7 @@ export function useCanvas() {
     const selectedToolRef = useRef<Tool | null>(null);
 
     const pasteTimeRef = useRef<number | null>(null);
+    const deleteObjectRef = useRef<fabric.Object[]>([]);
     const copiedObjectRef = useRef<fabric.Object[] | null>(null);
 
     useEffect(() => {
@@ -43,11 +44,21 @@ export function useCanvas() {
         });
 
         canvas.on("mouse:move", (options) => {
-            handleCanvasMouseMove({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef });
+            handleCanvasMouseMove({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
         });
 
         canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({ canvas, isDrawing, isPanning, shapeRef, selectedToolRef, setTool, setShape });
+            handleCanvasMouseUp({
+                canvas,
+                isDrawing,
+                isPanning,
+                shapeRef,
+                selectedToolRef,
+                deleteObjectRef,
+                setTool,
+                setShape,
+                deleteShape,
+            });
         });
 
         canvas.on("path:created", (options) => {

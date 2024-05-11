@@ -23,7 +23,7 @@ export default function Color({ placeholder, attribute, handleInputChange }: Col
                 slots={{ endDecorator: Typography }}
                 endDecorator={value ? value : "No Color"}
                 onChange={(e) => handleInputChange(attribute, e.target.value)}
-                slotProps={{ input: { sx: { height: "36px" } }, endDecorator: { sx: { pl: 1.25, pr: 4 } } }}
+                slotProps={{ input: { sx: { height: "36px" } }, endDecorator: { sx: { pl: 1.25, pr: 4, opacity: value ? 1 : 0.64 } } }}
             />
         </Section>
     );
