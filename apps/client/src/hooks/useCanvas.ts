@@ -9,8 +9,6 @@ import {
     handleCanvasMouseMove,
     handleCanvasMouseUp,
     handleCanvasObjectModified,
-    handleCanvasObjectMoving,
-    handleCanvasObjectScaling,
     handleCanvasSelectionCreated,
     handleCanvasZoom,
     handlePathCreated,
@@ -22,8 +20,8 @@ import type { Pointer, Tool } from "@/types";
 
 export function useCanvas() {
     const { undo, redo } = useShapeState.temporal.getState();
+    const { setTool, setZoom, setAttributes } = useCanvasState();
     const { setShape, updateShape, deleteShape } = useShapeState();
-    const { setTool, setZoom, setAttributes, updateAttributes } = useCanvasState();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -57,19 +55,11 @@ export function useCanvas() {
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, updateShape });
-        });
-
-        canvas.on("object:moving", (options) => {
-            handleCanvasObjectMoving({ options, updateAttributes });
+            handleCanvasObjectModified({ options, updateShape, setAttributes });
         });
 
         canvas.on("selection:created", (options) => {
             handleCanvasSelectionCreated({ options, isEditingRef, pasteTimeRef, setAttributes });
-        });
-
-        canvas.on("object:scaling", (options) => {
-            handleCanvasObjectScaling({ options, updateAttributes });
         });
 
         canvas.on("mouse:wheel", (options) => {
@@ -82,7 +72,7 @@ export function useCanvas() {
         // check if the keyup is space (panning)
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
         window.addEventListener("keydown", (e) =>
-            handleKeyDown({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool }),
+            handleKeyDown({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool })
         );
 
         return () => {
@@ -93,7 +83,7 @@ export function useCanvas() {
             // check if the keyup is space (panning)
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
-                handleKeyDown({ e, canvas: null, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool }),
+                handleKeyDown({ e, canvas: null, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool })
             );
         };
     }, []);

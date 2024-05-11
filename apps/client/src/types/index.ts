@@ -113,6 +113,7 @@ export type CanvasMouseUp = {
 export type CanvasObjectModified = {
     options: fabric.IEvent;
     updateShape: (shape: fabric.Object) => void;
+    setAttributes: (attributes: Attributes) => void;
 };
 
 export type CanvasPathCreated = {
@@ -125,16 +126,6 @@ export type CanvasSelectionCreated = {
     isEditingRef: React.MutableRefObject<boolean>;
     pasteTimeRef: React.MutableRefObject<number | null>;
     setAttributes: (attributes: Attributes) => void;
-};
-
-export type CanvasObjectScaling = {
-    options: fabric.IEvent;
-    updateAttributes: (key: keyof Attributes, value: string) => void;
-};
-
-export type CanvasObjectMoving = {
-    options: fabric.IEvent;
-    updateAttributes: (key: keyof Attributes, value: string) => void;
 };
 
 export type RenderCanvas = {

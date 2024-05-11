@@ -111,19 +111,48 @@ export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) =>
 export const modifyShape = ({ fabricRef, property, value, updateShape }: ModifyShape) => {
     if (!fabricRef.current) return;
     const selectedElement = fabricRef.current.getActiveObject();
-
     if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
-    // if  property is width or height, set the scale of the selected element
-    if (property === "width") {
-        selectedElement.set("scaleX", 1);
-        selectedElement.set("width", Number(value));
-    } else if (property === "height") {
-        selectedElement.set("scaleY", 1);
-        selectedElement.set("height", Number(value));
-    } else {
-        if (selectedElement[property as keyof object] === value) return;
-        selectedElement.set(property as keyof object, value as never);
+    // update the value of each property
+    switch (property) {
+        case "top":
+            selectedElement.set({ top: Number(value) });
+            break;
+
+        case "left":
+            selectedElement.set({ left: Number(value) });
+            break;
+
+        case "width":
+            selectedElement.set({ scaleX: 1, width: Number(value) });
+            break;
+
+        case "height":
+            selectedElement.set({ scaleY: 1, height: Number(value) });
+            break;
+
+        case "fontSize":
+            // @ts-ignore
+            selectedElement.set({ fontSize: Number(value) });
+            break;
+
+        case "fontFamily":
+            // @ts-ignore
+            selectedElement.set({ fontFamily: value });
+            break;
+
+        case "fontWeight":
+            // @ts-ignore
+            selectedElement.set({ fontWeight: value });
+            break;
+
+        case "fill":
+            selectedElement.set({ fill: value });
+            break;
+
+        case "stroke":
+            selectedElement.set({ stroke: value });
+            break;
     }
 
     // sync shape in storage
@@ -141,7 +170,6 @@ export const bringElement = ({ canvas, direction }: ElementDirection) => {
 
     // get the selected element. If there is no selected element or there are more than one selected element, return
     const selectedElement = canvas.getActiveObject();
-
     if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
     // bring the selected element to the front

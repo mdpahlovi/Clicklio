@@ -1,5 +1,5 @@
 import { navElements } from "@/constants";
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { handleImageUpload } from "@/utils/shapes";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
@@ -74,7 +74,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                             );
                         case "dropdown":
                             return (
-                                <Dropdown>
+                                <Dropdown key={idx}>
                                     <MenuButton
                                         slots={{ root: IconButton }}
                                         slotProps={{
@@ -107,7 +107,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                                 </Dropdown>
                             );
                         case "divider":
-                            return icon;
+                            return <Fragment key={idx}>{icon}</Fragment>;
                     }
                 })}
 

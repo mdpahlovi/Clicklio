@@ -16,13 +16,22 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
     const strokeInputRef = useRef(null);
     const { updateShape } = useShapeState();
     const { attributes, updateAttributes } = useCanvasState();
+    const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
     const handleInputChange = (property: keyof Attributes, value: string) => {
         if (!fabricRef.current) return;
         if (!isEditingRef.current) isEditingRef.current = true;
 
         updateAttributes(property, value);
-        modifyShape({ fabricRef, property, value, updateShape });
+
+        if (property === "top" || property === "left" || property === "width" || property === "height") {
+            clearTimeout(timerRef.current);
+            timerRef.current = setTimeout(() => {
+                modifyShape({ fabricRef, property, value, updateShape });
+            }, 1000);
+        } else {
+            modifyShape({ fabricRef, property, value, updateShape });
+        }
     };
 
     // memoize the content of the right sidebar to avoid re-rendering on every mouse actions

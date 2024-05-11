@@ -9,8 +9,6 @@ import type {
     CanvasMouseMove,
     CanvasMouseUp,
     CanvasObjectModified,
-    CanvasObjectScaling,
-    CanvasObjectMoving,
     CanvasPathCreated,
     CanvasSelectionCreated,
     CanvasZoom,
@@ -169,7 +167,7 @@ export const handleCanvasMouseUp = ({ canvas, isDrawing, isPanning, shapeRef, se
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, updateShape }: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, updateShape, setAttributes }: CanvasObjectModified) => {
     const target = options.target;
     if (!target) return;
 
@@ -179,6 +177,8 @@ export const handleCanvasObjectModified = ({ options, updateShape }: CanvasObjec
         // sync shape in storage
         // @ts-ignore
         if (target?.objectId) {
+            // @ts-ignore
+            setAttributes({ ...target.toJSON() });
             // @ts-ignore
             updateShape({ objectId: target.objectId, ...target.toJSON() });
             // @ts-ignore
@@ -207,31 +207,6 @@ export const handlePathCreated = ({ options, setShape }: CanvasPathCreated) => {
     }
 };
 
-// check how object is moving on canvas and restrict it to canvas boundaries
-export const handleCanvasObjectMoving = ({ options, updateAttributes }: CanvasObjectMoving) => {
-    // get target object which is moving
-    const target = options.target;
-
-    // target.canvas is the canvas on which the object is moving
-    const canvas = target?.canvas;
-
-    // if no target element, return
-    if (!target || !canvas) return;
-
-    // set coordinates of target object
-    target.setCoords();
-
-    if (target.left) {
-        target.left = Math.min(target.left, (canvas.width || 0) - (target.getScaledWidth() || target.width || 0));
-        updateAttributes("left", (target.left || 0).toFixed(2));
-    }
-
-    if (target.top) {
-        target.top = Math.min(target.top, (canvas.height || 0) - (target.getScaledHeight() || target.height || 0));
-        updateAttributes("top", (target.top || 0).toFixed(2));
-    }
-};
-
 // set selectShape when element is selected
 export const handleCanvasSelectionCreated = ({ options, isEditingRef, pasteTimeRef, setAttributes }: CanvasSelectionCreated) => {
     // if user is editing manually, return
@@ -246,19 +221,6 @@ export const handleCanvasSelectionCreated = ({ options, isEditingRef, pasteTimeR
     // if only one element is selected, set attributes
     // @ts-ignore
     if (options.selected.length === 1) setAttributes({ ...options.selected[0].toJSON() });
-};
-
-// update selectShape when element is scaled
-export const handleCanvasObjectScaling = ({ options, updateAttributes }: CanvasObjectScaling) => {
-    // if no target element, return
-    if (!options.target) return;
-    const { scaleX, scaleY, width, height } = options.target;
-    const w = width ? width : 0;
-    const h = height ? height : 0;
-
-    // calculate scaled dimensions of the object
-    updateAttributes("width", (scaleX ? w * scaleX : w).toFixed(2));
-    updateAttributes("height", (scaleY ? h * scaleY : h).toFixed(2));
 };
 
 // render canvas objects coming from storage on canvas
@@ -292,7 +254,7 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
              *
              * Fabric Namespace: http://fabricjs.com/docs/fabric.html
              */
-            "fabric",
+            "fabric"
         );
     });
 
