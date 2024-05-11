@@ -20,7 +20,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
             justifyContent="space-between"
             sx={{ width: "100%", height: 48, position: "absolute", zIndex: 1, left: 0, bottom: 0 }}
         >
-            <Sheet style={{ borderLeft: 0, display: "flex", gap: 4, padding: 4, borderRadius: "0 16px 0 0" }}>
+            <Sheet style={{ borderLeft: 0, display: "flex", gap: 4, padding: 6, borderRadius: "0 16px 0 0" }}>
                 <IconButton
                     onClick={() => {
                         undo();
@@ -39,7 +39,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     <GrRedo />
                 </IconButton>
             </Sheet>
-            <Sheet style={{ borderRight: 0, display: "flex", gap: 4, padding: 4, borderRadius: "16px 0 0 0" }}>
+            <Sheet style={{ borderRight: 0, display: "flex", gap: 4, padding: 6, borderRadius: "16px 0 0 0" }}>
                 <IconButton
                     onClick={() => {
                         if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {

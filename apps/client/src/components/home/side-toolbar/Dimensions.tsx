@@ -29,7 +29,7 @@ export default function Dimensions({ isEditingRef, handleInputChange }: Dimensio
                         startDecorator={label}
                         placeholder={placeholder}
                         onBlur={() => (isEditingRef.current = false)}
-                        defaultValue={attributes ? attributes[property] : ""}
+                        value={attributes ? attributes[property] : ""}
                         onChange={(e) => handleInputChange(property, e.target.value)}
                     />
                 ))}

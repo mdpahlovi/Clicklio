@@ -17,14 +17,8 @@ export default function Color({ inputRef, placeholder, attribute, handleInputCha
     return (
         <Section title={placeholder}>
             <div
-                style={{
-                    backgroundColor: "#F3F4F6", // bg-background
-                    display: "flex",
-                    height: "2rem", // h-8
-                    alignItems: "center", // items-center
-                    gap: "0.5rem", // gap-2
-                }}
                 onClick={() => (inputRef?.current ? inputRef.current.click() : undefined)}
+                style={{ display: "flex", height: "2rem", alignItems: "center", gap: "0.5rem" }}
             >
                 <input
                     type="color"
