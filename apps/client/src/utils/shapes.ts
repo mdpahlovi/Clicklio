@@ -83,12 +83,8 @@ export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) =>
 
     reader.onload = () => {
         fabric.Image.fromURL(reader.result as string, (image) => {
-            image.scaleToWidth(200);
-            image.scaleToHeight(200);
-            image.set({ top: 160, left: 320 });
-
-            if (fabricRef?.current) fabricRef.current.add(image);
-
+            image.scaleToWidth(160);
+            image.scaleToHeight(160);
             // @ts-ignore
             image.objectId = uuidv4();
 
@@ -101,7 +97,10 @@ export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) =>
                 socket.emit("set:shape", { objectId: image.objectId, ...image.toJSON() });
             }
 
-            if (fabricRef?.current) fabricRef.current.requestRenderAll();
+            if (fabricRef?.current) {
+                fabricRef.current.add(image);
+                fabricRef.current.requestRenderAll();
+            }
         });
     };
 

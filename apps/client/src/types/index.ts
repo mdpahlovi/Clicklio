@@ -85,7 +85,7 @@ export type InitializeFabric = {
 };
 
 export type CanvasMouseDown = {
-    options: fabric.IEvent;
+    options: fabric.IEvent<MouseEvent>;
     canvas: fabric.Canvas;
     selectedToolRef: React.MutableRefObject<Tool | null>;
     isDrawing: React.MutableRefObject<boolean>;
@@ -94,7 +94,7 @@ export type CanvasMouseDown = {
 };
 
 export type CanvasMouseMove = {
-    options: fabric.IEvent;
+    options: fabric.IEvent<MouseEvent>;
     canvas: fabric.Canvas;
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
@@ -116,18 +116,18 @@ export type CanvasMouseUp = {
 };
 
 export type CanvasObjectModified = {
-    options: fabric.IEvent;
+    options: fabric.IEvent<MouseEvent>;
     updateShape: (shape: fabric.Object) => void;
     setAttributes: (attributes: Attributes) => void;
 };
 
 export type CanvasPathCreated = {
     setShape: (shape: fabric.Object) => void;
-    options: (fabric.IEvent & { path: { objectId: string } & fabric.Path }) | any;
+    options: any;
 };
 
 export type CanvasSelectionCreated = {
-    options: fabric.IEvent;
+    options: fabric.IEvent<MouseEvent>;
     isEditingRef: React.MutableRefObject<boolean>;
     pasteTimeRef: React.MutableRefObject<number | null>;
     setAttributes: (attributes: Attributes) => void;
@@ -139,7 +139,7 @@ export type RenderCanvas = {
 };
 
 export type CanvasZoom = {
-    options: fabric.IEvent & { e: WheelEvent };
+    options: fabric.IEvent<WheelEvent>;
     canvas: fabric.Canvas;
     setZoom: (zoom: number) => void;
 };

@@ -41,6 +41,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 
                 case "image":
                     imageInputRef.current?.click();
+                    setTimeout(() => setTool("select"), 500);
                     break;
 
                 case "eraser":
