@@ -34,7 +34,14 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
                 break;
         }
 
-        if (property === "top" || property === "left" || property === "width" || property === "height") {
+        if (
+            property === "top" ||
+            property === "left" ||
+            property === "width" ||
+            property === "height" ||
+            property === "fill" ||
+            property === "stroke"
+        ) {
             clearTimeout(timerRef.current);
             timerRef.current = setTimeout(() => {
                 modifyShape({ fabricRef, property, value, updateShape });
