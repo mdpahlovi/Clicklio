@@ -34,9 +34,19 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     fabricRef.current.selection = true;
                     break;
 
-                case "path":
+                case "path-1":
+                    fabricRef.current.isDrawingMode = true;
+                    fabricRef.current.freeDrawingBrush.width = 1;
+                    break;
+
+                case "path-5":
                     fabricRef.current.isDrawingMode = true;
                     fabricRef.current.freeDrawingBrush.width = 5;
+                    break;
+
+                case "path-10":
+                    fabricRef.current.isDrawingMode = true;
+                    fabricRef.current.freeDrawingBrush.width = 10;
                     break;
 
                 case "image":
@@ -87,7 +97,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                                     >
                                         {icon}
                                     </MenuButton>
-                                    <Menu style={{ flexDirection: "row", gap: 4, padding: 6 }}>
+                                    <Menu sx={{ flexDirection: "row", gap: 0.5, padding: 0.75, margin: "0 0 0 16px !important" }}>
                                         {children?.length &&
                                             children.map(({ icon, value }, idx) => (
                                                 <MenuItem

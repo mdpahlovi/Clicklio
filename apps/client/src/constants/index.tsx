@@ -2,6 +2,7 @@ import { Divider } from "@mui/joy";
 import { LuShapes } from "react-icons/lu";
 import { TfiPencil } from "react-icons/tfi";
 import { LiaHandPaper } from "react-icons/lia";
+import { IoIosBrush, IoMdBrush } from "react-icons/io";
 import { CiEraser, CiImageOn, CiText } from "react-icons/ci";
 import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus } from "react-icons/pi";
 
@@ -30,7 +31,17 @@ export const navElements: {
             { icon: <PiMinus />, name: "Line", value: "line" },
         ],
     },
-    { icon: <TfiPencil />, name: "Free Drawing", value: "path", type: "tool" },
+    {
+        icon: <TfiPencil />,
+        name: "Free Drawing",
+        values: ["path-1", "path-5", "path-10"],
+        type: "dropdown",
+        children: [
+            { icon: <TfiPencil />, name: "Brush Size 01", value: "path-1" },
+            { icon: <IoMdBrush />, name: "Brush Size 05", value: "path-5" },
+            { icon: <IoIosBrush />, name: "Brush Size 10", value: "path-10" },
+        ],
+    },
     { icon: <CiText />, name: "Text", value: "i-text", type: "tool" },
     { icon: <CiImageOn />, name: "Image", value: "image", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },

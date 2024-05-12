@@ -52,7 +52,19 @@ export type Attributes = {
     stroke: string;
 };
 
-export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "path" | "i-text" | "image" | "eraser";
+export type Tool =
+    | "panning"
+    | "select"
+    | "rect"
+    | "triangle"
+    | "circle"
+    | "line"
+    | "path-1"
+    | "path-5"
+    | "path-10"
+    | "i-text"
+    | "image"
+    | "eraser";
 
 export type ModifyShape = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
