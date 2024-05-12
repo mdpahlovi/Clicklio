@@ -34,10 +34,11 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 
 // instantiate creation of custom fabric object/shape and add it to canvas
 export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedToolRef, shapeRef }: CanvasMouseDown) => {
+    // if canvas is in DrawingMode, return
+    if (canvas.isDrawingMode || selectedToolRef.current === "image") return;
+
     // set canvas drawing mode
     isDrawing.current = true;
-    // if no selectedToolRef, return
-    if (!selectedToolRef.current) return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
@@ -82,9 +83,9 @@ export const handleCanvasMouseMove = ({
     deleteObjectRef,
     shapeRef,
 }: CanvasMouseMove) => {
-    // if canvas is not in isDrawing and no selectedToolRef, return
+    // if canvas is in DrawingMode or not in isDrawing, return
     if (!isDrawing.current) return;
-    if (!selectedToolRef.current) return;
+    if (canvas.isDrawingMode || selectedToolRef.current === "image") return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
@@ -165,10 +166,12 @@ export const handleCanvasMouseUp = ({
     setShape,
     deleteShape,
 }: CanvasMouseUp) => {
+    // if canvas is in DrawingMode, return
+    if (canvas.isDrawingMode || selectedToolRef.current === "image") return;
+
     // set canvas drawing mode
     isDrawing.current = false;
-    // if no selectedToolRef, return
-    if (!selectedToolRef.current) return;
+
     // set panning to null
     if (selectedToolRef.current === "panning") return (isPanning.current = null);
 

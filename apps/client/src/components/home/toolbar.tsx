@@ -18,35 +18,36 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const imageInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        if (fabricRef.current) {
-            fabricRef.current.selection = false;
-            fabricRef.current.isDrawingMode = false;
-            fabricRef.current.defaultCursor = "default";
+        const canvas = fabricRef.current;
+        if (canvas) {
+            selectedToolRef.current = tool;
+
+            canvas.selection = false;
+            canvas.isDrawingMode = false;
+            canvas.defaultCursor = "default";
 
             switch (tool) {
                 case "panning":
-                    selectedToolRef.current = "panning";
-                    fabricRef.current.defaultCursor = "grab";
+                    canvas.defaultCursor = "grab";
                     break;
 
                 case "select":
-                    selectedToolRef.current = "select";
-                    fabricRef.current.selection = true;
+                    canvas.selection = true;
                     break;
 
                 case "path-1":
-                    fabricRef.current.isDrawingMode = true;
-                    fabricRef.current.freeDrawingBrush.width = 1;
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush.width = 1;
                     break;
 
                 case "path-5":
-                    fabricRef.current.isDrawingMode = true;
-                    fabricRef.current.freeDrawingBrush.width = 5;
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush.width = 5;
                     break;
 
                 case "path-10":
-                    fabricRef.current.isDrawingMode = true;
-                    fabricRef.current.freeDrawingBrush.width = 10;
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush.width = 10;
                     break;
 
                 case "image":
@@ -55,13 +56,11 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     break;
 
                 case "eraser":
-                    selectedToolRef.current = "eraser";
-                    fabricRef.current.defaultCursor = circle;
+                    canvas.defaultCursor = circle;
                     break;
 
                 default:
-                    selectedToolRef.current = tool;
-                    fabricRef.current.defaultCursor = "crosshair";
+                    canvas.defaultCursor = "crosshair";
                     break;
             }
         }
