@@ -86,7 +86,7 @@ export const handleImageUpload = ({ file, fabricRef, setShape }: ImageUpload) =>
             image.scaleToWidth(160);
             image.scaleToHeight(160);
             // @ts-ignore
-            image.objectId = uuidv4();
+            image.set({ objectId: uuidv4(), fill: "#000000" });
 
             // sync shape in storage
             // @ts-ignore
