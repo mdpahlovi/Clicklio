@@ -1,10 +1,25 @@
+import * as yup from "yup";
 import AuthLayout from "@/layout/auth";
 import { FaGoogle } from "react-icons/fa";
+import { FieldValues } from "react-hook-form";
 import { Link as RLink } from "react-router-dom";
 import { Form, FormInput } from "@/components/form";
 import { Button, Checkbox, Divider, Typography, Stack, Link } from "@mui/joy";
 
+const signinSchema = yup.object().shape({
+    email: yup.string().required("Please provide your email.").email("Please provide a valid email."),
+    password: yup
+        .string()
+        .required("Please provide your password.")
+        .min(6, "Password must be at least 6 characters.")
+        .max(40, "Password must not exceed 40 characters."),
+});
+
 export default function JoySignInSideTemplate() {
+    const onSubmit = (data: FieldValues) => {
+        console.log(data);
+    };
+
     return (
         <AuthLayout>
             <Stack sx={{ mb: 1.5, gap: 1 }}>
@@ -22,7 +37,7 @@ export default function JoySignInSideTemplate() {
                 Continue with Google
             </Button>
             <Divider sx={{ mt: 2, mb: 1 }}>OR</Divider>
-            <Form onSubmit={(value) => console.log(value)}>
+            <Form defaultValues={{ email: "", password: "" }} validationSchema={signinSchema} onSubmit={onSubmit}>
                 <FormInput type="email" name="email" label="Email" />
                 <FormInput type="password" name="password" label="Password" />
                 <Stack gap={4} sx={{ mt: 2 }}>
