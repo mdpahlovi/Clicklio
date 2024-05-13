@@ -17,7 +17,7 @@ export const handlePaste = (
     canvas: fabric.Canvas,
     pasteTimeRef: React.MutableRefObject<number | null>,
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>,
-    setShape: (shape: fabric.Object) => void,
+    setShape: (shape: fabric.Object) => void
 ) => {
     // if no pasteTime or copiedObject, return
     if (!pasteTimeRef.current || !copiedObjectRef.current || !copiedObjectRef.current.length) return;
@@ -49,7 +49,7 @@ export const handlePaste = (
                 });
                 canvas.renderAll();
             },
-            "fabric",
+            "fabric"
         );
     });
 
@@ -76,40 +76,103 @@ export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) =>
 };
 
 // create a handleKeyDown function that listen to different keydown events
-export const handleKeyDown = ({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool }: WindowKeyDown) => {
+export const handleKeyDown = ({
+    e,
+    canvas,
+    pasteTimeRef,
+    copiedObjectRef,
+    setShape,
+    deleteShape,
+    undo,
+    redo,
+    setTool,
+    setZoom,
+    setMode,
+}: WindowKeyDown) => {
+    const zoom = canvas?.getZoom();
+    const light = localStorage.getItem("joy-mode") === "light";
+
+    // Check if the key pressed is 1
+    if (e.keyCode === 49) setTool("panning");
+    // Check if the key pressed is 2
+    if (e.keyCode === 50) setTool("select");
+    // Check if the key pressed is 3
+    if (e.keyCode === 51) setTool("rect");
+    // Check if the key pressed is 4
+    if (e.keyCode === 52) setTool("triangle");
+    // Check if the key pressed is 5
+    if (e.keyCode === 53) setTool("circle");
+    // Check if the key pressed is 6
+    if (e.keyCode === 54) setTool("line");
+    // Check if the key pressed is 7
+    if (e.keyCode === 55) setTool("path-5");
+    // Check if the key pressed is 8
+    if (e.keyCode === 56) setTool("i-text");
+    // Check if the key pressed is 9
+    if (e.keyCode === 57) setTool("image");
+    // Check if the key pressed is 0
+    if (e.keyCode === 48) setTool("eraser");
+
+    // Check if the key pressed is ctrl/cmd + +
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 107) {
+        e.preventDefault();
+        if (zoom && Number(zoom.toFixed(1)) <= 10) {
+            setZoom(zoom + 0.1);
+            canvas.setZoom(zoom + 0.1);
+        }
+    }
+    // Check if the key pressed is ctrl/cmd + -
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 109) {
+        e.preventDefault();
+        if (zoom && Number(zoom.toFixed(1)) >= 0.1) {
+            setZoom(zoom - 0.1);
+            canvas.setZoom(zoom - 0.1);
+        }
+    }
+    // Check if the key pressed is ctrl/cmd + R
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 82) {
+        e.preventDefault();
+        setZoom(1);
+        canvas.setZoom(1);
+    }
+    // Check if the key pressed is ctrl/cmd + D
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {
+        setMode(light ? "dark" : "light");
+    }
+
     // Check if the key pressed is ctrl/cmd + c (copy)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67) {
         handleCopy(canvas, copiedObjectRef);
     }
-
     // Check if the key pressed is ctrl/cmd + v (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
         handlePaste(canvas, pasteTimeRef, copiedObjectRef, setShape);
     }
-
+    // Check if the key pressed is ctrl/cmd + D (paste)
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {
+        e.preventDefault();
+        handleCopy(canvas, copiedObjectRef);
+        handlePaste(canvas, pasteTimeRef, copiedObjectRef, setShape);
+    }
     // Check if the key pressed is delete (delete)
     if (canvas && e.keyCode === 46) {
         handleDelete(canvas, deleteShape);
     }
-
     // check if the key pressed is ctrl/cmd + x (cut)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
         handleCopy(canvas, copiedObjectRef);
         handleDelete(canvas, deleteShape);
     }
-
     // check if the key pressed is ctrl/cmd + z (undo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90) {
         undo();
         socket.emit("undo:shape", { status: true });
     }
-
     // check if the key pressed is ctrl/cmd + y (redo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 89) {
         redo();
         socket.emit("redo:shape", { status: true });
     }
-
     // check if the key pressed is space (panning)
     if (e.keyCode === 32) setTool("panning");
 };

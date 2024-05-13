@@ -1,10 +1,12 @@
 import { SlLogin } from "react-icons/sl";
+import { useCanvasState } from "@/hooks/useCanvasState";
 import { PiShareFat, PiSun, PiMoon, PiQuestion } from "react-icons/pi";
 import { Button, Divider, Sheet, Stack, useColorScheme, useTheme } from "@mui/joy";
 
 export default function Navbar() {
     const { palette } = useTheme();
     const { mode, setMode } = useColorScheme();
+    const { toggleHelpModal } = useCanvasState();
 
     return (
         <Sheet
@@ -20,7 +22,7 @@ export default function Navbar() {
                     {mode === "light" ? <PiSun size={24} /> : <PiMoon size={24} />}
                 </IconButton>
                 <Divider orientation="vertical" />
-                <IconButton>
+                <IconButton onClick={toggleHelpModal}>
                     <PiQuestion size={24} />
                 </IconButton>
                 <IconButton>

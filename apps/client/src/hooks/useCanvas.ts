@@ -16,9 +16,11 @@ import {
     initializeFabric,
 } from "@/utils/canvas";
 
+import { useColorScheme } from "@mui/joy";
 import type { Pointer, Tool } from "@/types";
 
 export function useCanvas() {
+    const { setMode } = useColorScheme();
     const { undo, redo } = useShapeState.temporal.getState();
     const { setTool, setZoom, setAttributes } = useCanvasState();
     const { setShape, updateShape, deleteShape } = useShapeState();
@@ -83,7 +85,19 @@ export function useCanvas() {
         // check if the keyup is space (panning)
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
         window.addEventListener("keydown", (e) =>
-            handleKeyDown({ e, canvas, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool })
+            handleKeyDown({
+                e,
+                canvas,
+                pasteTimeRef,
+                copiedObjectRef,
+                setShape,
+                deleteShape,
+                undo,
+                redo,
+                setTool,
+                setZoom,
+                setMode,
+            })
         );
 
         return () => {
@@ -94,7 +108,19 @@ export function useCanvas() {
             // check if the keyup is space (panning)
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
-                handleKeyDown({ e, canvas: null, pasteTimeRef, copiedObjectRef, setShape, deleteShape, undo, redo, setTool })
+                handleKeyDown({
+                    e,
+                    canvas: null,
+                    pasteTimeRef,
+                    copiedObjectRef,
+                    setShape,
+                    deleteShape,
+                    undo,
+                    redo,
+                    setTool,
+                    setZoom,
+                    setMode,
+                })
             );
         };
     }, []);

@@ -7,6 +7,7 @@ import { useShapeState } from "@/hooks/useShapeState";
 import Navbar from "@/components/home/navbar";
 import Toolbar from "@/components/home/toolbar";
 import Sidebar from "@/components/home/sidebar";
+import HelpModal from "@/components/home/help-modal";
 import SideToolbar from "@/components/home/side-toolbar";
 import RemoteCursor from "@/components/ui/remote-cursor";
 import BottomToolbar from "@/components/home/buttom-toolbar";
@@ -50,6 +51,8 @@ export default function HomePage() {
                     <canvas ref={canvasRef} />
                 </CanvasContainer>
             </div>
+
+            <HelpModal />
         </>
     );
 }

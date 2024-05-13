@@ -166,6 +166,8 @@ export type WindowKeyDown = {
     undo: (steps?: number) => void;
     redo: (steps?: number) => void;
     setTool: (tool: Tool) => void;
+    setZoom: (zoom: number) => void;
+    setMode: (mode: "light" | "dark" | null) => void;
 };
 
 export type CursorChatProps = {

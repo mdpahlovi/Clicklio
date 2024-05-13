@@ -1,0 +1,61 @@
+import React from "react";
+import { views, tools, editors } from "@/constants";
+import { useCanvasState } from "@/hooks/useCanvasState";
+import { Box, Divider, Modal, ModalClose, Sheet, Typography } from "@mui/joy";
+
+export default function HelpModal() {
+    const { helpModal, toggleHelpModal } = useCanvasState();
+
+    return (
+        <Modal open={helpModal} onClose={toggleHelpModal} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Sheet
+                style={{ maxHeight: "80vh", overflowY: "scroll" }}
+                sx={{ minWidth: { xs: "100%", md: 896 }, p: 3, borderRadius: "md", boxShadow: "lg" }}
+            >
+                <ModalClose variant="plain" sx={{ m: 1 }} />
+                <Typography level="h4" fontWeight="lg" mb={1}>
+                    Keyboard shortcuts
+                </Typography>
+                <Box display="grid" gridTemplateColumns={{ md: "1fr 1fr" }} gap={3}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                        <KeyboardShortcuts title="Tool" shortcuts={tools} />
+                        <KeyboardShortcuts title="View" shortcuts={views} />
+                    </div>
+                    <KeyboardShortcuts title="Editor" shortcuts={editors} />
+                </Box>
+            </Sheet>
+        </Modal>
+    );
+}
+
+function KeyboardShortcuts({ title, shortcuts }: { title: string; shortcuts: { name: string; key: string }[] }) {
+    return (
+        <div>
+            <Typography level="title-md" fontWeight="bold" mb={1}>
+                {title}
+            </Typography>
+            <Sheet>
+                {shortcuts.map(({ name, key }, idx) => (
+                    <React.Fragment key={idx}>
+                        <div style={{ padding: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <Typography>{name}</Typography>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                {key.split(" ").map((k, i) => (
+                                    <Typography
+                                        variant={i === 1 ? undefined : "soft"}
+                                        color={i === 1 ? undefined : "primary"}
+                                        fontSize={14}
+                                    >
+                                        {k}
+                                    </Typography>
+                                ))}
+                            </div>
+                        </div>
+                        {shortcuts.length !== idx + 1 ? <Divider /> : null}
+                    </React.Fragment>
+                ))}
+            </Sheet>
+        </div>
+    );
+}
