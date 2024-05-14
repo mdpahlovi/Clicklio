@@ -35,7 +35,9 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 // instantiate creation of custom fabric object/shape and add it to canvas
 export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, selectedToolRef, shapeRef }: CanvasMouseDown) => {
     // if canvas is in DrawingMode, return
-    if (canvas.isDrawingMode || selectedToolRef.current === "image") return;
+    if (canvas.isDrawingMode) return;
+    // if selectedTool is select or image, return
+    if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
     // set canvas drawing mode
     isDrawing.current = true;
@@ -46,31 +48,9 @@ export const handleCanvasMouseDown = ({ options, canvas, isDrawing, isPanning, s
     // if selected shape is panning, set panning points
     if (selectedToolRef.current === "panning") return (isPanning.current = pointer);
 
-    /**
-     * get target object i.e., the object that is clicked
-     * findtarget() returns the object that is clicked
-     *
-     * findTarget: http://fabricjs.com/docs/fabric.Canvas.html#findTarget
-     */
-    const target = canvas.findTarget(options.e, false);
-
-    // if target is the selected shape or active selection, set isDrawing to false
-    if (target && (target.type === selectedToolRef.current || target.type === "activeSelection")) {
-        isDrawing.current = false;
-
-        // set active object to target
-        canvas.setActiveObject(target);
-
-        /**
-         * setCoords() is used to update the controls of the object
-         * setCoords: http://fabricjs.com/docs/fabric.Object.html#setCoords
-         */
-        target.setCoords();
-    } else {
-        // create custom fabric object/shape and add it to canvas
-        shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
-        if (shapeRef.current) canvas.add(shapeRef.current);
-    }
+    // create custom fabric object/shape and add it to canvas
+    shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
+    if (shapeRef.current) canvas.add(shapeRef.current);
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
@@ -85,7 +65,9 @@ export const handleCanvasMouseMove = ({
 }: CanvasMouseMove) => {
     // if canvas is in DrawingMode or not in isDrawing, return
     if (!isDrawing.current) return;
-    if (canvas.isDrawingMode || selectedToolRef.current === "image") return;
+    if (canvas.isDrawingMode) return;
+    // if selectedTool is select or image, return
+    if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
@@ -168,7 +150,9 @@ export const handleCanvasMouseUp = ({
     deleteShape,
 }: CanvasMouseUp) => {
     // if canvas is in DrawingMode, return
-    if (canvas.isDrawingMode || selectedToolRef.current === "image") return;
+    if (canvas.isDrawingMode) return;
+    // if selectedTool is select or image, return
+    if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
     // set canvas drawing mode
     isDrawing.current = false;
@@ -194,6 +178,10 @@ export const handleCanvasMouseUp = ({
     // sync shape in storage
     // @ts-ignore
     if (shapeRef.current?.objectId) {
+        // set active object to current shape
+        canvas.setActiveObject(shapeRef.current);
+        shapeRef.current.setCoords();
+
         // @ts-ignore
         setShape({ objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
         // @ts-ignore
