@@ -23,7 +23,7 @@ export default function Action({ fabricRef, pasteTimeRef, copiedObjectRef }: Act
                     onClick={() => {
                         if (fabricRef.current) {
                             handleCopy(fabricRef.current, copiedObjectRef);
-                            handlePaste(fabricRef.current, searchParams, pasteTimeRef, copiedObjectRef, setShape);
+                            handlePaste(fabricRef.current, searchParams.get("room"), pasteTimeRef, copiedObjectRef, setShape);
                         }
                     }}
                 >
@@ -34,7 +34,7 @@ export default function Action({ fabricRef, pasteTimeRef, copiedObjectRef }: Act
                     variant="outlined"
                     onClick={() => {
                         if (fabricRef.current) {
-                            handleDelete(fabricRef.current, searchParams, deleteShape);
+                            handleDelete(fabricRef.current, searchParams.get("room"), deleteShape);
                         }
                     }}
                 >
