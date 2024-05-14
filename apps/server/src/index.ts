@@ -37,6 +37,10 @@ io.on("connection", (socket) => {
         if (room) socket.join(room);
     });
 
+    socket.on("leave:room", ({ room }) => {
+        if (room) socket.leave(room);
+    });
+
     socket.on("set:shape", ({ room, ...shape }) => {
         if (room) socket.broadcast.to(room).emit("set:shape", shape);
     });
@@ -54,7 +58,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("cursor", ({ room, cursor }) => {
-        if (room) socket.broadcast.to(room).emit("cursor", { id: socket.id, ...cursor });
+        if (room) socket.broadcast.to(room).emit("cursor", { ...cursor });
     });
 });
 

@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { socket } from "@/utils/socket";
 import { useSearchParams } from "react-router-dom";
 import { useAuthState } from "@/hooks/useAuthState";
 import { useRoomState } from "@/hooks/useRoomState";
@@ -23,13 +24,19 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
         const room = uuidv4();
         roomRef.current = room;
         setSearchParams({ room });
+        socket.emit("join:room", { room });
     };
 
     const removeRoomParam = () => {
-        if (searchParams.has("room")) {
+        const room = searchParams.get("room");
+
+        if (room) {
+            socket.emit("leave:room", { room });
             roomRef.current = null;
+
             searchParams.delete("room");
             setSearchParams(searchParams);
+
             toggleShareModal();
         }
     };

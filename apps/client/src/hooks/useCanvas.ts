@@ -1,4 +1,3 @@
-import { socket } from "@/utils/socket";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { handleKeyDown } from "@/utils/key-events";
@@ -87,9 +86,6 @@ export function useCanvas() {
         });
 
         window.addEventListener("resize", () => handleResize({ canvas }));
-        window.addEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
-
-        // check if the keyup is space (panning)
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
         window.addEventListener("keydown", (e) =>
             handleKeyDown({
@@ -111,9 +107,6 @@ export function useCanvas() {
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
-            window.removeEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
-
-            // check if the keyup is space (panning)
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
                 handleKeyDown({

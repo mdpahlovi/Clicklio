@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import type { User } from "./useAuthState";
 
-type Cursor = { id: string; x: number; y: number };
+type Cursor = { x: number; y: number } & User;
 
 type RoomStateStore = {
     cursor: Cursor[];

@@ -23,11 +23,10 @@ export default function HomePage() {
     const { canvasRef, fabricRef, roomRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
 
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
-    useEffect(() => {
-        socket.emit("join:room", { room: roomRef.current });
-    }, [roomRef.current]);
 
     useEffect(() => {
+        socket.emit("join:room", { room: roomRef.current });
+
         socket.on("set:shape", (shape) => {
             setShape(shape);
             setRefresh();
@@ -82,7 +81,7 @@ export default function HomePage() {
                 <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
 
                 <CanvasContainer>
-                    <RemoteCursor />
+                    <RemoteCursor {...{ roomRef }} />
                     <Toolbar {...{ fabricRef, selectedToolRef }} />
                     <BottomToolbar {...{ fabricRef }} />
                     <canvas ref={canvasRef} />
@@ -91,7 +90,7 @@ export default function HomePage() {
 
             <AuthModal />
             <HelpModal />
-            <ShareModal roomRef={roomRef} />
+            <ShareModal {...{ roomRef }} />
         </>
     );
 }
