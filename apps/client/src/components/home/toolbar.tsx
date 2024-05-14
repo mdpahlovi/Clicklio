@@ -129,7 +129,8 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     accept="image/*"
                     ref={imageInputRef}
                     onChange={(e) =>
-                        e?.target?.files?.length && handleImageUpload({ file: e.target.files[0], searchParams, fabricRef, setShape })
+                        e?.target?.files?.length &&
+                        handleImageUpload({ file: e.target.files[0], room: searchParams.get("room"), fabricRef, setShape })
                     }
                 />
             </Sheet>

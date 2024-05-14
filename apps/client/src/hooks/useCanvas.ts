@@ -19,16 +19,15 @@ import {
 
 import { useColorScheme } from "@mui/joy";
 import type { Pointer, Tool } from "@/types";
-import { useAuthState } from "./useAuthState";
 
 export function useCanvas() {
-    const { user } = useAuthState();
     const { setMode } = useColorScheme();
     const { undo, redo } = useShapeState.temporal.getState();
     const { setTool, setZoom, setAttributes } = useCanvasState();
     const { setShape, updateShape, deleteShape } = useShapeState();
 
     const [searchParams] = useSearchParams();
+    const roomRef = useRef<string | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -44,6 +43,8 @@ export function useCanvas() {
     const copiedObjectRef = useRef<fabric.Object[] | null>(null);
 
     useEffect(() => {
+        roomRef.current = searchParams.get("room");
+
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
         canvas.on("mouse:down", (options) => {
@@ -57,12 +58,12 @@ export function useCanvas() {
         canvas.on("mouse:up", () => {
             handleCanvasMouseUp({
                 canvas,
+                roomRef,
                 isDrawing,
                 isPanning,
                 shapeRef,
                 selectedToolRef,
                 deleteObjectRef,
-                searchParams,
                 setTool,
                 setShape,
                 deleteShape,
@@ -70,11 +71,11 @@ export function useCanvas() {
         });
 
         canvas.on("path:created", (options) => {
-            handlePathCreated({ options, searchParams, setShape });
+            handlePathCreated({ options, roomRef, setShape });
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, searchParams, updateShape, setAttributes });
+            handleCanvasObjectModified({ options, roomRef, updateShape, setAttributes });
         });
 
         canvas.on("selection:created", (options) => {
@@ -86,9 +87,7 @@ export function useCanvas() {
         });
 
         window.addEventListener("resize", () => handleResize({ canvas }));
-        window.addEventListener("mousemove", (e) =>
-            socket.emit("cursor", { room: searchParams.get("room"), cursor: { ...user, x: e.x, y: e.y } })
-        );
+        window.addEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
 
         // check if the keyup is space (panning)
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
@@ -96,7 +95,7 @@ export function useCanvas() {
             handleKeyDown({
                 e,
                 canvas,
-                searchParams,
+                roomRef,
                 pasteTimeRef,
                 copiedObjectRef,
                 setShape,
@@ -112,9 +111,7 @@ export function useCanvas() {
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
-            window.removeEventListener("mousemove", (e) =>
-                socket.emit("cursor", { room: searchParams.get("room"), cursor: { ...user, x: e.x, y: e.y } })
-            );
+            window.removeEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
 
             // check if the keyup is space (panning)
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
@@ -122,7 +119,7 @@ export function useCanvas() {
                 handleKeyDown({
                     e,
                     canvas: null,
-                    searchParams,
+                    roomRef,
                     pasteTimeRef,
                     copiedObjectRef,
                     setShape,
@@ -137,5 +134,5 @@ export function useCanvas() {
         };
     }, []);
 
-    return { canvasRef, fabricRef, isEditingRef, selectedToolRef, pasteTimeRef, copiedObjectRef };
+    return { canvasRef, fabricRef, roomRef, isEditingRef, selectedToolRef, pasteTimeRef, copiedObjectRef };
 }

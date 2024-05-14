@@ -78,7 +78,7 @@ export const createSpecificShape = (shape: Tool | null, pointer: Pointer) => {
     }
 };
 
-export const handleImageUpload = ({ file, searchParams, fabricRef, setShape }: ImageUpload) => {
+export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -94,7 +94,7 @@ export const handleImageUpload = ({ file, searchParams, fabricRef, setShape }: I
                 // @ts-ignore
                 setShape({ objectId: image.objectId, ...image.toJSON() });
                 // @ts-ignore
-                socket.emit("set:shape", { room: searchParams.get("room"), objectId: image.objectId, ...image.toJSON() });
+                socket.emit("set:shape", { room, objectId: image.objectId, ...image.toJSON() });
             }
 
             if (fabricRef?.current) {
@@ -107,7 +107,7 @@ export const handleImageUpload = ({ file, searchParams, fabricRef, setShape }: I
     reader.readAsDataURL(file);
 };
 
-export const modifyShape = ({ fabricRef, searchParams, property, value, updateShape }: ModifyShape) => {
+export const modifyShape = ({ fabricRef, room, property, value, updateShape }: ModifyShape) => {
     if (!fabricRef.current) return;
     const selectedElement = fabricRef.current.getActiveObject();
     if (!selectedElement || selectedElement?.type === "activeSelection") return;
@@ -160,7 +160,7 @@ export const modifyShape = ({ fabricRef, searchParams, property, value, updateSh
         // @ts-ignore
         updateShape({ objectId: selectedElement.objectId, ...selectedElement.toJSON() });
         // @ts-ignore
-        socket.emit("update:shape", { room: searchParams.get("room"), objectId: selectedElement.objectId, ...selectedElement.toJSON() });
+        socket.emit("update:shape", { room, objectId: selectedElement.objectId, ...selectedElement.toJSON() });
     }
 };
 

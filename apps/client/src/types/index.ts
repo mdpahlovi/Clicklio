@@ -70,7 +70,7 @@ export type ModifyShape = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     property: keyof Attributes;
     value: string;
-    searchParams: URLSearchParams;
+    room: string | null;
     updateShape: (shape: fabric.Object) => void;
 };
 
@@ -81,7 +81,7 @@ export type ElementDirection = {
 
 export type ImageUpload = {
     file: File;
-    searchParams: URLSearchParams;
+    room: string | null;
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     setShape: (shape: fabric.Object) => void;
 };
@@ -124,7 +124,7 @@ export type CanvasMouseUp = {
     shapeRef: React.MutableRefObject<fabric.Object | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
     deleteObjectRef: React.MutableRefObject<fabric.Object[]>;
-    searchParams: URLSearchParams;
+    roomRef: React.MutableRefObject<string | null>;
     setTool: (tool: Tool) => void;
     setShape: (shape: fabric.Object) => void;
     deleteShape: (id: string) => void;
@@ -132,13 +132,13 @@ export type CanvasMouseUp = {
 
 export type CanvasObjectModified = {
     options: fabric.IEvent<MouseEvent>;
-    searchParams: URLSearchParams;
+    roomRef: React.MutableRefObject<string | null>;
     updateShape: (shape: fabric.Object) => void;
     setAttributes: (attributes: Attributes) => void;
 };
 
 export type CanvasPathCreated = {
-    searchParams: URLSearchParams;
+    roomRef: React.MutableRefObject<string | null>;
     setShape: (shape: fabric.Object) => void;
     options: any;
 };
@@ -164,7 +164,7 @@ export type CanvasZoom = {
 export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
-    searchParams: URLSearchParams;
+    roomRef: React.MutableRefObject<string | null>;
     pasteTimeRef: React.MutableRefObject<number | null>;
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
     setShape: (shape: fabric.Object) => void;

@@ -157,12 +157,12 @@ export const handleCanvasMouseMove = ({
 // handle mouse up event on canvas to stop drawing shapes
 export const handleCanvasMouseUp = ({
     canvas,
+    roomRef,
     isDrawing,
     isPanning,
     shapeRef,
     selectedToolRef,
     deleteObjectRef,
-    searchParams,
     setTool,
     setShape,
     deleteShape,
@@ -184,7 +184,7 @@ export const handleCanvasMouseUp = ({
             // @ts-ignore
             deleteShape(object.objectId);
             // @ts-ignore
-            socket.emit("delete:shape", { room: searchParams.get("room"), objectId: object.objectId });
+            socket.emit("delete:shape", { room: roomRef.current, objectId: object.objectId });
         });
 
         canvas.requestRenderAll();
@@ -197,7 +197,7 @@ export const handleCanvasMouseUp = ({
         // @ts-ignore
         setShape({ objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
         // @ts-ignore
-        socket.emit("set:shape", { room: searchParams.get("room"), objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
+        socket.emit("set:shape", { room: roomRef.current, objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
     }
 
     // set everything to null
@@ -209,7 +209,7 @@ export const handleCanvasMouseUp = ({
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, searchParams, updateShape, setAttributes }: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, roomRef, updateShape, setAttributes }: CanvasObjectModified) => {
     const target = options.target;
     if (!target) return;
 
@@ -224,13 +224,13 @@ export const handleCanvasObjectModified = ({ options, searchParams, updateShape,
             // @ts-ignore
             updateShape({ objectId: target.objectId, ...target.toJSON() });
             // @ts-ignore
-            socket.emit("update:shape", { room: searchParams.get("room"), objectId: target.objectId, ...target.toJSON() });
+            socket.emit("update:shape", { room: roomRef.current, objectId: target.objectId, ...target.toJSON() });
         }
     }
 };
 
 // update shape in storage when path is created when in path mode
-export const handlePathCreated = ({ options, searchParams, setShape }: CanvasPathCreated) => {
+export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCreated) => {
     // get path object
     const path = options.path;
     if (!path) return;
@@ -245,7 +245,7 @@ export const handlePathCreated = ({ options, searchParams, setShape }: CanvasPat
         // @ts-ignore
         setShape({ objectId: path.objectId, ...path.toJSON() });
         // @ts-ignore
-        socket.emit("set:shape", { room: searchParams.get("room"), objectId: path.objectId, ...path.toJSON() });
+        socket.emit("set:shape", { room: roomRef.current, objectId: path.objectId, ...path.toJSON() });
     }
 };
 

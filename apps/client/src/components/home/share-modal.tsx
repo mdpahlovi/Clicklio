@@ -6,7 +6,7 @@ import { useRoomState } from "@/hooks/useRoomState";
 import { FaRegCopy, FaStop, FaPlay } from "react-icons/fa6";
 import { Button, Divider, Input, Modal, ModalClose, Sheet, Stack, Typography } from "@mui/joy";
 
-export default function ShareModal() {
+export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
     const { setUser } = useAuthState();
     const { shareModal, toggleShareModal } = useRoomState();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -19,11 +19,15 @@ export default function ShareModal() {
 
         // @ts-ignore
         setUser({ id: uuidv4(), ...formProps });
-        setSearchParams({ room: uuidv4() });
+
+        const room = uuidv4();
+        roomRef.current = room;
+        setSearchParams({ room });
     };
 
     const removeRoomParam = () => {
         if (searchParams.has("room")) {
+            roomRef.current = null;
             searchParams.delete("room");
             setSearchParams(searchParams);
             toggleShareModal();

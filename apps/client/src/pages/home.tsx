@@ -15,21 +15,19 @@ import SideToolbar from "@/components/home/side-toolbar";
 import RemoteCursor from "@/components/ui/remote-cursor";
 import BottomToolbar from "@/components/home/buttom-toolbar";
 import CanvasContainer from "@/components/home/canvas-container";
-import { useSearchParams } from "react-router-dom";
 
 export default function HomePage() {
     const { undo, redo } = useShapeState.temporal.getState();
     const { refresh, setRefresh } = useCanvasState();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
-    const { canvasRef, fabricRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
-
-    const [searchParams] = useSearchParams();
+    const { canvasRef, fabricRef, roomRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
 
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
+    useEffect(() => {
+        socket.emit("join:room", { room: roomRef.current });
+    }, [roomRef.current]);
 
     useEffect(() => {
-        socket.emit("join:room", { room: searchParams.get("room") });
-
         socket.on("set:shape", (shape) => {
             setShape(shape);
             setRefresh();
@@ -93,7 +91,7 @@ export default function HomePage() {
 
             <AuthModal />
             <HelpModal />
-            <ShareModal />
+            <ShareModal roomRef={roomRef} />
         </>
     );
 }

@@ -1,7 +1,6 @@
 import { create } from "zustand";
-import { User } from "./useAuthState";
 
-type Cursor = { x: number; y: number } & User;
+type Cursor = { id: string; x: number; y: number };
 
 type RoomStateStore = {
     cursor: Cursor[];
@@ -24,7 +23,7 @@ export const useRoomState = create<RoomStateStore>((set) => ({
 function updateCursor(all_cursor: Cursor[], cursor: Cursor) {
     const index = all_cursor.findIndex(({ id }) => id === cursor.id);
 
-    if (index) {
+    if (index !== -1) {
         all_cursor[index] = cursor;
 
         return all_cursor;

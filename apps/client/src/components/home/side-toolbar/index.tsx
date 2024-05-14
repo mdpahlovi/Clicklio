@@ -46,10 +46,10 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
         ) {
             clearTimeout(timerRef.current);
             timerRef.current = setTimeout(() => {
-                modifyShape({ fabricRef, searchParams, property, value, updateShape });
+                modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
             }, 1000);
         } else {
-            modifyShape({ fabricRef, searchParams, property, value, updateShape });
+            modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
         }
     };
 
