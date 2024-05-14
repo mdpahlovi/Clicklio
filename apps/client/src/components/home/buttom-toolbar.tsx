@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { socket } from "@/utils/socket";
 import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";
+import { useSearchParams } from "react-router-dom";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { Stack, Sheet, Button, IconButton, Divider } from "@mui/joy";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
+    const [searchParams] = useSearchParams();
     const { zoom, setZoom } = useCanvasState();
     const { undo, redo } = useShapeState.temporal.getState();
 
@@ -24,7 +26,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <IconButton
                     onClick={() => {
                         undo();
-                        socket.emit("undo:shape", { status: true });
+                        socket.emit("undo:shape", { room: searchParams.get("room"), status: true });
                     }}
                 >
                     <GrUndo />
@@ -33,7 +35,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <IconButton
                     onClick={() => {
                         redo();
-                        socket.emit("redo:shape", { status: true });
+                        socket.emit("redo:shape", { room: searchParams.get("room"), status: true });
                     }}
                 >
                     <GrRedo />

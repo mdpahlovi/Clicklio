@@ -1,6 +1,7 @@
 import { Button } from "@mui/joy";
 import { Section, DoubleColumn } from "@/components/home/side-toolbar/components";
 
+import { useSearchParams } from "react-router-dom";
 import { useShapeState } from "@/hooks/useShapeState";
 import { handleCopy, handleDelete, handlePaste } from "@/utils/key-events";
 
@@ -11,6 +12,7 @@ type ActionProps = {
 };
 
 export default function Action({ fabricRef, pasteTimeRef, copiedObjectRef }: ActionProps) {
+    const [searchParams] = useSearchParams();
     const { setShape, deleteShape } = useShapeState();
 
     return (
@@ -21,7 +23,7 @@ export default function Action({ fabricRef, pasteTimeRef, copiedObjectRef }: Act
                     onClick={() => {
                         if (fabricRef.current) {
                             handleCopy(fabricRef.current, copiedObjectRef);
-                            handlePaste(fabricRef.current, pasteTimeRef, copiedObjectRef, setShape);
+                            handlePaste(fabricRef.current, searchParams, pasteTimeRef, copiedObjectRef, setShape);
                         }
                     }}
                 >
@@ -32,7 +34,7 @@ export default function Action({ fabricRef, pasteTimeRef, copiedObjectRef }: Act
                     variant="outlined"
                     onClick={() => {
                         if (fabricRef.current) {
-                            handleDelete(fabricRef.current, deleteShape);
+                            handleDelete(fabricRef.current, searchParams, deleteShape);
                         }
                     }}
                 >

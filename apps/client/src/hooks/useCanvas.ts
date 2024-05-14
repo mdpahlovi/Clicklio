@@ -1,5 +1,6 @@
 import { socket } from "@/utils/socket";
 import { useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { handleKeyDown } from "@/utils/key-events";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
@@ -18,12 +19,16 @@ import {
 
 import { useColorScheme } from "@mui/joy";
 import type { Pointer, Tool } from "@/types";
+import { useAuthState } from "./useAuthState";
 
 export function useCanvas() {
+    const { user } = useAuthState();
     const { setMode } = useColorScheme();
     const { undo, redo } = useShapeState.temporal.getState();
     const { setTool, setZoom, setAttributes } = useCanvasState();
     const { setShape, updateShape, deleteShape } = useShapeState();
+
+    const [searchParams] = useSearchParams();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -57,6 +62,7 @@ export function useCanvas() {
                 shapeRef,
                 selectedToolRef,
                 deleteObjectRef,
+                searchParams,
                 setTool,
                 setShape,
                 deleteShape,
@@ -64,11 +70,11 @@ export function useCanvas() {
         });
 
         canvas.on("path:created", (options) => {
-            handlePathCreated({ options, setShape });
+            handlePathCreated({ options, searchParams, setShape });
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, updateShape, setAttributes });
+            handleCanvasObjectModified({ options, searchParams, updateShape, setAttributes });
         });
 
         canvas.on("selection:created", (options) => {
@@ -80,7 +86,9 @@ export function useCanvas() {
         });
 
         window.addEventListener("resize", () => handleResize({ canvas }));
-        window.addEventListener("mousemove", (e) => socket.emit("cursor", { x: e.x, y: e.y }));
+        window.addEventListener("mousemove", (e) =>
+            socket.emit("cursor", { room: searchParams.get("room"), cursor: { ...user, x: e.x, y: e.y } })
+        );
 
         // check if the keyup is space (panning)
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
@@ -88,6 +96,7 @@ export function useCanvas() {
             handleKeyDown({
                 e,
                 canvas,
+                searchParams,
                 pasteTimeRef,
                 copiedObjectRef,
                 setShape,
@@ -103,7 +112,9 @@ export function useCanvas() {
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
-            window.removeEventListener("mousemove", (e) => socket.emit("cursor", { x: e.x, y: e.y }));
+            window.removeEventListener("mousemove", (e) =>
+                socket.emit("cursor", { room: searchParams.get("room"), cursor: { ...user, x: e.x, y: e.y } })
+            );
 
             // check if the keyup is space (panning)
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
@@ -111,6 +122,7 @@ export function useCanvas() {
                 handleKeyDown({
                     e,
                     canvas: null,
+                    searchParams,
                     pasteTimeRef,
                     copiedObjectRef,
                     setShape,

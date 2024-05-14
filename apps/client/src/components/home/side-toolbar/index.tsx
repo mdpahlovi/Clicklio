@@ -1,5 +1,6 @@
 import { useMemo, useRef } from "react";
 import { modifyShape } from "@/utils/shapes";
+import { useSearchParams } from "react-router-dom";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 
@@ -13,6 +14,7 @@ import type { Attributes, RightSidebarProps } from "@/types";
 
 export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }: RightSidebarProps) {
     const { updateShape } = useShapeState();
+    const [searchParams] = useSearchParams();
     const { attributes, updateAttributes } = useCanvasState();
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -44,10 +46,10 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
         ) {
             clearTimeout(timerRef.current);
             timerRef.current = setTimeout(() => {
-                modifyShape({ fabricRef, property, value, updateShape });
+                modifyShape({ fabricRef, searchParams, property, value, updateShape });
             }, 1000);
         } else {
-            modifyShape({ fabricRef, property, value, updateShape });
+            modifyShape({ fabricRef, searchParams, property, value, updateShape });
         }
     };
 

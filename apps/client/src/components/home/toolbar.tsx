@@ -1,5 +1,6 @@
 import { circle, navElements } from "@/constants";
 import { handleImageUpload } from "@/utils/shapes";
+import { useSearchParams } from "react-router-dom";
 import { Fragment, useEffect, useRef } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
@@ -14,6 +15,7 @@ type ToolbarProps = {
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { setShape } = useShapeState();
+    const [searchParams] = useSearchParams();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -126,7 +128,9 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     type="file"
                     accept="image/*"
                     ref={imageInputRef}
-                    onChange={(e) => e?.target?.files?.length && handleImageUpload({ file: e.target.files[0], fabricRef, setShape })}
+                    onChange={(e) =>
+                        e?.target?.files?.length && handleImageUpload({ file: e.target.files[0], searchParams, fabricRef, setShape })
+                    }
                 />
             </Sheet>
         </Stack>

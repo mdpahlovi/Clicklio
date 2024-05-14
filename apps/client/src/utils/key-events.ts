@@ -15,6 +15,7 @@ export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.Mutable
 
 export const handlePaste = (
     canvas: fabric.Canvas,
+    searchParams: URLSearchParams,
     pasteTimeRef: React.MutableRefObject<number | null>,
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>,
     setShape: (shape: fabric.Object) => void
@@ -43,8 +44,12 @@ export const handlePaste = (
                     if (enlivenedObj?.objectId) {
                         // @ts-ignore
                         setShape({ objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
-                        // @ts-ignore
-                        socket.emit("set:shape", { objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
+                        socket.emit("set:shape", {
+                            room: searchParams.get("room"),
+                            // @ts-ignore
+                            objectId: enlivenedObj.objectId,
+                            ...enlivenedObj.toJSON(),
+                        });
                     }
                 });
                 canvas.renderAll();
@@ -56,7 +61,7 @@ export const handlePaste = (
     pasteTimeRef.current = pasteTimeRef.current + 1;
 };
 
-export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) => void) => {
+export const handleDelete = (canvas: fabric.Canvas, searchParams: URLSearchParams, deleteShape: (id: string) => void) => {
     const activeObjects = canvas.getActiveObjects();
     if (!activeObjects || activeObjects.length === 0) return;
 
@@ -67,7 +72,7 @@ export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) =>
             // @ts-ignore
             deleteShape(object.objectId);
             // @ts-ignore
-            socket.emit("delete:shape", { objectId: object.objectId });
+            socket.emit("delete:shape", { room: searchParams.get("room"), objectId: object.objectId });
         });
     }
 
@@ -79,6 +84,7 @@ export const handleDelete = (canvas: fabric.Canvas, deleteShape: (id: string) =>
 export const handleKeyDown = ({
     e,
     canvas,
+    searchParams,
     pasteTimeRef,
     copiedObjectRef,
     setShape,
@@ -146,32 +152,32 @@ export const handleKeyDown = ({
     }
     // Check if the key pressed is ctrl/cmd + v (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas, pasteTimeRef, copiedObjectRef, setShape);
+        handlePaste(canvas, searchParams, pasteTimeRef, copiedObjectRef, setShape);
     }
     // Check if the key pressed is ctrl/cmd + D (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {
         e.preventDefault();
         handleCopy(canvas, copiedObjectRef);
-        handlePaste(canvas, pasteTimeRef, copiedObjectRef, setShape);
+        handlePaste(canvas, searchParams, pasteTimeRef, copiedObjectRef, setShape);
     }
     // Check if the key pressed is delete (delete)
     if (canvas && e.keyCode === 46) {
-        handleDelete(canvas, deleteShape);
+        handleDelete(canvas, searchParams, deleteShape);
     }
     // check if the key pressed is ctrl/cmd + x (cut)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
         handleCopy(canvas, copiedObjectRef);
-        handleDelete(canvas, deleteShape);
+        handleDelete(canvas, searchParams, deleteShape);
     }
     // check if the key pressed is ctrl/cmd + z (undo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90) {
         undo();
-        socket.emit("undo:shape", { status: true });
+        socket.emit("undo:shape", { room: searchParams.get("room"), status: true });
     }
     // check if the key pressed is ctrl/cmd + y (redo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 89) {
         redo();
-        socket.emit("redo:shape", { status: true });
+        socket.emit("redo:shape", { room: searchParams.get("room"), status: true });
     }
     // check if the key pressed is space (panning)
     if (e.keyCode === 32) setTool("panning");

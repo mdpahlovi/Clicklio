@@ -1,19 +1,21 @@
+import { useEffect } from "react";
 import { socket } from "@/utils/socket";
-import { useEffect, useState } from "react";
+import { useRoomState } from "@/hooks/useRoomState";
+
 import { RxCursorArrow } from "react-icons/rx";
 
 export default function RemoteCursor() {
-    const [position, setPosition] = useState<{ x: number; y: number } | null>();
+    const { cursor, setCursor } = useRoomState();
 
     useEffect(() => {
-        socket.on("cursor", (position) => setPosition(position));
+        socket.on("cursor", (cursor) => setCursor(cursor));
 
         return () => {
-            socket.off("cursor", (position) => setPosition(position));
+            socket.off("cursor", (cursor) => setCursor(cursor));
         };
     }, []);
 
-    return (
-        <RxCursorArrow style={position ? { position: "absolute", zIndex: 1, top: position.y, left: position.x } : { display: "none" }} />
-    );
+    return cursor.map(({ id, x, y }) => (
+        <RxCursorArrow style={id ? { position: "absolute", zIndex: 1, top: y, left: x } : { display: "none" }} />
+    ));
 }

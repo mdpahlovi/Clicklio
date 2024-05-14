@@ -1,10 +1,12 @@
 import { SlLogout, SlLogin } from "react-icons/sl";
+import { useRoomState } from "@/hooks/useRoomState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { PiShareFat, PiSun, PiMoon, PiQuestion } from "react-icons/pi";
 import { Button, Divider, Sheet, Stack, useColorScheme } from "@mui/joy";
 
 export default function Navbar() {
     const { mode, setMode } = useColorScheme();
+    const { toggleShareModal } = useRoomState();
     const { toggleHelpModal } = useCanvasState();
 
     return (
@@ -14,7 +16,7 @@ export default function Navbar() {
         >
             <img src={`/logo/${mode}.png`} alt="" width={128} />
             <Stack direction="row" alignItems="center" spacing={2.5}>
-                <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />}>
+                <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={toggleShareModal}>
                     Share
                 </Button>
                 <IconButton onClick={() => setMode(mode === "light" ? "dark" : "light")}>

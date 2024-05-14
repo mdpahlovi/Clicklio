@@ -3,36 +3,75 @@ import { socket } from "@/utils/socket";
 import { renderCanvas } from "@/utils/canvas";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useShapeState } from "@/hooks/useShapeState";
+import { useCanvasState } from "@/hooks/useCanvasState";
 
 import Navbar from "@/components/home/navbar";
 import Toolbar from "@/components/home/toolbar";
 import Sidebar from "@/components/home/sidebar";
+import AuthModal from "@/components/home/auth-modal";
 import HelpModal from "@/components/home/help-modal";
+import ShareModal from "@/components/home/share-modal";
 import SideToolbar from "@/components/home/side-toolbar";
 import RemoteCursor from "@/components/ui/remote-cursor";
 import BottomToolbar from "@/components/home/buttom-toolbar";
 import CanvasContainer from "@/components/home/canvas-container";
+import { useSearchParams } from "react-router-dom";
 
 export default function HomePage() {
     const { undo, redo } = useShapeState.temporal.getState();
+    const { refresh, setRefresh } = useCanvasState();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
     const { canvasRef, fabricRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
 
-    useEffect(() => renderCanvas({ shapes, fabricRef }), [shapes]);
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        socket.on("set:shape", (shape) => setShape(shape));
-        socket.on("update:shape", (shape) => updateShape(shape));
-        socket.on("delete:shape", ({ objectId }) => deleteShape(objectId));
-        socket.on("undo:shape", ({ status }) => status && undo());
-        socket.on("redo:shape", ({ status }) => status && redo());
+        socket.emit("join:room", { room: searchParams.get("room") });
+
+        socket.on("set:shape", (shape) => {
+            setShape(shape);
+            setRefresh();
+        });
+        socket.on("update:shape", (shape) => {
+            updateShape(shape);
+            setRefresh();
+        });
+        socket.on("delete:shape", ({ objectId }) => {
+            deleteShape(objectId);
+            setRefresh();
+        });
+        socket.on("undo:shape", ({ status }) => {
+            if (status) undo();
+            setRefresh();
+        });
+        socket.on("redo:shape", ({ status }) => {
+            if (status) redo();
+            setRefresh();
+        });
 
         return () => {
-            socket.off("set:shape", (shape) => setShape(shape));
-            socket.off("update:shape", (shape) => updateShape(shape));
-            socket.off("delete:shape", ({ objectId }) => deleteShape(objectId));
-            socket.off("undo:shape", ({ status }) => status && undo());
-            socket.off("redo:shape", ({ status }) => status && redo());
+            socket.off("set:shape", (shape) => {
+                setShape(shape);
+                setRefresh();
+            });
+            socket.off("update:shape", (shape) => {
+                updateShape(shape);
+                setRefresh();
+            });
+            socket.off("delete:shape", ({ objectId }) => {
+                deleteShape(objectId);
+                setRefresh();
+            });
+            socket.off("undo:shape", ({ status }) => {
+                if (status) undo();
+                setRefresh();
+            });
+            socket.off("redo:shape", ({ status }) => {
+                if (status) redo();
+                setRefresh();
+            });
         };
     }, []);
 
@@ -52,7 +91,9 @@ export default function HomePage() {
                 </CanvasContainer>
             </div>
 
+            <AuthModal />
             <HelpModal />
+            <ShareModal />
         </>
     );
 }

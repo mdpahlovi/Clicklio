@@ -33,24 +33,28 @@ app.use(cors(), bodyParser.json({ limit: "64mb" }), expressMiddleware(server));
 const io = new Server(httpServer, { cors: { origin: "*" } });
 
 io.on("connection", (socket) => {
-    socket.on("set:shape", (shape) => {
-        socket.broadcast.emit("set:shape", shape);
-    });
-    socket.on("update:shape", (shape) => {
-        socket.broadcast.emit("update:shape", shape);
-    });
-    socket.on("delete:shape", ({ objectId }) => {
-        socket.broadcast.emit("delete:shape", { objectId });
-    });
-    socket.on("undo:shape", ({ status }) => {
-        socket.broadcast.emit("undo:shape", { status });
-    });
-    socket.on("redo:shape", ({ status }) => {
-        socket.broadcast.emit("redo:shape", { status });
+    socket.on("join:room", ({ room }) => {
+        if (room) socket.join(room);
     });
 
-    socket.on("cursor", (position) => {
-        socket.broadcast.emit("cursor", position);
+    socket.on("set:shape", ({ room, ...shape }) => {
+        if (room) socket.broadcast.to(room).emit("set:shape", shape);
+    });
+    socket.on("update:shape", ({ room, ...shape }) => {
+        if (room) socket.broadcast.emit("update:shape", shape);
+    });
+    socket.on("delete:shape", ({ room, objectId }) => {
+        if (room) socket.broadcast.emit("delete:shape", { objectId });
+    });
+    socket.on("undo:shape", ({ room, status }) => {
+        if (room) socket.broadcast.emit("undo:shape", { status });
+    });
+    socket.on("redo:shape", ({ room, status }) => {
+        if (room) socket.broadcast.emit("redo:shape", { status });
+    });
+
+    socket.on("cursor", ({ room, cursor }) => {
+        if (room) socket.broadcast.to(room).emit("cursor", cursor);
     });
 });
 
