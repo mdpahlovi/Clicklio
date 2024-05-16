@@ -3,6 +3,11 @@
     padding: 0;
 }
 
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
 /* @layer base {
     :root {
         --primary: hsl(250, 70%, 60%);

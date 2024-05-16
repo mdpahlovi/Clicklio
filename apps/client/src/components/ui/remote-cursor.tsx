@@ -1,15 +1,17 @@
-import { useEffect } from "react";
 import { useTheme } from "@mui/joy";
 import { socket } from "@/utils/socket";
+import { useAuthState } from "@/hooks/useAuthState";
 import { useRoomState } from "@/hooks/useRoomState";
+import { useCallback, useEffect, useRef } from "react";
 
 import { RxCursorArrow } from "react-icons/rx";
-import { useAuthState } from "@/hooks/useAuthState";
+import type { Cursor } from "@/hooks/useRoomState";
 
 export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
     const { palette } = useTheme();
     const { user } = useAuthState();
-    const { cursor, setCursor } = useRoomState();
+    const { cursor, setCursor, deleteCursor } = useRoomState();
+    const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
     useEffect(() => {
         window.addEventListener("mousemove", (e) => {
@@ -24,11 +26,19 @@ export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObj
     }, [user]);
 
     useEffect(() => {
-        socket.on("cursor", (cursor) => setCursor(cursor));
+        socket.on("cursor", (cursor) => handleCursorUpdate(cursor));
 
         return () => {
-            socket.off("cursor", (cursor) => setCursor(cursor));
+            socket.off("cursor", (cursor) => handleCursorUpdate(cursor));
         };
+    }, []);
+
+    const handleCursorUpdate = useCallback((cursor: Cursor) => {
+        setCursor(cursor);
+
+        // Reset the timeout if cursor is updated
+        clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => deleteCursor(cursor.id), 500);
     }, []);
 
     return cursor.map(({ id, name, x, y }) => (

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { User } from "./useAuthState";
 
-type Cursor = { x: number; y: number } & User;
+export type Cursor = { x: number; y: number } & User;
 
 type RoomStateStore = {
     cursor: Cursor[];
@@ -10,6 +10,7 @@ type RoomStateStore = {
     authModal: boolean;
     toggleAuthModal: () => void;
     setCursor: (cursor: Cursor) => void;
+    deleteCursor: (id: string) => void;
 };
 
 export const useRoomState = create<RoomStateStore>((set) => ({
@@ -19,6 +20,7 @@ export const useRoomState = create<RoomStateStore>((set) => ({
     authModal: false,
     toggleAuthModal: () => set(({ authModal }) => ({ authModal: !authModal })),
     setCursor: (cursor) => set(({ cursor: all_cursor }) => ({ cursor: updateCursor(all_cursor, cursor) })),
+    deleteCursor: (id) => set(({ cursor }) => ({ cursor: cursor.filter((c) => c.id !== id) })),
 }));
 
 function updateCursor(all_cursor: Cursor[], cursor: Cursor) {
