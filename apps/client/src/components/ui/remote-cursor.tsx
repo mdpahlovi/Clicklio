@@ -37,12 +37,12 @@ export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObj
             <div
                 style={{
                     borderRadius: 9999,
-                    padding: "2px 4px 1px",
+                    padding: "2px 6px 1px",
                     background: palette.background.body,
                     border: `1px solid ${palette.divider}`,
                 }}
             >
-                <p style={{ color: palette.text.primary, fontSize: 14, fontFamily: "Poppins" }}>{name}</p>
+                <p style={{ color: palette.text.primary, fontSize: 14, fontFamily: "Poppins", whiteSpace: "nowrap" }}>{name}</p>
             </div>
         </div>
     ));
