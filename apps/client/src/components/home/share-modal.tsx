@@ -19,7 +19,7 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
         const formProps = Object.fromEntries(formData);
 
         // @ts-ignore
-        setUser({ id: uuidv4(), ...formProps });
+        setUser({ ...formProps });
 
         const room = uuidv4();
         roomRef.current = room;

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { useSearchParams } from "react-router-dom";
 import { useAuthState } from "@/hooks/useAuthState";
 import { useRoomState } from "@/hooks/useRoomState";
@@ -23,7 +22,7 @@ export default function AuthModal() {
         const formProps = Object.fromEntries(formData);
 
         // @ts-ignore
-        setUser({ id: uuidv4(), ...formProps });
+        setUser({ ...formProps });
         toggleAuthModal();
     };
 

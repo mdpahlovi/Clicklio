@@ -30,7 +30,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("cursor", ({ room, cursor }) => {
-        if (room) socket.broadcast.to(room).emit("cursor", { ...cursor });
+        if (room) socket.broadcast.to(room).emit("cursor", { id: socket.id, ...cursor });
     });
 });
 

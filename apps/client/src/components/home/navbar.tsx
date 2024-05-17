@@ -1,10 +1,13 @@
-import { SlLogout, SlLogin } from "react-icons/sl";
+import { Link } from "react-router-dom";
+import { SlLogin } from "react-icons/sl";
 import { useRoomState } from "@/hooks/useRoomState";
+import { useAuthState } from "@/hooks/useAuthState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { PiShareFat, PiSun, PiMoon, PiQuestion } from "react-icons/pi";
 import { Button, Divider, Sheet, Stack, useColorScheme } from "@mui/joy";
 
 export default function Navbar() {
+    const { user } = useAuthState();
     const { mode, setMode } = useColorScheme();
     const { toggleShareModal } = useRoomState();
     const { toggleHelpModal } = useCanvasState();
@@ -26,10 +29,23 @@ export default function Navbar() {
                 <IconButton onClick={toggleHelpModal}>
                     <PiQuestion size={24} />
                 </IconButton>
-                <IconButton>
-                    <SlLogout size={24} />
-                    <SlLogin size={24} style={{ display: "none" }} />
-                </IconButton>
+
+                {user?.id ? (
+                    ""
+                ) : (
+                    <Link
+                        to="/signin"
+                        style={{
+                            userSelect: "none",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: mode === "light" ? "black" : "white",
+                        }}
+                    >
+                        <SlLogin size={24} />
+                    </Link>
+                )}
             </Stack>
         </Sheet>
     );

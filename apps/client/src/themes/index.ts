@@ -7,5 +7,6 @@ export default extendTheme({
         JoyButton: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyIconButton: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyMenu: { defaultProps: { placement: "auto" } },
+        JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },
     },
 });

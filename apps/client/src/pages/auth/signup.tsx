@@ -1,9 +1,13 @@
 import * as yup from "yup";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 import AuthLayout from "@/layout/auth";
-import { FieldValues } from "react-hook-form";
 import { Link as RLink } from "react-router-dom";
+import { useAuthState } from "@/hooks/useAuthState";
 import { Form, FormInput } from "@/components/form";
 import { Button, Checkbox, Typography, Stack, Link } from "@mui/joy";
+
+import type { Credentials } from "@/hooks/useAuthState";
 
 const signupSchema = yup.object().shape({
     name: yup.string().required("Please provide your name"),
@@ -20,9 +24,14 @@ const signupSchema = yup.object().shape({
 });
 
 export default function SignupPage() {
-    const onSubmit = (data: FieldValues) => {
-        console.log(data);
-    };
+    const { signup, loading, error, setError } = useAuthState();
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+            setTimeout(() => setError(null), 1500);
+        }
+    }, [error]);
 
     return (
         <AuthLayout>
@@ -37,7 +46,11 @@ export default function SignupPage() {
                     </Link>
                 </Typography>
             </Stack>
-            <Form defaultValues={{ name: "", email: "", password: "", c_password: "" }} validationSchema={signupSchema} onSubmit={onSubmit}>
+            <Form
+                defaultValues={{ name: "", email: "", password: "", c_password: "" }}
+                validationSchema={signupSchema}
+                onSubmit={(data) => signup(data as { name: string } & Credentials)}
+            >
                 <FormInput name="name" label="Name" />
                 <FormInput type="email" name="email" label="Email" />
                 <FormInput type="password" name="password" label="Password" />
@@ -49,7 +62,7 @@ export default function SignupPage() {
                             Forgot your password?
                         </Link>
                     </Stack>
-                    <Button type="submit" fullWidth>
+                    <Button type="submit" {...{ loading }} fullWidth>
                         Sign in
                     </Button>
                 </Stack>
