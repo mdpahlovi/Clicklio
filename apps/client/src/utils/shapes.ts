@@ -154,6 +154,7 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
             break;
     }
 
+    fabricRef.current.requestRenderAll();
     // sync shape in storage
     // @ts-ignore
     if (selectedElement?.objectId) {

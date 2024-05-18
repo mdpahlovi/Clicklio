@@ -20,7 +20,6 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
 
     const handleInputChange = (property: keyof Attributes, value: string) => {
         if (!fabricRef.current) return;
-        if (!isEditingRef.current) isEditingRef.current = true;
 
         switch (property) {
             case "width":

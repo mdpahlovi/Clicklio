@@ -165,6 +165,7 @@ export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
     roomRef: React.MutableRefObject<string | null>;
+    isEditingRef: React.MutableRefObject<boolean>;
     pasteTimeRef: React.MutableRefObject<number | null>;
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
     setShape: (shape: fabric.Object) => void;

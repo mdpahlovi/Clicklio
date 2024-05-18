@@ -91,7 +91,7 @@ export const handleCanvasMouseMove = ({
             options.target.set({ opacity: 0.25 });
             deleteObjectRef.current.push(options.target);
 
-            canvas.renderAll();
+            canvas.requestRenderAll();
             return;
         }
     }
@@ -133,7 +133,7 @@ export const handleCanvasMouseMove = ({
 
     // render objects on canvas
     // renderAll: http://fabricjs.com/docs/fabric.Canvas.html#renderAll
-    canvas.renderAll();
+    canvas.requestRenderAll();
 };
 
 // handle mouse up event on canvas to stop drawing shapes
@@ -288,7 +288,7 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
         );
     });
 
-    fabricRef.current?.renderAll();
+    fabricRef.current?.requestRenderAll();
 };
 
 // resize canvas dimensions on window resize

@@ -2,7 +2,7 @@ import { Snackbar } from "@mui/joy";
 import { RiErrorWarningLine } from "react-icons/ri";
 import toast, { ToastType, Toaster, resolveValue } from "react-hot-toast";
 
-export default function ToastProvider() {
+export function ToastProvider() {
     const getColor = (type: ToastType): "success" | "danger" | "primary" => {
         switch (type) {
             case "success":

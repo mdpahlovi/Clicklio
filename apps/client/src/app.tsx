@@ -1,14 +1,50 @@
 import router from "./routes";
 import themes from "./themes";
-import { CssVarsProvider } from "@mui/joy";
+import { useEffect, useState } from "react";
+import { auth, db } from "@/utils/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { RouterProvider } from "react-router-dom";
-import ToastProvider from "./components/ui/toast-provider";
+import { onAuthStateChanged } from "firebase/auth";
+import { useAuthState, User } from "@/hooks/useAuthState";
+import { CircularProgress, CssVarsProvider } from "@mui/joy";
+import { ToastProvider } from "@/components/ui/toast-provider";
 
 export default function App() {
-    return (
-        <CssVarsProvider theme={themes}>
-            <ToastProvider />
-            <RouterProvider router={router} />
-        </CssVarsProvider>
-    );
+    const { setUser } = useAuthState();
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) setUser({ id: userDoc.id, ...userDoc.data() } as User);
+                setLoading(false);
+            } else {
+                setUser(null);
+                setLoading(false);
+            }
+        });
+    }, []);
+
+    if (loading) {
+        return (
+            <div style={{ width: "100vw", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <CircularProgress
+                    sx={{
+                        "--CircularProgress-trackThickness": "16px",
+                        "--CircularProgress-size": "192px",
+                        "--CircularProgress-progressThickness": "12px",
+                    }}
+                />
+            </div>
+        );
+    } else {
+        return (
+            <CssVarsProvider theme={themes}>
+                <ToastProvider />
+                <RouterProvider router={router} />
+            </CssVarsProvider>
+        );
+    }
 }
