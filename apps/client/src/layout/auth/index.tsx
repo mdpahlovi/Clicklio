@@ -1,23 +1,19 @@
-import { Box, Sheet, Stack, Typography, useColorScheme } from "@mui/joy";
+import Logo from "@/components/ui/logo";
+import { Box, Sheet, Stack, Typography } from "@mui/joy";
 
 export default function AuthLayout({ children }: React.PropsWithChildren) {
-    const { mode } = useColorScheme();
-
     return (
         <>
             <Sheet sx={{ width: { xs: "100%", md: "50vw" }, px: 2 }} style={{ zIndex: 1, borderWidth: 0 }}>
                 <Stack minHeight="100dvh" width="100%">
-                    <Box component="header" sx={{ py: 2 }}>
-                        <img src={`/logo/${mode}.png`} alt="" width={128} />
-                    </Box>
+                    <Logo sx={{ py: 2 }} />
                     <Box
-                        component="main"
                         sx={{ pt: 2, pb: 5, mx: "auto", gap: 2 }}
                         style={{ width: "100%", maxWidth: 400, display: "flex", flexDirection: "column" }}
                     >
                         {children}
                     </Box>
-                    <Box component="footer" sx={{ py: 3 }}>
+                    <Box sx={{ py: 3 }}>
                         <Typography level="body-xs" textAlign="center">
                             © {new Date().getFullYear()} Clicklio. All Rights Reserved.
                         </Typography>

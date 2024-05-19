@@ -1,12 +1,12 @@
+import Logo from "@/components/ui/logo";
 import Layout from "@/components/room/layout";
 import Header from "@/components/room/header";
 import FileCard from "@/components/room/file-card";
 import Navigation from "@/components/room/navigation";
 import { useBasicState } from "@/hooks/useBasicState";
-import { Box, DialogTitle, Drawer, ModalClose, useColorScheme } from "@mui/joy";
+import { Box, DialogTitle, Drawer, ModalClose } from "@mui/joy";
 
-export default function FilesExample() {
-    const { mode } = useColorScheme();
+export default function RoomPage() {
     const { sidebar, toggleSidebar } = useBasicState();
 
     return (
@@ -29,7 +29,7 @@ export default function FilesExample() {
             <Drawer open={sidebar} onClose={toggleSidebar} sx={{ display: { md: "none" } }}>
                 <ModalClose />
                 <DialogTitle>
-                    <img src={`/logo/${mode}.png`} alt="" width={128} />
+                    <Logo />
                 </DialogTitle>
                 <Box sx={{ px: 1 }}>
                     <Navigation />
