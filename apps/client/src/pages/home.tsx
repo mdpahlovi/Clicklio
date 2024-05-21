@@ -4,6 +4,7 @@ import { renderCanvas } from "@/utils/canvas";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
+import { usePeriodicSave } from "@/hooks/usePeriodicSave";
 
 import Navbar from "@/components/home/navbar";
 import Toolbar from "@/components/home/toolbar";
@@ -19,6 +20,7 @@ import CanvasContainer from "@/components/home/canvas-container";
 export default function HomePage() {
     const { undo, redo } = useShapeState.temporal.getState();
     const { refresh, setRefresh } = useCanvasState();
+    const { saveShapes, isUpToDate } = usePeriodicSave();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
 
@@ -76,7 +78,7 @@ export default function HomePage() {
         <>
             <Navbar />
             <div style={{ display: "flex" }}>
-                <Sidebar />
+                <Sidebar {...{ saveShapes, isUpToDate }} />
 
                 <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
 

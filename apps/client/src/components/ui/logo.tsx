@@ -1,10 +1,10 @@
 import { Box, BoxProps, useColorScheme } from "@mui/joy";
 
-export default function Logo(props: BoxProps) {
+export default function Logo({ style, ...props }: BoxProps) {
     const { mode } = useColorScheme();
 
     return (
-        <Box {...props}>
+        <Box style={{ height: 40, ...style }} {...props}>
             <img src={`/logo/${mode}.png`} alt="" width={128} />
         </Box>
     );

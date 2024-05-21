@@ -8,9 +8,10 @@ import { createBrowserRouter } from "react-router-dom";
 const router = createBrowserRouter([
     { path: "/", element: <HomePage /> },
     { path: "/rooms", element: <RoomPage /> },
-    { path: "/setting", element: <SettingPage /> },
+    { path: "/room/:id", element: <HomePage /> },
     { path: "/signin", element: <SigninPage /> },
     { path: "/signup", element: <SignupPage /> },
+    { path: "/setting", element: <SettingPage /> },
 ]);
 
 export default router;
