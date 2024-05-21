@@ -20,7 +20,7 @@ const signinSchema = yup.object().shape({
 });
 
 export default function JoySignInSideTemplate() {
-    const { signin, loading, error, setError } = useAuthState();
+    const { signin, googleSignin, loading, error, setError } = useAuthState();
 
     useEffect(() => {
         if (error) {
@@ -42,7 +42,7 @@ export default function JoySignInSideTemplate() {
                     </Link>
                 </Typography>
             </Stack>
-            <Button variant="soft" color="neutral" fullWidth startDecorator={<RiGoogleLine />}>
+            <Button variant="soft" color="neutral" startDecorator={<RiGoogleLine />} onClick={googleSignin} {...{ loading }}>
                 Continue with Google
             </Button>
             <Divider sx={{ mt: 2, mb: 1 }}>OR</Divider>
@@ -53,14 +53,14 @@ export default function JoySignInSideTemplate() {
             >
                 <FormInput type="email" name="email" label="Email" />
                 <FormInput type="password" name="password" label="Password" />
-                <Stack gap={4} sx={{ mt: 2 }}>
+                <Stack gap={3.5} sx={{ mt: 2 }}>
                     <Stack direction="row" justifyContent="space-between">
                         <Checkbox size="sm" label="Remember me" name="persistent" />
                         <Link component={RLink} level="title-sm" to="/signin">
                             Forgot your password?
                         </Link>
                     </Stack>
-                    <Button type="submit" {...{ loading }} fullWidth>
+                    <Button type="submit" {...{ loading }}>
                         Sign in
                     </Button>
                 </Stack>

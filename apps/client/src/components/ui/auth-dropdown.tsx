@@ -10,11 +10,11 @@ export default function AuthDropdown() {
     return (
         <Dropdown>
             <MenuButton sx={{ p: 0, border: "none" }}>
-                <Avatar src={user?.avatar} sx={{ "--Avatar-size": "36px" }} />
+                <Avatar src={user?.image} sx={{ "--Avatar-size": "36px" }} />
             </MenuButton>
             <Menu placement="bottom-end" style={{ zIndex: 9999 }}>
                 <MenuItem>
-                    <Avatar src={user?.avatar} />
+                    <Avatar src={user?.image} />
                     <Box>
                         <Typography level="title-sm" textColor="text.primary">
                             {user?.name}

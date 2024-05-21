@@ -2,9 +2,9 @@ import { create } from "zustand";
 import { auth, db } from "@/utils/firebase";
 import { FirebaseError } from "firebase/app";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-export type User = { id: string; name: string; email: string; avatar?: string };
+export type User = { id: string; name: string; email: string; image?: string };
 export type Credentials = { email: string; password: string };
 
 type AuthStateStore = {
@@ -15,6 +15,7 @@ type AuthStateStore = {
     setError: (error: string | null) => void;
     signin: (credentials: Credentials) => Promise<void>;
     signup: (credentials: { name: string } & Credentials) => Promise<void>;
+    googleSignin: () => Promise<void>;
     signOut: () => Promise<void>;
 };
 
@@ -50,6 +51,28 @@ export const useAuthState = create<AuthStateStore>((set) => ({
             const user = { id: data.user.uid, name, email };
             await setDoc(doc(db, "users", user.id), user);
             set({ user });
+        } catch (error) {
+            if (error instanceof FirebaseError) set({ error: error.message });
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    googleSignin: async () => {
+        set({ loading: true, error: null });
+        try {
+            const provider = new GoogleAuthProvider();
+            const {
+                user: { uid, email, displayName, photoURL },
+            } = await signInWithPopup(auth, provider);
+            const userDoc = await getDoc(doc(db, "users", uid));
+            if (userDoc.exists()) {
+                set({ user: { id: userDoc.id, ...userDoc.data() } as User });
+            } else {
+                const user = { id: uid, name: displayName || "", email: email || "", image: photoURL || "" };
+                await setDoc(doc(db, "users", user.id), user);
+                set({ user });
+            }
         } catch (error) {
             if (error instanceof FirebaseError) set({ error: error.message });
         } finally {
