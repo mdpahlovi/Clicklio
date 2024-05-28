@@ -2,9 +2,9 @@ import * as yup from "yup";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import AuthLayout from "@/layout/auth";
-import { Link as RLink } from "react-router-dom";
 import { useAuthState } from "@/hooks/useAuthState";
 import { Form, FormInput } from "@/components/form";
+import { useNavigate, Link as RLink } from "react-router-dom";
 import { Button, Checkbox, Typography, Stack, Link } from "@mui/joy";
 
 import type { Credentials } from "@/hooks/useAuthState";
@@ -24,13 +24,15 @@ const signupSchema = yup.object().shape({
 });
 
 export default function SignupPage() {
-    const { signup, loading, error, setError } = useAuthState();
+    const navigate = useNavigate();
+    const { user, loading, error, signup } = useAuthState();
 
     useEffect(() => {
-        if (error) {
-            toast.error(error);
-            setTimeout(() => setError(null), 1500);
-        }
+        if (user && user?.id) navigate("/rooms");
+    }, [user]);
+
+    useEffect(() => {
+        if (error) toast.error(error);
     }, [error]);
 
     return (

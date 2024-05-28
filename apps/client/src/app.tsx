@@ -11,10 +11,9 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 
 export default function App() {
     const { setUser } = useAuthState();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));

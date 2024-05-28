@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import AuthLayout from "@/layout/auth";
 import { RiGoogleLine } from "react-icons/ri";
-import { Link as RLink } from "react-router-dom";
 import { useAuthState } from "@/hooks/useAuthState";
 import { Form, FormInput } from "@/components/form";
+import { useNavigate, Link as RLink } from "react-router-dom";
 import { Button, Checkbox, Divider, Typography, Stack, Link } from "@mui/joy";
 
 import { type Credentials } from "@/hooks/useAuthState";
@@ -20,13 +20,15 @@ const signinSchema = yup.object().shape({
 });
 
 export default function JoySignInSideTemplate() {
-    const { signin, googleSignin, loading, error, setError } = useAuthState();
+    const navigate = useNavigate();
+    const { user, loading, error, signin, googleSignin } = useAuthState();
 
     useEffect(() => {
-        if (error) {
-            toast.error(error);
-            setTimeout(() => setError(null), 1500);
-        }
+        if (user && user?.id) navigate("/rooms");
+    }, [user]);
+
+    useEffect(() => {
+        if (error) toast.error(error);
     }, [error]);
 
     return (

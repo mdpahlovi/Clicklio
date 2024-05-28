@@ -38,7 +38,10 @@ export const useAuthState = create<AuthStateStore>((set) => ({
                 set({ error: "User data not found" });
             }
         } catch (error) {
-            if (error instanceof FirebaseError) set({ error: error.message });
+            if (error instanceof FirebaseError) {
+                set({ error: error.message });
+                setTimeout(() => set({ error: null }), 1500);
+            }
         } finally {
             set({ loading: false });
         }
@@ -52,7 +55,10 @@ export const useAuthState = create<AuthStateStore>((set) => ({
             await setDoc(doc(db, "users", user.id), user);
             set({ user });
         } catch (error) {
-            if (error instanceof FirebaseError) set({ error: error.message });
+            if (error instanceof FirebaseError) {
+                set({ error: error.message });
+                setTimeout(() => set({ error: null }), 1500);
+            }
         } finally {
             set({ loading: false });
         }
@@ -74,7 +80,10 @@ export const useAuthState = create<AuthStateStore>((set) => ({
                 set({ user });
             }
         } catch (error) {
-            if (error instanceof FirebaseError) set({ error: error.message });
+            if (error instanceof FirebaseError) {
+                set({ error: error.message });
+                setTimeout(() => set({ error: null }), 1500);
+            }
         } finally {
             set({ loading: false });
         }
@@ -86,7 +95,10 @@ export const useAuthState = create<AuthStateStore>((set) => ({
             await signOut(auth);
             set({ user: null });
         } catch (error) {
-            if (error instanceof FirebaseError) set({ error: error.message });
+            if (error instanceof FirebaseError) {
+                set({ error: error.message });
+                setTimeout(() => set({ error: null }), 1500);
+            }
         } finally {
             set({ loading: false });
         }

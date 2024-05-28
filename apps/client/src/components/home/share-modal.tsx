@@ -8,18 +8,19 @@ import { FaRegCopy, FaStop, FaPlay } from "react-icons/fa6";
 import { Button, Divider, Input, Modal, ModalClose, Sheet, Stack, Typography } from "@mui/joy";
 
 export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
-    const { setUser } = useAuthState();
+    const { user, setUser } = useAuthState();
     const { shareModal, toggleShareModal } = useRoomState();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
         // @ts-ignore
         const formData = new FormData(event.target);
         const formProps = Object.fromEntries(formData);
 
         // @ts-ignore
-        setUser({ ...formProps });
+        !user?.id ? setUser({ ...formProps }) : null;
 
         const room = uuidv4();
         roomRef.current = room;
@@ -83,7 +84,7 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
                             private. Not even our server can see what you draw.
                         </Typography>
                         <form onSubmit={handleSubmit}>
-                            <Input name="name" placeholder="Your Name" sx={{ mb: 2 }} required />
+                            <Input name="name" placeholder="Your Name" defaultValue={user?.name} sx={{ mb: 2 }} required />
                             <Button type="submit" startDecorator={<FaPlay size={18} />}>
                                 Start Session
                             </Button>
