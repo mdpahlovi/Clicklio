@@ -13,7 +13,7 @@ export default function AuthModal() {
 
     useEffect(() => {
         if (searchParams.get("room") && !user?.id) toggleAuthModal();
-    }, []);
+    }, [user]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
