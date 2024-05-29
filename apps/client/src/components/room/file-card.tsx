@@ -95,7 +95,9 @@ export default function FileCard({
                         <img src={image} alt={name} />
                     </AspectRatio>
                 </CardOverflow>
-                <Typography level="body-xs">{updatedAt.toDate().toDateString()}</Typography>
+                <Typography level="body-xs">
+                    {updatedAt.toDate().toDateString()}, {updatedAt.toDate().toLocaleTimeString()}
+                </Typography>
             </Card>
             <Modal open={open} onClose={() => setOpen(false)} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <Sheet variant="outlined" sx={{ maxWidth: 512, borderRadius: "md", p: 3, boxShadow: "lg" }}>

@@ -4,8 +4,6 @@ import { useBasicState } from "@/hooks/useBasicState";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 
 import Logo from "@/components/ui/logo";
-import Layout from "@/components/room/layout";
-import Header from "@/components/room/header";
 import NewFile from "@/components/room/new-file";
 import FileCard from "@/components/room/file-card";
 import Navigation from "@/components/room/navigation";
@@ -27,18 +25,8 @@ export default function RoomPage() {
 
     return (
         <>
-            <Layout.Root>
-                <Layout.Header>
-                    <Header />
-                </Layout.Header>
-                <Layout.SideNav>
-                    <Navigation />
-                </Layout.SideNav>
-                <Layout.Main>
-                    <NewFile />
-                    {files?.length ? files.map((file) => <FileCard key={file.id} {...file} {...{ refresh, setRefresh }} />) : null}
-                </Layout.Main>
-            </Layout.Root>
+            <NewFile />
+            {files?.length ? files.map((file) => <FileCard key={file.id} {...file} {...{ refresh, setRefresh }} />) : null}
 
             <Drawer open={sidebar} onClose={toggleSidebar} sx={{ display: { md: "none" } }}>
                 <ModalClose />
