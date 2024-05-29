@@ -11,10 +11,11 @@ import FileCard from "@/components/room/file-card";
 import Navigation from "@/components/room/navigation";
 import { Box, DialogTitle, Drawer, ModalClose } from "@mui/joy";
 
-export type File = { id: string; name: string; shapes: fabric.Object[]; updatedAt: Timestamp };
+export type File = { id: string; name: string; shapes: fabric.Object[]; image: string; updatedAt: Timestamp };
 
 export default function RoomPage() {
     const [files, setFiles] = useState<File[]>();
+    const [refresh, setRefresh] = useState(false);
     const { sidebar, toggleSidebar } = useBasicState();
 
     useEffect(() => {
@@ -22,7 +23,7 @@ export default function RoomPage() {
             // @ts-ignore
             .then(({ docs }) => setFiles(docs.map((doc) => ({ id: doc.id, ...doc.data() }))))
             .catch(() => console.log("Error Get All Document"));
-    }, []);
+    }, [refresh]);
 
     return (
         <>
@@ -35,7 +36,7 @@ export default function RoomPage() {
                 </Layout.SideNav>
                 <Layout.Main>
                     <NewFile />
-                    {files?.length ? files.map((file) => <FileCard key={file.id} {...file} />) : null}
+                    {files?.length ? files.map((file) => <FileCard key={file.id} {...file} {...{ refresh, setRefresh }} />) : null}
                 </Layout.Main>
             </Layout.Root>
 

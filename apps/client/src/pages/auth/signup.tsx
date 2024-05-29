@@ -58,12 +58,7 @@ export default function SignupPage() {
                 <FormInput type="password" name="password" label="Password" />
                 <FormInput type="password" name="c_password" label="Confirm Password" />
                 <Stack gap={4} sx={{ mt: 2 }}>
-                    <Stack direction="row" justifyContent="space-between">
-                        <Checkbox size="sm" label="Remember me" name="persistent" />
-                        <Link component={RLink} level="title-sm" to="/signin">
-                            Forgot your password?
-                        </Link>
-                    </Stack>
+                    <Checkbox size="sm" label="Remember me" name="persistent" />
                     <Button type="submit" {...{ loading }} fullWidth>
                         Sign in
                     </Button>

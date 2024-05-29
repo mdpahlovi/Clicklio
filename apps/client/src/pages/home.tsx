@@ -20,9 +20,9 @@ import CanvasContainer from "@/components/home/canvas-container";
 export default function HomePage() {
     const { undo, redo } = useShapeState.temporal.getState();
     const { refresh, setRefresh } = useCanvasState();
-    const { saveShapes, isUpToDate } = usePeriodicSave();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef, isEditingRef, pasteTimeRef, copiedObjectRef } = useCanvas();
+    const { saveShapes, isUpToDate } = usePeriodicSave({ fabricRef });
 
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
