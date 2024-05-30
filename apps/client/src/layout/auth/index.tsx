@@ -1,4 +1,5 @@
 import Logo from "@/components/ui/logo";
+import { Link } from "react-router-dom";
 import { Box, Sheet, Stack, Typography } from "@mui/joy";
 
 export default function AuthLayout({ children }: React.PropsWithChildren) {
@@ -6,7 +7,9 @@ export default function AuthLayout({ children }: React.PropsWithChildren) {
         <>
             <Sheet sx={{ width: { xs: "100%", md: "50vw" }, px: 2 }} style={{ zIndex: 1, borderWidth: 0 }}>
                 <Stack minHeight="100dvh" width="100%">
-                    <Logo sx={{ py: 2 }} />
+                    <Link to="/">
+                        <Logo sx={{ py: 2 }} />
+                    </Link>
                     <Box
                         sx={{ pt: 2, pb: 5, mx: "auto", gap: 2 }}
                         style={{ width: "100%", maxWidth: 400, display: "flex", flexDirection: "column" }}

@@ -1,26 +1,52 @@
 import { useState } from "react";
-import { config } from "@/components/setting/config";
-import { Form, FormInput, FormImage } from "@/components/form";
-import { Box, Button, Textarea, Stack, Typography, Card } from "@mui/joy";
-
-import HtmlPlugin from "@/components/setting/html-plugin";
-import ToolbarPlugin from "@/components/setting/toolbar-plugin";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { Box, Button, Stack, Typography, Card } from "@mui/joy";
+import { Form, FormInput, FormImage, FormTexteditor } from "@/components/form";
+import { useAuthState } from "@/hooks/useAuthState";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/utils/firebase";
+import toast from "react-hot-toast";
 
 export default function MyProfile() {
+    const { user, setUser } = useAuthState();
     const [editBio, setEditBot] = useState(false);
     const [editProfile, setEditProfile] = useState(false);
+    const [editBioLoading, setEditBotLoading] = useState(false);
+    const [editProfileLoading, setEditProfileLoading] = useState(false);
 
     return (
         <Box sx={{ px: 3, py: 2 }}>
             <Typography level="h2">My Profile</Typography>
             <Stack spacing={2} sx={{ maxWidth: "800px", py: 2 }}>
                 <Card>
-                    <Form onSubmit={(value) => console.log(value)}>
+                    <Form
+                        defaultValues={
+                            user
+                                ? {
+                                      first_name: user?.name?.split(" ")[0] ? user?.name?.split(" ")[0] : "",
+                                      last_name: user?.name?.split(" ")[1] ? user?.name?.split(" ")[1] : "",
+                                      role: user?.role ? user?.role : "",
+                                      email: user?.email ? user?.email : "",
+                                      phone: user?.phone ? user?.phone : "",
+                                      image: user?.image ? user?.image : "",
+                                  }
+                                : undefined
+                        }
+                        onSubmit={(value) => {
+                            if (user) {
+                                setEditProfileLoading(true);
+                                updateDoc(doc(db, "users", user?.id), value)
+                                    .then(() => {
+                                        setEditProfile(false);
+                                        setEditProfileLoading(false);
+                                        setUser({ ...user, ...value });
+                                    })
+                                    .catch(() => {
+                                        setEditProfileLoading(false);
+                                        toast.error("Failed To Update Profile");
+                                    });
+                            }
+                        }}
+                    >
                         <CardHeader
                             title="Personal info"
                             body="Customize how your profile information here."
@@ -28,47 +54,48 @@ export default function MyProfile() {
                         />
                         <Stack direction="column" spacing={2}>
                             <Stack direction="row" spacing={2} sx={{ pt: 0.5 }}>
-                                <FormImage />
+                                <FormImage name="image" disabled={!editProfile} />
                                 <Stack spacing={1} sx={{ flexGrow: 1 }}>
-                                    <FormInput name="first_name" label="First Name" />
-                                    <FormInput name="last_name" label="Last Name" />
+                                    <FormInput name="first_name" label="First Name" disabled={!editProfile} />
+                                    <FormInput name="last_name" label="Last Name" disabled={!editProfile} />
                                 </Stack>
                             </Stack>
                             <Stack spacing={1}>
-                                <FormInput name="role" label="Your Role" />
-                                <FormInput name="email" label="Your Email" />
-                                <FormInput name="phone" label="Your Phone" />
+                                <FormInput name="role" label="Your Role" disabled={!editProfile} />
+                                <FormInput name="email" label="Your Email" disabled />
+                                <FormInput name="phone" label="Your Phone" disabled={!editProfile} />
                             </Stack>
                         </Stack>
-                        {editProfile ? <CardAction toggleEdit={() => setEditProfile(false)} /> : null}
+                        {editProfile ? <CardAction loading={editProfileLoading} toggleEdit={() => setEditProfile(false)} /> : null}
                     </Form>
                 </Card>
                 <Card>
-                    <CardHeader
-                        title="Bio"
-                        body="Write a short introduction to be displayed on your profile"
-                        toggleEdit={() => setEditBot(true)}
-                    />
-
-                    <LexicalComposer initialConfig={config}>
-                        <ToolbarPlugin />
-                        <RichTextPlugin
-                            contentEditable={<Textarea component={ContentEditable} minRows={4} sx={{ minHeight: 96 }} />}
-                            placeholder={
-                                <Typography level="body-sm" sx={{ position: "absolute", top: 146, left: 29.5 }}>
-                                    Enter some rich text...
-                                </Typography>
+                    <Form
+                        defaultValues={user ? { biography: user?.biography ? user?.biography : "" } : undefined}
+                        onSubmit={(value) => {
+                            if (user) {
+                                setEditBotLoading(true);
+                                updateDoc(doc(db, "users", user?.id), value)
+                                    .then(() => {
+                                        setEditBot(false);
+                                        setEditBotLoading(false);
+                                        setUser({ ...user, ...value });
+                                    })
+                                    .catch(() => {
+                                        setEditBotLoading(false);
+                                        toast.error("Failed To Update Biography");
+                                    });
                             }
-                            ErrorBoundary={LexicalErrorBoundary}
+                        }}
+                    >
+                        <CardHeader
+                            title="Bio"
+                            body="Write a short introduction to be displayed on your profile"
+                            toggleEdit={() => setEditBot(true)}
                         />
-                        <AutoFocusPlugin />
-                        <HtmlPlugin
-                            onHtmlChanged={(html) => console.log(html)}
-                            initialHtml="<h1>Test</h1><p>Lorem ipsum dolor sit amet</p>"
-                        />
-                    </LexicalComposer>
-
-                    {editBio ? <CardAction toggleEdit={() => setEditBot(false)} /> : null}
+                        <FormTexteditor name="biography" />
+                        {editBio ? <CardAction loading={editBioLoading} toggleEdit={() => setEditBot(false)} /> : null}
+                    </Form>
                 </Card>
             </Stack>
         </Box>
@@ -89,13 +116,13 @@ function CardHeader({ title, body, toggleEdit }: { title: string; body: string; 
     );
 }
 
-function CardAction({ toggleEdit }: { toggleEdit: () => void }) {
+function CardAction({ loading, toggleEdit }: { loading: boolean; toggleEdit: () => void }) {
     return (
         <Box sx={{ pt: 2, borderTop: "1px solid", borderColor: "divider", display: "flex", justifyContent: "end", gap: 2 }}>
             <Button size="sm" variant="outlined" color="neutral" onClick={toggleEdit}>
                 Cancel
             </Button>
-            <Button type="submit" size="sm">
+            <Button type="submit" size="sm" loading={loading}>
                 Save
             </Button>
         </Box>

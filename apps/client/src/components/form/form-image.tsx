@@ -1,31 +1,40 @@
-import { AspectRatio, IconButton } from "@mui/joy";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import { LiaUserEditSolid } from "react-icons/lia";
+import { Controller, useFormContext } from "react-hook-form";
+import { AspectRatio, Avatar, Box, IconButton } from "@mui/joy";
 
-export default function FormImage() {
+export default function FormImage({ name, disabled }: { name: string; disabled?: boolean }) {
+    const { setValue } = useFormContext();
+
     return (
-        <>
-            <AspectRatio ratio="1" sx={{ width: 132, height: 132, borderRadius: "100%" }}>
-                <img
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
-                    srcSet="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286&dpr=2 2x"
-                    loading="lazy"
-                    alt=""
-                />
-            </AspectRatio>
-            <IconButton
-                size="sm"
-                sx={{
-                    bgcolor: "background.body",
-                    position: "absolute",
-                    zIndex: 2,
-                    borderRadius: "50%",
-                    left: 96,
-                    top: 192,
-                    boxShadow: "sm",
-                }}
-            >
-                <EditRoundedIcon />
-            </IconButton>
-        </>
+        <Controller
+            name={name}
+            render={({ field: { value } }) => (
+                <>
+                    <AspectRatio ratio="1" sx={{ width: 132, height: 132, borderRadius: "100%" }}>
+                        <Avatar src={value} sx={{ "--Avatar-size": "132px" }} />
+                    </AspectRatio>
+                    {!disabled ? (
+                        <Box sx={{ position: "absolute", zIndex: 2, left: 96, top: 192 }}>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const fileReader = new FileReader();
+                                    fileReader.onload = () => {
+                                        if (fileReader.readyState === 2) setValue(name, fileReader.result);
+                                    };
+                                    fileReader.readAsDataURL(e.target.files![0]);
+                                }}
+                                style={{ position: "absolute", zIndex: 3, width: 32, height: 32, opacity: 0 }}
+                                disabled={disabled}
+                            />
+                            <IconButton size="sm" sx={{ bgcolor: "background.body", boxShadow: "sm" }}>
+                                <LiaUserEditSolid size={18} style={{ paddingLeft: 2.5 }} />
+                            </IconButton>
+                        </Box>
+                    ) : null}
+                </>
+            )}
+        />
     );
 }

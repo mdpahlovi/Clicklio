@@ -4,7 +4,7 @@ import { FirebaseError } from "firebase/app";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-export type User = { id: string; name: string; email: string; image?: string };
+export type User = { id: string; name: string; role?: string; email: string; phone?: string; image?: string; biography?: string };
 export type Credentials = { email: string; password: string };
 
 type AuthStateStore = {
