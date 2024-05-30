@@ -1,7 +1,7 @@
-import Layout from "@/components/room/layout";
-import Header from "@/components/room/header";
-import Navigation from "@/components/room/navigation";
 import { Outlet } from "react-router-dom";
+import Layout from "@/layout/dashboard/layout";
+import Header from "@/layout/dashboard/header";
+import Navigation from "@/layout/dashboard/navigation";
 
 export default function DashboardLayout() {
     return (
@@ -12,9 +12,7 @@ export default function DashboardLayout() {
             <Layout.SideNav>
                 <Navigation />
             </Layout.SideNav>
-            <Layout.Main>
-                <Outlet />
-            </Layout.Main>
+            <Outlet />
         </Layout.Root>
     );
 }

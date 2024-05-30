@@ -15,11 +15,13 @@ export default function App() {
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
+            try {
+                if (!user) throw new Error("User Not Found!...");
+
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) setUser({ id: userDoc.id, ...userDoc.data() } as User);
                 setLoading(false);
-            } else {
+            } catch (error) {
                 setUser(null);
                 setLoading(false);
             }

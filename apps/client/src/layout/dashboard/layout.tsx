@@ -31,21 +31,4 @@ function SideNav({ children }: React.PropsWithChildren) {
     );
 }
 
-function Main({ children }: React.PropsWithChildren) {
-    return (
-        <Box
-            component="main"
-            sx={{
-                height: "max-content",
-                p: 2,
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" },
-                gap: 2,
-            }}
-        >
-            {children}
-        </Box>
-    );
-}
-
-export default { Root, Header, SideNav, Main };
+export default { Root, Header, SideNav };

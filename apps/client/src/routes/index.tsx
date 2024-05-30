@@ -5,7 +5,7 @@ import SettingPage from "@/pages/setting";
 import SigninPage from "@/pages/auth/signin";
 import SignupPage from "@/pages/auth/signup";
 import ProtectedRoute from "./protected-route";
-import DashboardLayout from "@/layout/dashboard/dashboard-layout";
+import DashboardLayout from "@/layout/dashboard";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -22,11 +22,7 @@ const router = createBrowserRouter([
     { path: "/signup", element: <SignupPage /> },
     {
         path: "/",
-        element: (
-            <ProtectedRoute>
-                <DashboardLayout />
-            </ProtectedRoute>
-        ),
+        element: <DashboardLayout />,
         children: [
             { path: "/rooms", element: <RoomPage /> },
             { path: "/trash", element: <TrashPage /> },
