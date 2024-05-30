@@ -31,7 +31,9 @@ export default function MyProfile() {
                                   }
                                 : undefined
                         }
-                        onSubmit={(value) => {
+                        onSubmit={({ first_name, last_name, ...rest }) => {
+                            const value = { name: `${first_name} ${last_name}`, ...rest };
+
                             if (user) {
                                 setEditProfileLoading(true);
                                 updateDoc(doc(db, "users", user?.id), value)

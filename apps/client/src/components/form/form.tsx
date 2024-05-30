@@ -7,10 +7,7 @@ export default function Form({ onSubmit, children, defaultValues, validationSche
     const resolver = validationSchema ? yupResolver(validationSchema) : undefined;
     const methods = useForm({ defaultValues, resolver });
 
-    const submit: SubmitHandler<FieldValues> = (data) => {
-        onSubmit(data);
-        methods.reset();
-    };
+    const submit: SubmitHandler<FieldValues> = (data) => onSubmit(data);
 
     return (
         <FormProvider {...methods}>
