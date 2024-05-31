@@ -7,7 +7,7 @@ import ThemeToggle from "@/components/ui/theme-toggle";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { PiShareFat, PiQuestion } from "react-icons/pi";
 import AuthDropdown from "@/components/ui/auth-dropdown";
-import { Button, Divider, Sheet, Stack } from "@mui/joy";
+import { Box, Button, Divider, Sheet, Stack } from "@mui/joy";
 
 export default function Navbar() {
     const { user } = useAuthState();
@@ -19,7 +19,8 @@ export default function Navbar() {
             style={{ borderWidth: "0 0 1px 0" }}
             sx={{ height: 64, px: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}
         >
-            <Logo />
+            <Box sx={{ display: { xs: "block", sm: "none" } }} />
+            <Logo sx={{ display: { xs: "none", sm: "block" } }} />
             <Stack direction="row" alignItems="center" spacing={2.5}>
                 <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={toggleShareModal}>
                     Share
