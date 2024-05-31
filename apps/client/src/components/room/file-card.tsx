@@ -23,17 +23,12 @@ import {
     Input,
 } from "@mui/joy";
 
-export default function FileCard({
-    id,
-    name,
-    image,
-    updatedAt,
-    refresh,
-    setRefresh,
-}: File & { refresh: boolean; setRefresh: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function FileCard({ file, refetch }: { file: { id: string } & File; refetch: () => void }) {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const { id, name, image, updatedAt } = file;
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -45,7 +40,7 @@ export default function FileCard({
         setLoading(true);
         updateDoc(doc(db, "shapes", id), { ...formProps })
             .then(() => {
-                setRefresh(!refresh);
+                refetch();
                 setLoading(false);
                 setOpen(false);
             })
@@ -72,7 +67,7 @@ export default function FileCard({
                                 color="danger"
                                 onClick={() =>
                                     deleteDoc(doc(db, "shapes", id))
-                                        .then(() => setRefresh(!refresh))
+                                        .then(() => refetch())
                                         .catch(() => toast.error("Filed To Delete File"))
                                 }
                             >

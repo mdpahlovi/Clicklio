@@ -1,5 +1,5 @@
 import { db } from "@/utils/firebase";
-import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useBasicState } from "@/hooks/useBasicState";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 
@@ -9,19 +9,18 @@ import FileCard from "@/components/room/file-card";
 import Navigation from "@/layout/dashboard/navigation";
 import { Box, DialogTitle, Drawer, ModalClose } from "@mui/joy";
 
-export type File = { id: string; name: string; shapes: fabric.Object[]; image: string; updatedAt: Timestamp };
+export type File = { name: string; shapes: fabric.Object[]; image: string; updatedAt: Timestamp };
 
 export default function RoomPage() {
-    const [files, setFiles] = useState<File[]>();
-    const [refresh, setRefresh] = useState(false);
     const { sidebar, toggleSidebar } = useBasicState();
 
-    useEffect(() => {
-        getDocs(collection(db, "shapes"))
-            // @ts-ignore
-            .then(({ docs }) => setFiles(docs.map((doc) => ({ id: doc.id, ...doc.data() }))))
-            .catch(() => console.log("Error Get All Document"));
-    }, [refresh]);
+    const { data, refetch } = useQuery({
+        queryKey: "shapes",
+        queryFn: async () => {
+            const shapes = await getDocs(collection(db, "shapes"));
+            return shapes.docs.map((doc) => ({ id: doc.id, ...(doc.data() as File) }));
+        },
+    });
 
     return (
         <>
@@ -31,7 +30,7 @@ export default function RoomPage() {
                 sx={{ p: 2, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" } }}
             >
                 <NewFile />
-                {files?.length ? files.map((file) => <FileCard key={file.id} {...file} {...{ refresh, setRefresh }} />) : null}
+                {data?.length ? data.map((file) => <FileCard key={file.id} {...{ file, refetch }} />) : null}
             </Box>
 
             <Drawer open={sidebar} onClose={toggleSidebar} sx={{ display: { md: "none" } }}>

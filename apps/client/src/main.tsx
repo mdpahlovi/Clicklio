@@ -4,4 +4,12 @@ import "@fontsource/poppins";
 import App from "@/app";
 import { createRoot } from "react-dom/client";
 
-createRoot(document.getElementById("root")!).render(<App />);
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
+
+createRoot(document.getElementById("root")!).render(
+    <QueryClientProvider client={queryClient}>
+        <App />
+    </QueryClientProvider>
+);
