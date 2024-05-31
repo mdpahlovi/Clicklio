@@ -58,7 +58,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Button
                     color="neutral"
                     variant="plain"
-                    sx={{ width: 96 }}
+                    sx={{ width: { xs: 64, sm: 96 } }}
                     onClick={() => {
                         if (fabricRef.current) {
                             setZoom(1);

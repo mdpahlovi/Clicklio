@@ -75,7 +75,7 @@ export default function ToolbarPlugin({ sx, ...props }: BoxProps) {
     }, [editor, $updateToolbar]);
 
     return (
-        <Box ref={toolbarRef} sx={[{ display: "flex", gap: 0.5 }, ...(Array.isArray(sx) ? sx : [sx])]} {...props}>
+        <Box ref={toolbarRef} sx={[{ display: "flex", flexWrap: "wrap", gap: 0.5 }, ...(Array.isArray(sx) ? sx : [sx])]} {...props}>
             <IconButton disabled={!canUndo} onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}>
                 <CiUndo />
             </IconButton>

@@ -8,7 +8,7 @@ export default function Sidebar({ saveShapes, isUpToDate }: { saveShapes: () => 
     return (
         <Sheet
             style={{ width: 64, height: "calc(100vh - 97px)", borderWidth: "0 1px 0 0" }}
-            sx={{ py: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 1.5 }}
+            sx={{ py: 2, display: { xs: "none", sm: "flex" }, flexDirection: "column", alignItems: "center", gap: 1.5 }}
         >
             <Link to="/rooms">
                 <IconButton variant="solid" color="primary">

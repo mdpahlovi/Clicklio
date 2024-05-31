@@ -10,9 +10,9 @@ export default function Header() {
 
     return (
         <>
-            <Logo sx={{ display: { xs: "none", md: "flex" } }} />
+            <Logo sx={{ display: { xs: "none", xl: "flex" } }} />
 
-            <IconButton onClick={toggleSidebar} sx={{ display: { md: "none" } }}>
+            <IconButton onClick={toggleSidebar} sx={{ display: { xl: "none" } }}>
                 <IoMdMenu size={24} />
             </IconButton>
 
@@ -27,9 +27,9 @@ export default function Header() {
                             </Typography>
                         </IconButton>
                     }
-                    sx={{ alignSelf: "center", display: { xs: "none", md: "flex" } }}
+                    sx={{ alignSelf: "center", display: { xs: "none", xl: "flex" } }}
                 />
-                <IconButton variant="outlined" sx={{ display: { xs: "flex", md: "none" } }}>
+                <IconButton variant="outlined" sx={{ display: { xs: "flex", xl: "none" } }}>
                     <IoIosSearch size={22} />
                 </IconButton>
                 <ThemeToggle />

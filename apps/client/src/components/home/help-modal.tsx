@@ -10,13 +10,13 @@ export default function HelpModal() {
         <Modal open={helpModal} onClose={toggleHelpModal} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
             <Sheet
                 style={{ maxHeight: "80vh", overflowY: "scroll" }}
-                sx={{ minWidth: { xs: "100%", md: 896 }, p: 3, borderRadius: "md", boxShadow: "lg" }}
+                sx={{ minWidth: { xs: "100%", lg: 768 }, borderRadius: "md", boxShadow: "lg" }}
             >
                 <ModalClose variant="plain" sx={{ m: 1 }} />
-                <Typography level="h4" fontWeight="lg" mb={1}>
+                <Typography level="h4" fontWeight="lg" pt={3} pb={2} px={3}>
                     Keyboard shortcuts
                 </Typography>
-                <Box display="grid" gridTemplateColumns={{ md: "1fr 1fr" }} gap={3}>
+                <Box sx={{ pb: 3, px: 3, display: "grid", gridTemplateColumns: { lg: "1fr 1fr" }, gap: 3 }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                         <KeyboardShortcuts title="Tool" shortcuts={tools} />
                         <KeyboardShortcuts title="View" shortcuts={views} />

@@ -27,13 +27,13 @@ export default function RoomPage() {
             <Box
                 component="main"
                 style={{ height: "max-content", display: "grid", gap: 16 }}
-                sx={{ p: 2, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" } }}
+                sx={{ p: 2, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr", lg: "1fr 1fr 1fr" } }}
             >
                 <NewFile />
                 {data?.length ? data.map((file) => <FileCard key={file.id} {...{ file, refetch }} />) : null}
             </Box>
 
-            <Drawer open={sidebar} onClose={toggleSidebar} sx={{ display: { md: "none" } }}>
+            <Drawer open={sidebar} onClose={toggleSidebar} sx={{ display: { xl: "none" } }}>
                 <ModalClose />
                 <DialogTitle>
                     <Logo />

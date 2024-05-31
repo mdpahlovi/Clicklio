@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthState } from "@/hooks/useAuthState";
-import { MdSettings, MdLogout } from "react-icons/md";
+import { RiFolder5Fill, RiSettings3Fill, RiArtboardFill, RiLogoutBoxRLine } from "react-icons/ri";
 import { Avatar, Box, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
 
 export default function AuthDropdown() {
@@ -25,13 +25,23 @@ export default function AuthDropdown() {
                     </Box>
                 </MenuItem>
                 <ListDivider />
-                <MenuItem component={Link} to="setting">
-                    <MdSettings size={20} />
+                <MenuItem component={Link} to="/rooms">
+                    <RiFolder5Fill size={20} />
+                    My Files
+                </MenuItem>
+                <ListDivider />
+                <MenuItem component={Link} to="/setting">
+                    <RiSettings3Fill size={20} />
                     Settings
                 </MenuItem>
                 <ListDivider />
+                <MenuItem component={Link} to="/">
+                    <RiArtboardFill size={20} />
+                    Canvas
+                </MenuItem>
+                <ListDivider />
                 <MenuItem color="danger" onClick={signOut}>
-                    <MdLogout size={20} />
+                    <RiLogoutBoxRLine size={20} />
                     Log out
                 </MenuItem>
             </Menu>

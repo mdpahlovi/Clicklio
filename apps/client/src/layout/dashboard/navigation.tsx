@@ -6,7 +6,7 @@ import { List, ListSubheader, ListItem, ListItemButton, ListItemDecorator, ListI
 const navItems = [
     {
         type: "Browse",
-        children: [{ href: "/rooms", label: "My files", icon: <RiFolder5Fill size={20} /> }],
+        children: [{ href: "/rooms", label: "My Files", icon: <RiFolder5Fill size={20} /> }],
     },
     {
         type: "Navigation",

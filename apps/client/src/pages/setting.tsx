@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Box, Button, Stack, Typography, Card } from "@mui/joy";
-import { Form, FormInput, FormImage, FormTexteditor } from "@/components/form";
+import toast from "react-hot-toast";
+import { db } from "@/utils/firebase";
 import { useAuthState } from "@/hooks/useAuthState";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/utils/firebase";
-import toast from "react-hot-toast";
+import { Box, Button, Stack, Typography, Card } from "@mui/joy";
+import { Form, FormInput, FormImage, FormTexteditor } from "@/components/form";
 
 export default function MyProfile() {
     const { user, setUser } = useAuthState();
@@ -55,14 +55,14 @@ export default function MyProfile() {
                             toggleEdit={() => setEditProfile(true)}
                         />
                         <Stack direction="column" spacing={2}>
-                            <Stack direction="row" spacing={2} sx={{ pt: 0.5 }}>
+                            <Stack direction={{ md: "row" }}>
                                 <FormImage name="image" disabled={!editProfile} />
-                                <Stack spacing={1} sx={{ flexGrow: 1 }}>
+                                <Stack spacing={1} sx={{ flexGrow: 1, pt: { xs: 2, md: 0 } }}>
                                     <FormInput name="first_name" label="First Name" disabled={!editProfile} />
                                     <FormInput name="last_name" label="Last Name" disabled={!editProfile} />
                                 </Stack>
                             </Stack>
-                            <Stack spacing={1}>
+                            <Stack spacing={1} style={{ marginTop: 8 }}>
                                 <FormInput name="role" label="Your Role" disabled={!editProfile} />
                                 <FormInput name="email" label="Your Email" disabled />
                                 <FormInput name="phone" label="Your Phone" disabled={!editProfile} />

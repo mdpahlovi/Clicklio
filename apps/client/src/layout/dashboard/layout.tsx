@@ -4,7 +4,7 @@ function Root({ children }: React.PropsWithChildren) {
     return (
         <Box
             style={{ minHeight: "100vh", display: "grid", gridTemplateRows: "64px 1fr" }}
-            sx={{ backgroundColor: "background.body", gridTemplateColumns: { xs: "1fr", md: "300px 1fr" } }}
+            sx={{ backgroundColor: "background.body", gridTemplateColumns: { xs: "1fr", xl: "300px 1fr" } }}
         >
             {children}
         </Box>
@@ -25,7 +25,7 @@ function Header({ children }: React.PropsWithChildren) {
 
 function SideNav({ children }: React.PropsWithChildren) {
     return (
-        <Sheet style={{ borderWidth: "0 1px 0 0" }} sx={{ p: 2, display: { xs: "none", md: "initial" } }}>
+        <Sheet style={{ borderWidth: "0 1px 0 0" }} sx={{ p: 2, display: { xs: "none", xl: "initial" } }}>
             {children}
         </Sheet>
     );

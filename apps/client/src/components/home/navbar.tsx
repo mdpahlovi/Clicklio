@@ -21,7 +21,7 @@ export default function Navbar() {
         >
             <Box sx={{ display: { xs: "block", sm: "none" } }} />
             <Logo sx={{ display: { xs: "none", sm: "block" } }} />
-            <Stack direction="row" alignItems="center" spacing={2.5}>
+            <Stack direction="row" alignItems="center" spacing={{ xs: 1.5, md: 2.5 }}>
                 <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={toggleShareModal}>
                     Share
                 </Button>
