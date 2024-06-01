@@ -8,46 +8,40 @@
     height: 0;
 }
 
-/* @layer base {
-    :root {
-        --primary: hsl(250, 70%, 60%);
-        --primary-content: hsl(0, 0%, 100%);
-        --primary-dark: hsl(251, 70%, 50%);
-        --primary-light: hsl(250, 70%, 70%);
+.fileTemplateColumn {
+    height: max-content;
+    display: grid;
+}
 
-        --secondary: hsl(340, 70%, 60%);
-        --secondary-content: hsl(339, 71%, 10%);
-        --secondary-dark: hsl(340, 70%, 50%);
-        --secondary-light: hsl(340, 70%, 70%);
-
-        --background: hsl(252, 16%, 94%);
-        --foreground: hsl(240, 14%, 99%);
-        --border: hsl(245, 17%, 88%);
-
-        --content: hsl(249, 17%, 15%);
-        --content-light: hsl(250, 18%, 40%);
-        --content-lighter: hsl(251, 17%, 55%);
-
-        --success: hsl(120, 70%, 60%);
-        --warning: hsl(60, 70%, 60%);
-        --error: hsl(0, 70%, 60%);
-        --success-content: hsl(120, 71%, 10%);
-        --warning-content: hsl(60, 71%, 10%);
-        --error-content: hsl(0, 0%, 100%);
-
-        --radius: 0.5rem;
+@media only screen and (min-width: 544px) {
+    .fileTemplateColumn {
+        grid-template-columns: repeat(2, 1fr);
     }
+}
 
-    .dark {
-        --background: hsl(253, 18%, 10%);
-        --foreground: hsl(249, 17%, 15%);
-        --border: hsl(248, 17%, 25%);
-
-        --content: hsl(240, 14%, 99%);
-        --content-light: hsl(249, 17%, 85%);
-        --content-lighter: hsl(252, 17%, 65%);
+@media only screen and (min-width: 768px) {
+    .fileTemplateColumn {
+        grid-template-columns: repeat(3, 1fr);
     }
-} */
+}
+
+@media only screen and (min-width: 1024px) {
+    .fileTemplateColumn {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media only screen and (min-width: 1280px) {
+    .fileTemplateColumn {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media only screen and (min-width: 1600px) {
+    .fileTemplateColumn {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
 
 .ltr {
     text-align: left;
@@ -87,22 +81,6 @@
 .editor-link {
     color: rgb(33, 111, 219);
     text-decoration: none;
-}
-
-.tree-view-output {
-    display: block;
-    background: #222;
-    color: #fff;
-    padding: 5px;
-    font-size: 12px;
-    white-space: pre-wrap;
-    margin: 1px auto 10px auto;
-    max-height: 250px;
-    position: relative;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    overflow: auto;
-    line-height: 14px;
 }
 
 .editor-code {
@@ -235,44 +213,4 @@
 
 .editor-nested-listitem {
     list-style-type: none;
-}
-
-.debug-timetravel-panel {
-    overflow: hidden;
-    padding: 0 0 10px 0;
-    margin: auto;
-    display: flex;
-}
-
-.debug-timetravel-panel-slider {
-    padding: 0;
-    flex: 8;
-}
-
-.debug-timetravel-panel-button {
-    padding: 0;
-    border: 0;
-    background: none;
-    flex: 1;
-    color: #fff;
-    font-size: 12px;
-}
-
-.debug-timetravel-panel-button:hover {
-    text-decoration: underline;
-}
-
-.debug-timetravel-button {
-    border: 0;
-    padding: 0;
-    font-size: 12px;
-    top: 10px;
-    right: 15px;
-    position: absolute;
-    background: none;
-    color: #fff;
-}
-
-.debug-timetravel-button:hover {
-    text-decoration: underline;
 }
