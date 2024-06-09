@@ -7,7 +7,7 @@
         "start": "turbo start"
     },
     "devDependencies": {
-        "dotenv-cli": "^7.4.1",
+        "dotenv-cli": "^7.4.2",
         "turbo": "latest"
     },
     "workspaces": [

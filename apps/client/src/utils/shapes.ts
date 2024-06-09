@@ -146,11 +146,21 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
             break;
 
         case "fill":
-            selectedElement.set({ fill: value });
+            // @ts-ignore
+            selectedElement.set({ fill: value ? value : null });
             break;
 
         case "stroke":
-            selectedElement.set({ stroke: value });
+            // @ts-ignore
+            selectedElement.set({ stroke: value ? value : null });
+            break;
+
+        case "strokeWidth":
+            selectedElement.set({ strokeWidth: Number(value) });
+            break;
+
+        case "opacity":
+            selectedElement.set({ opacity: Number(value) });
             break;
     }
 

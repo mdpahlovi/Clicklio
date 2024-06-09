@@ -1,6 +1,6 @@
 import { useCanvasState } from "@/hooks/useCanvasState";
 
-import { Input, Typography } from "@mui/joy";
+import { Box, BoxProps, Divider, Input } from "@mui/joy";
 import { Section } from "@/components/home/side-toolbar/components";
 
 import type { Attributes } from "@/types";
@@ -11,20 +11,58 @@ type ColorProps = {
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
+const colors = ["#000000", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080", "#00FFFF"];
+
+function ColorBox({ active, ...props }: { active: boolean } & BoxProps) {
+    return (
+        <Box
+            sx={({ palette }) => ({
+                width: 28,
+                height: 28,
+                cursor: "pointer",
+                borderRadius: 6,
+                outlineOffset: 2.5,
+                outline: 1,
+                outlineColor: active ? "black" : "transparent",
+                ":hover": { outlineColor: active ? "black" : palette.divider },
+            })}
+            {...props}
+        />
+    );
+}
+
 export default function Color({ placeholder, attribute, handleInputChange }: ColorProps) {
     const { attributes } = useCanvasState();
     const value = attributes && attributes[attribute];
 
     return (
         <Section title={placeholder}>
-            <Input
-                type="color"
-                value={value ? value : ""}
-                slots={{ endDecorator: Typography }}
-                endDecorator={value ? value : "No Color"}
-                onChange={(e) => handleInputChange(attribute, e.target.value)}
-                slotProps={{ input: { sx: { height: "36px" } }, endDecorator: { sx: { pl: 1.25, pr: 4, opacity: value ? 1 : 0.64 } } }}
-            />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                <ColorBox
+                    active={value === null}
+                    onClick={() => handleInputChange(attribute, "")}
+                    style={{
+                        backgroundImage:
+                            "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==')",
+                    }}
+                />
+                <Divider orientation="vertical" />
+                {colors.map((color) => (
+                    <ColorBox
+                        key={color}
+                        active={color === value}
+                        style={{ backgroundColor: color }}
+                        onClick={() => handleInputChange(attribute, color)}
+                    />
+                ))}
+                <Divider orientation="vertical" />
+                <Input
+                    value={value ? value.slice(1, 7) : ""}
+                    startDecorator="#"
+                    style={{ width: 98, minHeight: 28, paddingInline: 6 }}
+                    readOnly
+                />
+            </div>
         </Section>
     );
 }

@@ -4,11 +4,13 @@ import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import Text from "./Text";
-import Color from "./Color";
-import Action from "./Action";
-import Dimensions from "./Dimensions";
 import { Divider, IconButton, Sheet } from "@mui/joy";
+import Text from "@/components/home/side-toolbar/Text";
+import Color from "@/components/home/side-toolbar/Color";
+import Action from "@/components/home/side-toolbar/Action";
+import Opacity from "@/components/home/side-toolbar/Opacity";
+import Dimensions from "@/components/home/side-toolbar/Dimensions";
+import StrokeWidth from "@/components/home/side-toolbar/StrokeWidth";
 
 import type { Attributes, RightSidebarProps } from "@/types";
 import { CgMenuRight, CgClose } from "react-icons/cg";
@@ -37,14 +39,7 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
                 break;
         }
 
-        if (
-            property === "top" ||
-            property === "left" ||
-            property === "width" ||
-            property === "height" ||
-            property === "fill" ||
-            property === "stroke"
-        ) {
+        if (property === "top" || property === "left" || property === "width" || property === "height") {
             clearTimeout(timerRef.current);
             timerRef.current = setTimeout(() => {
                 modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
@@ -58,16 +53,24 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
     const memoizedContent = useMemo(
         () => (
             <Sheet
-                style={{ overflowY: "auto", maxHeight: "calc(100vh - 12rem)", top: 89, right: open ? 24 : -241 }}
-                sx={{ position: "fixed", zIndex: 1, width: 240, borderRadius: 16, transition: "all 0.5s ease-in-out" }}
+                style={{ overflowY: "auto", maxHeight: "calc(100vh - 10.25rem)", top: 89, right: open ? 24 : -241 }}
+                sx={{ position: "fixed", zIndex: 1, width: 240, borderRadius: 16, transition: "right 0.5s ease-in-out" }}
             >
                 <Dimensions {...{ isEditingRef, handleInputChange }} />
                 <Divider />
-                <Text {...{ handleInputChange }} />
+                <Color placeholder="Fill Color" attribute="fill" {...{ handleInputChange }} />
                 <Divider />
-                <Color placeholder="Color" attribute="fill" {...{ handleInputChange }} />
+                <Color placeholder="Stroke Color" attribute="stroke" {...{ handleInputChange }} />
                 <Divider />
-                <Color placeholder="Stroke" attribute="stroke" {...{ handleInputChange }} />
+                <StrokeWidth {...{ handleInputChange }} />
+                <Divider />
+                {attributes?.type === "i-text" ? (
+                    <>
+                        <Text {...{ handleInputChange }} />
+                        <Divider />
+                    </>
+                ) : null}
+                <Opacity {...{ handleInputChange }} />
                 <Divider />
                 <Action {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
             </Sheet>
@@ -90,7 +93,7 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
             {memoizedContent}
             <Sheet
                 style={{ borderRadius: "12px 0 0 12px", top: 108, right: open ? 265 : 0 }}
-                sx={{ p: 0.25, position: "fixed", zIndex: 1, transition: "all 0.5s ease-in-out" }}
+                sx={{ p: 0.25, position: "fixed", zIndex: 1, transition: "right 0.5s ease-in-out" }}
             >
                 <IconButton onClick={() => setOpen(!open)}>{open ? <CgClose /> : <CgMenuRight />}</IconButton>
             </Sheet>

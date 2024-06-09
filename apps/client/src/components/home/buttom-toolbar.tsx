@@ -5,7 +5,7 @@ import { PiMinus, PiPlus } from "react-icons/pi";
 import { useSearchParams } from "react-router-dom";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Stack, Sheet, Button, IconButton, Divider } from "@mui/joy";
+import { Sheet, Button, IconButton, Divider } from "@mui/joy";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const [searchParams] = useSearchParams();
@@ -17,12 +17,11 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     }, []);
 
     return (
-        <Stack
-            direction="row"
-            justifyContent="space-between"
-            sx={{ width: "100%", height: 48, position: "absolute", zIndex: 1, left: 0, bottom: 0 }}
-        >
-            <Sheet style={{ borderLeft: 0, display: "flex", gap: 4, padding: 6, borderRadius: "0 16px 0 0" }}>
+        <>
+            <Sheet
+                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 1 }}
+                style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 16px 0 0" }}
+            >
                 <IconButton
                     onClick={() => {
                         undo();
@@ -41,7 +40,10 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     <GrRedo />
                 </IconButton>
             </Sheet>
-            <Sheet style={{ borderRight: 0, display: "flex", gap: 4, padding: 6, borderRadius: "16px 0 0 0" }}>
+            <Sheet
+                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 1 }}
+                style={{ borderWidth: "1px 0 0 1px", position: "absolute", bottom: 0, right: 0, borderRadius: "16px 0 0 0" }}
+            >
                 <IconButton
                     onClick={() => {
                         if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {
@@ -81,6 +83,6 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     <PiMinus />
                 </IconButton>
             </Sheet>
-        </Stack>
+        </>
     );
 }

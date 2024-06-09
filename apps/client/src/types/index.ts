@@ -39,6 +39,7 @@ export type ShapeData = {
 };
 
 export type Attributes = {
+    type: string;
     top: string;
     left: string;
     width: string;
@@ -50,6 +51,8 @@ export type Attributes = {
     fontWeight: string;
     fill: string;
     stroke: string;
+    strokeWidth: string;
+    opacity: string;
 };
 
 export type Tool =
