@@ -3,9 +3,7 @@ import { Attributes } from "@/types";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { Section } from "@/components/home/side-toolbar/components";
 
-type StrokeWidthProps = {
-    handleInputChange: (property: keyof Attributes, value: string) => void;
-};
+type StrokeWidthProps = { handleInputChange: (property: keyof Attributes, value: string) => void };
 
 export default function StrokeWidth({ handleInputChange }: StrokeWidthProps) {
     const { attributes } = useCanvasState();
@@ -25,15 +23,16 @@ export default function StrokeWidth({ handleInputChange }: StrokeWidthProps) {
     return (
         <Section title="Stroke Width">
             <Slider
-                marks
                 min={0}
                 max={10}
                 step={1}
                 value={value}
-                sx={{ "--Slider-trackSize": "20px" }}
-                style={{ marginTop: 0, marginBottom: -10 }}
                 onChange={(_, value) => handleInputChange("strokeWidth", value.toString())}
                 slotProps={{ track: { style: value === 10 ? { borderRadius: 10 } : undefined }, thumb: { style: thumbStyle() } }}
+                marks={[
+                    { value: 0, label: "0px" },
+                    { value: 10, label: "10px" },
+                ]}
             />
         </Section>
     );

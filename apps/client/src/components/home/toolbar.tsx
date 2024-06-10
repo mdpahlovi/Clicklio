@@ -4,8 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { Fragment, useEffect, useRef } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-
-import { Sheet, IconButton, Stack, Dropdown, MenuButton, Menu, MenuItem } from "@mui/joy";
+import { Sheet, IconButton, Stack, Dropdown, MenuButton, Menu, MenuItem, useColorScheme } from "@mui/joy";
 import type { Tool } from "@/types";
 
 type ToolbarProps = {
@@ -14,6 +13,7 @@ type ToolbarProps = {
 };
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
+    const { mode } = useColorScheme();
     const { setShape } = useShapeState();
     const [searchParams] = useSearchParams();
     const { tool, setTool } = useCanvasState();
@@ -40,16 +40,19 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 case "path-1":
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush.width = 1;
+                    canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
                     break;
 
                 case "path-5":
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush.width = 5;
+                    canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
                     break;
 
                 case "path-10":
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush.width = 10;
+                    canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
                     break;
 
                 case "image":
@@ -66,7 +69,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     break;
             }
         }
-    }, [tool]);
+    }, [tool, mode]);
 
     return (
         <Stack justifyContent="center" sx={{ width: 48, position: "absolute", zIndex: 1, inset: 0 }}>

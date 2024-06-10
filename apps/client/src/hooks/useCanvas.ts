@@ -20,7 +20,7 @@ import { useColorScheme } from "@mui/joy";
 import type { Pointer, Tool } from "@/types";
 
 export function useCanvas() {
-    const { setMode } = useColorScheme();
+    const { mode, setMode } = useColorScheme();
     const { undo, redo } = useShapeState.temporal.getState();
     const { setTool, setZoom, setAttributes } = useCanvasState();
     const { setShape, updateShape, deleteShape } = useShapeState();
@@ -41,13 +41,35 @@ export function useCanvas() {
     const deleteObjectRef = useRef<fabric.Object[]>([]);
     const copiedObjectRef = useRef<fabric.Object[] | null>(null);
 
+    const baseColorRef = useRef<string>();
+
+    useEffect(() => {
+        mode === "light" ? (baseColorRef.current = "#000000") : (baseColorRef.current = "#FFFFFF");
+
+        if (fabricRef.current)
+            fabricRef.current.forEachObject((object) => {
+                switch (mode) {
+                    case "light":
+                        if (object.fill === "#FFFFFF") object.set({ fill: "#000000" });
+                        if (object.stroke === "#FFFFFF") object.set({ stroke: "#000000" });
+                        break;
+                    case "dark":
+                        if (object.fill === "#000000") object.set({ fill: "#FFFFFF" });
+                        if (object.stroke === "#000000") object.set({ stroke: "#FFFFFF" });
+                        break;
+                }
+            });
+
+        fabricRef.current?.requestRenderAll();
+    }, [mode]);
+
     useEffect(() => {
         roomRef.current = searchParams.get("room");
 
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
         canvas.on("mouse:down", (options) => {
-            handleCanvasMouseDown({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef });
+            handleCanvasMouseDown({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef, baseColorRef });
         });
 
         canvas.on("mouse:move", (options) => {

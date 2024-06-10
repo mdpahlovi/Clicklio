@@ -108,6 +108,7 @@ export type CanvasMouseDown = {
     isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
+    baseColorRef: React.MutableRefObject<string | undefined>;
 };
 
 export type CanvasMouseMove = {

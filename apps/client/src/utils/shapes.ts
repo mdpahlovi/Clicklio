@@ -4,51 +4,51 @@ import { v4 as uuidv4 } from "uuid";
 import type { Pointer, ElementDirection, ImageUpload, ModifyShape, Tool } from "@/types";
 import { socket } from "./socket";
 
-export const createRectangle = (pointer: Pointer) => {
+export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
     return new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
         width: 0,
         height: 0,
-        fill: "#000000",
+        fill: baseColorRef.current,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Rect);
 };
 
-export const createTriangle = (pointer: Pointer) => {
+export const createTriangle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
     return new fabric.Triangle({
         left: pointer.x,
         top: pointer.y,
         width: 0,
         height: 0,
-        fill: "#000000",
+        fill: baseColorRef.current,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Triangle);
 };
 
-export const createCircle = (pointer: Pointer) => {
+export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
     return new fabric.Circle({
         left: pointer.x,
         top: pointer.y,
         radius: 0,
-        fill: "#000000",
+        fill: baseColorRef.current,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Circle);
 };
 
-export const createLine = (pointer: Pointer) => {
+export const createLine = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
-        stroke: "#000000",
+        stroke: baseColorRef.current,
         strokeWidth: 2,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Line);
 };
 
-export const createText = (pointer: Pointer, text: string) => {
-    return new fabric.IText(text, {
+export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
+    return new fabric.IText("Tap To Type", {
         left: pointer.x,
         top: pointer.y,
-        fill: "#000000",
+        fill: baseColorRef.current,
         fontFamily: "Helvetica",
         fontSize: 36,
         fontWeight: "400",
@@ -56,22 +56,22 @@ export const createText = (pointer: Pointer, text: string) => {
     } as { objectId: string } & fabric.IText);
 };
 
-export const createSpecificShape = (shape: Tool | null, pointer: Pointer) => {
+export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
     switch (shape) {
         case "rect":
-            return createRectangle(pointer);
+            return createRectangle(pointer, baseColorRef);
 
         case "triangle":
-            return createTriangle(pointer);
+            return createTriangle(pointer, baseColorRef);
 
         case "circle":
-            return createCircle(pointer);
+            return createCircle(pointer, baseColorRef);
 
         case "line":
-            return createLine(pointer);
+            return createLine(pointer, baseColorRef);
 
         case "i-text":
-            return createText(pointer, "Tap To Type");
+            return createText(pointer, baseColorRef);
 
         default:
             return null;
@@ -86,7 +86,7 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
             image.scaleToWidth(160);
             image.scaleToHeight(160);
             // @ts-ignore
-            image.set({ objectId: uuidv4(), fill: "#000000" });
+            image.set({ objectId: uuidv4() });
 
             // sync shape in storage
             // @ts-ignore
