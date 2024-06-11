@@ -7,7 +7,7 @@ export default function HelpModal() {
     const { helpModal, toggleHelpModal } = useCanvasState();
 
     return (
-        <Modal open={helpModal} onClose={toggleHelpModal} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Modal open={helpModal} onClose={toggleHelpModal}>
             <Sheet
                 style={{ maxHeight: "80vh", overflowY: "scroll" }}
                 sx={{ minWidth: { xs: "100%", lg: 768 }, borderRadius: "md", boxShadow: "lg" }}

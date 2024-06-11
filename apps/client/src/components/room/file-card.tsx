@@ -94,7 +94,7 @@ export default function FileCard({ file, refetch }: { file: { id: string } & Fil
                     {updatedAt.toDate().toDateString()}, {updatedAt.toDate().toLocaleTimeString()}
                 </Typography>
             </Card>
-            <Modal open={open} onClose={() => setOpen(false)} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Modal open={open} onClose={() => setOpen(false)}>
                 <Sheet variant="outlined" sx={{ maxWidth: 512, borderRadius: "md", p: 3, boxShadow: "lg" }}>
                     <ModalClose variant="plain" sx={{ m: 1 }} />
                     <Typography level="h4" fontWeight="lg" mb={1}>

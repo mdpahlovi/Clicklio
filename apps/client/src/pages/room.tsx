@@ -6,6 +6,7 @@ import { collection, getDocs, Timestamp } from "firebase/firestore";
 import Logo from "@/components/ui/logo";
 import NewFile from "@/components/room/new-file";
 import FileCard from "@/components/room/file-card";
+import FileLoader from "@/components/room/file-loader";
 import Navigation from "@/layout/dashboard/navigation";
 import { Box, DialogTitle, Drawer, ModalClose } from "@mui/joy";
 
@@ -14,7 +15,7 @@ export type File = { name: string; shapes: fabric.Object[]; image: string; updat
 export default function RoomPage() {
     const { sidebar, toggleSidebar } = useBasicState();
 
-    const { data, refetch } = useQuery({
+    const { data, isLoading, refetch } = useQuery({
         queryKey: "shapes",
         queryFn: async () => {
             const shapes = await getDocs(collection(db, "shapes"));
@@ -26,7 +27,7 @@ export default function RoomPage() {
         <>
             <Box component="main" className="fileTemplateColumn" sx={{ gap: 2, p: 2 }}>
                 <NewFile />
-                {data?.length ? data.map((file) => <FileCard key={file.id} {...{ file, refetch }} />) : null}
+                {isLoading ? <FileLoader /> : data?.length ? data.map((file, idx) => <FileCard key={idx} {...{ file, refetch }} />) : null}
             </Box>
 
             <Drawer open={sidebar} onClose={toggleSidebar} sx={{ display: { xl: "none" } }}>

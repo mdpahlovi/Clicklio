@@ -43,7 +43,7 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
     };
 
     return (
-        <Modal open={shareModal} onClose={toggleShareModal} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Modal open={shareModal} onClose={toggleShareModal}>
             <Sheet sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}>
                 <ModalClose variant="plain" sx={{ m: 1 }} />
                 <Typography component="h2" fontWeight="lg" mb={1}>
