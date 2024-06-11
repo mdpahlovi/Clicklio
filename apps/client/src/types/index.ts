@@ -92,6 +92,11 @@ export type ImageUpload = {
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     isEditingRef: React.MutableRefObject<boolean>;
+};
+
+export type ToolbarProps = {
+    fabricRef: React.RefObject<fabric.Canvas | null>;
+    selectedToolRef: React.MutableRefObject<Tool | null>;
     pasteTimeRef: React.MutableRefObject<number | null>;
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
 };

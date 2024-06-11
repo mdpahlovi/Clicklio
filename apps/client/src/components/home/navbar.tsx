@@ -7,7 +7,7 @@ import ThemeToggle from "@/components/ui/theme-toggle";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { PiShareFat, PiQuestion } from "react-icons/pi";
 import AuthDropdown from "@/components/ui/auth-dropdown";
-import { Box, Button, Divider, Sheet, Stack } from "@mui/joy";
+import { Box, Button, Divider, IconButton, Sheet, Stack } from "@mui/joy";
 
 export default function Navbar() {
     const { user } = useAuthState();
@@ -19,15 +19,17 @@ export default function Navbar() {
             style={{ borderWidth: "0 0 1px 0" }}
             sx={{ height: 64, px: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}
         >
-            <Box sx={{ display: { xs: "block", sm: "none" } }} />
             <Logo sx={{ display: { xs: "none", sm: "block" } }} />
-            <Stack direction="row" alignItems="center" spacing={{ xs: 1.5, md: 2.5 }}>
+            <Box sx={{ display: { xs: "block", sm: "none" } }} style={{ height: 40 }}>
+                <img src="/logo/icon.png" alt="" width={40} height={40} />
+            </Box>
+            <Stack direction="row" alignItems="center" gap={{ xs: 1.5, md: 2.5 }}>
                 <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={toggleShareModal}>
                     Share
                 </Button>
                 <ThemeToggle />
-                <Divider orientation="vertical" />
-                <IconButton onClick={toggleHelpModal}>
+                <Divider orientation="vertical" sx={{ mr: { xs: 1, sm: 0 } }} />
+                <IconButton onClick={toggleHelpModal} sx={{ display: { xs: "none", sm: "inline-flex" } }}>
                     <PiQuestion size={24} />
                 </IconButton>
 
@@ -40,13 +42,5 @@ export default function Navbar() {
                 )}
             </Stack>
         </Sheet>
-    );
-}
-
-function IconButton({ children, style, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-    return (
-        <div style={{ userSelect: "none", display: "flex", cursor: "pointer", ...style }} {...props}>
-            {children}
-        </div>
     );
 }

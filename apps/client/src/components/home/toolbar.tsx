@@ -4,19 +4,15 @@ import { useSearchParams } from "react-router-dom";
 import { Fragment, useEffect, useRef } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Sheet, IconButton, Stack, Dropdown, MenuButton, Menu, MenuItem, useColorScheme } from "@mui/joy";
-import type { Tool } from "@/types";
+import { handleCopy, handleDelete, handlePaste } from "@/utils/key-events";
+import { Sheet, IconButton, Dropdown, MenuButton, Menu, MenuItem, useColorScheme } from "@mui/joy";
+import type { ToolbarProps } from "@/types";
 
-type ToolbarProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
-    selectedToolRef: React.MutableRefObject<Tool | null>;
-};
-
-export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
+export default function Toolbar({ fabricRef, selectedToolRef, pasteTimeRef, copiedObjectRef }: ToolbarProps) {
     const { mode } = useColorScheme();
-    const { setShape } = useShapeState();
     const [searchParams] = useSearchParams();
     const { tool, setTool } = useCanvasState();
+    const { setShape, deleteShape } = useShapeState();
     const imageInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -72,71 +68,102 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     }, [tool, mode]);
 
     return (
-        <Stack justifyContent="center" sx={{ width: 48, position: "absolute", zIndex: 1, inset: 0 }}>
-            <Sheet style={{ borderLeft: 0, display: "grid", gap: 4, padding: 6, borderRadius: "0 16px 16px 0" }}>
-                {navElements.map(({ value, values, icon, type, children }, idx) => {
-                    switch (type) {
-                        case "tool":
-                            return (
-                                <IconButton
-                                    key={idx}
-                                    onClick={() => value && setTool(value)}
-                                    variant={value === tool ? "solid" : "plain"}
-                                    color={value === tool ? "primary" : "neutral"}
+        <Sheet
+            sx={{ position: "absolute", zIndex: 1, inset: 0, top: 24, bottom: 73, my: "auto", p: 0.75, width: 36 }}
+            style={{ borderLeft: 0, borderRadius: "0 16px 16px 0", display: "grid", gap: 4, overflowY: "auto", maxHeight: 366 }}
+        >
+            {navElements.map(({ value, values, icon, type, children }, idx) => {
+                switch (type) {
+                    case "tool":
+                        return (
+                            <IconButton
+                                key={idx}
+                                onClick={() => value && setTool(value)}
+                                variant={value === tool ? "solid" : "plain"}
+                                color={value === tool ? "primary" : "neutral"}
+                            >
+                                {icon}
+                            </IconButton>
+                        );
+                    case "dropdown":
+                        return (
+                            <Dropdown key={idx}>
+                                <MenuButton
+                                    slots={{ root: IconButton }}
+                                    slotProps={{
+                                        root: {
+                                            variant: values?.includes(tool) ? "solid" : "plain",
+                                            color: values?.includes(tool) ? "primary" : "neutral",
+                                        },
+                                    }}
                                 >
                                     {icon}
-                                </IconButton>
-                            );
-                        case "dropdown":
-                            return (
-                                <Dropdown key={idx}>
-                                    <MenuButton
-                                        slots={{ root: IconButton }}
-                                        slotProps={{
-                                            root: {
-                                                variant: values?.includes(tool) ? "solid" : "plain",
-                                                color: values?.includes(tool) ? "primary" : "neutral",
-                                            },
-                                        }}
-                                    >
-                                        {icon}
-                                    </MenuButton>
-                                    <Menu sx={{ flexDirection: "row", gap: 0.5, padding: 0.75, margin: "0 0 0 16px !important" }}>
-                                        {children?.length &&
-                                            children.map(({ icon, value }, idx) => (
-                                                <MenuItem
-                                                    key={idx}
-                                                    slots={{ root: IconButton }}
-                                                    slotProps={{
-                                                        root: {
-                                                            onClick: () => setTool(value),
-                                                            variant: value === tool ? "solid" : "plain",
-                                                            color: value === tool ? "primary" : "neutral",
-                                                        },
-                                                    }}
-                                                >
-                                                    {icon}
-                                                </MenuItem>
-                                            ))}
-                                    </Menu>
-                                </Dropdown>
-                            );
-                        case "divider":
-                            return <Fragment key={idx}>{icon}</Fragment>;
-                    }
-                })}
+                                </MenuButton>
+                                <Menu sx={{ flexDirection: "row", gap: 0.5, padding: 0.75, margin: "0 0 0 16px !important" }}>
+                                    {children?.length &&
+                                        children.map(({ icon, value }, idx) => (
+                                            <MenuItem
+                                                key={idx}
+                                                slots={{ root: IconButton }}
+                                                slotProps={{
+                                                    root: {
+                                                        onClick: () => setTool(value),
+                                                        variant: value === tool ? "solid" : "plain",
+                                                        color: value === tool ? "primary" : "neutral",
+                                                    },
+                                                }}
+                                            >
+                                                {icon}
+                                            </MenuItem>
+                                        ))}
+                                </Menu>
+                            </Dropdown>
+                        );
 
-                <input
-                    hidden
-                    type="file"
-                    accept="image/*"
-                    ref={imageInputRef}
-                    onChange={(e) =>
-                        e?.target?.files?.length &&
-                        handleImageUpload({ file: e.target.files[0], room: searchParams.get("room"), fabricRef, setShape })
-                    }
-                />
-            </Sheet>
-        </Stack>
+                    case "duplicate":
+                        return (
+                            <IconButton
+                                key={idx}
+                                onClick={() => {
+                                    if (fabricRef.current) {
+                                        handleCopy(fabricRef.current, copiedObjectRef);
+                                        handlePaste(fabricRef.current, searchParams.get("room"), pasteTimeRef, copiedObjectRef, setShape);
+                                    }
+                                }}
+                                disabled={!fabricRef.current || !fabricRef.current.getActiveObject()}
+                            >
+                                {icon}
+                            </IconButton>
+                        );
+
+                    case "delete":
+                        return (
+                            <IconButton
+                                key={idx}
+                                onClick={() =>
+                                    fabricRef.current ? handleDelete(fabricRef.current, searchParams.get("room"), deleteShape) : null
+                                }
+                                disabled={!fabricRef.current || !fabricRef.current.getActiveObject()}
+                            >
+                                {icon}
+                            </IconButton>
+                        );
+
+                    case "divider":
+                        return <Fragment key={idx}>{icon}</Fragment>;
+                }
+            })}
+
+            <input
+                hidden
+                type="file"
+                accept="image/*"
+                ref={imageInputRef}
+                onChange={(e) =>
+                    e?.target?.files?.length &&
+                    handleImageUpload({ file: e.target.files[0], room: searchParams.get("room"), fabricRef, setShape })
+                }
+            />
+        </Sheet>
     );
 }

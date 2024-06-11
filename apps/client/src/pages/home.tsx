@@ -16,6 +16,7 @@ import SideToolbar from "@/components/home/side-toolbar";
 import RemoteCursor from "@/components/ui/remote-cursor";
 import BottomToolbar from "@/components/home/buttom-toolbar";
 import CanvasContainer from "@/components/home/canvas-container";
+import { Box } from "@mui/joy";
 
 export default function HomePage() {
     const { undo, redo } = useShapeState.temporal.getState();
@@ -75,16 +76,14 @@ export default function HomePage() {
     }, []);
 
     return (
-        <>
+        <Box sx={{ position: "fixed", width: "100vw", height: "100vh" }}>
             <Navbar />
             <div style={{ display: "flex" }}>
                 <Sidebar {...{ saveShapes, isUpToDate }} />
-
-                <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
-
                 <CanvasContainer>
                     <RemoteCursor {...{ roomRef }} />
-                    <Toolbar {...{ fabricRef, selectedToolRef }} />
+                    <SideToolbar {...{ fabricRef, isEditingRef }} />
+                    <Toolbar {...{ fabricRef, selectedToolRef, pasteTimeRef, copiedObjectRef }} />
                     <BottomToolbar {...{ fabricRef }} />
                     <canvas ref={canvasRef} />
                 </CanvasContainer>
@@ -93,6 +92,6 @@ export default function HomePage() {
             <AuthModal />
             <HelpModal />
             <ShareModal {...{ roomRef }} />
-        </>
+        </Box>
     );
 }

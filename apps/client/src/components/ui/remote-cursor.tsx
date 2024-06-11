@@ -42,7 +42,7 @@ export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObj
     }, []);
 
     return cursor.map(({ id, name, x, y }) => (
-        <div style={id ? { position: "absolute", zIndex: 1, top: y, left: x } : { display: "none" }}>
+        <div style={id ? { position: "fixed", zIndex: 1, top: y, left: x } : { display: "none" }}>
             <RxCursorArrow />
             <div
                 style={{

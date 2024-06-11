@@ -27,11 +27,7 @@ export default function NewFile() {
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gridTemplateRows: "1fr 47px", gap: 1.5 }}>
-            <Card
-                component="label"
-                htmlFor={id}
-                sx={{ justifyContent: "center", alignItems: "center", aspectRatio: { xs: "16 / 9", sm: "auto" } }}
-            >
+            <Card component="label" htmlFor={id} className="newFileCard">
                 <MdAdd size={64} style={{ padding: "24px 0" }} />
             </Card>
             <Input

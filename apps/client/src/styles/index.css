@@ -20,6 +20,12 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
+.newFileCard {
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 16 / 9;
+}
+
 .fileTemplateColumn {
     height: max-content;
     display: grid;
@@ -28,6 +34,9 @@ input[type="number"] {
 @media only screen and (min-width: 544px) {
     .fileTemplateColumn {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .newFileCard {
+        aspect-ratio: auto;
     }
 }
 

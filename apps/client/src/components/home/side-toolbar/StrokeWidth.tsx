@@ -13,10 +13,10 @@ export default function StrokeWidth({ handleInputChange }: StrokeWidthProps) {
         switch (value) {
             case 0:
                 return { left: 9 };
-            case 10:
+            case 20:
                 return { left: `calc(100% - 9px)` };
             default:
-                return { left: `${value * 10}%` };
+                return { left: `${value * 5}%` };
         }
     };
 
@@ -24,14 +24,14 @@ export default function StrokeWidth({ handleInputChange }: StrokeWidthProps) {
         <Section title="Stroke Width">
             <Slider
                 min={0}
-                max={10}
+                max={20}
                 step={1}
                 value={value}
                 onChange={(_, value) => handleInputChange("strokeWidth", value.toString())}
-                slotProps={{ track: { style: value === 10 ? { borderRadius: 10 } : undefined }, thumb: { style: thumbStyle() } }}
+                slotProps={{ track: { style: value === 20 ? { borderRadius: 10 } : undefined }, thumb: { style: thumbStyle() } }}
                 marks={[
                     { value: 0, label: "0px" },
-                    { value: 10, label: "10px" },
+                    { value: 20, label: "20px" },
                 ]}
             />
         </Section>
