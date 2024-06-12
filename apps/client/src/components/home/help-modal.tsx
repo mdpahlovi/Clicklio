@@ -41,13 +41,14 @@ function KeyboardShortcuts({ title, shortcuts }: { title: string; shortcuts: { n
                             <Typography>{name}</Typography>
 
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                {key.split(" ").map((k, i) => (
+                                {key.split(" ").map((key, idx) => (
                                     <Typography
-                                        variant={i === 1 ? undefined : "soft"}
-                                        color={i === 1 ? undefined : "primary"}
+                                        key={idx}
+                                        variant={idx === 1 ? undefined : "soft"}
+                                        color={idx === 1 ? undefined : "primary"}
                                         fontSize={14}
                                     >
-                                        {k}
+                                        {key}
                                     </Typography>
                                 ))}
                             </div>

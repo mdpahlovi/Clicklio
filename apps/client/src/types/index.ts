@@ -184,6 +184,7 @@ export type WindowKeyDown = {
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setMode: (mode: "light" | "dark" | null) => void;
+    setRefresh: () => void;
 };
 
 export type CursorChatProps = {

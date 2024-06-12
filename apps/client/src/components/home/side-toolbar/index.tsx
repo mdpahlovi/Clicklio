@@ -56,18 +56,18 @@ export default function SideToolbar({ fabricRef, isEditingRef }: RightSidebarPro
             >
                 <Dimensions {...{ isEditingRef, handleInputChange }} />
                 <Divider />
-                <Color placeholder="Fill Color" attribute="fill" {...{ handleInputChange }} />
-                <Divider />
-                <Color placeholder="Stroke Color" attribute="stroke" {...{ handleInputChange }} />
-                <Divider />
-                <StrokeWidth {...{ handleInputChange }} />
-                <Divider />
                 {attributes?.type === "i-text" ? (
                     <>
                         <Text {...{ handleInputChange }} />
                         <Divider />
                     </>
                 ) : null}
+                <Color placeholder="Fill Color" attribute="fill" {...{ handleInputChange }} />
+                <Divider />
+                <Color placeholder="Stroke Color" attribute="stroke" {...{ handleInputChange }} />
+                <Divider />
+                <StrokeWidth {...{ handleInputChange }} />
+                <Divider />
                 <Opacity {...{ handleInputChange }} />
             </Sheet>
         ),

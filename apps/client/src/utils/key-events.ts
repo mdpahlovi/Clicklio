@@ -91,6 +91,7 @@ export const handleKeyDown = ({
     setTool,
     setZoom,
     setMode,
+    setRefresh,
 }: WindowKeyDown) => {
     const zoom = canvas?.getZoom();
     const light = localStorage.getItem("joy-mode") === "light";
@@ -169,11 +170,13 @@ export const handleKeyDown = ({
     // check if the key pressed is ctrl/cmd + z (undo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90) {
         undo();
+        setRefresh();
         socket.emit("undo:shape", { room: roomRef.current, status: true });
     }
     // check if the key pressed is ctrl/cmd + y (redo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 89) {
         redo();
+        setRefresh();
         socket.emit("redo:shape", { room: roomRef.current, status: true });
     }
     // check if the key pressed is space (panning)

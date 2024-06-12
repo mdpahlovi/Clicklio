@@ -22,8 +22,8 @@ import type { Pointer, Tool } from "@/types";
 export function useCanvas() {
     const { mode, setMode } = useColorScheme();
     const { undo, redo } = useShapeState.temporal.getState();
-    const { setTool, setZoom, setAttributes } = useCanvasState();
     const { setShape, updateShape, deleteShape } = useShapeState();
+    const { setTool, setZoom, setAttributes, setRefresh } = useCanvasState();
 
     const [searchParams] = useSearchParams();
     const roomRef = useRef<string | null>(null);
@@ -124,6 +124,7 @@ export function useCanvas() {
                 setTool,
                 setZoom,
                 setMode,
+                setRefresh,
             })
         );
 
@@ -146,6 +147,7 @@ export function useCanvas() {
                     setTool,
                     setZoom,
                     setMode,
+                    setRefresh,
                 })
             );
         };
