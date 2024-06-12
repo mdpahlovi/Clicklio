@@ -57,7 +57,7 @@ export default function MyProfile() {
                         <Stack direction="column" spacing={2}>
                             <Stack direction={{ md: "row" }}>
                                 <FormImage name="image" disabled={!editProfile} />
-                                <Stack spacing={1} sx={{ flexGrow: 1, pt: { xs: 2, md: 0 } }}>
+                                <Stack spacing={1} sx={{ flexGrow: 1, pt: { xs: 2, md: 0 }, pl: { md: 2 } }}>
                                     <FormInput name="first_name" label="First Name" disabled={!editProfile} />
                                     <FormInput name="last_name" label="Last Name" disabled={!editProfile} />
                                 </Stack>

@@ -23,10 +23,19 @@ export default function Toolbar({ fabricRef, selectedToolRef, pasteTimeRef, copi
             canvas.selection = false;
             canvas.isDrawingMode = false;
             canvas.defaultCursor = "default";
+            canvas.hoverCursor = "all-scroll";
+            canvas.forEachObject((object) => {
+                object.evented = true;
+                object.selectable = true;
+            });
 
             switch (tool) {
                 case "panning":
                     canvas.defaultCursor = "grab";
+                    canvas.forEachObject((object) => {
+                        object.evented = false;
+                        object.selectable = false;
+                    });
                     break;
 
                 case "select":
@@ -57,7 +66,8 @@ export default function Toolbar({ fabricRef, selectedToolRef, pasteTimeRef, copi
                     break;
 
                 case "eraser":
-                    canvas.defaultCursor = circle;
+                    canvas.defaultCursor = circle(mode);
+                    canvas.hoverCursor = circle(mode);
                     break;
 
                 default:
