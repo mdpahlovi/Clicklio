@@ -9,7 +9,6 @@ import { usePeriodicSave } from "@/hooks/usePeriodicSave";
 import Navbar from "@/components/home/navbar";
 import Toolbar from "@/components/home/toolbar";
 import Sidebar from "@/components/home/sidebar";
-import AuthModal from "@/components/home/auth-modal";
 import HelpModal from "@/components/home/help-modal";
 import ShareModal from "@/components/home/share-modal";
 import SideToolbar from "@/components/home/side-toolbar";
@@ -89,7 +88,6 @@ export default function HomePage() {
                 </CanvasContainer>
             </div>
 
-            <AuthModal />
             <HelpModal />
             <ShareModal {...{ roomRef }} />
         </Box>

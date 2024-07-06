@@ -1,32 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 import { socket } from "@/utils/socket";
 import { useSearchParams } from "react-router-dom";
-import { useAuthState } from "@/hooks/useAuthState";
 import { useRoomState } from "@/hooks/useRoomState";
 
 import { FaRegCopy, FaStop, FaPlay } from "react-icons/fa6";
 import { Button, Divider, Input, Modal, ModalClose, Sheet, Stack, Typography } from "@mui/joy";
 
 export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
-    const { user, setUser } = useAuthState();
     const { shareModal, toggleShareModal } = useRoomState();
     const [searchParams, setSearchParams] = useSearchParams();
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        // @ts-ignore
-        const formData = new FormData(event.target);
-        const formProps = Object.fromEntries(formData);
-
-        // @ts-ignore
-        !user?.id ? setUser({ ...formProps }) : null;
-
-        const room = uuidv4();
-        roomRef.current = room;
-        setSearchParams({ room });
-        socket.emit("join:room", { room });
-    };
 
     const removeRoomParam = () => {
         const room = searchParams.get("room");
@@ -83,12 +65,17 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
                             Invite people to collaborate on your drawing. Don't worry, the session is end-to-end encrypted, and fully
                             private. Not even our server can see what you draw.
                         </Typography>
-                        <form onSubmit={handleSubmit}>
-                            <Input name="name" placeholder="Your Name" defaultValue={user?.name} sx={{ mb: 2 }} required />
-                            <Button type="submit" startDecorator={<FaPlay size={18} />}>
-                                Start Session
-                            </Button>
-                        </form>
+                        <Button
+                            onClick={() => {
+                                const room = uuidv4();
+                                roomRef.current = room;
+                                setSearchParams({ room });
+                                socket.emit("join:room", { room });
+                            }}
+                            startDecorator={<FaPlay size={18} />}
+                        >
+                            Start Session
+                        </Button>
                     </>
                 )}
             </Sheet>

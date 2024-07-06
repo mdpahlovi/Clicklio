@@ -41,7 +41,7 @@ export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObj
         timerRef.current = setTimeout(() => deleteCursor(cursor.id), 500);
     }, []);
 
-    return cursor.map(({ id, name, x, y }) => (
+    return cursor.map(({ id, name, x, y }, idx) => (
         <div key={id} style={id ? { position: "fixed", zIndex: 1, top: y, left: x } : { display: "none" }}>
             <RxCursorArrow />
             <div
@@ -52,7 +52,9 @@ export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObj
                     border: `1px solid ${palette.divider}`,
                 }}
             >
-                <p style={{ color: palette.text.primary, fontSize: 14, fontFamily: "Poppins", whiteSpace: "nowrap" }}>{name}</p>
+                <p style={{ color: palette.text.primary, fontSize: 14, fontFamily: "Poppins", whiteSpace: "nowrap" }}>
+                    {name ? name : `Guest ${String(idx + 1).padStart(2, "0")}`}
+                </p>
             </div>
         </div>
     ));
