@@ -1,3 +1,4 @@
+import { fabric } from "fabric";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { handleKeyDown } from "@/utils/key-events";

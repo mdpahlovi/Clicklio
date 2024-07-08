@@ -1,5 +1,5 @@
 import { Slider } from "@mui/joy";
-import { Attributes } from "@/types";
+import type { Attributes } from "@/types";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { Section } from "@/components/home/side-toolbar/components";
 

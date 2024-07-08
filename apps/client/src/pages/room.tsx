@@ -1,3 +1,4 @@
+import { fabric } from "fabric";
 import { db } from "@/utils/firebase";
 import { useQuery } from "react-query";
 import { useBasicState } from "@/hooks/useBasicState";

@@ -1,5 +1,5 @@
-import { Attributes, Tool } from "@/types";
 import { create } from "zustand";
+import type { Attributes, Tool } from "@/types";
 
 type CanvasStateStore = {
     tool: Tool;

@@ -1,9 +1,7 @@
-import { useCanvasState } from "@/hooks/useCanvasState";
-
 import { Input } from "@mui/joy";
-import { DoubleColumn, Section } from "@/components/home/side-toolbar/components";
-
 import type { Attributes } from "@/types";
+import { useCanvasState } from "@/hooks/useCanvasState";
+import { DoubleColumn, Section } from "@/components/home/side-toolbar/components";
 
 type Property = "top" | "left" | "width" | "height";
 const dimensionsOptions: { label: string; property: Property; placeholder: string }[] = [

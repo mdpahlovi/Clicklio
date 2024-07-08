@@ -4,15 +4,14 @@ import { useSearchParams } from "react-router-dom";
 import { Fragment, useEffect, useRef } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { handleCopy, handleDelete, handlePaste } from "@/utils/key-events";
 import { Sheet, IconButton, Dropdown, MenuButton, Menu, MenuItem, useColorScheme } from "@mui/joy";
 import type { ToolbarProps } from "@/types";
 
-export default function Toolbar({ fabricRef, selectedToolRef, pasteTimeRef, copiedObjectRef }: ToolbarProps) {
+export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { mode } = useColorScheme();
+    const { setShape } = useShapeState();
     const [searchParams] = useSearchParams();
     const { tool, setTool } = useCanvasState();
-    const { setShape, deleteShape } = useShapeState();
     const imageInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -80,7 +79,7 @@ export default function Toolbar({ fabricRef, selectedToolRef, pasteTimeRef, copi
     return (
         <Sheet
             sx={{ position: "absolute", zIndex: 1, inset: 0, top: 24, bottom: 73, my: "auto", p: 0.75, width: 36 }}
-            style={{ borderLeft: 0, borderRadius: "0 16px 16px 0", display: "grid", gap: 4, overflowY: "auto", maxHeight: 366 }}
+            style={{ borderLeft: 0, borderRadius: "0 24px 24px 0", display: "grid", gap: 4, overflowY: "auto", maxHeight: 286 }}
         >
             {navElements.map(({ value, values, icon, type, children }, idx) => {
                 switch (type) {
@@ -128,35 +127,6 @@ export default function Toolbar({ fabricRef, selectedToolRef, pasteTimeRef, copi
                                         ))}
                                 </Menu>
                             </Dropdown>
-                        );
-
-                    case "duplicate":
-                        return (
-                            <IconButton
-                                key={idx}
-                                onClick={() => {
-                                    if (fabricRef.current) {
-                                        handleCopy(fabricRef.current, copiedObjectRef);
-                                        handlePaste(fabricRef.current, searchParams.get("room"), pasteTimeRef, copiedObjectRef, setShape);
-                                    }
-                                }}
-                                disabled={!fabricRef.current || !fabricRef.current.getActiveObject()}
-                            >
-                                {icon}
-                            </IconButton>
-                        );
-
-                    case "delete":
-                        return (
-                            <IconButton
-                                key={idx}
-                                onClick={() =>
-                                    fabricRef.current ? handleDelete(fabricRef.current, searchParams.get("room"), deleteShape) : null
-                                }
-                                disabled={!fabricRef.current || !fabricRef.current.getActiveObject()}
-                            >
-                                {icon}
-                            </IconButton>
                         );
 
                     case "divider":

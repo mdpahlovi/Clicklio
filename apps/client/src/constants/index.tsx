@@ -2,8 +2,6 @@ import { Divider } from "@mui/joy";
 import { LuShapes } from "react-icons/lu";
 import { TfiPencil } from "react-icons/tfi";
 import { LiaHandPaper } from "react-icons/lia";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { IoDuplicateOutline } from "react-icons/io5";
 import { IoIosBrush, IoMdBrush } from "react-icons/io";
 import { CiEraser, CiImageOn, CiText } from "react-icons/ci";
 import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus } from "react-icons/pi";
@@ -15,7 +13,7 @@ export const navElements: {
     name?: string;
     values?: Tool[];
     icon: React.ReactNode;
-    type: "tool" | "divider" | "dropdown" | "duplicate" | "delete";
+    type: "tool" | "divider" | "dropdown";
     children?: { value: Tool; name: string; icon: React.ReactNode }[];
 }[] = [
     { icon: <LiaHandPaper />, name: "Panning", value: "panning", type: "tool" },
@@ -46,10 +44,8 @@ export const navElements: {
     },
     { icon: <CiText />, name: "Text", value: "i-text", type: "tool" },
     { icon: <CiImageOn />, name: "Image", value: "image", type: "tool" },
-    { icon: <CiEraser />, name: "Eraser", value: "eraser", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
-    { icon: <IoDuplicateOutline />, name: "Duplicate", type: "duplicate" },
-    { icon: <RiDeleteBin5Line />, name: "Delete", type: "delete" },
+    { icon: <CiEraser />, name: "Eraser", value: "eraser", type: "tool" },
 ];
 
 export const fontFamilyOptions = [

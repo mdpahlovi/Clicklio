@@ -81,8 +81,8 @@ export default function HomePage() {
                 <Sidebar {...{ saveShapes, isUpToDate }} />
                 <CanvasContainer>
                     <RemoteCursor {...{ roomRef }} />
-                    <SideToolbar {...{ fabricRef, isEditingRef }} />
-                    <Toolbar {...{ fabricRef, selectedToolRef, pasteTimeRef, copiedObjectRef }} />
+                    <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
+                    <Toolbar {...{ fabricRef, selectedToolRef }} />
                     <BottomToolbar {...{ fabricRef }} />
                     <canvas ref={canvasRef} />
                 </CanvasContainer>

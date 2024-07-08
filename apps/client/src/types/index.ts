@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { fabric } from "fabric";
 import { Gradient, Pattern } from "fabric/fabric-impl";
 
 export enum CursorMode {
@@ -92,13 +92,19 @@ export type ImageUpload = {
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     isEditingRef: React.MutableRefObject<boolean>;
+    pasteTimeRef: React.MutableRefObject<number | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
+};
+
+export type ActionsProps = {
+    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    pasteTimeRef: React.MutableRefObject<number | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
 };
 
 export type ToolbarProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
-    pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
 };
 
 export type InitializeFabric = {
@@ -149,7 +155,7 @@ export type CanvasObjectModified = {
 export type CanvasPathCreated = {
     roomRef: React.MutableRefObject<string | null>;
     setShape: (shape: fabric.Object) => void;
-    options: any;
+    options: { path: fabric.Object };
 };
 
 export type CanvasSelectionCreated = {

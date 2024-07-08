@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
-import { WindowKeyDown } from "@/types";
 import { socket } from "@/utils/socket";
+import type { WindowKeyDown } from "@/types";
 
 export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>) => {
     const activeObjects = canvas.getActiveObjects();

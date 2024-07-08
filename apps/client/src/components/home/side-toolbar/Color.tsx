@@ -1,6 +1,6 @@
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Box, BoxProps, Divider, Input, useColorScheme } from "@mui/joy";
 import { Section } from "@/components/home/side-toolbar/components";
+import { Box, BoxProps, Divider, Input, useColorScheme } from "@mui/joy";
 
 import type { Attributes } from "@/types";
 

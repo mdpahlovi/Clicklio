@@ -1,3 +1,4 @@
+import { fabric } from "fabric";
 import { useEffect } from "react";
 import { socket } from "@/utils/socket";
 import { GrUndo, GrRedo } from "react-icons/gr";
@@ -20,7 +21,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
         <>
             <Sheet
                 sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 1 }}
-                style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 16px 0 0" }}
+                style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 24px 0 0" }}
             >
                 <IconButton
                     onClick={() => {
@@ -42,7 +43,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
             </Sheet>
             <Sheet
                 sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 1 }}
-                style={{ borderWidth: "1px 0 0 1px", position: "absolute", bottom: 0, right: 0, borderRadius: "16px 0 0 0" }}
+                style={{ borderWidth: "1px 0 0 1px", position: "absolute", bottom: 0, right: 0, borderRadius: "24px 0 0 0" }}
             >
                 <IconButton
                     onClick={() => {
