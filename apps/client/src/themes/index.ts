@@ -7,7 +7,7 @@ export default extendTheme({
         JoySheet: { defaultProps: { variant: "outlined" } },
         JoyButton: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyIconButton: { styleOverrides: { root: { borderRadius: 9999 } } },
-        JoyMenu: { defaultProps: { placement: "auto" }, styleOverrides: { root: { borderRadius: 9999 } } },
+        JoyMenu: { defaultProps: { placement: "auto" } },
         JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },
         JoyModal: { defaultProps: { sx: { display: "flex", justifyContent: "center", alignItems: "center" } } },
         JoySlider: {

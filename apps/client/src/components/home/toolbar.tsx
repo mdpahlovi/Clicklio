@@ -108,7 +108,10 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                                 >
                                     {icon}
                                 </MenuButton>
-                                <Menu sx={{ flexDirection: "row", gap: 0.5, padding: 0.75, margin: "0 0 0 16px !important" }}>
+                                <Menu
+                                    sx={{ p: 0.75, m: "0 0 0 16px !important" }}
+                                    style={{ borderRadius: 9999, flexDirection: "row", gap: 4 }}
+                                >
                                     {children?.length &&
                                         children.map(({ icon, value }, idx) => (
                                             <MenuItem
