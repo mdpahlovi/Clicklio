@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sheet } from "@mui/joy";
 import Actions from "@/components/home/floating-menu/Actions";
 import type { FloatingMenuProps } from "@/types";
 
 export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef }: FloatingMenuProps) {
     const [show, setShow] = useState(false);
+    const touchEventRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         window.addEventListener("click", () => setShow(false));
         window.addEventListener("dblclick", () => setShow(true));
+        window.addEventListener("touchstart", () => (touchEventRef.current = setTimeout(() => setShow(true), 500)));
+        window.addEventListener("touchend", () => (touchEventRef.current ? clearTimeout(touchEventRef.current) : null));
 
         return () => {
             window.removeEventListener("click", () => setShow(false));
             window.removeEventListener("dblclick", () => setShow(true));
+            window.removeEventListener("touchstart", () => (touchEventRef.current = setTimeout(() => setShow(true), 500)));
+            window.removeEventListener("touchend", () => (touchEventRef.current ? clearTimeout(touchEventRef.current) : null));
         };
     }, []);
 
