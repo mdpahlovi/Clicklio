@@ -13,6 +13,7 @@ import HelpModal from "@/components/home/help-modal";
 import ShareModal from "@/components/home/share-modal";
 import SideToolbar from "@/components/home/side-toolbar";
 import RemoteCursor from "@/components/ui/remote-cursor";
+import FloatingMenu from "@/components/home/floating-menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
 import CanvasContainer from "@/components/home/canvas-container";
 import { Box } from "@mui/joy";
@@ -82,6 +83,7 @@ export default function HomePage() {
                 <CanvasContainer>
                     <RemoteCursor {...{ roomRef }} />
                     <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
+                    <FloatingMenu {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
                     <Toolbar {...{ fabricRef, selectedToolRef }} />
                     <BottomToolbar {...{ fabricRef }} />
                     <canvas ref={canvasRef} />

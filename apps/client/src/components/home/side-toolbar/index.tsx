@@ -8,14 +8,14 @@ import { Divider, IconButton, Sheet } from "@mui/joy";
 import Text from "@/components/home/side-toolbar/Text";
 import Color from "@/components/home/side-toolbar/Color";
 import Opacity from "@/components/home/side-toolbar/Opacity";
-import Actions from "@/components/home/side-toolbar/Actions";
+// import Actions from "@/components/home/side-toolbar/Actions";
 import Dimensions from "@/components/home/side-toolbar/Dimensions";
 import StrokeWidth from "@/components/home/side-toolbar/StrokeWidth";
 
 import type { Attributes, RightSidebarProps } from "@/types";
 import { CgMenuRight, CgClose } from "react-icons/cg";
 
-export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }: RightSidebarProps) {
+export default function SideToolbar({ fabricRef, isEditingRef }: RightSidebarProps) {
     const [open, setOpen] = useState(true);
     const { updateShape } = useShapeState();
     const [searchParams] = useSearchParams();
@@ -70,8 +70,8 @@ export default function SideToolbar({ fabricRef, isEditingRef, pasteTimeRef, cop
                 <StrokeWidth {...{ handleInputChange }} />
                 <Divider />
                 <Opacity {...{ handleInputChange }} />
-                <Divider />
-                <Actions {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
+                {/* <Divider />
+                <Actions {...{ fabricRef, pasteTimeRef, copiedObjectRef }} /> */}
             </Sheet>
         ),
         [attributes, open]

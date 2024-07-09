@@ -233,7 +233,7 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
 
     // set unique id to path object
     // @ts-ignore
-    path.set({ objectId: uuid4() });
+    path.set({ cornerStyle: "circle", objectId: uuid4() });
 
     // sync shape in storage
     // @ts-ignore

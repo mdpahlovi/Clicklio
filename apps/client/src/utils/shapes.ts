@@ -11,6 +11,8 @@ export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRef
         width: 0,
         height: 0,
         fill: baseColorRef.current,
+        cornerStyle: "circle",
+        transparentCorners: false,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Rect);
 };
@@ -22,6 +24,8 @@ export const createTriangle = (pointer: Pointer, baseColorRef: React.MutableRefO
         width: 0,
         height: 0,
         fill: baseColorRef.current,
+        cornerStyle: "circle",
+        transparentCorners: false,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Triangle);
 };
@@ -32,6 +36,8 @@ export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObj
         top: pointer.y,
         radius: 0,
         fill: baseColorRef.current,
+        cornerStyle: "circle",
+        transparentCorners: false,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Circle);
 };
@@ -39,6 +45,8 @@ export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObj
 export const createLine = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
         stroke: baseColorRef.current,
+        cornerStyle: "circle",
+        transparentCorners: false,
         strokeWidth: 2,
         objectId: uuidv4(),
     } as { objectId: string } & fabric.Line);
@@ -49,6 +57,8 @@ export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObjec
         left: pointer.x,
         top: pointer.y,
         fill: baseColorRef.current,
+        cornerStyle: "circle",
+        transparentCorners: false,
         fontFamily: "Helvetica",
         fontSize: 36,
         fontWeight: "400",
@@ -86,7 +96,7 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
             image.scaleToWidth(160);
             image.scaleToHeight(160);
             // @ts-ignore
-            image.set({ objectId: uuidv4() });
+            image.set({ cornerStyle: "circle", transparentCorners: false, objectId: uuidv4() });
 
             // sync shape in storage
             // @ts-ignore

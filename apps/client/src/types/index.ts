@@ -53,6 +53,13 @@ export type ImageUpload = {
     setShape: (shape: fabric.Object) => void;
 };
 
+export type FloatingMenuProps = {
+    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    isEditingRef: React.MutableRefObject<boolean>;
+    pasteTimeRef: React.MutableRefObject<number | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
+};
+
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     isEditingRef: React.MutableRefObject<boolean>;
