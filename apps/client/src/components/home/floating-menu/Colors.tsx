@@ -1,25 +1,20 @@
-import { fabric } from "fabric";
+import StrokeWidth from "@/components/home/floating-menu/StrokeWidth";
 import { Box, BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip, useColorScheme, useTheme } from "@mui/joy";
-import type { Attributes } from "@/types";
-import StrokeWidth from "./StrokeWidth";
+import type { FloatingMenuItemProps } from "@/types";
 
-type ColorProps = {
-    name: "fill" | "stroke";
-    currentObject: fabric.Object | null;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
-};
+type ColorProps = { name: "fill" | "stroke" } & FloatingMenuItemProps;
 
 const backgroundImage =
     "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==')";
 
-export default function Colors({ name, currentObject, handleInputChange }: ColorProps) {
+export default function Colors({ name, open, onOpenChange, currentObject, handleInputChange }: ColorProps) {
     const { palette } = useTheme();
     const { mode } = useColorScheme();
     const iconProps: React.CSSProperties = { width: 14, height: 14, borderRadius: 9999, border: "2px solid" };
     const baseColor = mode === "light" ? "#000000" : "#FFFFFF";
 
     return (
-        <Dropdown>
+        <Dropdown open={open} onOpenChange={onOpenChange}>
             <Tooltip title={name.charAt(0).toUpperCase() + name.slice(1)}>
                 <MenuButton slots={{ root: IconButton }}>
                     {name === "fill" ? (

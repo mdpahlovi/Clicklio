@@ -53,6 +53,13 @@ export type FloatingMenuProps = {
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
 };
 
+export type FloatingMenuItemProps = {
+    open: boolean;
+    onOpenChange: (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, open: boolean) => void;
+    currentObject: fabric.Object | null;
+    handleInputChange: (property: keyof Attributes, value: string) => void;
+};
+
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     isEditingRef: React.MutableRefObject<boolean>;

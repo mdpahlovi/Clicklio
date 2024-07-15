@@ -5,10 +5,13 @@ export default extendTheme({
     fontFamily: { body: "Poppins", code: "Poppins", display: "Poppins", fallback: "Poppins" },
     components: {
         JoySheet: { defaultProps: { variant: "outlined" } },
+        JoyCard: { styleOverrides: { root: { borderRadius: 24 } } },
         JoyInput: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyButton: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoySelect: { styleOverrides: { root: { borderRadius: 9999 } } },
+        JoyTextarea: { styleOverrides: { root: { borderRadius: 16 } } },
         JoyIconButton: { styleOverrides: { root: { borderRadius: 9999 } } },
+        JoyListItemButton: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyMenu: { defaultProps: { placement: "auto" } },
         JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },
         JoyModal: { defaultProps: { sx: { display: "flex", justifyContent: "center", alignItems: "center" } } },

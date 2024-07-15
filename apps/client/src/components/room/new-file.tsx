@@ -33,15 +33,10 @@ export default function NewFile() {
             <Input
                 id={id}
                 required
-                size="sm"
                 name="name"
                 placeholder="File Name"
                 sx={{ "--Input-decoratorChildHeight": "45px" }}
-                endDecorator={
-                    <Button type="submit" size="sm" sx={{ borderRadius: "0 6px 6px 0" }}>
-                        New File
-                    </Button>
-                }
+                endDecorator={<Button type="submit">New File</Button>}
             />
         </Box>
     );

@@ -1,18 +1,26 @@
 import { Divider, Sheet } from "@mui/joy";
 import { modifyShape } from "@/utils/shapes";
 import { useSearchParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
+import Text from "@/components/home/floating-menu/Text";
 import Colors from "@/components/home/floating-menu/Colors";
 import Actions from "@/components/home/floating-menu/Actions";
 import Opacity from "@/components/home/floating-menu/Opacity";
 import type { Attributes, FloatingMenuProps } from "@/types";
-import Text from "./Text";
 
 export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef }: FloatingMenuProps) {
     const [show, setShow] = useState(false);
     const touchEventRef = useRef<NodeJS.Timeout | null>(null);
     const currentObject = fabricRef?.current && fabricRef?.current?.getActiveObject();
+
+    const [open, setOpen] = useState<{ [key: string]: boolean }>({});
+    const handleOpenChange = useCallback(
+        (key: string) => () => setOpen((prev) => (Object.keys(prev).includes(key) ? { [key]: !prev[key] } : { [key]: true })),
+        []
+    );
+
+    console.log(open);
 
     useEffect(() => {
         window.addEventListener("click", () => setShow(false));
@@ -42,10 +50,22 @@ export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef 
                 sx={{ position: "absolute", zIndex: 9999, p: 0.75, display: "flex", gap: 0.5 }}
                 style={{ top: top + 10, left: left + width / 2, transform: "translateX(-50%)", height: 36, borderRadius: 24 }}
             >
-                {currentObject?.type === "i-text" ? <Text {...{ currentObject, handleInputChange }} /> : null}
-                <Colors name="fill" {...{ currentObject, handleInputChange }} />
-                <Colors name="stroke" {...{ currentObject, handleInputChange }} />
-                <Opacity {...{ currentObject, handleInputChange }} />
+                {currentObject?.type === "i-text" ? (
+                    <Text open={!!open["text"]} onOpenChange={handleOpenChange("text")} {...{ currentObject, handleInputChange }} />
+                ) : null}
+                <Colors
+                    name="fill"
+                    open={!!open["fill"]}
+                    onOpenChange={handleOpenChange("fill")}
+                    {...{ currentObject, handleInputChange }}
+                />
+                <Colors
+                    name="stroke"
+                    open={!!open["stroke"]}
+                    onOpenChange={handleOpenChange("stroke")}
+                    {...{ currentObject, handleInputChange }}
+                />
+                <Opacity open={!!open["opacity"]} onOpenChange={handleOpenChange("opacity")} {...{ currentObject, handleInputChange }} />
                 <Divider orientation="vertical" />
                 <Actions {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
             </Sheet>

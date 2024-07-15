@@ -1,8 +1,7 @@
+import { MdFormatTextdirectionLToR } from "react-icons/md";
 import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
 import { Select, Option, Dropdown, Tooltip, MenuButton, Menu, IconButton } from "@mui/joy";
-
-import type { Attributes } from "@/types";
-import { MdFormatTextdirectionLToR } from "react-icons/md";
+import type { Attributes, FloatingMenuItemProps } from "@/types";
 
 type Property = "fontFamily" | "fontSize" | "fontWeight";
 type SelectConfig = { property: Property; placeholder: string; options: { label: string; value: string }[] };
@@ -11,10 +10,6 @@ type RenderSelectProps = {
     handleInputChange: (property: keyof Attributes, value: string) => void;
     currentObject: fabric.Object | null;
 };
-type TextProps = {
-    currentObject: fabric.Object | null;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
-};
 
 const selectConfigs: SelectConfig[] = [
     { property: "fontFamily", placeholder: "Choose A Font", options: fontFamilyOptions },
@@ -22,9 +17,9 @@ const selectConfigs: SelectConfig[] = [
     { property: "fontWeight", placeholder: "Weight", options: fontWeightOptions },
 ];
 
-export default function Text({ currentObject, handleInputChange }: TextProps) {
+export default function Text({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
     return (
-        <Dropdown>
+        <Dropdown open={open} onOpenChange={onOpenChange}>
             <Tooltip title="Text">
                 <MenuButton slots={{ root: IconButton }}>
                     <MdFormatTextdirectionLToR />

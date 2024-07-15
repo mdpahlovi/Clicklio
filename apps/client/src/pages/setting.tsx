@@ -17,7 +17,7 @@ export default function MyProfile() {
         <Box sx={{ px: 3, py: 2 }}>
             <Typography level="h2">My Profile</Typography>
             <Stack spacing={2} sx={{ maxWidth: "800px", py: 2 }}>
-                <Card>
+                <Card style={{ overflow: "hidden" }}>
                     <Form
                         defaultValues={
                             user
@@ -71,7 +71,7 @@ export default function MyProfile() {
                         {editProfile ? <CardAction loading={editProfileLoading} toggleEdit={() => setEditProfile(false)} /> : null}
                     </Form>
                 </Card>
-                <Card>
+                <Card style={{ overflow: "hidden" }}>
                     <Form
                         defaultValues={user ? { biography: user?.biography ? user?.biography : "" } : undefined}
                         onSubmit={(value) => {
@@ -111,7 +111,7 @@ function CardHeader({ title, body, toggleEdit }: { title: string; body: string; 
                 <Typography level="title-md">{title}</Typography>
                 <Typography level="body-sm">{body}</Typography>
             </Box>
-            <Button onClick={toggleEdit} sx={{ position: "absolute", right: 0, top: 0, borderRadius: "0 8px 0 8px" }}>
+            <Button onClick={toggleEdit} sx={{ position: "absolute", right: 0, top: 0, borderRadius: "0 16px 0 16px" }}>
                 Edit
             </Button>
         </>

@@ -14,7 +14,7 @@ type CanvasStateStore = {
 
 export const useCanvasState = create<CanvasStateStore>((set) => ({
     tool: "select",
-    zoom: 1,
+    zoom: 2,
     refresh: null,
     helpModal: false,
     setTool: (tool) => set({ tool }),

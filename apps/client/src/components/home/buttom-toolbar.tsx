@@ -74,12 +74,12 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && Number(zoom.toFixed(1)) >= 0.1) {
+                        if (fabricRef.current && Number(zoom.toFixed(1)) >= 1) {
                             setZoom(zoom - 0.1);
                             fabricRef.current.setZoom(zoom - 0.1);
                         }
                     }}
-                    disabled={Number(zoom.toFixed(1)) <= 0.1}
+                    disabled={Number(zoom.toFixed(1)) <= 1}
                 >
                     <PiMinus />
                 </IconButton>

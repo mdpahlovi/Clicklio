@@ -1,13 +1,8 @@
 import { MdOpacity } from "react-icons/md";
 import { Dropdown, IconButton, Menu, MenuButton, Slider, Tooltip } from "@mui/joy";
-import type { Attributes } from "@/types";
+import type { FloatingMenuItemProps } from "@/types";
 
-type OpacityProps = {
-    currentObject: fabric.Object | null;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
-};
-
-export default function Opacity({ currentObject, handleInputChange }: OpacityProps) {
+export default function Opacity({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
     const value = currentObject?.opacity;
 
     const thumbStyle = (): React.CSSProperties => {
@@ -22,7 +17,7 @@ export default function Opacity({ currentObject, handleInputChange }: OpacityPro
     };
 
     return (
-        <Dropdown>
+        <Dropdown open={open} onOpenChange={onOpenChange}>
             <Tooltip title="Opacity">
                 <MenuButton slots={{ root: IconButton }}>
                     <MdOpacity />

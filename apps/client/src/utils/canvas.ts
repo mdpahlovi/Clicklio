@@ -26,6 +26,7 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
         height: canvasElement?.clientHeight,
     });
 
+    canvas.setZoom(2);
     // set canvas reference to fabricRef so we can use it later anywhere outside canvas listener
     fabricRef.current = canvas;
 
@@ -308,7 +309,7 @@ export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
     let zoom = canvas.getZoom();
 
     // allow zooming to min 10% and max 1000%
-    const minZoom = 0.1;
+    const minZoom = 1;
     const maxZoom = 10;
     const zoomStep = 0.001;
 
