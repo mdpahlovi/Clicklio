@@ -124,21 +124,21 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
 
     // update the value of each property
     switch (property) {
-        case "top":
-            selectedElement.set({ top: Number(value) });
-            break;
+        // case "top":
+        //     selectedElement.set({ top: Number(value) });
+        //     break;
 
-        case "left":
-            selectedElement.set({ left: Number(value) });
-            break;
+        // case "left":
+        //     selectedElement.set({ left: Number(value) });
+        //     break;
 
-        case "width":
-            selectedElement.set({ scaleX: 1, width: Number(value) });
-            break;
+        // case "width":
+        //     selectedElement.set({ scaleX: 1, width: Number(value) });
+        //     break;
 
-        case "height":
-            selectedElement.set({ scaleY: 1, height: Number(value) });
-            break;
+        // case "height":
+        //     selectedElement.set({ scaleY: 1, height: Number(value) });
+        //     break;
 
         case "fontSize":
             // @ts-ignore

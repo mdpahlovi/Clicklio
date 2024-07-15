@@ -205,7 +205,7 @@ export const handleCanvasMouseUp = ({
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, roomRef, updateShape, setAttributes }: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: CanvasObjectModified) => {
     const target = options.target;
     if (!target) return;
 
@@ -215,8 +215,6 @@ export const handleCanvasObjectModified = ({ options, roomRef, updateShape, setA
         // sync shape in storage
         // @ts-ignore
         if (target?.objectId) {
-            // @ts-ignore
-            setAttributes({ ...target.toJSON() });
             // @ts-ignore
             updateShape({ objectId: target.objectId, ...target.toJSON() });
             // @ts-ignore
@@ -246,7 +244,7 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
 };
 
 // set selectShape when element is selected
-export const handleCanvasSelectionCreated = ({ options, isEditingRef, pasteTimeRef, setAttributes }: CanvasSelectionCreated) => {
+export const handleCanvasSelectionCreated = ({ options, isEditingRef, pasteTimeRef }: CanvasSelectionCreated) => {
     // if user is editing manually, return
     if (isEditingRef.current) return;
 
@@ -255,10 +253,6 @@ export const handleCanvasSelectionCreated = ({ options, isEditingRef, pasteTimeR
 
     // set pasteTime forEach selection
     pasteTimeRef.current = 1;
-
-    // if only one element is selected, set attributes
-    // @ts-ignore
-    if (options.selected.length === 1) setAttributes({ ...options.selected[0].toJSON() });
 };
 
 // render canvas objects coming from storage on canvas

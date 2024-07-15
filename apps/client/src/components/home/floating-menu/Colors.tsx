@@ -1,6 +1,6 @@
 import { fabric } from "fabric";
 import { Box, BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip, useColorScheme, useTheme } from "@mui/joy";
-import type { Attributes } from "@/components/home/floating-menu";
+import type { Attributes } from "@/types";
 import StrokeWidth from "./StrokeWidth";
 
 type ColorProps = {

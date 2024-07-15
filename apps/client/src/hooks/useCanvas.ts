@@ -24,7 +24,7 @@ export function useCanvas() {
     const { mode, setMode } = useColorScheme();
     const { undo, redo } = useShapeState.temporal.getState();
     const { setShape, updateShape, deleteShape } = useShapeState();
-    const { setTool, setZoom, setAttributes, setRefresh } = useCanvasState();
+    const { setTool, setZoom, setRefresh } = useCanvasState();
 
     const [searchParams] = useSearchParams();
     const roomRef = useRef<string | null>(null);
@@ -97,11 +97,11 @@ export function useCanvas() {
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, roomRef, updateShape, setAttributes });
+            handleCanvasObjectModified({ options, roomRef, updateShape });
         });
 
         canvas.on("selection:created", (options) => {
-            handleCanvasSelectionCreated({ options, isEditingRef, pasteTimeRef, setAttributes });
+            handleCanvasSelectionCreated({ options, isEditingRef, pasteTimeRef });
         });
 
         canvas.on("mouse:wheel", (options) => {

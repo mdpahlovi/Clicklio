@@ -3,13 +3,6 @@ import { fabric } from "fabric";
 export type Pointer = { x: number; y: number };
 
 export type Attributes = {
-    type: string;
-    top: string;
-    left: string;
-    width: string;
-    height: string;
-    scaleX: string;
-    scaleY: string;
     fontSize: string;
     fontFamily: string;
     fontWeight: string;
@@ -120,7 +113,6 @@ export type CanvasObjectModified = {
     options: fabric.IEvent<MouseEvent>;
     roomRef: React.MutableRefObject<string | null>;
     updateShape: (shape: fabric.Object) => void;
-    setAttributes: (attributes: Attributes) => void;
 };
 
 export type CanvasPathCreated = {
@@ -133,7 +125,6 @@ export type CanvasSelectionCreated = {
     options: fabric.IEvent<MouseEvent>;
     isEditingRef: React.MutableRefObject<boolean>;
     pasteTimeRef: React.MutableRefObject<number | null>;
-    setAttributes: (attributes: Attributes) => void;
 };
 
 export type RenderCanvas = {

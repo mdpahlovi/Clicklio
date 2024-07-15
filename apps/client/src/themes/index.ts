@@ -5,7 +5,9 @@ export default extendTheme({
     fontFamily: { body: "Poppins", code: "Poppins", display: "Poppins", fallback: "Poppins" },
     components: {
         JoySheet: { defaultProps: { variant: "outlined" } },
+        JoyInput: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyButton: { styleOverrides: { root: { borderRadius: 9999 } } },
+        JoySelect: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyIconButton: { styleOverrides: { root: { borderRadius: 9999 } } },
         JoyMenu: { defaultProps: { placement: "auto" } },
         JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },

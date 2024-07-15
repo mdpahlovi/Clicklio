@@ -11,7 +11,7 @@ import Toolbar from "@/components/home/toolbar";
 import Sidebar from "@/components/home/sidebar";
 import HelpModal from "@/components/home/help-modal";
 import ShareModal from "@/components/home/share-modal";
-import SideToolbar from "@/components/home/side-toolbar";
+// import SideToolbar from "@/components/home/side-toolbar";
 import RemoteCursor from "@/components/ui/remote-cursor";
 import FloatingMenu from "@/components/home/floating-menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
@@ -82,7 +82,7 @@ export default function HomePage() {
                 <Sidebar {...{ saveShapes, isUpToDate }} />
                 <CanvasContainer>
                     <RemoteCursor {...{ roomRef }} />
-                    <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
+                    {/* <SideToolbar {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} /> */}
                     <FloatingMenu {...{ fabricRef, isEditingRef, pasteTimeRef, copiedObjectRef }} />
                     <Toolbar {...{ fabricRef, selectedToolRef }} />
                     <BottomToolbar {...{ fabricRef }} />

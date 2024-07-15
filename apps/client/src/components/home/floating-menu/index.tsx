@@ -1,21 +1,13 @@
 import { Divider, Sheet } from "@mui/joy";
+import { modifyShape } from "@/utils/shapes";
+import { useSearchParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useShapeState } from "@/hooks/useShapeState";
 import Colors from "@/components/home/floating-menu/Colors";
 import Actions from "@/components/home/floating-menu/Actions";
-import type { FloatingMenuProps } from "@/types";
-import { useShapeState } from "@/hooks/useShapeState";
-import { useSearchParams } from "react-router-dom";
-import { modifyShape } from "@/utils/shapes";
-
-export type Attributes = {
-    fontSize: string;
-    fontFamily: string;
-    fontWeight: string;
-    fill: string;
-    stroke: string;
-    strokeWidth: string;
-    opacity: string;
-};
+import Opacity from "@/components/home/floating-menu/Opacity";
+import type { Attributes, FloatingMenuProps } from "@/types";
+import Text from "./Text";
 
 export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef }: FloatingMenuProps) {
     const [show, setShow] = useState(false);
@@ -50,8 +42,10 @@ export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef 
                 sx={{ position: "absolute", zIndex: 9999, p: 0.75, display: "flex", gap: 0.5 }}
                 style={{ top: top + 10, left: left + width / 2, transform: "translateX(-50%)", height: 36, borderRadius: 24 }}
             >
+                {currentObject?.type === "i-text" ? <Text {...{ currentObject, handleInputChange }} /> : null}
                 <Colors name="fill" {...{ currentObject, handleInputChange }} />
                 <Colors name="stroke" {...{ currentObject, handleInputChange }} />
+                <Opacity {...{ currentObject, handleInputChange }} />
                 <Divider orientation="vertical" />
                 <Actions {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
             </Sheet>

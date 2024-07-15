@@ -1,7 +1,10 @@
 import { Slider } from "@mui/joy";
-import type { Attributes } from "@/components/home/floating-menu";
+import type { Attributes } from "@/types";
 
-type StrokeWidthProps = { currentObject: fabric.Object | null; handleInputChange: (property: keyof Attributes, value: string) => void };
+type StrokeWidthProps = {
+    currentObject: fabric.Object | null;
+    handleInputChange: (property: keyof Attributes, value: string) => void;
+};
 
 export default function StrokeWidth({ currentObject, handleInputChange }: StrokeWidthProps) {
     const value = currentObject?.strokeWidth;
