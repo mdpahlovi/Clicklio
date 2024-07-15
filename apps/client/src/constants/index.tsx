@@ -33,13 +33,13 @@ export const navElements: {
     },
     {
         icon: <TfiPencil />,
-        name: "Free Drawing",
+        name: "Brushes",
         values: ["path-1", "path-5", "path-10"],
         type: "dropdown",
         children: [
-            { icon: <TfiPencil />, name: "Brush Size 01", value: "path-1" },
-            { icon: <IoMdBrush />, name: "Brush Size 05", value: "path-5" },
-            { icon: <IoIosBrush />, name: "Brush Size 10", value: "path-10" },
+            { icon: <TfiPencil />, name: "Brush S:01", value: "path-1" },
+            { icon: <IoMdBrush />, name: "Brush S:05", value: "path-5" },
+            { icon: <IoIosBrush />, name: "Brush S:10", value: "path-10" },
         ],
     },
     { icon: <CiText />, name: "Text", value: "i-text", type: "tool" },

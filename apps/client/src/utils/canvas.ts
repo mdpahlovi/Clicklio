@@ -281,6 +281,7 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
             [object],
             (enlivenedObjects: fabric.Object[]) => {
                 enlivenedObjects.forEach((enlivenedObj) => {
+                    enlivenedObj.set({ cornerStyle: "circle", transparentCorners: false });
                     // add object to canvas
                     fabricRef.current?.add(enlivenedObj);
                 });

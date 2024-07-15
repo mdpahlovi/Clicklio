@@ -21,8 +21,9 @@ export default extendTheme({
                         [`&.${sliderClasses.markLabel}`]: { transform: "translateX(-100%)" },
                     },
                 },
-                style: { marginTop: 0, marginBottom: 4 },
+                style: { padding: 10, marginBottom: 24 },
             },
         },
+        JoyTooltip: { defaultProps: { size: "sm", placement: "top" } },
     },
 });

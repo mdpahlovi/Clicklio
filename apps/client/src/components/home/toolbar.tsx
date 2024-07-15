@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { Fragment, useEffect, useRef } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Sheet, IconButton, Dropdown, MenuButton, Menu, MenuItem, useColorScheme } from "@mui/joy";
+import { Sheet, IconButton, Dropdown, MenuButton, Menu, MenuItem, useColorScheme, Tooltip } from "@mui/joy";
 import type { ToolbarProps } from "@/types";
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
@@ -81,52 +81,56 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
             sx={{ position: "absolute", zIndex: 1, inset: 0, top: 24, bottom: 73, my: "auto", p: 0.75, width: 36 }}
             style={{ borderLeft: 0, borderRadius: "0 24px 24px 0", display: "grid", gap: 4, overflowY: "auto", maxHeight: 286 }}
         >
-            {navElements.map(({ value, values, icon, type, children }, idx) => {
+            {navElements.map(({ name, value, values, icon, type, children }, idx) => {
                 switch (type) {
                     case "tool":
                         return (
-                            <IconButton
-                                key={idx}
-                                onClick={() => value && setTool(value)}
-                                variant={value === tool ? "solid" : "plain"}
-                                color={value === tool ? "primary" : "neutral"}
-                            >
-                                {icon}
-                            </IconButton>
+                            <Tooltip key={idx} title={name} placement="right">
+                                <IconButton
+                                    onClick={() => value && setTool(value)}
+                                    variant={value === tool ? "solid" : "plain"}
+                                    color={value === tool ? "primary" : "neutral"}
+                                >
+                                    {icon}
+                                </IconButton>
+                            </Tooltip>
                         );
                     case "dropdown":
                         return (
                             <Dropdown key={idx}>
-                                <MenuButton
-                                    slots={{ root: IconButton }}
-                                    slotProps={{
-                                        root: {
-                                            variant: values?.includes(tool) ? "solid" : "plain",
-                                            color: values?.includes(tool) ? "primary" : "neutral",
-                                        },
-                                    }}
-                                >
-                                    {icon}
-                                </MenuButton>
+                                <Tooltip title={name} placement="right">
+                                    <MenuButton
+                                        slots={{ root: IconButton }}
+                                        slotProps={{
+                                            root: {
+                                                variant: values?.includes(tool) ? "solid" : "plain",
+                                                color: values?.includes(tool) ? "primary" : "neutral",
+                                            },
+                                        }}
+                                    >
+                                        {icon}
+                                    </MenuButton>
+                                </Tooltip>
                                 <Menu
                                     sx={{ p: 0.75, m: "0 0 0 16px !important" }}
                                     style={{ borderRadius: 9999, flexDirection: "row", gap: 4 }}
                                 >
                                     {children?.length &&
-                                        children.map(({ icon, value }, idx) => (
-                                            <MenuItem
-                                                key={idx}
-                                                slots={{ root: IconButton }}
-                                                slotProps={{
-                                                    root: {
-                                                        onClick: () => setTool(value),
-                                                        variant: value === tool ? "solid" : "plain",
-                                                        color: value === tool ? "primary" : "neutral",
-                                                    },
-                                                }}
-                                            >
-                                                {icon}
-                                            </MenuItem>
+                                        children.map(({ icon, name, value }, idx) => (
+                                            <Tooltip key={idx} title={name}>
+                                                <MenuItem
+                                                    slots={{ root: IconButton }}
+                                                    slotProps={{
+                                                        root: {
+                                                            onClick: () => setTool(value),
+                                                            variant: value === tool ? "solid" : "plain",
+                                                            color: value === tool ? "primary" : "neutral",
+                                                        },
+                                                    }}
+                                                >
+                                                    {icon}
+                                                </MenuItem>
+                                            </Tooltip>
                                         ))}
                                 </Menu>
                             </Dropdown>
