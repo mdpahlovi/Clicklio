@@ -33,8 +33,6 @@ export const handlePaste = (
                     enlivenedObj.set({
                         top: enlivenedObj.top! + 20 * pasteTimeRef.current!,
                         left: enlivenedObj.left! + 20 * pasteTimeRef.current!,
-                        cornerStyle: "circle",
-                        transparentCorners: false,
 
                         // @ts-ignore
                         objectId: uuidv4(),

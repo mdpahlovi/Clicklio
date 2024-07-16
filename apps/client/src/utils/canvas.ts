@@ -20,6 +20,11 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
     // get canvas element
     const canvasElement = document.getElementById("canvas");
 
+    // customizing corners
+    fabric.Object.prototype.cornerStyle = "circle";
+    fabric.Object.prototype.cornerColor = "#4882ED";
+    fabric.Object.prototype.transparentCorners = false;
+
     // create fabric canvas
     const canvas = new fabric.Canvas(canvasRef.current, {
         width: canvasElement?.clientWidth,
@@ -232,7 +237,7 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
 
     // set unique id to path object
     // @ts-ignore
-    path.set({ cornerStyle: "circle", objectId: uuid4() });
+    path.set({ objectId: uuid4() });
 
     // sync shape in storage
     // @ts-ignore
@@ -276,7 +281,6 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
             [object],
             (enlivenedObjects: fabric.Object[]) => {
                 enlivenedObjects.forEach((enlivenedObj) => {
-                    enlivenedObj.set({ cornerStyle: "circle", transparentCorners: false });
                     // add object to canvas
                     fabricRef.current?.add(enlivenedObj);
                 });

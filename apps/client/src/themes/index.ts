@@ -1,6 +1,40 @@
 import { extendTheme, sliderClasses } from "@mui/joy";
 
 export default extendTheme({
+    colorSchemes: {
+        light: {
+            palette: {
+                primary: {
+                    "50": "#f0f6fe",
+                    "100": "#dde9fc",
+                    "200": "#c2d9fb",
+                    "300": "#98c2f8",
+                    "400": "#68a2f2",
+                    "500": "#4882ed",
+                    "600": "#2f62e1",
+                    "700": "#264dcf",
+                    "800": "#2540a8",
+                    "900": "#233a85",
+                },
+            },
+        },
+        dark: {
+            palette: {
+                primary: {
+                    "50": "#f0f6fe",
+                    "100": "#dde9fc",
+                    "200": "#c2d9fb",
+                    "300": "#98c2f8",
+                    "400": "#68a2f2",
+                    "500": "#4882ed",
+                    "600": "#2f62e1",
+                    "700": "#264dcf",
+                    "800": "#2540a8",
+                    "900": "#233a85",
+                },
+            },
+        },
+    },
     breakpoints: { values: { xs: 0, sm: 448, md: 640, lg: 768, xl: 1024 } },
     fontFamily: { body: "Poppins", code: "Poppins", display: "Poppins", fallback: "Poppins" },
     components: {
