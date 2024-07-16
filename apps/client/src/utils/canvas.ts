@@ -10,7 +10,6 @@ import type {
     CanvasMouseUp,
     CanvasObjectModified,
     CanvasPathCreated,
-    CanvasSelectionCreated,
     CanvasZoom,
     RenderCanvas,
 } from "@/types";
@@ -247,18 +246,6 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
         // @ts-ignore
         socket.emit("set:shape", { room: roomRef.current, objectId: path.objectId, ...path.toJSON() });
     }
-};
-
-// set selectShape when element is selected
-export const handleCanvasSelectionCreated = ({ options, isEditingRef, pasteTimeRef }: CanvasSelectionCreated) => {
-    // if user is editing manually, return
-    if (isEditingRef.current) return;
-
-    // if no element is selected, return
-    if (!options?.selected) return;
-
-    // set pasteTime forEach selection
-    pasteTimeRef.current = 1;
 };
 
 // render canvas objects coming from storage on canvas

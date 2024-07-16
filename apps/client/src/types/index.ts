@@ -48,7 +48,7 @@ export type ImageUpload = {
 
 export type FloatingMenuProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    isEditingRef: React.MutableRefObject<boolean>;
+    currentObject: fabric.Object | null;
     pasteTimeRef: React.MutableRefObject<number | null>;
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
 };
@@ -62,7 +62,6 @@ export type FloatingMenuItemProps = {
 
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    isEditingRef: React.MutableRefObject<boolean>;
     pasteTimeRef: React.MutableRefObject<number | null>;
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
 };
@@ -128,12 +127,6 @@ export type CanvasPathCreated = {
     options: any;
 };
 
-export type CanvasSelectionCreated = {
-    options: fabric.IEvent<MouseEvent>;
-    isEditingRef: React.MutableRefObject<boolean>;
-    pasteTimeRef: React.MutableRefObject<number | null>;
-};
-
 export type RenderCanvas = {
     shapes: fabric.Object[];
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
@@ -149,7 +142,6 @@ export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
     roomRef: React.MutableRefObject<string | null>;
-    isEditingRef: React.MutableRefObject<boolean>;
     pasteTimeRef: React.MutableRefObject<number | null>;
     copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
     setShape: (shape: fabric.Object) => void;

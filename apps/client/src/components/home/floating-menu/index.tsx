@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { Divider, Sheet } from "@mui/joy";
 import { modifyShape } from "@/utils/shapes";
 import { useSearchParams } from "react-router-dom";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import Text from "@/components/home/floating-menu/Text";
 import Colors from "@/components/home/floating-menu/Colors";
@@ -9,39 +9,18 @@ import Actions from "@/components/home/floating-menu/Actions";
 import Opacity from "@/components/home/floating-menu/Opacity";
 import type { Attributes, FloatingMenuProps } from "@/types";
 
-export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef }: FloatingMenuProps) {
-    const [show, setShow] = useState(false);
-    const touchEventRef = useRef<NodeJS.Timeout | null>(null);
-    const currentObject = fabricRef?.current && fabricRef?.current?.getActiveObject();
-
-    const [open, setOpen] = useState<{ [key: string]: boolean }>({});
-    const handleOpenChange = useCallback(
-        (key: string) => () => setOpen((prev) => (Object.keys(prev).includes(key) ? { [key]: !prev[key] } : { [key]: true })),
-        []
-    );
-
-    console.log(open);
-
-    useEffect(() => {
-        window.addEventListener("click", () => setShow(false));
-        window.addEventListener("dblclick", () => setShow(true));
-        window.addEventListener("touchstart", () => (touchEventRef.current = setTimeout(() => setShow(true), 500)));
-        window.addEventListener("touchend", () => (touchEventRef.current ? clearTimeout(touchEventRef.current) : null));
-
-        return () => {
-            window.removeEventListener("click", () => setShow(false));
-            window.removeEventListener("dblclick", () => setShow(true));
-            window.removeEventListener("touchstart", () => (touchEventRef.current = setTimeout(() => setShow(true), 500)));
-            window.removeEventListener("touchend", () => (touchEventRef.current ? clearTimeout(touchEventRef.current) : null));
-        };
-    }, []);
-
+export default function FloatingMenu({ fabricRef, currentObject, copiedObjectRef, pasteTimeRef }: FloatingMenuProps) {
     const { updateShape } = useShapeState();
     const [searchParams] = useSearchParams();
+    const [open, setOpen] = useState<{ [key: string]: boolean }>({});
+
+    const handleOpenChange = (key: string) => () =>
+        setOpen((prev) => (Object.keys(prev).includes(key) ? { [key]: !prev[key] } : { [key]: true }));
+
     const handleInputChange = (property: keyof Attributes, value: string) =>
         modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
 
-    if (currentObject && show) {
+    if (currentObject) {
         const { top, left, width } = currentObject.getBoundingRect();
 
         return (

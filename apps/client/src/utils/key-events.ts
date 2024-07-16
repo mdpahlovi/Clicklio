@@ -81,7 +81,6 @@ export const handleKeyDown = ({
     e,
     canvas,
     roomRef,
-    isEditingRef,
     pasteTimeRef,
     copiedObjectRef,
     setShape,
@@ -97,25 +96,25 @@ export const handleKeyDown = ({
     const light = localStorage.getItem("joy-mode") === "light";
 
     // Check if the key pressed is 1
-    if (e.keyCode === 49 && !isEditingRef.current) setTool("panning");
+    if (e.keyCode === 49) setTool("panning");
     // Check if the key pressed is 2
-    if (e.keyCode === 50 && !isEditingRef.current) setTool("select");
+    if (e.keyCode === 50) setTool("select");
     // Check if the key pressed is 3
-    if (e.keyCode === 51 && !isEditingRef.current) setTool("rect");
+    if (e.keyCode === 51) setTool("rect");
     // Check if the key pressed is 4
-    if (e.keyCode === 52 && !isEditingRef.current) setTool("triangle");
+    if (e.keyCode === 52) setTool("triangle");
     // Check if the key pressed is 5
-    if (e.keyCode === 53 && !isEditingRef.current) setTool("circle");
+    if (e.keyCode === 53) setTool("circle");
     // Check if the key pressed is 6
-    if (e.keyCode === 54 && !isEditingRef.current) setTool("line");
+    if (e.keyCode === 54) setTool("line");
     // Check if the key pressed is 7
-    if (e.keyCode === 55 && !isEditingRef.current) setTool("path-5");
+    if (e.keyCode === 55) setTool("path-5");
     // Check if the key pressed is 8
-    if (e.keyCode === 56 && !isEditingRef.current) setTool("i-text");
+    if (e.keyCode === 56) setTool("i-text");
     // Check if the key pressed is 9
-    if (e.keyCode === 57 && !isEditingRef.current) setTool("image");
+    if (e.keyCode === 57) setTool("image");
     // Check if the key pressed is 0
-    if (e.keyCode === 48 && !isEditingRef.current) setTool("eraser");
+    if (e.keyCode === 48) setTool("eraser");
 
     // Check if the key pressed is ctrl/cmd + +
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 107) {

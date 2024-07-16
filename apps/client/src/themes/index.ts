@@ -63,6 +63,9 @@ export default extendTheme({
                 style: { padding: 10, marginBottom: 24 },
             },
         },
-        JoyTooltip: { defaultProps: { size: "sm", placement: "top" } },
+        JoyTooltip: {
+            defaultProps: { variant: "soft", size: "sm", placement: "top", enterDelay: 1000, enterNextDelay: 1000, enterTouchDelay: 1000 },
+            styleOverrides: { root: { borderRadius: 9999 } },
+        },
     },
 });

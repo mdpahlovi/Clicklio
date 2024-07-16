@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { handleKeyDown } from "@/utils/key-events";
 import { useShapeState } from "@/hooks/useShapeState";
@@ -10,7 +10,6 @@ import {
     handleCanvasMouseMove,
     handleCanvasMouseUp,
     handleCanvasObjectModified,
-    handleCanvasSelectionCreated,
     handleCanvasZoom,
     handlePathCreated,
     handleResize,
@@ -25,6 +24,7 @@ export function useCanvas() {
     const { undo, redo } = useShapeState.temporal.getState();
     const { setShape, updateShape, deleteShape } = useShapeState();
     const { setTool, setZoom, setRefresh } = useCanvasState();
+    const [currentObject, setCurrentObject] = useState<fabric.Object | null>(null);
 
     const [searchParams] = useSearchParams();
     const roomRef = useRef<string | null>(null);
@@ -33,7 +33,6 @@ export function useCanvas() {
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const isDrawing = useRef(false);
-    const isEditingRef = useRef(false);
     const isPanning = useRef<Pointer | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
     const selectedToolRef = useRef<Tool | null>(null);
@@ -101,12 +100,21 @@ export function useCanvas() {
         });
 
         canvas.on("selection:created", (options) => {
-            handleCanvasSelectionCreated({ options, isEditingRef, pasteTimeRef });
+            if (!options?.selected) return;
+
+            pasteTimeRef.current = 1;
+            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
         });
 
-        canvas.on("mouse:wheel", (options) => {
-            handleCanvasZoom({ options, canvas, setZoom });
+        canvas.on("selection:updated", (options) => {
+            if (!options?.selected) return;
+
+            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
         });
+
+        canvas.on("selection:cleared", () => setCurrentObject(null));
+
+        canvas.on("mouse:wheel", (options) => handleCanvasZoom({ options, canvas, setZoom }));
 
         window.addEventListener("resize", () => handleResize({ canvas }));
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
@@ -115,7 +123,6 @@ export function useCanvas() {
                 e,
                 canvas,
                 roomRef,
-                isEditingRef,
                 pasteTimeRef,
                 copiedObjectRef,
                 setShape,
@@ -138,7 +145,6 @@ export function useCanvas() {
                     e,
                     canvas: null,
                     roomRef,
-                    isEditingRef,
                     pasteTimeRef,
                     copiedObjectRef,
                     setShape,
@@ -154,5 +160,5 @@ export function useCanvas() {
         };
     }, []);
 
-    return { canvasRef, fabricRef, roomRef, isEditingRef, selectedToolRef, pasteTimeRef, copiedObjectRef };
+    return { canvasRef, fabricRef, roomRef, selectedToolRef, pasteTimeRef, copiedObjectRef, currentObject };
 }
