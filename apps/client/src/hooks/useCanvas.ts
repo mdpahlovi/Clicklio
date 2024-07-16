@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
+import { useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { handleKeyDown } from "@/utils/key-events";
-import { useRef, useState, useEffect } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 
@@ -23,8 +23,7 @@ export function useCanvas() {
     const { mode, setMode } = useColorScheme();
     const { undo, redo } = useShapeState.temporal.getState();
     const { setShape, updateShape, deleteShape } = useShapeState();
-    const { setTool, setZoom, setRefresh } = useCanvasState();
-    const [currentObject, setCurrentObject] = useState<fabric.Object | null>(null);
+    const { setTool, setZoom, setRefresh, setCurrentObject, removeCurrentObject } = useCanvasState();
 
     const [searchParams] = useSearchParams();
     const roomRef = useRef<string | null>(null);
@@ -75,7 +74,7 @@ export function useCanvas() {
 
         canvas.on("mouse:move", (options) => {
             // @ts-ignore
-            isClicked.current && options?.target?.objectId ? setCurrentObject(null) : null;
+            isClicked.current && options?.target?.objectId ? removeCurrentObject() : null;
             handleCanvasMouseMove({ options, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
         });
 
@@ -117,7 +116,7 @@ export function useCanvas() {
             if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
         });
 
-        canvas.on("selection:cleared", () => setCurrentObject(null));
+        canvas.on("selection:cleared", () => removeCurrentObject());
 
         canvas.on("mouse:wheel", (options) => handleCanvasZoom({ options, canvas, setZoom }));
 
@@ -165,5 +164,5 @@ export function useCanvas() {
         };
     }, []);
 
-    return { canvasRef, fabricRef, roomRef, selectedToolRef, pasteTimeRef, copiedObjectRef, currentObject };
+    return { canvasRef, fabricRef, roomRef, selectedToolRef, pasteTimeRef, copiedObjectRef };
 }

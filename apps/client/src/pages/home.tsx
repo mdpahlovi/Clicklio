@@ -22,7 +22,7 @@ export default function HomePage() {
     const { undo, redo } = useShapeState.temporal.getState();
     const { refresh, setRefresh } = useCanvasState();
     const { shapes, setShape, updateShape, deleteShape } = useShapeState();
-    const { canvasRef, fabricRef, roomRef, selectedToolRef, pasteTimeRef, copiedObjectRef, currentObject } = useCanvas();
+    const { canvasRef, fabricRef, roomRef, selectedToolRef, pasteTimeRef, copiedObjectRef } = useCanvas();
     const { saveShapes, isUpToDate } = usePeriodicSave({ fabricRef });
 
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
@@ -83,7 +83,7 @@ export default function HomePage() {
                 <CanvasContainer>
                     <RemoteCursor {...{ roomRef }} />
                     {/* <SideToolbar {...{ fabricRef, pasteTimeRef, copiedObjectRef }} /> */}
-                    <FloatingMenu {...{ fabricRef, currentObject, pasteTimeRef, copiedObjectRef }} />
+                    <FloatingMenu {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
                     <Toolbar {...{ fabricRef, selectedToolRef }} />
                     <BottomToolbar {...{ fabricRef }} />
                     <canvas ref={canvasRef} />

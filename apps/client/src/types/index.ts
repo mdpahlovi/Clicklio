@@ -48,14 +48,13 @@ export type ImageUpload = {
 
 export type FloatingMenuProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    currentObject: fabric.Object | null;
     pasteTimeRef: React.MutableRefObject<number | null>;
     copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
 };
 
 export type FloatingMenuItemProps = {
     open: boolean;
-    onOpenChange: (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, open: boolean) => void;
+    onOpenChange: () => void;
     currentObject: fabric.Object | null;
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
