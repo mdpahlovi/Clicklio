@@ -50,7 +50,7 @@ export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObjec
         top: pointer.y,
         fill: baseColorRef.current,
         fontFamily: "Helvetica",
-        fontSize: 36,
+        fontSize: 16,
         fontWeight: "400",
         objectId: uuidv4(),
     } as { objectId: string } & fabric.IText);

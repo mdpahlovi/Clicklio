@@ -24,7 +24,10 @@ export default function FloatingMenu({ fabricRef, currentObject, copiedObjectRef
         const { top: OTop, left: OLeft, width } = currentObject.getBoundingRect();
 
         const top = Math.min(window.innerHeight, Math.max(10, OTop - 96));
-        const left = Math.min(window.innerWidth - 178, Math.max(166, OLeft + width / 2));
+        const left = Math.min(
+            window.innerWidth - (currentObject?.type === "i-text" ? 200 : 180),
+            Math.max(currentObject?.type === "i-text" ? 186 : 166, OLeft + width / 2)
+        );
 
         return (
             <Sheet
