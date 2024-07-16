@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
-import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { handleKeyDown } from "@/utils/key-events";
+import { useRef, useState, useEffect } from "react";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 
@@ -32,14 +32,14 @@ export function useCanvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
-    const isDrawing = useRef(false);
+    const isClicked = useRef(false);
     const isPanning = useRef<Pointer | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
-    const selectedToolRef = useRef<Tool | null>(null);
 
     const pasteTimeRef = useRef<number | null>(null);
+    const selectedToolRef = useRef<Tool | null>(null);
     const deleteObjectRef = useRef<fabric.Object[]>([]);
-    const copiedObjectRef = useRef<fabric.Object[] | null>(null);
+    const copiedObjectRef = useRef<fabric.Object[]>([]);
 
     const baseColorRef = useRef<string>();
 
@@ -69,18 +69,23 @@ export function useCanvas() {
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
         canvas.on("mouse:down", (options) => {
-            handleCanvasMouseDown({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef, baseColorRef });
+            isClicked.current = true;
+            handleCanvasMouseDown({ options, canvas, isPanning, shapeRef, selectedToolRef, baseColorRef });
         });
 
         canvas.on("mouse:move", (options) => {
-            handleCanvasMouseMove({ options, canvas, isDrawing, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
+            // @ts-ignore
+            isClicked.current && options?.target?.objectId ? setCurrentObject(null) : null;
+            handleCanvasMouseMove({ options, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
         });
 
-        canvas.on("mouse:up", () => {
+        canvas.on("mouse:up", (options) => {
+            // @ts-ignore
+            isClicked.current && options?.target?.objectId ? setCurrentObject(options?.target) : null;
+            isClicked.current = false;
             handleCanvasMouseUp({
                 canvas,
                 roomRef,
-                isDrawing,
                 isPanning,
                 shapeRef,
                 selectedToolRef,

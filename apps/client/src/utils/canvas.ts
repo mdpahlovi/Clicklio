@@ -38,22 +38,11 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 };
 
 // instantiate creation of custom fabric object/shape and add it to canvas
-export const handleCanvasMouseDown = ({
-    options,
-    canvas,
-    isDrawing,
-    isPanning,
-    selectedToolRef,
-    shapeRef,
-    baseColorRef,
-}: CanvasMouseDown) => {
+export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedToolRef, shapeRef, baseColorRef }: CanvasMouseDown) => {
     // if canvas is in DrawingMode, return
     if (canvas.isDrawingMode) return;
     // if selectedTool is select or image, return
     if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
-
-    // set canvas drawing mode
-    isDrawing.current = true;
 
     // get pointer coordinates
     const pointer = canvas.getPointer(options.e);
@@ -67,17 +56,8 @@ export const handleCanvasMouseDown = ({
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
-export const handleCanvasMouseMove = ({
-    options,
-    canvas,
-    isDrawing,
-    isPanning,
-    selectedToolRef,
-    deleteObjectRef,
-    shapeRef,
-}: CanvasMouseMove) => {
-    // if canvas is in DrawingMode or not in isDrawing, return
-    if (!isDrawing.current) return;
+export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedToolRef, deleteObjectRef, shapeRef }: CanvasMouseMove) => {
+    // if canvas is in DrawingMode, return
     if (canvas.isDrawingMode) return;
     // if selectedTool is select or image, return
     if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
@@ -153,7 +133,6 @@ export const handleCanvasMouseMove = ({
 export const handleCanvasMouseUp = ({
     canvas,
     roomRef,
-    isDrawing,
     isPanning,
     shapeRef,
     selectedToolRef,
@@ -167,14 +146,11 @@ export const handleCanvasMouseUp = ({
     // if selectedTool is select or image, return
     if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
-    // set canvas drawing mode
-    isDrawing.current = false;
-
     // set panning to null
     if (selectedToolRef.current === "panning") return (isPanning.current = null);
 
     // eraser all shape from deleteObjectRef
-    if (selectedToolRef.current === "eraser" && deleteObjectRef.current.length > 0) {
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current.length) {
         deleteObjectRef.current.forEach((object) => {
             canvas.remove(object);
             // sync in storage

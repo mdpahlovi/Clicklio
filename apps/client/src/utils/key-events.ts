@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { socket } from "@/utils/socket";
 import type { WindowKeyDown } from "@/types";
 
-export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>) => {
+export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.Object[]>) => {
     const activeObjects = canvas.getActiveObjects();
 
     // set copied objects in the copiedObjectRef
@@ -17,11 +17,11 @@ export const handlePaste = (
     canvas: fabric.Canvas,
     room: string | null,
     pasteTimeRef: React.MutableRefObject<number | null>,
-    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>,
+    copiedObjectRef: React.MutableRefObject<fabric.Object[]>,
     setShape: (shape: fabric.Object) => void
 ) => {
     // if no pasteTime or copiedObject, return
-    if (!pasteTimeRef.current || !copiedObjectRef.current || !copiedObjectRef.current.length) return;
+    if (!pasteTimeRef.current || !copiedObjectRef.current.length) return;
 
     copiedObjectRef.current.forEach((object) => {
         // convert the plain javascript objects into fabric.js objects (deserialization)

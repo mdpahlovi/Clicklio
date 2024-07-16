@@ -50,7 +50,7 @@ export type FloatingMenuProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     currentObject: fabric.Object | null;
     pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
 };
 
 export type FloatingMenuItemProps = {
@@ -63,13 +63,13 @@ export type FloatingMenuItemProps = {
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
 };
 
 export type ActionsProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
 };
 
 export type ToolbarProps = {
@@ -86,7 +86,6 @@ export type CanvasMouseDown = {
     options: fabric.IEvent<MouseEvent>;
     canvas: fabric.Canvas;
     selectedToolRef: React.MutableRefObject<Tool | null>;
-    isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
     baseColorRef: React.MutableRefObject<string | undefined>;
@@ -95,7 +94,6 @@ export type CanvasMouseDown = {
 export type CanvasMouseMove = {
     options: fabric.IEvent<MouseEvent>;
     canvas: fabric.Canvas;
-    isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
@@ -104,7 +102,6 @@ export type CanvasMouseMove = {
 
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
-    isDrawing: React.MutableRefObject<boolean>;
     isPanning: React.MutableRefObject<Pointer | null>;
     shapeRef: React.MutableRefObject<fabric.Object | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
@@ -143,7 +140,7 @@ export type WindowKeyDown = {
     canvas: fabric.Canvas | null;
     roomRef: React.MutableRefObject<string | null>;
     pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[] | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
     setShape: (shape: fabric.Object) => void;
     deleteShape: (id: string) => void;
     undo: (steps?: number) => void;
