@@ -12,6 +12,7 @@ import {
     handleCanvasObjectModified,
     handleCanvasZoom,
     handlePathCreated,
+    handleSetCurrentObject,
     handleResize,
     initializeFabric,
 } from "@/utils/canvas";
@@ -104,16 +105,11 @@ export function useCanvas() {
         });
 
         canvas.on("selection:created", (options) => {
-            if (!options?.selected) return;
-
-            pasteTimeRef.current = 1;
-            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
+            handleSetCurrentObject({ options, pasteTimeRef, setCurrentObject });
         });
 
         canvas.on("selection:updated", (options) => {
-            if (!options?.selected) return;
-
-            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
+            handleSetCurrentObject({ options, pasteTimeRef, setCurrentObject });
         });
 
         canvas.on("selection:cleared", () => removeCurrentObject());

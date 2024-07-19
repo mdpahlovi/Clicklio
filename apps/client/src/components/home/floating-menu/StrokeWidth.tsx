@@ -27,7 +27,7 @@ export default function StrokeWidth({ currentObject, handleInputChange }: Stroke
             step={1}
             value={value}
             style={{ padding: 10, marginBottom: 36 }}
-            onChange={(_, value) => handleInputChange("strokeWidth", value.toString())}
+            onChange={(_, value) => handleInputChange("strokeWidth", String(value))}
             slotProps={{ track: { style: value === 20 ? { borderRadius: 10 } : undefined }, thumb: { style: thumbStyle() } }}
             marks={[
                 { value: 0, label: "0px" },

@@ -1,10 +1,10 @@
 import { MdFormatTextdirectionLToR } from "react-icons/md";
 import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
-import { Select, Option, Dropdown, Tooltip, MenuButton, Menu, IconButton } from "@mui/joy";
+import { Dropdown, Tooltip, MenuButton, Menu, IconButton, styled } from "@mui/joy";
 import type { Attributes, FloatingMenuItemProps } from "@/types";
 
 type Property = "fontFamily" | "fontSize" | "fontWeight";
-type SelectConfig = { property: Property; placeholder: string; options: { label: string; value: string }[] };
+type SelectConfig = { property: Property; options: { label: string; value: string }[] };
 type RenderSelectProps = {
     config: SelectConfig;
     handleInputChange: (property: keyof Attributes, value: string) => void;
@@ -12,9 +12,9 @@ type RenderSelectProps = {
 };
 
 const selectConfigs: SelectConfig[] = [
-    { property: "fontFamily", placeholder: "Choose A Font", options: fontFamilyOptions },
-    { property: "fontSize", placeholder: "Size", options: fontSizeOptions },
-    { property: "fontWeight", placeholder: "Weight", options: fontWeightOptions },
+    { property: "fontFamily", options: fontFamilyOptions },
+    { property: "fontSize", options: fontSizeOptions },
+    { property: "fontWeight", options: fontWeightOptions },
 ];
 
 export default function Text({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
@@ -39,21 +39,32 @@ export default function Text({ open, onOpenChange, currentObject, handleInputCha
     );
 }
 
-function RenderSelect({ currentObject, config: { property, placeholder, options }, handleInputChange }: RenderSelectProps) {
+function RenderSelect({ currentObject, config: { property, options }, handleInputChange }: RenderSelectProps) {
     const defaultValue = currentObject ? (currentObject as fabric.IText)[property] : "";
 
     return (
-        <Select
-            key={property}
-            placeholder={placeholder}
-            defaultValue={defaultValue}
-            onChange={(_, value) => value && handleInputChange(property, String(value))}
-        >
+        <Select key={property} value={String(defaultValue)} onChange={(e) => handleInputChange(property, String(e.target.value))}>
             {options.map((option) => (
-                <Option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value}>
                     {option.label}
-                </Option>
+                </option>
             ))}
         </Select>
     );
 }
+
+const Select = styled("select")(({ theme: { palette, fontFamily, fontSize, lineHeight, shadow } }) => ({
+    width: "100%",
+    height: 36,
+    border: "1px solid",
+    paddingInline: 12,
+    borderRadius: 9999,
+    backgroundColor: palette.background.surface,
+    borderColor: palette.neutral.outlinedBorder,
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.md,
+    lineHeight: lineHeight.md,
+    color: palette.neutral.outlinedColor,
+    boxShadow: shadow.xs,
+    ":focus": { borderColor: palette.focusVisible },
+}));

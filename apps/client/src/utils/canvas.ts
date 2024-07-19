@@ -10,6 +10,7 @@ import type {
     CanvasMouseUp,
     CanvasObjectModified,
     CanvasPathCreated,
+    CanvasSetCurrentObject,
     CanvasZoom,
     RenderCanvas,
 } from "@/types";
@@ -222,6 +223,15 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
         // @ts-ignore
         socket.emit("set:shape", { room: roomRef.current, objectId: path.objectId, ...path.toJSON() });
     }
+};
+
+// setCurrentObject to show floating menu & pasteTimeRef to 1
+export const handleSetCurrentObject = ({ options, pasteTimeRef, setCurrentObject }: CanvasSetCurrentObject) => {
+    // if no selected object return
+    if (!options?.selected) return;
+
+    pasteTimeRef.current = 1;
+    if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
 };
 
 // render canvas objects coming from storage on canvas

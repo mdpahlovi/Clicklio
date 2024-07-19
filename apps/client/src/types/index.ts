@@ -123,6 +123,12 @@ export type CanvasPathCreated = {
     options: any;
 };
 
+export type CanvasSetCurrentObject = {
+    options: fabric.IEvent<MouseEvent>;
+    pasteTimeRef: React.MutableRefObject<number | null>;
+    setCurrentObject: (object: fabric.Object) => void;
+};
+
 export type RenderCanvas = {
     shapes: fabric.Object[];
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;

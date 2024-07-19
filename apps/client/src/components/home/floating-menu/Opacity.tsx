@@ -29,7 +29,7 @@ export default function Opacity({ open, onOpenChange, currentObject, handleInput
                     max={1}
                     step={0.1}
                     value={value}
-                    onChange={(_, value) => handleInputChange("opacity", value.toString())}
+                    onChange={(_, value) => handleInputChange("opacity", String(value))}
                     slotProps={{ track: { style: value === 1 ? { borderRadius: 10 } : undefined }, thumb: { style: thumbStyle() } }}
                     marks={[
                         { value: 0, label: "0%" },
