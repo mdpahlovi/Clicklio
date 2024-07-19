@@ -17,19 +17,19 @@ export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef 
     const handleInputChange = (property: keyof Attributes, value: string) =>
         modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
 
-    if (currentObject) {
+    if (fabricRef?.current && currentObject) {
         const { top: OTop, left: OLeft, width } = currentObject.getBoundingRect();
 
-        const top = Math.min(window.innerHeight, Math.max(10, OTop - 96));
+        const top = Math.max(10, OTop - 96);
         const left = Math.min(
-            window.innerWidth - (currentObject?.type === "i-text" ? 200 : 180),
-            Math.max(currentObject?.type === "i-text" ? 186 : 166, OLeft + width / 2)
+            fabricRef?.current?.width! - (currentObject?.type === "i-text" ? 137.3 : 117.3),
+            Math.max(currentObject?.type === "i-text" ? 137.3 : 117.3, OLeft + width / 2)
         );
 
         return (
             <Sheet
                 onClick={(e) => e.stopPropagation()}
-                sx={{ position: "absolute", zIndex: 9999, p: 0.75, display: "flex", gap: 0.5 }}
+                sx={{ position: "absolute", zIndex: 1, p: 0.75, display: "flex", gap: 0.5 }}
                 style={{ top, left, transform: "translateX(-50%)", height: 36, borderRadius: 24 }}
             >
                 {currentObject?.type === "i-text" ? (

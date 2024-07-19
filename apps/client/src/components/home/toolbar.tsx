@@ -78,7 +78,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 
     return (
         <Sheet
-            sx={{ position: "absolute", zIndex: 1, inset: 0, top: 24, bottom: 73, my: "auto", p: 0.75, width: 36 }}
+            sx={{ position: "absolute", zIndex: 10, inset: 0, top: 24, bottom: 73, my: "auto", p: 0.75, width: 36 }}
             style={{ borderLeft: 0, borderRadius: "0 24px 24px 0", display: "grid", gap: 4, overflowY: "auto", maxHeight: 286 }}
         >
             {navElements.map(({ name, value, values, icon, type, children }, idx) => {

@@ -15,8 +15,8 @@ function Header({ children }: React.PropsWithChildren) {
     return (
         <Sheet
             component="header"
-            style={{ position: "sticky", top: 0, zIndex: 1200, borderWidth: "0 0 1px" }}
-            sx={{ px: 2, gap: 2, display: "flex", alignItems: "center", justifyContent: "space-between", gridColumn: "1 / -1" }}
+            style={{ position: "sticky", top: 0, zIndex: 10, borderWidth: "0 0 1px" }}
+            sx={{ px: 2, gap: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}
         >
             {children}
         </Sheet>

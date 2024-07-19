@@ -20,7 +20,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     return (
         <>
             <Sheet
-                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 1 }}
+                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
                 style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 24px 0 0" }}
             >
                 <IconButton
@@ -42,7 +42,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 </IconButton>
             </Sheet>
             <Sheet
-                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 1 }}
+                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
                 style={{ borderWidth: "1px 0 0 1px", position: "absolute", bottom: 0, right: 0, borderRadius: "24px 0 0 0" }}
             >
                 <IconButton
