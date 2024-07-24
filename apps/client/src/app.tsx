@@ -20,9 +20,9 @@ export default function App() {
 
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) setUser({ id: userDoc.id, ...userDoc.data() } as User);
-                setLoading(false);
             } catch (error) {
                 setUser(null);
+            } finally {
                 setLoading(false);
             }
         });

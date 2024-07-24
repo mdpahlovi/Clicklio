@@ -4,15 +4,18 @@ import { temporal } from "zundo";
 
 type ShapeStateStore = {
     shapes: fabric.Object[];
+    previous: fabric.Object[];
     setShape: (shape: fabric.Object) => void;
     setShapes: (shape: fabric.Object[]) => void;
     updateShape: (shape: fabric.Object) => void;
     deleteShape: (id: string) => void;
+    setPrevious: (shape: fabric.Object[]) => void;
 };
 
 export const useShapeState = create<ShapeStateStore>()(
     temporal((set) => ({
         shapes: [],
+        previous: [],
         setShapes: (shapes) => set({ shapes }),
         setShape: (shape) => set(({ shapes }) => ({ shapes: [...shapes, shape] })),
 
@@ -24,5 +27,7 @@ export const useShapeState = create<ShapeStateStore>()(
 
         // @ts-ignore
         deleteShape: (id) => set(({ shapes }) => ({ shapes: shapes.filter(({ objectId }) => objectId !== id) })),
+
+        setPrevious: (previous) => set({ previous }),
     }))
 );

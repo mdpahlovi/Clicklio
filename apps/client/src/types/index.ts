@@ -59,6 +59,11 @@ export type FloatingMenuItemProps = {
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
+export type FloatingMenuSubItemProps = {
+    currentObject: fabric.Object | null;
+    handleInputChange: (property: keyof Attributes, value: string) => void;
+};
+
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
     pasteTimeRef: React.MutableRefObject<number | null>;

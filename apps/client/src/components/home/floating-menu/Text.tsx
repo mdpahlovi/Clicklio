@@ -1,15 +1,12 @@
+import { fabric } from "fabric";
 import { MdFormatTextdirectionLToR } from "react-icons/md";
 import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
 import { Dropdown, Tooltip, MenuButton, Menu, IconButton, styled } from "@mui/joy";
-import type { Attributes, FloatingMenuItemProps } from "@/types";
+import type { FloatingMenuItemProps, FloatingMenuSubItemProps } from "@/types";
 
 type Property = "fontFamily" | "fontSize" | "fontWeight";
 type SelectConfig = { property: Property; options: { label: string; value: string }[] };
-type RenderSelectProps = {
-    config: SelectConfig;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
-    currentObject: fabric.Object | null;
-};
+type RenderSelectProps = { config: SelectConfig } & FloatingMenuSubItemProps;
 
 const selectConfigs: SelectConfig[] = [
     { property: "fontFamily", options: fontFamilyOptions },

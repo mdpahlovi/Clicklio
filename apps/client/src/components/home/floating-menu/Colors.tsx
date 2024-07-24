@@ -21,10 +21,8 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                         <div
                             style={{
                                 ...iconProps,
-                                // @ts-ignore
-                                borderColor: currentObject ? currentObject?.fill : undefined,
-                                // @ts-ignore
-                                backgroundColor: currentObject ? currentObject?.fill : undefined,
+                                borderColor: currentObject ? (currentObject?.fill as string) : undefined,
+                                backgroundColor: currentObject ? (currentObject?.fill as string) : undefined,
                             }}
                         />
                     ) : (
@@ -32,8 +30,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                             style={{
                                 ...iconProps,
                                 backgroundColor: palette.background.body,
-                                // @ts-ignore
-                                borderColor: currentObject ? currentObject?.stroke : undefined,
+                                borderColor: currentObject ? (currentObject?.stroke as string) : undefined,
                             }}
                         />
                     )}

@@ -1,29 +1,26 @@
 import React from "react";
+import Modal from "@/components/ui/modal";
 import { views, tools, editors } from "@/constants";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Box, Divider, Modal, ModalClose, Sheet, Typography } from "@mui/joy";
+import { Box, Divider, Sheet, Typography } from "@mui/joy";
 
 export default function HelpModal() {
     const { helpModal, toggleHelpModal } = useCanvasState();
 
     return (
-        <Modal open={helpModal} onClose={toggleHelpModal}>
-            <Sheet
-                style={{ maxHeight: "80vh", overflowY: "scroll" }}
-                sx={{ minWidth: { xs: "100%", lg: 768 }, borderRadius: "md", boxShadow: "lg" }}
-            >
-                <ModalClose variant="plain" sx={{ m: 1 }} />
-                <Typography level="h4" fontWeight="lg" pt={3} pb={2} px={3}>
-                    Keyboard shortcuts
-                </Typography>
-                <Box sx={{ pb: 3, px: 3, display: "grid", gridTemplateColumns: { lg: "1fr 1fr" }, gap: 3 }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                        <KeyboardShortcuts title="Tool" shortcuts={tools} />
-                        <KeyboardShortcuts title="View" shortcuts={views} />
-                    </div>
-                    <KeyboardShortcuts title="Editor" shortcuts={editors} />
-                </Box>
-            </Sheet>
+        <Modal
+            open={helpModal}
+            onClose={toggleHelpModal}
+            title="Keyboard shortcuts"
+            sx={{ maxWidth: 768, maxHeight: "80vh", overflowY: "scroll" }}
+        >
+            <Box sx={{ display: "grid", gridTemplateColumns: { lg: "1fr 1fr" }, gap: 3 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                    <KeyboardShortcuts title="Tool" shortcuts={tools} />
+                    <KeyboardShortcuts title="View" shortcuts={views} />
+                </div>
+                <KeyboardShortcuts title="Editor" shortcuts={editors} />
+            </Box>
         </Modal>
     );
 }

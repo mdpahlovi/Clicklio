@@ -67,5 +67,15 @@ export default extendTheme({
             defaultProps: { variant: "soft", size: "sm", placement: "top", enterDelay: 1000, enterNextDelay: 1000, enterTouchDelay: 1000 },
             styleOverrides: { root: { borderRadius: 9999 } },
         },
+        JoyCardOverflow: {
+            defaultProps: {
+                sx: {
+                    borderBottom: "1px solid",
+                    borderTop: "1px solid",
+                    borderColor: "neutral.outlinedBorder",
+                    ":hover": { cursor: "pointer" },
+                },
+            },
+        },
     },
 });

@@ -9,18 +9,16 @@ import { addDoc, collection, Timestamp } from "firebase/firestore";
 
 export default function NewFile() {
     const id = useId();
-    const navigator = useNavigate();
     const { user } = useAuthState();
+    const navigator = useNavigate();
 
+    // Add New File Actions
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!user || !user?.id) return;
-        // @ts-ignore
-        const formData = new FormData(event.target);
-        const formProps = Object.fromEntries(formData);
 
-        const room = { name: formProps.name as string, user: user?.id, shapes: [], updatedAt: Timestamp.now() };
-        addDoc(collection(db, "shapes"), room)
+        const name = new FormData(event.currentTarget).get("name");
+        addDoc(collection(db, "shapes"), { name, user: user?.id, shapes: [], updatedAt: Timestamp.now() })
             .then((value) => navigator(`/room/${value.id}`))
             .catch(() => toast.error("Failed To Create Room"));
     };

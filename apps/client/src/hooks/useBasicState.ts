@@ -1,15 +1,19 @@
 import { create } from "zustand";
 
 type BasicStateStore = {
-    menu: boolean;
-    toggleMenu: () => void;
+    renameModal: boolean;
+    toggleRenameModal: () => void;
+    renameLoading: boolean;
+    toggleRenameLoading: () => void;
     sidebar: boolean;
     toggleSidebar: () => void;
 };
 
 export const useBasicState = create<BasicStateStore>()((set) => ({
-    menu: false,
-    toggleMenu: () => set(({ menu }) => ({ menu: !menu })),
+    renameModal: false,
+    toggleRenameModal: () => set(({ renameModal }) => ({ renameModal: !renameModal })),
+    renameLoading: false,
+    toggleRenameLoading: () => set(({ renameLoading }) => ({ renameLoading: !renameLoading })),
     sidebar: false,
     toggleSidebar: () => set(({ sidebar }) => ({ sidebar: !sidebar })),
 }));

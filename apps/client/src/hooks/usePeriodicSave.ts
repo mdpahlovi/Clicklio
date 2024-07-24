@@ -1,8 +1,8 @@
 import { fabric } from "fabric";
 import { isEqual } from "lodash";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { db } from "@/utils/firebase";
-import { useEffect, useState } from "react";
 import { useAuthState } from "@/hooks/useAuthState";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
@@ -14,14 +14,12 @@ export function usePeriodicSave({ fabricRef }: { fabricRef: React.MutableRefObje
     const navigator = useNavigate();
     const { user } = useAuthState();
     const { setRefresh } = useCanvasState();
-    const [roomId, setRoomId] = useState("");
-    const { shapes, setShapes } = useShapeState();
-    const [previous, setPrevious] = useState<fabric.Object[]>([]);
+    const { shapes, setShapes, previous, setPrevious } = useShapeState();
 
     const saveShapes = () => {
-        if (!fabricRef.current || !roomId || !user?.id || !shapes.length) return;
+        if (!fabricRef.current || !id || !user?.id || !shapes.length) return;
 
-        updateDoc(doc(db, "shapes", roomId), {
+        updateDoc(doc(db, "shapes", id), {
             shapes,
             image: fabricRef.current.toDataURL({ format: "png", quality: 0.75 }),
             updatedAt: Timestamp.now(),
@@ -35,7 +33,6 @@ export function usePeriodicSave({ fabricRef }: { fabricRef: React.MutableRefObje
 
         getDoc(doc(db, "shapes", id))
             .then((value) => {
-                setRoomId(value.id);
                 const file = value.data();
                 if (file?.shapes?.length) {
                     setShapes(file?.shapes);

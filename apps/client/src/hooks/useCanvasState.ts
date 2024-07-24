@@ -1,3 +1,4 @@
+import { fabric } from "fabric";
 import { create } from "zustand";
 import type { Tool } from "@/types";
 

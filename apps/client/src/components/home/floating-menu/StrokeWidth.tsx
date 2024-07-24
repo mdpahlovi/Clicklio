@@ -1,12 +1,7 @@
 import { Slider } from "@mui/joy";
-import type { Attributes } from "@/types";
+import type { FloatingMenuSubItemProps } from "@/types";
 
-type StrokeWidthProps = {
-    currentObject: fabric.Object | null;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
-};
-
-export default function StrokeWidth({ currentObject, handleInputChange }: StrokeWidthProps) {
+export default function StrokeWidth({ currentObject, handleInputChange }: FloatingMenuSubItemProps) {
     const value = currentObject?.strokeWidth;
 
     const thumbStyle = (): React.CSSProperties => {
