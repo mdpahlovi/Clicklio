@@ -196,7 +196,7 @@ input[type="number"] {
 }
 
 .editor-heading-h2 {
-    font-size: 15px;
+    font-size: 16px;
     color: rgb(101, 103, 107);
     font-weight: 700;
     margin: 0;
@@ -208,7 +208,7 @@ input[type="number"] {
 .editor-quote {
     margin: 0;
     margin-left: 20px;
-    font-size: 15px;
+    font-size: 16px;
     color: rgb(101, 103, 107);
     border-left-color: rgb(206, 208, 212);
     border-left-width: 4px;

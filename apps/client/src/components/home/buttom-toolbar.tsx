@@ -1,5 +1,4 @@
 import { fabric } from "fabric";
-import { useEffect } from "react";
 import { socket } from "@/utils/socket";
 import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";
@@ -12,10 +11,6 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     const [searchParams] = useSearchParams();
     const { zoom, setZoom } = useCanvasState();
     const { undo, redo } = useShapeState.temporal.getState();
-
-    useEffect(() => {
-        if (fabricRef?.current) setZoom(fabricRef.current.getZoom());
-    }, []);
 
     return (
         <>
@@ -64,8 +59,8 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     sx={{ width: { xs: 64, sm: 96 } }}
                     onClick={() => {
                         if (fabricRef.current) {
-                            setZoom(1);
-                            fabricRef.current.setZoom(1);
+                            setZoom(2);
+                            fabricRef.current.setZoom(2);
                         }
                     }}
                 >

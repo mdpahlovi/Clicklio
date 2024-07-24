@@ -135,8 +135,8 @@ export const handleKeyDown = ({
     // Check if the key pressed is ctrl/cmd + R
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 82) {
         e.preventDefault();
-        setZoom(1);
-        canvas.setZoom(1);
+        setZoom(2);
+        canvas.setZoom(2);
     }
     // Check if the key pressed is ctrl/cmd + D
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {

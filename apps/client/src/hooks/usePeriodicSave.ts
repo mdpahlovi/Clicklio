@@ -11,8 +11,8 @@ import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 
 export function usePeriodicSave({ fabricRef }: { fabricRef: React.MutableRefObject<fabric.Canvas | null> }) {
     const { id } = useParams();
-    const navigator = useNavigate();
     const { user } = useAuthState();
+    const navigator = useNavigate();
     const { setRefresh } = useCanvasState();
     const { shapes, setShapes, previous, setPrevious } = useShapeState();
 
@@ -36,6 +36,7 @@ export function usePeriodicSave({ fabricRef }: { fabricRef: React.MutableRefObje
                 const file = value.data();
                 if (file?.shapes?.length) {
                     setShapes(file?.shapes);
+                    setPrevious(file?.shapes);
                     setRefresh();
                 }
             })

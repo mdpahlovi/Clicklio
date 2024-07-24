@@ -285,7 +285,7 @@ export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
     const delta = options.e?.deltaY;
     let zoom = canvas.getZoom();
 
-    // allow zooming to min 10% and max 1000%
+    // allow zooming to min 100% and max 1000%
     const minZoom = 1;
     const maxZoom = 10;
     const zoomStep = 0.001;

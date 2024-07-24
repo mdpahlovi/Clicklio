@@ -4,7 +4,7 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 
-const HtmlPlugin = ({ initialHtml, onHtmlChanged }: { initialHtml?: string; onHtmlChanged: (html: string) => void }) => {
+export default function HtmlPlugin({ initialHtml, onHtmlChanged }: { initialHtml?: string; onHtmlChanged: (html: string) => void }) {
     const [editor] = useLexicalComposerContext();
 
     const [isFirstRender, setIsFirstRender] = useState(true);
@@ -31,6 +31,4 @@ const HtmlPlugin = ({ initialHtml, onHtmlChanged }: { initialHtml?: string; onHt
             }}
         />
     );
-};
-
-export default HtmlPlugin;
+}
