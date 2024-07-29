@@ -57,7 +57,7 @@ export default function FileCard({ file: { id, name, image, updatedAt }, refetch
                     </Dropdown>
                 </Box>
                 <CardOverflow onClick={() => navigate(`/room/${id}`)}>
-                    <img src={image} alt={name} style={{ aspectRatio: "16 / 9" }} />
+                    <img src={image} alt={name} style={{ width: "100%", height: "100%", aspectRatio: "16 / 9" }} />
                 </CardOverflow>
                 <Typography level="body-xs">
                     {updatedAt.toDate().toDateString()}, {updatedAt.toDate().toLocaleTimeString()}

@@ -23,7 +23,7 @@ export default function Opacity({ open, onOpenChange, currentObject, handleInput
                     <MdOpacity />
                 </MenuButton>
             </Tooltip>
-            <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ borderRadius: 24, width: 205 }}>
+            <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ width: 205 }}>
                 <Slider
                     min={0}
                     max={1}

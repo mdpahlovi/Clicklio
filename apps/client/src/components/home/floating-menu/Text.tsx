@@ -22,11 +22,7 @@ export default function Text({ open, onOpenChange, currentObject, handleInputCha
                     <MdFormatTextdirectionLToR />
                 </MenuButton>
             </Tooltip>
-            <Menu
-                placement="bottom"
-                sx={{ p: 2, m: "4px 0 !important" }}
-                style={{ borderRadius: 24, width: 205, display: "grid", gap: 10 }}
-            >
+            <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ width: 205, display: "grid", gap: 10 }}>
                 {RenderSelect({ config: selectConfigs[0], handleInputChange, currentObject })}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                     {selectConfigs.slice(1).map((config) => RenderSelect({ config, handleInputChange, currentObject }))}
@@ -42,9 +38,9 @@ function RenderSelect({ currentObject, config: { property, options }, handleInpu
     return (
         <Select key={property} value={String(defaultValue)} onChange={(e) => handleInputChange(property, String(e.target.value))}>
             {options.map((option) => (
-                <option key={option.value} value={option.value}>
+                <Option key={option.value} value={option.value} style={{ fontFamily: "Poppins" }}>
                     {option.label}
-                </option>
+                </Option>
             ))}
         </Select>
     );
@@ -64,4 +60,10 @@ const Select = styled("select")(({ theme: { palette, fontFamily, fontSize, lineH
     color: palette.neutral.outlinedColor,
     boxShadow: shadow.xs,
     ":focus": { borderColor: palette.focusVisible },
+}));
+
+const Option = styled("option")(({ theme: { fontFamily, fontSize, lineHeight } }) => ({
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.md,
+    lineHeight: lineHeight.md,
 }));

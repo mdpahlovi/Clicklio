@@ -36,7 +36,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                     )}
                 </MenuButton>
             </Tooltip>
-            <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ borderRadius: 24, maxWidth: 205 }}>
+            <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ maxWidth: 205 }}>
                 {name === "stroke" ? <StrokeWidth {...{ currentObject, handleInputChange }} /> : null}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     <ColorBox
