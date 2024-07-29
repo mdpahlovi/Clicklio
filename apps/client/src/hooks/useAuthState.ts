@@ -2,7 +2,14 @@ import { create } from "zustand";
 import { auth, db } from "@/utils/firebase";
 import { FirebaseError } from "firebase/app";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    GoogleAuthProvider,
+    signInWithPopup,
+    updateProfile,
+} from "firebase/auth";
 
 export type User = { id: string; name: string; role?: string; email: string; phone?: string; image?: string; biography?: string };
 export type Credentials = { email: string; password: string };
@@ -51,6 +58,7 @@ export const useAuthState = create<AuthStateStore>((set) => ({
         set({ loading: true, error: null });
         try {
             const data = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(data.user, { displayName: name });
             const user = { id: data.user.uid, name, email };
             await setDoc(doc(db, "users", user.id), user);
             set({ user });
