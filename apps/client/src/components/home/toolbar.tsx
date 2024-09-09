@@ -1,3 +1,4 @@
+import * as fabric from "fabric";
 import { circle, navElements } from "@/constants";
 import { handleImageUpload } from "@/utils/shapes";
 import { useSearchParams } from "react-router-dom";
@@ -43,18 +44,21 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 
                 case "path-1":
                     canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                     canvas.freeDrawingBrush.width = 1;
                     canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
                     break;
 
                 case "path-5":
                     canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                     canvas.freeDrawingBrush.width = 5;
                     canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
                     break;
 
                 case "path-10":
                     canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                     canvas.freeDrawingBrush.width = 10;
                     canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
                     break;
