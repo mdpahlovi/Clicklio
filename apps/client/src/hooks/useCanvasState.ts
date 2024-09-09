@@ -7,13 +7,13 @@ type CanvasStateStore = {
     zoom: number;
     refresh: number | null;
     helpModal: boolean;
-    currentObject: fabric.Object | null;
+    currentObject: fabric.FabricObject | null;
     openedFloatingMenu: { [key: string]: boolean };
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setRefresh: () => void;
     toggleHelpModal: () => void;
-    setCurrentObject: (object: fabric.Object) => void;
+    setCurrentObject: (object: fabric.FabricObject) => void;
     removeCurrentObject: () => void;
     setOpenedFloatingMenu: (key: string) => void;
 };

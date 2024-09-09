@@ -20,9 +20,9 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
     const canvasElement = document.getElementById("canvas");
 
     // customizing corners
-    fabric.Object.prototype.cornerStyle = "circle";
-    fabric.Object.prototype.cornerColor = "#4882ED";
-    fabric.Object.prototype.transparentCorners = false;
+    fabric.FabricObject.prototype.cornerStyle = "circle";
+    fabric.FabricObject.prototype.cornerColor = "#4882ED";
+    fabric.FabricObject.prototype.transparentCorners = false;
 
     // create fabric canvas
     const canvas = new fabric.Canvas(canvasRef.current!, {
@@ -242,7 +242,7 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
          */
         fabric.util.enlivenObjects(
             [object],
-            (enlivenedObjects: fabric.Object[]) => {
+            (enlivenedObjects: fabric.FabricObject[]) => {
                 enlivenedObjects.forEach((enlivenedObj) => {
                     // add object to canvas
                     fabricRef.current?.add(enlivenedObj);

@@ -31,7 +31,7 @@ export type ModifyShape = {
     property: keyof Attributes;
     value: string;
     room: string | null;
-    updateShape: (shape: fabric.Object) => void;
+    updateShape: (shape: fabric.FabricObject) => void;
 };
 
 export type ElementDirection = {
@@ -43,34 +43,34 @@ export type ImageUpload = {
     file: File;
     room: string | null;
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    setShape: (shape: fabric.Object) => void;
+    setShape: (shape: fabric.FabricObject) => void;
 };
 
 export type FloatingMenuProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
 };
 
 export type FloatingMenuItemProps = {
     open: boolean;
     onOpenChange: () => void;
-    currentObject: fabric.Object | null;
+    currentObject: fabric.FabricObject | null;
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
 export type FloatingMenuSubItemProps = {
-    currentObject: fabric.Object | null;
+    currentObject: fabric.FabricObject | null;
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
 };
 
 export type ActionsProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
+    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
 };
 
 export type ToolbarProps = {
@@ -88,7 +88,7 @@ export type CanvasMouseDown = {
     canvas: fabric.Canvas;
     selectedToolRef: React.MutableRefObject<Tool | null>;
     isPanning: React.MutableRefObject<Pointer | null>;
-    shapeRef: React.MutableRefObject<fabric.Object | null>;
+    shapeRef: React.MutableRefObject<fabric.FabricObject | null>;
     baseColorRef: React.MutableRefObject<string | undefined>;
 };
 
@@ -97,36 +97,36 @@ export type CanvasMouseMove = {
     canvas: fabric.Canvas;
     isPanning: React.MutableRefObject<Pointer | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
-    shapeRef: React.MutableRefObject<fabric.Object | null>;
-    deleteObjectRef: React.MutableRefObject<fabric.Object[]>;
+    shapeRef: React.MutableRefObject<fabric.FabricObject | null>;
+    deleteObjectRef: React.MutableRefObject<fabric.FabricObject[]>;
 };
 
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
     isPanning: React.MutableRefObject<Pointer | null>;
-    shapeRef: React.MutableRefObject<fabric.Object | null>;
+    shapeRef: React.MutableRefObject<fabric.FabricObject | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
-    deleteObjectRef: React.MutableRefObject<fabric.Object[]>;
+    deleteObjectRef: React.MutableRefObject<fabric.FabricObject[]>;
     roomRef: React.MutableRefObject<string | null>;
     setTool: (tool: Tool) => void;
-    setShape: (shape: fabric.Object) => void;
+    setShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
 };
 
 export type CanvasObjectModified = {
     options: fabric.ModifiedEvent<fabric.TPointerEvent>;
     roomRef: React.MutableRefObject<string | null>;
-    updateShape: (shape: fabric.Object) => void;
+    updateShape: (shape: fabric.FabricObject) => void;
 };
 
 export type CanvasPathCreated = {
     roomRef: React.MutableRefObject<string | null>;
-    setShape: (shape: fabric.Object) => void;
+    setShape: (shape: fabric.FabricObject) => void;
     options: { path: fabric.FabricObject };
 };
 
 export type RenderCanvas = {
-    shapes: fabric.Object[];
+    shapes: fabric.FabricObject[];
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
 };
 
@@ -140,8 +140,8 @@ export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
     roomRef: React.MutableRefObject<string | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
-    setShape: (shape: fabric.Object) => void;
+    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
+    setShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
     undo: (steps?: number) => void;
     redo: (steps?: number) => void;

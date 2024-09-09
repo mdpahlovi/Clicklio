@@ -12,21 +12,21 @@ import type { Attributes, FloatingMenuProps } from "@/types";
 export default function FloatingMenu({ fabricRef, copiedObjectRef }: FloatingMenuProps) {
     const { updateShape } = useShapeState();
     const [searchParams] = useSearchParams();
-    const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
+    const { zoom, currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
 
     const handleInputChange = (property: keyof Attributes, value: string) =>
         modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
 
     if (fabricRef?.current && currentObject) {
-        console.log(currentObject.getCenterPoint());
         const { top: OTop, left: OLeft, width } = currentObject.getBoundingRect();
-        console.log({ OTop, OLeft });
 
-        const top = Math.max(10, OTop - 96);
+        const top = Math.max(10, OTop * zoom - 96);
         const left = Math.min(
             fabricRef?.current?.width! - (currentObject?.type === "i-text" ? 137.3 : 117.3),
-            Math.max(currentObject?.type === "i-text" ? 137.3 : 117.3, OLeft + width / 2)
+            Math.max(currentObject?.type === "i-text" ? 137.3 : 117.3, OLeft * zoom + (width * zoom) / 2)
         );
+
+        console.log(fabricRef?.current?.width, { width: width * zoom });
 
         return (
             <Sheet

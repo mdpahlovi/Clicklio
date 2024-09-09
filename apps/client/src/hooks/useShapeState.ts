@@ -3,13 +3,13 @@ import { create } from "zustand";
 import { temporal } from "zundo";
 
 type ShapeStateStore = {
-    shapes: fabric.Object[];
-    previous: fabric.Object[];
-    setShape: (shape: fabric.Object) => void;
-    setShapes: (shape: fabric.Object[]) => void;
-    updateShape: (shape: fabric.Object) => void;
+    shapes: fabric.FabricObject[];
+    previous: fabric.FabricObject[];
+    setShape: (shape: fabric.FabricObject) => void;
+    setShapes: (shape: fabric.FabricObject[]) => void;
+    updateShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
-    setPrevious: (shape: fabric.Object[]) => void;
+    setPrevious: (shape: fabric.FabricObject[]) => void;
 };
 
 export const useShapeState = create<ShapeStateStore>()(

@@ -33,11 +33,11 @@ export function useCanvas() {
 
     const isClicked = useRef(false);
     const isPanning = useRef<Pointer | null>(null);
-    const shapeRef = useRef<fabric.Object | null>(null);
+    const shapeRef = useRef<fabric.FabricObject | null>(null);
 
     const selectedToolRef = useRef<Tool | null>(null);
-    const deleteObjectRef = useRef<fabric.Object[]>([]);
-    const copiedObjectRef = useRef<fabric.Object | null>(null);
+    const deleteObjectRef = useRef<fabric.FabricObject[]>([]);
+    const copiedObjectRef = useRef<fabric.FabricObject | null>(null);
 
     const baseColorRef = useRef<string>();
 

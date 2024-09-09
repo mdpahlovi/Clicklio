@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { socket } from "@/utils/socket";
 import type { WindowKeyDown } from "@/types";
 
-export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.Object | null>) => {
+export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>) => {
     const activeObjects = canvas.getActiveObject();
 
     if (activeObjects) activeObjects.clone().then((cloned) => (copiedObjectRef.current = cloned));
@@ -12,8 +12,8 @@ export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.Mutable
 export const handlePaste = async (
     canvas: fabric.Canvas,
     room: string | null,
-    copiedObjectRef: React.MutableRefObject<fabric.Object | null>,
-    setShape: (shape: fabric.Object) => void
+    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>,
+    setShape: (shape: fabric.FabricObject) => void
 ) => {
     // if no copiedObject, return
     if (!copiedObjectRef.current) return;
