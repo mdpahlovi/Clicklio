@@ -88,12 +88,9 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
             image.set({ objectId: uuidv4() });
 
             // sync shape in storage
-            // @ts-ignore
             if (image?.objectId) {
-                // @ts-ignore
-                setShape({ objectId: image.objectId, ...image.toJSON() });
-                // @ts-ignore
-                socket.emit("set:shape", { room, objectId: image.objectId, ...image.toJSON() });
+                setShape({ objectId: image?.objectId, ...image.toJSON() });
+                socket.emit("set:shape", { room, objectId: image?.objectId, ...image.toJSON() });
             }
 
             if (fabricRef?.current) {
@@ -143,12 +140,10 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
     }
 
     fabricRef.current.requestRenderAll();
+
     // sync shape in storage
-    // @ts-ignore
     if (selectedElement?.objectId) {
-        // @ts-ignore
-        updateShape({ objectId: selectedElement.objectId, ...selectedElement.toJSON() });
-        // @ts-ignore
-        socket.emit("update:shape", { room, objectId: selectedElement.objectId, ...selectedElement.toJSON() });
+        updateShape({ objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
+        socket.emit("update:shape", { room, objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
     }
 };

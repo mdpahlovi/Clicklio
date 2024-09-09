@@ -72,13 +72,11 @@ export function useCanvas() {
         });
 
         canvas.on("mouse:move", (options) => {
-            // @ts-ignore
             isClicked.current && options?.target?.objectId ? removeCurrentObject() : null;
             handleCanvasMouseMove({ options, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
         });
 
         canvas.on("mouse:up", (options) => {
-            // @ts-ignore
             isClicked.current && options?.target?.objectId ? setCurrentObject(options?.target) : null;
             isClicked.current = false;
             handleCanvasMouseUp({

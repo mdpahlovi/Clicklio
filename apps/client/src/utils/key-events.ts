@@ -28,12 +28,9 @@ export const handlePaste = async (
             canvas.add(obj);
 
             // sync in storage
-            // @ts-ignore
             if (obj?.objectId) {
-                // @ts-ignore
-                setShape({ objectId: obj.objectId, ...obj.toJSON() });
-                // @ts-ignore
-                socket.emit("set:shape", { room, objectId: obj.objectId, ...obj.toJSON() });
+                setShape({ objectId: obj?.objectId, ...obj.toJSON() });
+                socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
             }
         });
         // this should solve the unselectability
@@ -43,12 +40,9 @@ export const handlePaste = async (
         canvas.add(clonedObj);
 
         // sync in storage
-        // @ts-ignore
         if (clonedObj?.objectId) {
-            // @ts-ignore
-            setShape({ objectId: clonedObj.objectId, ...clonedObj.toJSON() });
-            // @ts-ignore
-            socket.emit("set:shape", { room, objectId: clonedObj.objectId, ...clonedObj.toJSON() });
+            setShape({ objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
+            socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
         }
     }
     copiedObjectRef.current.top += 20;
@@ -64,11 +58,10 @@ export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteS
     if (activeObjects.length > 0) {
         activeObjects.forEach((object) => {
             canvas.remove(object);
+
             // sync in storage
-            // @ts-ignore
-            deleteShape(object.objectId);
-            // @ts-ignore
-            socket.emit("delete:shape", { room, objectId: object.objectId });
+            deleteShape(object?.objectId);
+            socket.emit("delete:shape", { room, objectId: object?.objectId });
         });
     }
 

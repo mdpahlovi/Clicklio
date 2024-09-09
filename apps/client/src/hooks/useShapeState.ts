@@ -21,11 +21,9 @@ export const useShapeState = create<ShapeStateStore>()(
 
         updateShape: (shape) =>
             set(({ shapes }) => ({
-                // @ts-ignore
-                shapes: shapes.map((previous) => (previous.objectId === shape.objectId ? shape : previous)),
+                shapes: shapes.map((previous) => (previous?.objectId === shape?.objectId ? shape : previous)),
             })),
 
-        // @ts-ignore
         deleteShape: (id) => set(({ shapes }) => ({ shapes: shapes.filter(({ objectId }) => objectId !== id) })),
 
         setPrevious: (previous) => set({ previous }),

@@ -77,9 +77,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
 
     // set target object to deleteObjectRef for eraser
     if (selectedToolRef.current === "eraser") {
-        // @ts-ignore
         if (!options.target?.objectId) return;
-        // @ts-ignore
         if (!deleteObjectRef.current.find(({ objectId }) => objectId === options.target?.objectId)) {
             options.target.set({ opacity: 0.25 });
             deleteObjectRef.current.push(options.target);
@@ -153,11 +151,11 @@ export const handleCanvasMouseUp = ({
     if (selectedToolRef.current === "eraser" && deleteObjectRef.current.length) {
         deleteObjectRef.current.forEach((object) => {
             canvas.remove(object);
+
             // sync in storage
-            // @ts-ignore
-            deleteShape(object.objectId);
-            // @ts-ignore
-            socket.emit("delete:shape", { room: roomRef.current, objectId: object.objectId });
+
+            deleteShape(object?.objectId);
+            socket.emit("delete:shape", { room: roomRef.current, objectId: object?.objectId });
         });
 
         canvas.requestRenderAll();
@@ -165,16 +163,13 @@ export const handleCanvasMouseUp = ({
     }
 
     // sync shape in storage
-    // @ts-ignore
     if (shapeRef.current?.objectId) {
         // set active object to current shape
         canvas.setActiveObject(shapeRef.current);
         shapeRef.current.setCoords();
 
-        // @ts-ignore
-        setShape({ objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
-        // @ts-ignore
-        socket.emit("set:shape", { room: roomRef.current, objectId: shapeRef.current.objectId, ...shapeRef.current.toJSON() });
+        setShape({ objectId: shapeRef.current?.objectId, ...shapeRef.current.toJSON() });
+        socket.emit("set:shape", { room: roomRef.current, objectId: shapeRef.current?.objectId, ...shapeRef.current.toJSON() });
     }
 
     // set everything to null
@@ -194,12 +189,9 @@ export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: Ca
         // fix this
     } else {
         // sync shape in storage
-        // @ts-ignore
         if (target?.objectId) {
-            // @ts-ignore
-            updateShape({ objectId: target.objectId, ...target.toJSON() });
-            // @ts-ignore
-            socket.emit("update:shape", { room: roomRef.current, objectId: target.objectId, ...target.toJSON() });
+            updateShape({ objectId: target?.objectId, ...target.toJSON() });
+            socket.emit("update:shape", { room: roomRef.current, objectId: target?.objectId, ...target.toJSON() });
         }
     }
 };
@@ -211,16 +203,12 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
     if (!path) return;
 
     // set unique id to path object
-    // @ts-ignore
     path.set({ objectId: uuid4() });
 
     // sync shape in storage
-    // @ts-ignore
     if (path?.objectId) {
-        // @ts-ignore
-        setShape({ objectId: path.objectId, ...path.toJSON() });
-        // @ts-ignore
-        socket.emit("set:shape", { room: roomRef.current, objectId: path.objectId, ...path.toJSON() });
+        setShape({ objectId: path?.objectId, ...path.toJSON() });
+        socket.emit("set:shape", { room: roomRef.current, objectId: path?.objectId, ...path.toJSON() });
     }
 };
 
