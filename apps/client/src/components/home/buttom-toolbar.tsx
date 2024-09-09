@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { socket } from "@/utils/socket";
 import { GrUndo, GrRedo } from "react-icons/gr";
 import { PiMinus, PiPlus } from "react-icons/pi";

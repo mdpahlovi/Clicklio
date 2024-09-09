@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { create } from "zustand";
 import { temporal } from "zundo";
 

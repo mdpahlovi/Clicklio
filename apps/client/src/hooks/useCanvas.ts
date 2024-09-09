@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { handleKeyDown } from "@/utils/key-events";
@@ -12,7 +12,6 @@ import {
     handleCanvasObjectModified,
     handleCanvasZoom,
     handlePathCreated,
-    handleSetCurrentObject,
     handleResize,
     initializeFabric,
 } from "@/utils/canvas";
@@ -36,10 +35,9 @@ export function useCanvas() {
     const isPanning = useRef<Pointer | null>(null);
     const shapeRef = useRef<fabric.Object | null>(null);
 
-    const pasteTimeRef = useRef<number | null>(null);
     const selectedToolRef = useRef<Tool | null>(null);
     const deleteObjectRef = useRef<fabric.Object[]>([]);
-    const copiedObjectRef = useRef<fabric.Object[]>([]);
+    const copiedObjectRef = useRef<fabric.Object | null>(null);
 
     const baseColorRef = useRef<string>();
 
@@ -105,11 +103,11 @@ export function useCanvas() {
         });
 
         canvas.on("selection:created", (options) => {
-            handleSetCurrentObject({ options, pasteTimeRef, setCurrentObject });
+            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
         });
 
         canvas.on("selection:updated", (options) => {
-            handleSetCurrentObject({ options, pasteTimeRef, setCurrentObject });
+            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
         });
 
         canvas.on("selection:cleared", () => removeCurrentObject());
@@ -123,7 +121,6 @@ export function useCanvas() {
                 e,
                 canvas,
                 roomRef,
-                pasteTimeRef,
                 copiedObjectRef,
                 setShape,
                 deleteShape,
@@ -145,7 +142,6 @@ export function useCanvas() {
                     e,
                     canvas: null,
                     roomRef,
-                    pasteTimeRef,
                     copiedObjectRef,
                     setShape,
                     deleteShape,
@@ -160,5 +156,5 @@ export function useCanvas() {
         };
     }, []);
 
-    return { canvasRef, fabricRef, roomRef, selectedToolRef, pasteTimeRef, copiedObjectRef };
+    return { canvasRef, fabricRef, roomRef, selectedToolRef, copiedObjectRef };
 }

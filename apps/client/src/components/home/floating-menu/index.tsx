@@ -9,7 +9,7 @@ import Actions from "@/components/home/floating-menu/Actions";
 import Opacity from "@/components/home/floating-menu/Opacity";
 import type { Attributes, FloatingMenuProps } from "@/types";
 
-export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef }: FloatingMenuProps) {
+export default function FloatingMenu({ fabricRef, copiedObjectRef }: FloatingMenuProps) {
     const { updateShape } = useShapeState();
     const [searchParams] = useSearchParams();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
@@ -18,7 +18,9 @@ export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef 
         modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
 
     if (fabricRef?.current && currentObject) {
+        console.log(currentObject.getCenterPoint());
         const { top: OTop, left: OLeft, width } = currentObject.getBoundingRect();
+        console.log({ OTop, OLeft });
 
         const top = Math.max(10, OTop - 96);
         const left = Math.min(
@@ -57,7 +59,7 @@ export default function FloatingMenu({ fabricRef, copiedObjectRef, pasteTimeRef 
                     {...{ currentObject, handleInputChange }}
                 />
                 <Divider orientation="vertical" />
-                <Actions {...{ fabricRef, pasteTimeRef, copiedObjectRef }} />
+                <Actions {...{ fabricRef, copiedObjectRef }} />
             </Sheet>
         );
     } else {

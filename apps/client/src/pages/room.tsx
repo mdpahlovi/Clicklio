@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { db } from "@/utils/firebase";
 import { useQuery } from "react-query";
 import { useAuthState } from "@/hooks/useAuthState";

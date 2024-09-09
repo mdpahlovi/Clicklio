@@ -1,60 +1,60 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import { socket } from "@/utils/socket";
 import type { WindowKeyDown } from "@/types";
 
-export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.Object[]>) => {
-    const activeObjects = canvas.getActiveObjects();
+export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.Object | null>) => {
+    const activeObjects = canvas.getActiveObject();
 
-    // set copied objects in the copiedObjectRef
-    if (activeObjects.length > 0) {
-        // @ts-ignore
-        copiedObjectRef.current = activeObjects.map((object) => object.toJSON());
-    }
+    if (activeObjects) activeObjects.clone().then((cloned) => (copiedObjectRef.current = cloned));
 };
 
-export const handlePaste = (
+export const handlePaste = async (
     canvas: fabric.Canvas,
     room: string | null,
-    pasteTimeRef: React.MutableRefObject<number | null>,
-    copiedObjectRef: React.MutableRefObject<fabric.Object[]>,
+    copiedObjectRef: React.MutableRefObject<fabric.Object | null>,
     setShape: (shape: fabric.Object) => void
 ) => {
-    // if no pasteTime or copiedObject, return
-    if (!pasteTimeRef.current || !copiedObjectRef.current.length) return;
+    // if no copiedObject, return
+    if (!copiedObjectRef.current) return;
+    const clonedObj = await copiedObjectRef.current.clone(); // clone again, so you can do multiple copies.
+    canvas.discardActiveObject();
+    clonedObj.set({ left: clonedObj.left + 20, top: clonedObj.top + 20, evented: true });
+    if (clonedObj instanceof fabric.ActiveSelection) {
+        // active selection needs a reference to the canvas.
+        clonedObj.canvas = canvas;
+        clonedObj.forEachObject((obj) => {
+            obj.set({ objectId: uuidv4() });
+            canvas.add(obj);
 
-    copiedObjectRef.current.forEach((object) => {
-        // convert the plain javascript objects into fabric.js objects (deserialization)
-        fabric.util.enlivenObjects(
-            [object],
-            (enlivenedObjects: fabric.Object[]) => {
-                enlivenedObjects.forEach((enlivenedObj) => {
-                    // Offset the pasted objects to avoid overlap with existing objects
-                    enlivenedObj.set({
-                        top: enlivenedObj.top! + 20 * pasteTimeRef.current!,
-                        left: enlivenedObj.left! + 20 * pasteTimeRef.current!,
+            // sync in storage
+            // @ts-ignore
+            if (obj?.objectId) {
+                // @ts-ignore
+                setShape({ objectId: obj.objectId, ...obj.toJSON() });
+                // @ts-ignore
+                socket.emit("set:shape", { room, objectId: obj.objectId, ...obj.toJSON() });
+            }
+        });
+        // this should solve the unselectability
+        clonedObj.setCoords();
+    } else {
+        clonedObj.set({ objectId: uuidv4() });
+        canvas.add(clonedObj);
 
-                        // @ts-ignore
-                        objectId: uuidv4(),
-                    });
-
-                    canvas.add(enlivenedObj);
-                    // sync in storage
-                    // @ts-ignore
-                    if (enlivenedObj?.objectId) {
-                        // @ts-ignore
-                        setShape({ objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
-                        // @ts-ignore
-                        socket.emit("set:shape", { room, objectId: enlivenedObj.objectId, ...enlivenedObj.toJSON() });
-                    }
-                });
-                canvas.requestRenderAll();
-            },
-            "fabric"
-        );
-    });
-
-    pasteTimeRef.current = pasteTimeRef.current + 1;
+        // sync in storage
+        // @ts-ignore
+        if (clonedObj?.objectId) {
+            // @ts-ignore
+            setShape({ objectId: clonedObj.objectId, ...clonedObj.toJSON() });
+            // @ts-ignore
+            socket.emit("set:shape", { room, objectId: clonedObj.objectId, ...clonedObj.toJSON() });
+        }
+    }
+    copiedObjectRef.current.top += 20;
+    copiedObjectRef.current.left += 20;
+    canvas.setActiveObject(clonedObj);
+    canvas.requestRenderAll();
 };
 
 export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteShape: (id: string) => void) => {
@@ -81,7 +81,6 @@ export const handleKeyDown = ({
     e,
     canvas,
     roomRef,
-    pasteTimeRef,
     copiedObjectRef,
     setShape,
     deleteShape,
@@ -149,13 +148,13 @@ export const handleKeyDown = ({
     }
     // Check if the key pressed is ctrl/cmd + v (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas, roomRef.current, pasteTimeRef, copiedObjectRef, setShape);
+        handlePaste(canvas, roomRef.current, copiedObjectRef, setShape);
     }
     // Check if the key pressed is ctrl/cmd + D (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {
         e.preventDefault();
         handleCopy(canvas, copiedObjectRef);
-        handlePaste(canvas, roomRef.current, pasteTimeRef, copiedObjectRef, setShape);
+        handlePaste(canvas, roomRef.current, copiedObjectRef, setShape);
     }
     // Check if the key pressed is delete (delete)
     if (canvas && e.keyCode === 46) {

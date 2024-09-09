@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { isEqual } from "lodash";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
@@ -21,7 +21,7 @@ export function usePeriodicSave({ fabricRef }: { fabricRef: React.MutableRefObje
 
         updateDoc(doc(db, "shapes", id), {
             shapes,
-            image: fabricRef.current.toDataURL({ format: "png", quality: 0.75 }),
+            image: fabricRef.current.toDataURL({ format: "png", quality: 0.75, multiplier: 1 }),
             updatedAt: Timestamp.now(),
         })
             .then(() => setPrevious(shapes))

@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { v4 as uuid4 } from "uuid";
 import { socket } from "@/utils/socket";
 import { createSpecificShape } from "@/utils/shapes";
@@ -10,7 +10,6 @@ import type {
     CanvasMouseUp,
     CanvasObjectModified,
     CanvasPathCreated,
-    CanvasSetCurrentObject,
     CanvasZoom,
     RenderCanvas,
 } from "@/types";
@@ -26,7 +25,7 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
     fabric.Object.prototype.transparentCorners = false;
 
     // create fabric canvas
-    const canvas = new fabric.Canvas(canvasRef.current, {
+    const canvas = new fabric.Canvas(canvasRef.current!, {
         width: canvasElement?.clientWidth,
         height: canvasElement?.clientHeight,
     });
@@ -71,7 +70,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
         const deltaX = pointer.x - isPanning.current.x;
         const deltaY = pointer.y - isPanning.current.y;
 
-        canvas.relativePan({ x: deltaX, y: deltaY });
+        canvas.relativePan(new fabric.Point({ x: deltaX, y: deltaY }));
         isPanning.current = pointer;
         return;
     }
@@ -225,15 +224,6 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
     }
 };
 
-// setCurrentObject to show floating menu & pasteTimeRef to 1
-export const handleSetCurrentObject = ({ options, pasteTimeRef, setCurrentObject }: CanvasSetCurrentObject) => {
-    // if no selected object return
-    if (!options?.selected) return;
-
-    pasteTimeRef.current = 1;
-    if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
-};
-
 // render canvas objects coming from storage on canvas
 export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
     // clear canvas
@@ -296,7 +286,7 @@ export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
     // set zoom to canvas
     // zoomToPoint: http://fabricjs.com/docs/fabric.Canvas.html#zoomToPoint
     setZoom(zoom);
-    canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom);
+    canvas.zoomToPoint(new fabric.Point({ x: options.e.offsetX, y: options.e.offsetY }), zoom);
 
     options.e.preventDefault();
     options.e.stopPropagation();

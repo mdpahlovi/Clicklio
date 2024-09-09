@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 
 export type Pointer = { x: number; y: number };
 
@@ -48,8 +48,7 @@ export type ImageUpload = {
 
 export type FloatingMenuProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
 };
 
 export type FloatingMenuItemProps = {
@@ -66,14 +65,12 @@ export type FloatingMenuSubItemProps = {
 
 export type RightSidebarProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
 };
 
 export type ActionsProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
 };
 
 export type ToolbarProps = {
@@ -87,7 +84,7 @@ export type InitializeFabric = {
 };
 
 export type CanvasMouseDown = {
-    options: fabric.IEvent<MouseEvent>;
+    options: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
     selectedToolRef: React.MutableRefObject<Tool | null>;
     isPanning: React.MutableRefObject<Pointer | null>;
@@ -96,7 +93,7 @@ export type CanvasMouseDown = {
 };
 
 export type CanvasMouseMove = {
-    options: fabric.IEvent<MouseEvent>;
+    options: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
     isPanning: React.MutableRefObject<Pointer | null>;
     selectedToolRef: React.MutableRefObject<Tool | null>;
@@ -117,7 +114,7 @@ export type CanvasMouseUp = {
 };
 
 export type CanvasObjectModified = {
-    options: fabric.IEvent<MouseEvent>;
+    options: fabric.ModifiedEvent<fabric.TPointerEvent>;
     roomRef: React.MutableRefObject<string | null>;
     updateShape: (shape: fabric.Object) => void;
 };
@@ -125,13 +122,7 @@ export type CanvasObjectModified = {
 export type CanvasPathCreated = {
     roomRef: React.MutableRefObject<string | null>;
     setShape: (shape: fabric.Object) => void;
-    options: any;
-};
-
-export type CanvasSetCurrentObject = {
-    options: fabric.IEvent<MouseEvent>;
-    pasteTimeRef: React.MutableRefObject<number | null>;
-    setCurrentObject: (object: fabric.Object) => void;
+    options: { path: fabric.FabricObject };
 };
 
 export type RenderCanvas = {
@@ -140,7 +131,7 @@ export type RenderCanvas = {
 };
 
 export type CanvasZoom = {
-    options: fabric.IEvent<WheelEvent>;
+    options: fabric.TPointerEventInfo<WheelEvent>;
     canvas: fabric.Canvas;
     setZoom: (zoom: number) => void;
 };
@@ -149,8 +140,7 @@ export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
     roomRef: React.MutableRefObject<string | null>;
-    pasteTimeRef: React.MutableRefObject<number | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.Object[]>;
+    copiedObjectRef: React.MutableRefObject<fabric.Object | null>;
     setShape: (shape: fabric.Object) => void;
     deleteShape: (id: string) => void;
     undo: (steps?: number) => void;

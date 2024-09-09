@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { MdFormatTextdirectionLToR } from "react-icons/md";
 import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
 import { Dropdown, Tooltip, MenuButton, Menu, IconButton, styled } from "@mui/joy";

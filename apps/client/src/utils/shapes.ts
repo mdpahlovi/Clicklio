@@ -1,7 +1,7 @@
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Pointer, ElementDirection, ImageUpload, ModifyShape, Tool } from "@/types";
+import type { Pointer, ImageUpload, ModifyShape, Tool } from "@/types";
 import { socket } from "./socket";
 
 export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
@@ -12,7 +12,7 @@ export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRef
         height: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
-    } as { objectId: string } & fabric.Rect);
+    });
 };
 
 export const createTriangle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
@@ -23,7 +23,7 @@ export const createTriangle = (pointer: Pointer, baseColorRef: React.MutableRefO
         height: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
-    } as { objectId: string } & fabric.Triangle);
+    });
 };
 
 export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
@@ -33,7 +33,7 @@ export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObj
         radius: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
-    } as { objectId: string } & fabric.Circle);
+    });
 };
 
 export const createLine = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
@@ -41,7 +41,7 @@ export const createLine = (pointer: Pointer, baseColorRef: React.MutableRefObjec
         stroke: baseColorRef.current,
         strokeWidth: 2,
         objectId: uuidv4(),
-    } as { objectId: string } & fabric.Line);
+    });
 };
 
 export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
@@ -53,7 +53,7 @@ export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObjec
         fontSize: 16,
         fontWeight: "400",
         objectId: uuidv4(),
-    } as { objectId: string } & fabric.IText);
+    });
 };
 
 export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
@@ -82,10 +82,9 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
     const reader = new FileReader();
 
     reader.onload = () => {
-        fabric.Image.fromURL(reader.result as string, (image) => {
+        fabric.FabricImage.fromURL(reader.result as string).then((image) => {
             image.scaleToWidth(160);
             image.scaleToHeight(160);
-            // @ts-ignore
             image.set({ objectId: uuidv4() });
 
             // sync shape in storage
@@ -114,44 +113,23 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
 
     // update the value of each property
     switch (property) {
-        // case "top":
-        //     selectedElement.set({ top: Number(value) });
-        //     break;
-
-        // case "left":
-        //     selectedElement.set({ left: Number(value) });
-        //     break;
-
-        // case "width":
-        //     selectedElement.set({ scaleX: 1, width: Number(value) });
-        //     break;
-
-        // case "height":
-        //     selectedElement.set({ scaleY: 1, height: Number(value) });
-        //     break;
-
         case "fontSize":
-            // @ts-ignore
             selectedElement.set({ fontSize: Number(value) });
             break;
 
         case "fontFamily":
-            // @ts-ignore
             selectedElement.set({ fontFamily: value });
             break;
 
         case "fontWeight":
-            // @ts-ignore
             selectedElement.set({ fontWeight: value });
             break;
 
         case "fill":
-            // @ts-ignore
             selectedElement.set({ fill: value ? value : null });
             break;
 
         case "stroke":
-            // @ts-ignore
             selectedElement.set({ stroke: value ? value : null });
             break;
 
@@ -173,24 +151,4 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
         // @ts-ignore
         socket.emit("update:shape", { room, objectId: selectedElement.objectId, ...selectedElement.toJSON() });
     }
-};
-
-export const bringElement = ({ canvas, direction }: ElementDirection) => {
-    if (!canvas) return;
-
-    // get the selected element. If there is no selected element or there are more than one selected element, return
-    const selectedElement = canvas.getActiveObject();
-    if (!selectedElement || selectedElement?.type === "activeSelection") return;
-
-    // bring the selected element to the front
-    if (direction === "front") {
-        canvas.bringToFront(selectedElement);
-    } else if (direction === "back") {
-        canvas.sendToBack(selectedElement);
-    }
-
-    // canvas.renderAll();
-    console.log({ selectedElement });
-
-    // re-render all objects on the canvas
 };
