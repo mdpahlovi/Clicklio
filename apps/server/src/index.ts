@@ -17,16 +17,19 @@ io.on("connection", (socket) => {
         if (room) socket.broadcast.to(room).emit("set:shape", shape);
     });
     socket.on("update:shape", ({ room, ...shape }) => {
-        if (room) socket.broadcast.emit("update:shape", shape);
+        if (room) socket.broadcast.to(room).emit("update:shape", shape);
     });
     socket.on("delete:shape", ({ room, objectId }) => {
-        if (room) socket.broadcast.emit("delete:shape", { objectId });
+        if (room) socket.broadcast.to(room).emit("delete:shape", { objectId });
     });
     socket.on("undo:shape", ({ room, status }) => {
-        if (room) socket.broadcast.emit("undo:shape", { status });
+        if (room) socket.broadcast.to(room).emit("undo:shape", { status });
     });
     socket.on("redo:shape", ({ room, status }) => {
-        if (room) socket.broadcast.emit("redo:shape", { status });
+        if (room) socket.broadcast.to(room).emit("redo:shape", { status });
+    });
+    socket.on("reset:canvas", ({ room, status }) => {
+        if (room) socket.broadcast.to(room).emit("reset:canvas", { status });
     });
 
     socket.on("cursor", ({ room, cursor }) => {

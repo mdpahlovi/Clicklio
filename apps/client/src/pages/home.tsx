@@ -21,7 +21,7 @@ import { Box } from "@mui/joy";
 export default function HomePage() {
     const { undo, redo } = useShapeState.temporal.getState();
     const { refresh, setRefresh } = useCanvasState();
-    const { shapes, setShape, updateShape, deleteShape } = useShapeState();
+    const { shapes, setShapes, setShape, updateShape, deleteShape } = useShapeState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
     const { saveShapes, isUpToDate } = usePeriodicSave({ fabricRef });
 
@@ -50,6 +50,13 @@ export default function HomePage() {
             if (status) redo();
             setRefresh();
         });
+        socket.on("reset:canvas", ({ status }) => {
+            if (status) {
+                setShapes([]);
+                fabricRef.current?.clear();
+            }
+            setRefresh();
+        });
 
         return () => {
             socket.off("set:shape", (shape) => {
@@ -70,6 +77,14 @@ export default function HomePage() {
             });
             socket.off("redo:shape", ({ status }) => {
                 if (status) redo();
+                setRefresh();
+            });
+            socket.off("reset:canvas", ({ status }) => {
+                if (status) {
+                    console.log(" jjbuvbuygu ");
+                    setShapes([]);
+                    fabricRef.current?.clear();
+                }
                 setRefresh();
             });
         };
