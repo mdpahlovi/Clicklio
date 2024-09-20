@@ -214,32 +214,17 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
 
     // render all objects on canvas
     shapes.forEach((object) => {
-        /**
-         * enlivenObjects() is used to render objects on canvas.
-         * It takes two arguments:
-         * 1. objectData: object data to render on canvas
-         * 2. callback: callback function to execute after rendering objects
-         * on canvas
-         *
-         * enlivenObjects: http://fabricjs.com/docs/fabric.util.html#.enlivenObjectEnlivables
-         */
-        fabric.util.enlivenObjects(
-            [object],
-            (enlivenedObjects: fabric.FabricObject[]) => {
-                enlivenedObjects.forEach((enlivenedObj) => {
+        fabric.util.enlivenObjects([object]).then((enlivenedObjects) => {
+            enlivenedObjects.forEach((enlivenedObj) => {
+                const object = enlivenedObj as fabric.FabricObject;
+
+                if (object?.objectId) {
+                    object.set({ ...objectCorner });
                     // add object to canvas
-                    fabricRef.current?.add(enlivenedObj);
-                });
-            },
-            /**
-             * specify namespace of the object for fabric to render it on canvas
-             * A namespace is a string that is used to identify the type of
-             * object.
-             *
-             * Fabric Namespace: http://fabricjs.com/docs/fabric.html
-             */
-            "fabric"
-        );
+                    fabricRef.current?.add(object);
+                }
+            });
+        });
     });
 
     fabricRef.current?.requestRenderAll();
