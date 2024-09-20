@@ -118,3 +118,9 @@ export const editors = [
     { name: "Decrease font size", key: "Ctrl + <" },
     { name: "Increase font size", key: "Ctrl + >" },
 ];
+
+export const objectCorner: { cornerStyle: "rect" | "circle" | undefined; cornerColor: string; transparentCorners: boolean } = {
+    cornerStyle: "circle",
+    cornerColor: "#4882ED",
+    transparentCorners: false,
+};

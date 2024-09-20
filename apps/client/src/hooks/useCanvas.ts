@@ -154,5 +154,5 @@ export function useCanvas() {
         };
     }, []);
 
-    return { canvasRef, fabricRef, roomRef, selectedToolRef, copiedObjectRef };
+    return { canvasRef, fabricRef, roomRef, selectedToolRef };
 }

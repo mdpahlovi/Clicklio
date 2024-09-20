@@ -11,10 +11,10 @@
     },
     "dependencies": {
         "socket.io": "^4.7.5",
-        "typescript": "^5.5.4"
+        "typescript": "^5.6.2"
     },
     "devDependencies": {
-        "nodemon": "^3.1.4",
+        "nodemon": "^3.1.6",
         "ts-node-dev": "^2.0.0"
     }
 }

@@ -48,7 +48,6 @@ export type ImageUpload = {
 
 export type FloatingMenuProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
 };
 
 export type FloatingMenuItemProps = {
@@ -63,14 +62,8 @@ export type FloatingMenuSubItemProps = {
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
-export type RightSidebarProps = {
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
-};
-
 export type ActionsProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
 };
 
 export type ToolbarProps = {

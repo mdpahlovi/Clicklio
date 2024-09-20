@@ -1,6 +1,7 @@
 import * as fabric from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import { socket } from "@/utils/socket";
+import { objectCorner } from "@/constants";
 import type { WindowKeyDown } from "@/types";
 
 export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>) => {
@@ -24,7 +25,7 @@ export const handlePaste = async (
         // active selection needs a reference to the canvas.
         clonedObj.canvas = canvas;
         clonedObj.forEachObject((obj) => {
-            obj.set({ objectId: uuidv4() });
+            obj.set({ objectId: uuidv4(), ...objectCorner });
             canvas.add(obj);
 
             // sync in storage
@@ -36,7 +37,7 @@ export const handlePaste = async (
         // this should solve the unselectability
         clonedObj.setCoords();
     } else {
-        clonedObj.set({ objectId: uuidv4() });
+        clonedObj.set({ objectId: uuidv4(), ...objectCorner });
         canvas.add(clonedObj);
 
         // sync in storage
@@ -47,6 +48,50 @@ export const handlePaste = async (
     }
     copiedObjectRef.current.top += 20;
     copiedObjectRef.current.left += 20;
+    canvas.setActiveObject(clonedObj);
+    canvas.requestRenderAll();
+};
+
+export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null, setShape: (shape: fabric.FabricObject) => void) => {
+    // Get the active object from the canvas
+    const activeObject = canvas.getActiveObject();
+
+    // If no active object, return
+    if (!activeObject) return;
+
+    // Clone the active object
+    const clonedObj = await activeObject.clone();
+
+    // Slightly offset the cloned object to avoid overlap
+    clonedObj.set({ left: clonedObj.left + 20, top: clonedObj.top + 20, evented: true });
+
+    if (clonedObj instanceof fabric.ActiveSelection) {
+        // If it's an active selection (multiple objects selected), handle each object
+        clonedObj.canvas = canvas;
+        clonedObj.forEachObject((obj) => {
+            obj.set({ objectId: uuidv4(), ...objectCorner });
+            canvas.add(obj);
+
+            // Sync in storage
+            if (obj?.objectId) {
+                setShape({ objectId: obj?.objectId, ...obj.toJSON() });
+                socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
+            }
+        });
+        clonedObj.setCoords();
+    } else {
+        // Handle single object duplication
+        clonedObj.set({ objectId: uuidv4(), ...objectCorner });
+        canvas.add(clonedObj);
+
+        // Sync in storage
+        if (clonedObj?.objectId) {
+            setShape({ objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
+            socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
+        }
+    }
+
+    // Set the cloned object as the active one and render
     canvas.setActiveObject(clonedObj);
     canvas.requestRenderAll();
 };
@@ -146,8 +191,7 @@ export const handleKeyDown = ({
     // Check if the key pressed is ctrl/cmd + D (paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {
         e.preventDefault();
-        handleCopy(canvas, copiedObjectRef);
-        handlePaste(canvas, roomRef.current, copiedObjectRef, setShape);
+        handleDuplicate(canvas, roomRef.current, setShape);
     }
     // Check if the key pressed is delete (delete)
     if (canvas && e.keyCode === 46) {

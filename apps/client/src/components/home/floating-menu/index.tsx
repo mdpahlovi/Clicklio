@@ -9,7 +9,7 @@ import Actions from "@/components/home/floating-menu/Actions";
 import Opacity from "@/components/home/floating-menu/Opacity";
 import type { Attributes, FloatingMenuProps } from "@/types";
 
-export default function FloatingMenu({ fabricRef, copiedObjectRef }: FloatingMenuProps) {
+export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     const { updateShape } = useShapeState();
     const [searchParams] = useSearchParams();
     const { zoom, currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
@@ -59,7 +59,7 @@ export default function FloatingMenu({ fabricRef, copiedObjectRef }: FloatingMen
                     {...{ currentObject, handleInputChange }}
                 />
                 <Divider orientation="vertical" />
-                <Actions {...{ fabricRef, copiedObjectRef }} />
+                <Actions {...{ fabricRef }} />
             </Sheet>
         );
     } else {

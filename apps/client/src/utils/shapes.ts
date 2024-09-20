@@ -1,8 +1,8 @@
 import * as fabric from "fabric";
-import { v4 as uuidv4 } from "uuid";
-
-import type { Pointer, ImageUpload, ModifyShape, Tool } from "@/types";
 import { socket } from "./socket";
+import { v4 as uuidv4 } from "uuid";
+import { objectCorner } from "@/constants";
+import type { Pointer, ImageUpload, ModifyShape, Tool } from "@/types";
 
 export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
     return new fabric.Rect({
@@ -12,6 +12,7 @@ export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRef
         height: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
+        ...objectCorner,
     });
 };
 
@@ -23,6 +24,7 @@ export const createTriangle = (pointer: Pointer, baseColorRef: React.MutableRefO
         height: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
+        ...objectCorner,
     });
 };
 
@@ -33,6 +35,7 @@ export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObj
         radius: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
+        ...objectCorner,
     });
 };
 
@@ -41,6 +44,7 @@ export const createLine = (pointer: Pointer, baseColorRef: React.MutableRefObjec
         stroke: baseColorRef.current,
         strokeWidth: 2,
         objectId: uuidv4(),
+        ...objectCorner,
     });
 };
 
@@ -53,6 +57,7 @@ export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObjec
         fontSize: 16,
         fontWeight: "400",
         objectId: uuidv4(),
+        ...objectCorner,
     });
 };
 
@@ -85,7 +90,7 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
         fabric.FabricImage.fromURL(reader.result as string).then((image) => {
             image.scaleToWidth(160);
             image.scaleToHeight(160);
-            image.set({ objectId: uuidv4() });
+            image.set({ objectId: uuidv4(), ...objectCorner });
 
             // sync shape in storage
             if (image?.objectId) {

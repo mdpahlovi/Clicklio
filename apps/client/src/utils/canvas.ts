@@ -1,8 +1,8 @@
 import * as fabric from "fabric";
 import { v4 as uuid4 } from "uuid";
 import { socket } from "@/utils/socket";
+import { objectCorner } from "@/constants";
 import { createSpecificShape } from "@/utils/shapes";
-
 import type {
     InitializeFabric,
     CanvasMouseDown,
@@ -18,11 +18,6 @@ import type {
 export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => {
     // get canvas element
     const canvasElement = document.getElementById("canvas");
-
-    // customizing corners
-    fabric.FabricObject.prototype.cornerStyle = "circle";
-    fabric.FabricObject.prototype.cornerColor = "#4882ED";
-    fabric.FabricObject.prototype.transparentCorners = false;
 
     // create fabric canvas
     const canvas = new fabric.Canvas(canvasRef.current!, {
@@ -203,7 +198,7 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
     if (!path) return;
 
     // set unique id to path object
-    path.set({ objectId: uuid4() });
+    path.set({ objectId: uuid4(), ...objectCorner });
 
     // sync shape in storage
     if (path?.objectId) {
