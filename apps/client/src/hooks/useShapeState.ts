@@ -1,6 +1,7 @@
 import * as fabric from "fabric";
 import { create } from "zustand";
 import { temporal } from "zundo";
+import { persist } from "zustand/middleware";
 
 type ShapeStateStore = {
     shapes: fabric.FabricObject[];
@@ -13,19 +14,22 @@ type ShapeStateStore = {
 };
 
 export const useShapeState = create<ShapeStateStore>()(
-    temporal((set) => ({
-        shapes: [],
-        previous: [],
-        setShapes: (shapes) => set({ shapes }),
-        setShape: (shape) => set(({ shapes }) => ({ shapes: [...shapes, shape] })),
+    persist(
+        temporal((set) => ({
+            shapes: [],
+            previous: [],
+            setShapes: (shapes) => set({ shapes }),
+            setShape: (shape) => set(({ shapes }) => ({ shapes: [...shapes, shape] })),
 
-        updateShape: (shape) =>
-            set(({ shapes }) => ({
-                shapes: shapes.map((previous) => (previous?.objectId === shape?.objectId ? shape : previous)),
-            })),
+            updateShape: (shape) =>
+                set(({ shapes }) => ({
+                    shapes: shapes.map((previous) => (previous?.objectId === shape?.objectId ? shape : previous)),
+                })),
 
-        deleteShape: (id) => set(({ shapes }) => ({ shapes: shapes.filter(({ objectId }) => objectId !== id) })),
+            deleteShape: (id) => set(({ shapes }) => ({ shapes: shapes.filter(({ objectId }) => objectId !== id) })),
 
-        setPrevious: (previous) => set({ previous }),
-    }))
+            setPrevious: (previous) => set({ previous }),
+        })),
+        { name: "clicklio-shapes" }
+    )
 );

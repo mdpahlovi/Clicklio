@@ -46,6 +46,12 @@ export type ImageUpload = {
     setShape: (shape: fabric.FabricObject) => void;
 };
 
+export type SidebarProps = {
+    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    saveShapes: () => void;
+    isUpToDate: boolean;
+};
+
 export type FloatingMenuProps = {
     fabricRef: React.MutableRefObject<fabric.Canvas | null>;
 };

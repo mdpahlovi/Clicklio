@@ -79,7 +79,7 @@ export default function HomePage() {
         <Box sx={{ position: "fixed", width: "100vw", height: "100vh" }}>
             <Navbar />
             <div style={{ display: "flex" }}>
-                <Sidebar {...{ saveShapes, isUpToDate }} />
+                <Sidebar {...{ fabricRef, saveShapes, isUpToDate }} />
                 <CanvasContainer>
                     <RemoteCursor {...{ roomRef }} />
                     <FloatingMenu {...{ fabricRef }} />

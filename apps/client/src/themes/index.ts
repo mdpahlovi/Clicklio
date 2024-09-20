@@ -65,7 +65,7 @@ export default extendTheme({
             },
         },
         JoyTooltip: {
-            defaultProps: { variant: "soft", size: "sm", placement: "top", enterDelay: 1000, enterNextDelay: 1000, enterTouchDelay: 1000 },
+            defaultProps: { variant: "soft", size: "sm", placement: "top", enterDelay: 300, enterNextDelay: 300, enterTouchDelay: 300 },
             styleOverrides: { root: { borderRadius: 9999 } },
         },
         JoyCardOverflow: {
