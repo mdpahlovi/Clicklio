@@ -175,8 +175,8 @@ export const handleKeyDown = ({
         setZoom(2);
         canvas.setZoom(2);
     }
-    // Check if the key pressed is ctrl/cmd + D
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {
+    // Check if the key pressed is alt + D
+    if (canvas && e?.altKey && e.keyCode === 68) {
         setMode(light ? "dark" : "light");
     }
 
