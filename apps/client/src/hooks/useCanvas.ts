@@ -77,7 +77,9 @@ export function useCanvas() {
         });
 
         canvas.on("mouse:up", (options) => {
-            isClicked.current && options?.target?.objectId ? setCurrentObject(options?.target) : null;
+            isClicked.current && options?.target?.objectId && selectedToolRef.current !== "eraser"
+                ? setCurrentObject(options?.target)
+                : null;
             isClicked.current = false;
             handleCanvasMouseUp({
                 canvas,

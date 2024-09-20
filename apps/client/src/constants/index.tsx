@@ -103,7 +103,7 @@ export const views = [
     { name: "Zoom in", key: "Ctrl + +" },
     { name: "Zoom out", key: "Ctrl + -" },
     { name: "Reset zoom", key: "Ctrl + R" },
-    { name: "Toggle Theme", key: "Alt + D" },
+    { name: "Toggle Theme", key: "Alt + Shift + D" },
 ];
 
 export const editors = [

@@ -176,7 +176,7 @@ export const handleKeyDown = ({
         canvas.setZoom(2);
     }
     // Check if the key pressed is alt + D
-    if (canvas && e?.altKey && e.keyCode === 68) {
+    if (canvas && e?.altKey && e?.shiftKey && e.keyCode === 68) {
         setMode(light ? "dark" : "light");
     }
 

@@ -26,8 +26,6 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
             Math.max(currentObject?.type === "i-text" ? 137.3 : 117.3, OLeft * zoom + (width * zoom) / 2)
         );
 
-        console.log(fabricRef?.current?.width, { width: width * zoom });
-
         return (
             <Sheet
                 onClick={(e) => e.stopPropagation()}

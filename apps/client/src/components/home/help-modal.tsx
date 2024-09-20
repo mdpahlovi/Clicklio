@@ -41,8 +41,8 @@ function KeyboardShortcuts({ title, shortcuts }: { title: string; shortcuts: { n
                                 {key.split(" ").map((key, idx) => (
                                     <Typography
                                         key={idx}
-                                        variant={idx === 1 ? undefined : "soft"}
-                                        color={idx === 1 ? undefined : "primary"}
+                                        variant={idx % 2 !== 0 ? undefined : "soft"}
+                                        color={idx % 2 !== 0 ? undefined : "primary"}
                                         fontSize={14}
                                     >
                                         {key}
