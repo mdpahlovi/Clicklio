@@ -8,9 +8,10 @@
     },
     "devDependencies": {
         "dotenv-cli": "^7.4.2",
-        "turbo": "latest"
+        "turbo": "^2.3.0"
     },
     "workspaces": [
         "apps/*"
-    ]
+    ],
+    "packageManager": "npm@10.8.2"
 }
