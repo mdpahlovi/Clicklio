@@ -9,8 +9,8 @@ import { Sheet, Button, IconButton, Divider } from "@mui/joy";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const [searchParams] = useSearchParams();
+    const { undo, redo } = useShapeState();
     const { zoom, setZoom } = useCanvasState();
-    const { undo, redo } = useShapeState.temporal.getState();
 
     return (
         <>

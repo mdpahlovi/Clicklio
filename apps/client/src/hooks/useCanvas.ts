@@ -21,8 +21,7 @@ import type { Pointer, Tool } from "@/types";
 
 export function useCanvas() {
     const { mode, setMode } = useColorScheme();
-    const { undo, redo } = useShapeState.temporal.getState();
-    const { setShape, updateShape, deleteShape } = useShapeState();
+    const { setShape, updateShape, deleteShape, undo, redo } = useShapeState();
     const { setTool, setZoom, setRefresh, setCurrentObject, removeCurrentObject } = useCanvasState();
 
     const [searchParams] = useSearchParams();

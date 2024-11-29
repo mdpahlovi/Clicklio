@@ -11,7 +11,6 @@ import Toolbar from "@/components/home/toolbar";
 import Sidebar from "@/components/home/sidebar";
 import HelpModal from "@/components/home/help-modal";
 import ShareModal from "@/components/home/share-modal";
-// import SideToolbar from "@/components/home/side-toolbar";
 import RemoteCursor from "@/components/ui/remote-cursor";
 import FloatingMenu from "@/components/home/floating-menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
@@ -19,9 +18,8 @@ import CanvasContainer from "@/components/home/canvas-container";
 import { Box } from "@mui/joy";
 
 export default function HomePage() {
-    const { undo, redo } = useShapeState.temporal.getState();
     const { refresh, setRefresh } = useCanvasState();
-    const { shapes, setShapes, setShape, updateShape, deleteShape } = useShapeState();
+    const { shapes, setShapes, setShape, updateShape, deleteShape, undo, redo } = useShapeState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
     const { saveShapes, isUpToDate } = usePeriodicSave({ fabricRef });
 

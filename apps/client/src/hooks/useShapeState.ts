@@ -1,35 +1,97 @@
 import * as fabric from "fabric";
 import { create } from "zustand";
-import { temporal } from "zundo";
 import { persist } from "zustand/middleware";
 
 type ShapeStateStore = {
     shapes: fabric.FabricObject[];
+    history: fabric.FabricObject[][];
+    position: number;
     previous: fabric.FabricObject[];
     setShape: (shape: fabric.FabricObject) => void;
     setShapes: (shape: fabric.FabricObject[]) => void;
     updateShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
     setPrevious: (shape: fabric.FabricObject[]) => void;
+    undo: () => void;
+    redo: () => void;
 };
 
 export const useShapeState = create<ShapeStateStore>()(
     persist(
-        temporal((set) => ({
+        (set) => ({
             shapes: [],
+            history: [],
+            position: 0,
             previous: [],
-            setShapes: (shapes) => set({ shapes }),
-            setShape: (shape) => set(({ shapes }) => ({ shapes: [...shapes, shape] })),
+            setShapes: (shapes) =>
+                set((state) => {
+                    const newHistory = [...state.history.slice(0, state.position + 1), shapes];
+                    return {
+                        shapes,
+                        history: newHistory,
+                        position: newHistory.length - 1,
+                    };
+                }),
+
+            setShape: (shape) =>
+                set((state) => {
+                    const updatedShapes = [...state.shapes, shape];
+                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes];
+                    return {
+                        shapes: updatedShapes,
+                        history: newHistory,
+                        position: newHistory.length - 1,
+                    };
+                }),
 
             updateShape: (shape) =>
-                set(({ shapes }) => ({
-                    shapes: shapes.map((previous) => (previous?.objectId === shape?.objectId ? shape : previous)),
-                })),
+                set((state) => {
+                    const updatedShapes = state.shapes.map((s) => (s?.objectId === shape?.objectId ? shape : s));
+                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes];
+                    return {
+                        shapes: updatedShapes,
+                        history: newHistory,
+                        position: newHistory.length - 1,
+                    };
+                }),
 
-            deleteShape: (id) => set(({ shapes }) => ({ shapes: shapes.filter(({ objectId }) => objectId !== id) })),
+            deleteShape: (id) =>
+                set((state) => {
+                    const updatedShapes = state.shapes.filter(({ objectId }) => objectId !== id);
+                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes];
+                    return {
+                        shapes: updatedShapes,
+                        history: newHistory,
+                        position: newHistory.length - 1,
+                    };
+                }),
 
             setPrevious: (previous) => set({ previous }),
-        })),
+
+            undo: () =>
+                set((state) => {
+                    if (state.position > 0) {
+                        const newPosition = state.position - 1;
+                        return {
+                            shapes: state.history[newPosition],
+                            position: newPosition,
+                        };
+                    }
+                    return {};
+                }),
+
+            redo: () =>
+                set((state) => {
+                    if (state.position < state.history.length - 1) {
+                        const newPosition = state.position + 1;
+                        return {
+                            shapes: state.history[newPosition],
+                            position: newPosition,
+                        };
+                    }
+                    return {};
+                }),
+        }),
         { name: "clicklio-shapes" }
     )
 );
