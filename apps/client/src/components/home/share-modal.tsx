@@ -11,9 +11,9 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
     const { shareModal, toggleShareModal } = useRoomState();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const removeRoomParam = () => {
-        const room = searchParams.get("room");
+    const room = searchParams.get("room");
 
+    const removeRoomParam = () => {
         if (room) {
             socket.emit("leave:room", { room });
             roomRef.current = null;
@@ -27,14 +27,14 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
 
     return (
         <Modal open={shareModal} onClose={toggleShareModal} title="Live collaboration">
-            {searchParams.get("room") ? (
+            {room ? (
                 <>
                     <Input
                         readOnly
                         name="name"
                         placeholder="Your Name"
                         sx={{ mb: 2 }}
-                        value={`https://clicklio.vercel.app/?room=${searchParams.get("room")}`}
+                        value={`https://clicklio.vercel.app/?room=${room}`}
                     />
                     <Stack flexDirection="row" justifyContent="end" gap={2}>
                         <Button startDecorator={<FaStop size={18} />} color="danger" onClick={removeRoomParam}>
@@ -42,7 +42,7 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
                         </Button>
                         <Button
                             startDecorator={<FaRegCopy size={18} />}
-                            onClick={() => navigator.clipboard.writeText(`https://clicklio.vercel.app/?room=${searchParams.get("room")}`)}
+                            onClick={() => navigator.clipboard.writeText(`https://clicklio.vercel.app/?room=${room}`)}
                         >
                             Copy Link
                         </Button>

@@ -15,6 +15,8 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement>(null);
 
+    const room = searchParams.get("room");
+
     useEffect(() => {
         const canvas = fabricRef.current;
         if (canvas) {
@@ -150,10 +152,11 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 type="file"
                 accept="image/*"
                 ref={imageInputRef}
-                onChange={(e) =>
-                    e?.target?.files?.length &&
-                    handleImageUpload({ file: e.target.files[0], room: searchParams.get("room"), fabricRef, setShape })
-                }
+                onChange={(e) => {
+                    const files = e?.target?.files;
+
+                    if (files && e?.target?.files?.length) handleImageUpload({ file: files[0], room, fabricRef, setShape });
+                }}
             />
         </Sheet>
     );

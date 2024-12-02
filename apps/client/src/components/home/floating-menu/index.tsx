@@ -14,8 +14,9 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     const [searchParams] = useSearchParams();
     const { zoom, currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
 
-    const handleInputChange = (property: keyof Attributes, value: string) =>
-        modifyShape({ fabricRef, room: searchParams.get("room"), property, value, updateShape });
+    const room = searchParams.get("room");
+
+    const handleInputChange = (property: keyof Attributes, value: string) => modifyShape({ fabricRef, room, property, value, updateShape });
 
     if (fabricRef?.current && currentObject) {
         const { top: OTop, left: OLeft, width } = currentObject.getBoundingRect();

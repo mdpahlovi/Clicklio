@@ -11,6 +11,8 @@ export default function Sidebar({ fabricRef, saveShapes, isUpToDate }: SidebarPr
     const [searchParams] = useSearchParams();
     const { shapes, setShapes } = useShapeState();
 
+    const room = searchParams.get("room");
+
     return (
         <Sheet
             style={{ width: 64, height: "calc(100vh - 97px)", borderWidth: "0 1px 0 0" }}
@@ -29,7 +31,7 @@ export default function Sidebar({ fabricRef, saveShapes, isUpToDate }: SidebarPr
                         if (fabricRef.current) {
                             setShapes([]);
                             fabricRef.current.clear();
-                            socket.emit("reset:canvas", { room: searchParams.get("room"), status: true });
+                            socket.emit("reset:canvas", { room, status: true });
                         }
                     }}
                     disabled={!shapes?.length}

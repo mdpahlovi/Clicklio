@@ -12,6 +12,8 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     const { undo, redo } = useShapeState();
     const { zoom, setZoom } = useCanvasState();
 
+    const room = searchParams.get("room");
+
     return (
         <>
             <Sheet
@@ -21,7 +23,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <IconButton
                     onClick={() => {
                         undo();
-                        socket.emit("undo:shape", { room: searchParams.get("room"), status: true });
+                        socket.emit("undo:shape", { room, status: true });
                     }}
                 >
                     <GrUndo />
@@ -30,7 +32,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <IconButton
                     onClick={() => {
                         redo();
-                        socket.emit("redo:shape", { room: searchParams.get("room"), status: true });
+                        socket.emit("redo:shape", { room, status: true });
                     }}
                 >
                     <GrRedo />

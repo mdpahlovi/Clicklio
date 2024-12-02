@@ -1,6 +1,14 @@
 import http from "http";
+import { createClient } from "redis";
 import { Server } from "socket.io";
+
 const httpServer = http.createServer();
+
+const client = createClient({ url: "rediss://red-ct5snqjqf0us738911hg:9NqvFG2h1iK7xD4BPBqdB9pbZyW6ayKz@singapore-redis.render.com:6379" });
+
+client.on("error", (error) => console.log("Redis Client Error", error));
+
+await client.connect();
 
 const io = new Server(httpServer, { cors: { origin: "*" } });
 

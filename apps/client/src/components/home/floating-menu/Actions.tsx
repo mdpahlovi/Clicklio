@@ -10,13 +10,15 @@ export default function Actions({ fabricRef }: ActionsProps) {
     const [searchParams] = useSearchParams();
     const { setShape, deleteShape } = useShapeState();
 
+    const room = searchParams.get("room");
+
     return (
         <>
             <Tooltip title="Duplicate">
                 <IconButton
                     color="primary"
                     variant="soft"
-                    onClick={() => (fabricRef.current ? handleDuplicate(fabricRef.current, searchParams.get("room"), setShape) : null)}
+                    onClick={() => (fabricRef.current ? handleDuplicate(fabricRef.current, room, setShape) : null)}
                 >
                     <IoDuplicateOutline />
                 </IconButton>
@@ -25,7 +27,7 @@ export default function Actions({ fabricRef }: ActionsProps) {
                 <IconButton
                     color="danger"
                     variant="soft"
-                    onClick={() => (fabricRef.current ? handleDelete(fabricRef.current, searchParams.get("room"), deleteShape) : null)}
+                    onClick={() => (fabricRef.current ? handleDelete(fabricRef.current, room, deleteShape) : null)}
                 >
                     <RiDeleteBin5Line />
                 </IconButton>
