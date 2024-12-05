@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { socket } from "@/utils/socket";
 import { useSearchParams } from "react-router-dom";
+import { useAuthState } from "@/hooks/useAuthState";
 import { useRoomState } from "@/hooks/useRoomState";
 
 import Modal from "@/components/ui/modal";
@@ -8,6 +9,7 @@ import { FaRegCopy, FaStop, FaPlay } from "react-icons/fa6";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
 
 export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
+    const { user } = useAuthState();
     const { shareModal, toggleShareModal } = useRoomState();
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -64,7 +66,7 @@ export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObjec
                             const room = uuidv4();
                             roomRef.current = room;
                             setSearchParams({ room });
-                            socket.emit("join:room", { room });
+                            socket.emit("join:room", { room, name: user?.name });
                         }}
                         startDecorator={<FaPlay size={18} />}
                     >

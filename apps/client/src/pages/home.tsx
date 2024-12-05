@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { socket } from "@/utils/socket";
 import { renderCanvas } from "@/utils/canvas";
 import { useCanvas } from "@/hooks/useCanvas";
+import { useAuthState } from "@/hooks/useAuthState";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { usePeriodicSave } from "@/hooks/usePeriodicSave";
+import { User, useRoomState } from "@/hooks/useRoomState";
 
 import Navbar from "@/components/home/navbar";
 import Toolbar from "@/components/home/toolbar";
@@ -18,15 +20,30 @@ import CanvasContainer from "@/components/home/canvas-container";
 import { Box } from "@mui/joy";
 
 export default function HomePage() {
+    const [shareTo, setShareTo] = useState(null);
+    const { user } = useAuthState();
+    const { setUsers } = useRoomState();
     const { refresh, setRefresh } = useCanvasState();
-    const { shapes, setShapes, setShape, updateShape, deleteShape, undo, redo } = useShapeState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
     const { saveShapes, isUpToDate } = usePeriodicSave({ fabricRef });
+    const { shapes, history, position, setShapes, setShape, updateShape, deleteShape, setInitialState, undo, redo } = useShapeState();
 
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        socket.emit("join:room", { room: roomRef.current });
+        socket.emit("join:room", { room: roomRef.current, name: user?.name });
+
+        socket.on("room:users", ({ users: userData, to }) => {
+            const users: User[] = userData.map((user: string) => JSON.parse(user));
+            setUsers(users);
+
+            if (to && users?.length > 1 && users[0]?.id === socket.id) setShareTo(to);
+        });
+
+        socket.on("initial:state", ({ shapes, history, position }) => {
+            setInitialState({ shapes, history, position });
+            setRefresh();
+        });
 
         socket.on("set:shape", (shape) => {
             setShape(shape);
@@ -79,7 +96,6 @@ export default function HomePage() {
             });
             socket.off("reset:canvas", ({ status }) => {
                 if (status) {
-                    console.log(" jjbuvbuygu ");
                     setShapes([]);
                     fabricRef.current?.clear();
                 }
@@ -87,6 +103,13 @@ export default function HomePage() {
             });
         };
     }, []);
+
+    useEffect(() => {
+        if (shareTo) {
+            socket.emit("initial:state", { to: shareTo, shapes, history, position });
+            setShareTo(null);
+        }
+    }, [shareTo]);
 
     return (
         <Box sx={{ position: "fixed", width: "100vw", height: "100vh" }}>

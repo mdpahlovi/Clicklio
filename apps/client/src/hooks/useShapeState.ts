@@ -12,6 +12,15 @@ type ShapeStateStore = {
     updateShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
     setPrevious: (shape: fabric.FabricObject[]) => void;
+    setInitialState: ({
+        shapes,
+        history,
+        position,
+    }: {
+        shapes: fabric.FabricObject[];
+        history: fabric.FabricObject[][];
+        position: number;
+    }) => void;
     undo: () => void;
     redo: () => void;
 };
@@ -67,6 +76,13 @@ export const useShapeState = create<ShapeStateStore>()(
                 }),
 
             setPrevious: (previous) => set({ previous }),
+
+            setInitialState: ({ shapes, history, position }) =>
+                set({
+                    shapes,
+                    history,
+                    position,
+                }),
 
             undo: () =>
                 set((state) => {

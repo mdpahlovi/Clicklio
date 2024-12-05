@@ -1,29 +1,23 @@
 import { useTheme } from "@mui/joy";
 import { socket } from "@/utils/socket";
-import { useAuthState } from "@/hooks/useAuthState";
 import { useRoomState } from "@/hooks/useRoomState";
 import { useCallback, useEffect, useRef } from "react";
 
-import { RxCursorArrow } from "react-icons/rx";
+import { BsCursor } from "react-icons/bs";
 import type { Cursor } from "@/hooks/useRoomState";
 
 export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
     const { palette } = useTheme();
-    const { user } = useAuthState();
-    const { cursor, setCursor, deleteCursor } = useRoomState();
+    const { users, cursor, setCursor, deleteCursor } = useRoomState();
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
     useEffect(() => {
-        window.addEventListener("mousemove", (e) => {
-            socket.emit("cursor", { room: roomRef.current, cursor: { name: user?.name, x: e.x, y: e.y } });
-        });
+        window.addEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
 
         return () => {
-            window.removeEventListener("mousemove", (e) =>
-                socket.emit("cursor", { room: roomRef.current, cursor: { name: user?.name, x: e.x, y: e.y } })
-            );
+            window.removeEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
         };
-    }, [user]);
+    }, []);
 
     useEffect(() => {
         socket.on("cursor", (cursor) => handleCursorUpdate(cursor));
@@ -41,21 +35,24 @@ export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObj
         timerRef.current = setTimeout(() => deleteCursor(cursor.id), 500);
     }, []);
 
-    return cursor.map(({ id, name, x, y }, idx) => (
-        <div key={id} style={id ? { position: "fixed", zIndex: 1, top: y, left: x } : { display: "none" }}>
-            <RxCursorArrow />
-            <div
-                style={{
-                    borderRadius: 9999,
-                    padding: "2px 6px 1px",
-                    background: palette.background.body,
-                    border: `1px solid ${palette.divider}`,
-                }}
-            >
-                <p style={{ color: palette.text.primary, fontSize: 14, fontFamily: "Poppins", whiteSpace: "nowrap" }}>
-                    {name ? name : `Guest ${String(idx + 1).padStart(2, "0")}`}
-                </p>
+    return cursor.map(({ id, x, y }) => {
+        const user = users.find((u) => u.id === id);
+
+        return (
+            <div key={id} style={id ? { position: "fixed", zIndex: 1, top: y, left: x } : { display: "none" }}>
+                <BsCursor style={{ transform: "rotate(-90deg)" }} />
+                <div
+                    style={{
+                        borderRadius: 9999,
+                        margin: "-10px 10px",
+                        padding: "1px 8px 0",
+                        background: palette.background.body,
+                        border: `1px solid ${palette.divider}`,
+                    }}
+                >
+                    <p style={{ color: palette.text.primary, fontSize: 14, fontFamily: "Poppins", whiteSpace: "nowrap" }}>{user?.name}</p>
+                </div>
             </div>
-        </div>
-    ));
+        );
+    });
 }
