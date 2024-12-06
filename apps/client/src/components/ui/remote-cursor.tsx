@@ -5,15 +5,19 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { BsCursor } from "react-icons/bs";
 import type { Cursor } from "@/hooks/useRoomState";
+import { useSearchParams } from "react-router-dom";
 
-export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
+export default function RemoteCursor() {
     const { palette } = useTheme();
+    const [searchParams] = useSearchParams();
     const { users, cursor, setCursor, deleteCursor } = useRoomState();
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
+    const room = searchParams.get("room");
+
     useEffect(() => {
         const emitCursorPoint = (e: globalThis.MouseEvent) => {
-            if (roomRef.current) socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } });
+            if (room) socket.emit("cursor", { room, cursor: { x: e.x, y: e.y } });
         };
 
         window.addEventListener("mousemove", (e) => emitCursorPoint(e));

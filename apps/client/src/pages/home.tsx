@@ -117,7 +117,7 @@ export default function HomePage() {
             <div style={{ display: "flex" }}>
                 <Sidebar {...{ fabricRef, saveShapes, isUpToDate }} />
                 <CanvasContainer>
-                    <RemoteCursor {...{ roomRef }} />
+                    <RemoteCursor />
                     <FloatingMenu {...{ fabricRef }} />
                     <Toolbar {...{ fabricRef, selectedToolRef }} />
                     <BottomToolbar {...{ fabricRef }} />

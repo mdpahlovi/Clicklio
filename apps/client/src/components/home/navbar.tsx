@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import RoomUsers from "./room-users";
 import Logo from "@/components/ui/logo";
+import { Link } from "react-router-dom";
 import { SlLogin } from "react-icons/sl";
 import { useRoomState } from "@/hooks/useRoomState";
 import { useAuthState } from "@/hooks/useAuthState";
@@ -24,12 +25,13 @@ export default function Navbar() {
                 <img src="/logo/icon.png" alt="" width={40} height={40} />
             </Box>
             <Stack direction="row" alignItems="center" gap={{ xs: 1.5, md: 2.5 }}>
+                <RoomUsers />
                 <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={toggleShareModal}>
                     Share
                 </Button>
                 <ThemeToggle />
                 <Divider orientation="vertical" sx={{ mr: { xs: 1, sm: 0 } }} />
-                <IconButton onClick={toggleHelpModal} sx={{ display: { xs: "none", sm: "inline-flex" } }}>
+                <IconButton onClick={toggleHelpModal} sx={{ display: { xs: "none", md: "inline-flex" } }}>
                     <PiQuestion size={24} />
                 </IconButton>
 
