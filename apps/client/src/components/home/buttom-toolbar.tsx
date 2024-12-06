@@ -23,7 +23,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <IconButton
                     onClick={() => {
                         undo();
-                        socket.emit("undo:shape", { room, status: true });
+                        if (room) socket.emit("undo:shape", { room, status: true });
                     }}
                 >
                     <GrUndo />
@@ -32,7 +32,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <IconButton
                     onClick={() => {
                         redo();
-                        socket.emit("redo:shape", { room, status: true });
+                        if (room) socket.emit("redo:shape", { room, status: true });
                     }}
                 >
                     <GrRedo />

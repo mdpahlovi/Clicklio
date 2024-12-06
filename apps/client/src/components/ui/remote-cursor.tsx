@@ -12,10 +12,14 @@ export default function RemoteCursor({ roomRef }: { roomRef: React.MutableRefObj
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
     useEffect(() => {
-        window.addEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
+        const emitCursorPoint = (e: globalThis.MouseEvent) => {
+            if (roomRef.current) socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } });
+        };
+
+        window.addEventListener("mousemove", (e) => emitCursorPoint(e));
 
         return () => {
-            window.removeEventListener("mousemove", (e) => socket.emit("cursor", { room: roomRef.current, cursor: { x: e.x, y: e.y } }));
+            window.removeEventListener("mousemove", (e) => emitCursorPoint(e));
         };
     }, []);
 

@@ -95,7 +95,7 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
             // sync shape in storage
             if (image?.objectId) {
                 setShape({ objectId: image?.objectId, ...image.toJSON() });
-                socket.emit("set:shape", { room, objectId: image?.objectId, ...image.toJSON() });
+                if (room) socket.emit("set:shape", { room, objectId: image?.objectId, ...image.toJSON() });
             }
 
             if (fabricRef?.current) {
@@ -149,6 +149,6 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
     // sync shape in storage
     if (selectedElement?.objectId) {
         updateShape({ objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
-        socket.emit("update:shape", { room, objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
+        if (room) socket.emit("update:shape", { room, objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
     }
 };

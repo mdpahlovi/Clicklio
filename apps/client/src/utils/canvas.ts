@@ -150,7 +150,7 @@ export const handleCanvasMouseUp = ({
             // sync in storage
 
             deleteShape(object?.objectId);
-            socket.emit("delete:shape", { room: roomRef.current, objectId: object?.objectId });
+            if (roomRef.current) socket.emit("delete:shape", { room: roomRef.current, objectId: object?.objectId });
         });
 
         canvas.requestRenderAll();
@@ -164,7 +164,8 @@ export const handleCanvasMouseUp = ({
         shapeRef.current.setCoords();
 
         setShape({ objectId: shapeRef.current?.objectId, ...shapeRef.current.toJSON() });
-        socket.emit("set:shape", { room: roomRef.current, objectId: shapeRef.current?.objectId, ...shapeRef.current.toJSON() });
+        if (roomRef.current)
+            socket.emit("set:shape", { room: roomRef.current, objectId: shapeRef.current?.objectId, ...shapeRef.current.toJSON() });
     }
 
     // set everything to null
@@ -186,7 +187,7 @@ export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: Ca
         // sync shape in storage
         if (target?.objectId) {
             updateShape({ objectId: target?.objectId, ...target.toJSON() });
-            socket.emit("update:shape", { room: roomRef.current, objectId: target?.objectId, ...target.toJSON() });
+            if (roomRef.current) socket.emit("update:shape", { room: roomRef.current, objectId: target?.objectId, ...target.toJSON() });
         }
     }
 };
@@ -203,7 +204,7 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
     // sync shape in storage
     if (path?.objectId) {
         setShape({ objectId: path?.objectId, ...path.toJSON() });
-        socket.emit("set:shape", { room: roomRef.current, objectId: path?.objectId, ...path.toJSON() });
+        if (roomRef.current) socket.emit("set:shape", { room: roomRef.current, objectId: path?.objectId, ...path.toJSON() });
     }
 };
 

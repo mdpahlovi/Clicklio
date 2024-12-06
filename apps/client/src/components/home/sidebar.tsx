@@ -31,7 +31,7 @@ export default function Sidebar({ fabricRef, saveShapes, isUpToDate }: SidebarPr
                         if (fabricRef.current) {
                             setShapes([]);
                             fabricRef.current.clear();
-                            socket.emit("reset:canvas", { room, status: true });
+                            if (room) socket.emit("reset:canvas", { room, status: true });
                         }
                     }}
                     disabled={!shapes?.length}

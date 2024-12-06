@@ -31,7 +31,7 @@ export const handlePaste = async (
             // sync in storage
             if (obj?.objectId) {
                 setShape({ objectId: obj?.objectId, ...obj.toJSON() });
-                socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
+                if (room) socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
             }
         });
         // this should solve the unselectability
@@ -43,7 +43,7 @@ export const handlePaste = async (
         // sync in storage
         if (clonedObj?.objectId) {
             setShape({ objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
-            socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
+            if (room) socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
         }
     }
     copiedObjectRef.current.top += 20;
@@ -75,7 +75,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
             // Sync in storage
             if (obj?.objectId) {
                 setShape({ objectId: obj?.objectId, ...obj.toJSON() });
-                socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
+                if (room) socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
             }
         });
         clonedObj.setCoords();
@@ -87,7 +87,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
         // Sync in storage
         if (clonedObj?.objectId) {
             setShape({ objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
-            socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
+            if (room) socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
         }
     }
 
@@ -106,7 +106,7 @@ export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteS
 
             // sync in storage
             deleteShape(object?.objectId);
-            socket.emit("delete:shape", { room, objectId: object?.objectId });
+            if (room) socket.emit("delete:shape", { room, objectId: object?.objectId });
         });
     }
 
@@ -204,12 +204,12 @@ export const handleKeyDown = ({
     // check if the key pressed is ctrl/cmd + z (undo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90) {
         undo();
-        socket.emit("undo:shape", { room: roomRef.current, status: true });
+        if (roomRef.current) socket.emit("undo:shape", { room: roomRef.current, status: true });
     }
     // check if the key pressed is ctrl/cmd + y (redo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 89) {
         redo();
-        socket.emit("redo:shape", { room: roomRef.current, status: true });
+        if (roomRef.current) socket.emit("redo:shape", { room: roomRef.current, status: true });
     }
     // check if the key pressed is space (panning)
     if (e.keyCode === 32) setTool("panning");

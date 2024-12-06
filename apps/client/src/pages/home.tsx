@@ -31,7 +31,7 @@ export default function HomePage() {
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        socket.emit("join:room", { room: roomRef.current, name: user?.name });
+        if (roomRef.current) socket.emit("join:room", { room: roomRef.current, name: user?.name });
 
         socket.on("room:users", ({ users: userData, to }) => {
             const users: User[] = userData.map((user: string) => JSON.parse(user));
