@@ -11,7 +11,7 @@ export default function RemoteCursor() {
     const { palette } = useTheme();
     const [searchParams] = useSearchParams();
     const { users, cursor, setCursor, deleteCursor } = useRoomState();
-    const timerRef = useRef<ReturnType<typeof setTimeout>>();
+    const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
     const room = searchParams.get("room");
 
@@ -39,7 +39,7 @@ export default function RemoteCursor() {
         setCursor(cursor);
 
         // Reset the timeout if cursor is updated
-        clearTimeout(timerRef.current);
+        timerRef.current ? clearTimeout(timerRef.current) : null;
         timerRef.current = setTimeout(() => deleteCursor(cursor.id), 500);
     }, []);
 
@@ -58,7 +58,16 @@ export default function RemoteCursor() {
                         border: `1px solid ${palette.divider}`,
                     }}
                 >
-                    <p style={{ color: palette.text.primary, fontSize: 14, fontFamily: "Poppins", whiteSpace: "nowrap" }}>{user?.name}</p>
+                    <p
+                        style={{
+                            color: palette.text.primary,
+                            fontSize: 14,
+                            fontFamily: "Poppins",
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        {user?.name}
+                    </p>
                 </div>
             </div>
         );

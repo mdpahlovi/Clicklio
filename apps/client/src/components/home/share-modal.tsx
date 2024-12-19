@@ -8,7 +8,7 @@ import Modal from "@/components/ui/modal";
 import { FaRegCopy, FaStop, FaPlay } from "react-icons/fa6";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
 
-export default function ShareModal({ roomRef }: { roomRef: React.MutableRefObject<string | null> }) {
+export default function ShareModal({ roomRef }: { roomRef: React.RefObject<string | null> }) {
     const { user } = useAuthState();
     const { shareModal, toggleShareModal } = useRoomState();
     const [searchParams, setSearchParams] = useSearchParams();

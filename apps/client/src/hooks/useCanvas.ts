@@ -27,7 +27,7 @@ export function useCanvas() {
     const [searchParams] = useSearchParams();
     const roomRef = useRef<string | null>(null);
 
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const isClicked = useRef(false);
@@ -38,7 +38,7 @@ export function useCanvas() {
     const deleteObjectRef = useRef<fabric.FabricObject[]>([]);
     const copiedObjectRef = useRef<fabric.FabricObject | null>(null);
 
-    const baseColorRef = useRef<string>();
+    const baseColorRef = useRef<string | null>(null);
 
     useEffect(() => {
         mode === "light" ? (baseColorRef.current = "#000000") : (baseColorRef.current = "#FFFFFF");

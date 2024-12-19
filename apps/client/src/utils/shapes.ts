@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { objectCorner } from "@/constants";
 import type { Pointer, ImageUpload, ModifyShape, Tool } from "@/types";
 
-export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
+export const createRectangle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
@@ -16,7 +16,7 @@ export const createRectangle = (pointer: Pointer, baseColorRef: React.MutableRef
     });
 };
 
-export const createTriangle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
+export const createTriangle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.Triangle({
         left: pointer.x,
         top: pointer.y,
@@ -28,7 +28,7 @@ export const createTriangle = (pointer: Pointer, baseColorRef: React.MutableRefO
     });
 };
 
-export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
+export const createCircle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.Circle({
         left: pointer.x,
         top: pointer.y,
@@ -39,7 +39,7 @@ export const createCircle = (pointer: Pointer, baseColorRef: React.MutableRefObj
     });
 };
 
-export const createLine = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
+export const createLine = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
         stroke: baseColorRef.current,
         strokeWidth: 2,
@@ -48,7 +48,7 @@ export const createLine = (pointer: Pointer, baseColorRef: React.MutableRefObjec
     });
 };
 
-export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
+export const createText = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.IText("Tap To Type", {
         left: pointer.x,
         top: pointer.y,
@@ -61,7 +61,7 @@ export const createText = (pointer: Pointer, baseColorRef: React.MutableRefObjec
     });
 };
 
-export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseColorRef: React.MutableRefObject<string | undefined>) => {
+export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     switch (shape) {
         case "rect":
             return createRectangle(pointer, baseColorRef);

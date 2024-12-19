@@ -9,7 +9,7 @@ import { useCanvasState } from "@/hooks/useCanvasState";
 import { useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 
-export function usePeriodicSave({ fabricRef }: { fabricRef: React.MutableRefObject<fabric.Canvas | null> }) {
+export function usePeriodicSave({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const { id } = useParams();
     const { user } = useAuthState();
     const navigator = useNavigate();

@@ -27,7 +27,7 @@ export type Tool =
     | "eraser";
 
 export type ModifyShape = {
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
     property: keyof Attributes;
     value: string;
     room: string | null;
@@ -42,18 +42,18 @@ export type ElementDirection = {
 export type ImageUpload = {
     file: File;
     room: string | null;
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
     setShape: (shape: fabric.FabricObject) => void;
 };
 
 export type SidebarProps = {
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
     saveShapes: () => void;
     isUpToDate: boolean;
 };
 
 export type FloatingMenuProps = {
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
 };
 
 export type FloatingMenuItemProps = {
@@ -69,44 +69,44 @@ export type FloatingMenuSubItemProps = {
 };
 
 export type ActionsProps = {
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
 };
 
 export type ToolbarProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    selectedToolRef: React.MutableRefObject<Tool | null>;
+    selectedToolRef: React.RefObject<Tool | null>;
 };
 
 export type InitializeFabric = {
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvasRef: React.RefObject<HTMLCanvasElement | null>;
 };
 
 export type CanvasMouseDown = {
     options: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
-    selectedToolRef: React.MutableRefObject<Tool | null>;
-    isPanning: React.MutableRefObject<Pointer | null>;
-    shapeRef: React.MutableRefObject<fabric.FabricObject | null>;
-    baseColorRef: React.MutableRefObject<string | undefined>;
+    selectedToolRef: React.RefObject<Tool | null>;
+    isPanning: React.RefObject<Pointer | null>;
+    shapeRef: React.RefObject<fabric.FabricObject | null>;
+    baseColorRef: React.RefObject<string | null>;
 };
 
 export type CanvasMouseMove = {
     options: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
-    isPanning: React.MutableRefObject<Pointer | null>;
-    selectedToolRef: React.MutableRefObject<Tool | null>;
-    shapeRef: React.MutableRefObject<fabric.FabricObject | null>;
-    deleteObjectRef: React.MutableRefObject<fabric.FabricObject[]>;
+    isPanning: React.RefObject<Pointer | null>;
+    selectedToolRef: React.RefObject<Tool | null>;
+    shapeRef: React.RefObject<fabric.FabricObject | null>;
+    deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
 };
 
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
-    isPanning: React.MutableRefObject<Pointer | null>;
-    shapeRef: React.MutableRefObject<fabric.FabricObject | null>;
-    selectedToolRef: React.MutableRefObject<Tool | null>;
-    deleteObjectRef: React.MutableRefObject<fabric.FabricObject[]>;
-    roomRef: React.MutableRefObject<string | null>;
+    isPanning: React.RefObject<Pointer | null>;
+    shapeRef: React.RefObject<fabric.FabricObject | null>;
+    selectedToolRef: React.RefObject<Tool | null>;
+    deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
+    roomRef: React.RefObject<string | null>;
     setTool: (tool: Tool) => void;
     setShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
@@ -114,19 +114,19 @@ export type CanvasMouseUp = {
 
 export type CanvasObjectModified = {
     options: fabric.ModifiedEvent<fabric.TPointerEvent>;
-    roomRef: React.MutableRefObject<string | null>;
+    roomRef: React.RefObject<string | null>;
     updateShape: (shape: fabric.FabricObject) => void;
 };
 
 export type CanvasPathCreated = {
-    roomRef: React.MutableRefObject<string | null>;
+    roomRef: React.RefObject<string | null>;
     setShape: (shape: fabric.FabricObject) => void;
     options: { path: fabric.FabricObject };
 };
 
 export type RenderCanvas = {
     shapes: fabric.FabricObject[];
-    fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
 };
 
 export type CanvasZoom = {
@@ -138,8 +138,8 @@ export type CanvasZoom = {
 export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
-    roomRef: React.MutableRefObject<string | null>;
-    copiedObjectRef: React.MutableRefObject<fabric.FabricObject | null>;
+    roomRef: React.RefObject<string | null>;
+    copiedObjectRef: React.RefObject<fabric.FabricObject | null>;
     setShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
     undo: (steps?: number) => void;
