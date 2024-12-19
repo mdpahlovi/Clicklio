@@ -16,7 +16,7 @@ export default function RoomUsers() {
             return (
                 <AvatarGroup>
                     <Avatar alt={users[currentUserIndex].name} />
-                    {users.length ? <Avatar>+{(users.length - 1).toString().padStart(2, "0")}</Avatar> : null}
+                    {users.length - 1 ? <Avatar>+{(users.length - 1).toString().padStart(2, "0")}</Avatar> : null}
                 </AvatarGroup>
             );
         }
