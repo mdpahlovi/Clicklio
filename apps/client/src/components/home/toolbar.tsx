@@ -13,7 +13,8 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { setShape } = useShapeState();
     const [searchParams] = useSearchParams();
     const { tool, setTool } = useCanvasState();
-    const imageInputRef = useRef<HTMLInputElement>(null);
+    const imageInputRef = useRef<HTMLInputElement | null>(null);
+    const videoInputRef = useRef<HTMLInputElement | null>(null);
 
     const room = searchParams.get("room");
 
@@ -67,6 +68,11 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 
                 case "image":
                     imageInputRef.current?.click();
+                    setTimeout(() => setTool("select"), 500);
+                    break;
+
+                case "video":
+                    videoInputRef.current?.click();
                     setTimeout(() => setTool("select"), 500);
                     break;
 
@@ -155,7 +161,25 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 onChange={(e) => {
                     const files = e?.target?.files;
 
-                    if (files && e?.target?.files?.length) handleImageUpload({ file: files[0], room, fabricRef, setShape });
+                    if (files && e?.target?.files?.length) {
+                        handleImageUpload({ file: files[0], room, fabricRef, setShape });
+                        if (imageInputRef.current) imageInputRef.current.value = "";
+                    }
+                }}
+            />
+
+            <input
+                hidden
+                type="file"
+                accept="video/*"
+                ref={videoInputRef}
+                onChange={(e) => {
+                    const files = e?.target?.files;
+
+                    if (files && e?.target?.files?.length) {
+                        // upload video
+                        if (videoInputRef.current) videoInputRef.current.value = "";
+                    }
                 }}
             />
         </Sheet>

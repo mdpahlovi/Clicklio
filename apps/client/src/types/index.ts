@@ -19,11 +19,13 @@ export type Tool =
     | "triangle"
     | "circle"
     | "line"
+    | "arrow"
     | "path-1"
     | "path-5"
     | "path-10"
     | "i-text"
     | "image"
+    | "video"
     | "eraser";
 
 export type ModifyShape = {

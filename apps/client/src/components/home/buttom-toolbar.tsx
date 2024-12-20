@@ -1,15 +1,19 @@
-import * as fabric from "fabric";
-import { socket } from "@/utils/socket";
-import { GrUndo, GrRedo } from "react-icons/gr";
-import { PiMinus, PiPlus } from "react-icons/pi";
-import { useSearchParams } from "react-router-dom";
-import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Sheet, Button, IconButton, Divider } from "@mui/joy";
+import { useShapeState } from "@/hooks/useShapeState";
+import { socket } from "@/utils/socket";
+import { Button, Divider, IconButton, Sheet } from "@mui/joy";
+import * as fabric from "fabric";
+import { BiSolidWebcam } from "react-icons/bi";
+import { GrRedo, GrUndo } from "react-icons/gr";
+import { MdGrid3X3 } from "react-icons/md";
+import { PiMinus, PiPlus, PiVinylRecord } from "react-icons/pi";
+import { useSearchParams } from "react-router-dom";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const [searchParams] = useSearchParams();
+
     const { undo, redo } = useShapeState();
+    const { setRefresh } = useCanvasState();
     const { zoom, setZoom } = useCanvasState();
 
     const room = searchParams.get("room");
@@ -20,18 +24,29 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
                 style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 24px 0 0" }}
             >
+                <IconButton onClick={() => {}}>
+                    <MdGrid3X3 />
+                </IconButton>
+                <IconButton onClick={() => {}}>
+                    <BiSolidWebcam />
+                </IconButton>
+                <IconButton onClick={() => {}}>
+                    <PiVinylRecord />
+                </IconButton>
+                <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
                         undo();
+                        setRefresh();
                         if (room) socket.emit("undo:shape", { room, status: true });
                     }}
                 >
                     <GrUndo />
                 </IconButton>
-                <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
                         redo();
+                        setRefresh();
                         if (room) socket.emit("redo:shape", { room, status: true });
                     }}
                 >
