@@ -94,6 +94,7 @@ export const tools = [
     { name: "Triangle", key: "T" },
     { name: "Circle", key: "C" },
     { name: "Line", key: "L" },
+    { name: "Arrow", key: "Shift + L" },
     { name: "Draw", key: "P" },
     { name: "Text", key: "A" },
     { name: "Insert Image", key: "I" },

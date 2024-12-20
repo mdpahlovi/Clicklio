@@ -145,6 +145,8 @@ export const handleKeyDown = ({
     if (e.keyCode === 67) setTool("circle");
     // Check if key pressed is L (Line Tool)
     if (e.keyCode === 76) setTool("line");
+    // Check if key pressed is Shift + L (Arrow Tool)
+    if (e.shiftKey && e.keyCode === 76) setTool("arrow");
     // Check if key pressed is P (Pencil Tool)
     if (e.keyCode === 80) setTool("path-5");
     // Check if key pressed is A (Text Tool)

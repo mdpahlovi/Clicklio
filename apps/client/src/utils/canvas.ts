@@ -1,3 +1,4 @@
+import { Arrow } from "./arrow";
 import * as fabric from "fabric";
 import { v4 as uuid4 } from "uuid";
 import { socket } from "@/utils/socket";
@@ -111,6 +112,13 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
 
         case "line":
             (shapeRef.current as fabric.Line).set({
+                x2: pointer.x,
+                y2: pointer.y,
+            });
+            break;
+
+        case "arrow":
+            (shapeRef.current as Arrow).set({
                 x2: pointer.x,
                 y2: pointer.y,
             });

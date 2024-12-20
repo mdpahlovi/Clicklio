@@ -1,3 +1,4 @@
+import { Arrow } from "./arrow";
 import * as fabric from "fabric";
 import { socket } from "./socket";
 import { v4 as uuidv4 } from "uuid";
@@ -48,6 +49,15 @@ export const createLine = (pointer: Pointer, baseColorRef: React.RefObject<strin
     });
 };
 
+export const createArrow = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+    return new Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
+        stroke: baseColorRef.current,
+        strokeWidth: 2,
+        objectId: uuidv4(),
+        ...objectCorner,
+    });
+};
+
 export const createText = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.IText("Tap To Type", {
         left: pointer.x,
@@ -74,6 +84,9 @@ export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseCo
 
         case "line":
             return createLine(pointer, baseColorRef);
+
+        case "arrow":
+            return createArrow(pointer, baseColorRef);
 
         case "i-text":
             return createText(pointer, baseColorRef);
