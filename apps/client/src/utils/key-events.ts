@@ -132,28 +132,30 @@ export const handleKeyDown = ({
     const zoom = canvas?.getZoom();
     const light = localStorage.getItem("joy-mode") === "light";
 
-    // Check if the key pressed is 1
-    if (e.keyCode === 49) setTool("panning");
-    // Check if the key pressed is 2
-    if (e.keyCode === 50) setTool("select");
-    // Check if the key pressed is 3
-    if (e.keyCode === 51) setTool("rect");
-    // Check if the key pressed is 4
-    if (e.keyCode === 52) setTool("triangle");
-    // Check if the key pressed is 5
-    if (e.keyCode === 53) setTool("circle");
-    // Check if the key pressed is 6
-    if (e.keyCode === 54) setTool("line");
-    // Check if the key pressed is 7
-    if (e.keyCode === 55) setTool("path-5");
-    // Check if the key pressed is 8
-    if (e.keyCode === 56) setTool("i-text");
-    // Check if the key pressed is 9
-    if (e.keyCode === 57) setTool("image");
-    // Check if the key pressed is 0
-    if (e.keyCode === 48) setTool("eraser");
+    // Tool Selection Shortcuts
+    // Check if key pressed is H (Hand Tool)
+    if (e.keyCode === 72) setTool("panning");
+    // Check if key pressed is V (Select Tool)
+    if (e.keyCode === 86) setTool("select");
+    // Check if key pressed is R (Rectangle Tool)
+    if (e.keyCode === 82) setTool("rect");
+    // Check if key pressed is T (Triangle Tool)
+    if (e.keyCode === 84) setTool("triangle");
+    // Check if key pressed is C (Circle Tool)
+    if (e.keyCode === 67) setTool("circle");
+    // Check if key pressed is L (Line Tool)
+    if (e.keyCode === 76) setTool("line");
+    // Check if key pressed is P (Pencil Tool)
+    if (e.keyCode === 80) setTool("path-5");
+    // Check if key pressed is A (Text Tool)
+    if (e.keyCode === 65) setTool("i-text");
+    // Check if key pressed is I (Image Tool)
+    if (e.keyCode === 73) setTool("image");
+    // Check if key pressed is E (Eraser Tool)
+    if (e.keyCode === 69) setTool("eraser");
 
-    // Check if the key pressed is ctrl/cmd + +
+    // View Controls
+    // Check if the key pressed is ctrl/cmd + + (Zoom In)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 107) {
         e.preventDefault();
         if (zoom && Number(zoom.toFixed(1)) <= 10) {
@@ -161,7 +163,7 @@ export const handleKeyDown = ({
             canvas.setZoom(zoom + 0.1);
         }
     }
-    // Check if the key pressed is ctrl/cmd + -
+    // Check if the key pressed is ctrl/cmd + - (Zoom Out)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 109) {
         e.preventDefault();
         if (zoom && Number(zoom.toFixed(1)) >= 0.1) {
@@ -169,51 +171,52 @@ export const handleKeyDown = ({
             canvas.setZoom(zoom - 0.1);
         }
     }
-    // Check if the key pressed is ctrl/cmd + R
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 82) {
+    // Check if the key pressed is ctrl/cmd + 0 (Reset View)
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 48) {
         e.preventDefault();
         setZoom(2);
         canvas.setZoom(2);
     }
-    // Check if the key pressed is alt + D
-    if (canvas && e?.altKey && e?.shiftKey && e.keyCode === 68) {
+    // Check if the key pressed is ctrl + alt + D (Toggle Dark Mode)
+    if (canvas && e?.ctrlKey && e?.altKey && e.keyCode === 68) {
         setMode(light ? "dark" : "light");
     }
 
-    // Check if the key pressed is ctrl/cmd + c (copy)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67) {
+    // Editor Controls
+    // Check if the key pressed is ctrl/cmd + c (Copy)
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67 && !e.altKey) {
         handleCopy(canvas, copiedObjectRef);
     }
-    // Check if the key pressed is ctrl/cmd + v (paste)
+    // Check if the key pressed is ctrl/cmd + v (Paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
         handlePaste(canvas, roomRef.current, copiedObjectRef, setShape);
     }
-    // Check if the key pressed is ctrl/cmd + D (paste)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68) {
+    // Check if the key pressed is ctrl/cmd + d (Duplicate)
+    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68 && !e.altKey) {
         e.preventDefault();
         handleDuplicate(canvas, roomRef.current, setShape);
     }
-    // Check if the key pressed is delete (delete)
+    // Check if the key pressed is delete (Delete Selection)
     if (canvas && e.keyCode === 46) {
         handleDelete(canvas, roomRef.current, deleteShape);
     }
-    // check if the key pressed is ctrl/cmd + x (cut)
+    // Check if the key pressed is ctrl/cmd + x (Cut)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
         handleCopy(canvas, copiedObjectRef);
         handleDelete(canvas, roomRef.current, deleteShape);
     }
-    // check if the key pressed is ctrl/cmd + z (undo)
-    if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90) {
+    // Check if the key pressed is ctrl/cmd + z (Undo)
+    if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90 && !e.shiftKey) {
         undo();
         setRefresh();
         if (roomRef.current) socket.emit("undo:shape", { room: roomRef.current, status: true });
     }
-    // check if the key pressed is ctrl/cmd + y (redo)
-    if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 89) {
+    // Check if the key pressed is ctrl/cmd + shift + z (Redo)
+    if ((e?.ctrlKey || e?.metaKey) && e.shiftKey && e.keyCode === 90) {
         redo();
         setRefresh();
         if (roomRef.current) socket.emit("redo:shape", { room: roomRef.current, status: true });
     }
-    // check if the key pressed is space (panning)
+    // Check if the key pressed is space (Temporary Pan)
     if (e.keyCode === 32) setTool("panning");
 };

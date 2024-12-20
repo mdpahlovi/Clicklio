@@ -1,9 +1,9 @@
 import { Divider } from "@mui/joy";
 import { LuShapes } from "react-icons/lu";
 import { TfiPencil } from "react-icons/tfi";
-import { LiaHandPaper } from "react-icons/lia";
 import { IoIosBrush, IoMdBrush } from "react-icons/io";
 import { CiEraser, CiImageOn, CiText } from "react-icons/ci";
+import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
 import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus } from "react-icons/pi";
 
 import type { Tool } from "@/types";
@@ -22,13 +22,14 @@ export const navElements: {
     {
         icon: <LuShapes />,
         name: "Shapes",
-        values: ["rect", "triangle", "circle", "line"],
+        values: ["rect", "triangle", "circle", "line", "arrow"],
         type: "dropdown",
         children: [
             { icon: <PiSquare />, name: "Rectangle", value: "rect" },
             { icon: <PiTriangle />, name: "Triangle", value: "triangle" },
             { icon: <PiCircle />, name: "Circle", value: "circle" },
             { icon: <PiMinus />, name: "Line", value: "line" },
+            { icon: <LiaLongArrowAltRightSolid />, name: "Arrow", value: "arrow" },
         ],
     },
     {
@@ -87,36 +88,36 @@ export const circle = (mode: Mode | undefined) =>
     }' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='currentColor' stroke-width='1.5' stroke-linejoin='round' /%3E%3C/svg%3E"), auto`;
 
 export const tools = [
-    { name: "Panning tool", key: "1" },
-    { name: "Selection", key: "2" },
-    { name: "Rectangle", key: "3" },
-    { name: "Triangle", key: "4" },
-    { name: "Circle", key: "5" },
-    { name: "Line", key: "6" },
-    { name: "Draw", key: "7" },
-    { name: "Text", key: "8" },
-    { name: "Insert Image", key: "9" },
-    { name: "Eraser", key: "0" },
+    { name: "Hand Tool", key: "H" },
+    { name: "Selection", key: "V" },
+    { name: "Rectangle", key: "R" },
+    { name: "Triangle", key: "T" },
+    { name: "Circle", key: "C" },
+    { name: "Line", key: "L" },
+    { name: "Draw", key: "P" },
+    { name: "Text", key: "A" },
+    { name: "Insert Image", key: "I" },
+    { name: "Eraser", key: "E" },
 ];
 
 export const views = [
-    { name: "Zoom in", key: "Ctrl + +" },
-    { name: "Zoom out", key: "Ctrl + -" },
-    { name: "Reset zoom", key: "Ctrl + R" },
-    { name: "Toggle Theme", key: "Alt + Shift + D" },
+    { name: "Zoom In", key: "Ctrl + +" },
+    { name: "Zoom Out", key: "Ctrl + -" },
+    { name: "Reset Zoom", key: "Ctrl + 0" },
+    { name: "Toggle Theme", key: "Ctrl + Alt + D" },
 ];
 
 export const editors = [
-    { name: "Move canvas", key: "Space + drag" },
+    { name: "Pan Canvas", key: "Space + drag" },
     { name: "Delete", key: "Delete" },
     { name: "Cut", key: "Ctrl + X" },
     { name: "Copy", key: "Ctrl + C" },
     { name: "Paste", key: "Ctrl + V" },
     { name: "Duplicate", key: "Ctrl + D" },
     { name: "Undo", key: "Ctrl + Z" },
-    { name: "Redo", key: "Ctrl + Y" },
-    { name: "Decrease font size", key: "Ctrl + <" },
-    { name: "Increase font size", key: "Ctrl + >" },
+    { name: "Redo", key: "Ctrl + Shift + Z" },
+    { name: "Decrease font size", key: "Ctrl + Shift + <" },
+    { name: "Increase font size", key: "Ctrl + Shift + >" },
 ];
 
 export const objectCorner: { cornerStyle: "rect" | "circle" | undefined; cornerColor: string; transparentCorners: boolean } = {
