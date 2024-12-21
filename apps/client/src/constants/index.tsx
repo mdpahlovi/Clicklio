@@ -1,11 +1,10 @@
 import { Divider } from "@mui/joy";
-import { LuShapes } from "react-icons/lu";
 import { TfiPencil } from "react-icons/tfi";
 import { IoIosBrush, IoMdBrush } from "react-icons/io";
+import { LuShapes, LuCloudUpload } from "react-icons/lu";
 import { CiEraser, CiImageOn, CiText } from "react-icons/ci";
 import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
-import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus } from "react-icons/pi";
-
+import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus, PiVideoLight, PiFilePdfLight } from "react-icons/pi";
 import type { Tool } from "@/types";
 
 export const navElements: {
@@ -44,7 +43,17 @@ export const navElements: {
         ],
     },
     { icon: <CiText />, name: "Text", value: "i-text", type: "tool" },
-    { icon: <CiImageOn />, name: "Image", value: "image", type: "tool" },
+    {
+        icon: <LuCloudUpload />,
+        name: "Files",
+        values: ["image", "video", "document"],
+        type: "dropdown",
+        children: [
+            { icon: <CiImageOn />, name: "Image", value: "image" },
+            { icon: <PiVideoLight />, name: "Video", value: "video" },
+            { icon: <PiFilePdfLight />, name: "Document", value: "document" },
+        ],
+    },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     { icon: <CiEraser />, name: "Eraser", value: "eraser", type: "tool" },
 ];

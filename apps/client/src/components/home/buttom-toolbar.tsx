@@ -1,8 +1,10 @@
+import { objectCorner } from "@/constants";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { useShapeState } from "@/hooks/useShapeState";
 import { socket } from "@/utils/socket";
 import { Button, Divider, IconButton, Sheet } from "@mui/joy";
 import * as fabric from "fabric";
+import toast from "react-hot-toast";
 import { BiSolidWebcam } from "react-icons/bi";
 import { GrRedo, GrUndo } from "react-icons/gr";
 import { MdGrid3X3 } from "react-icons/md";
@@ -13,8 +15,8 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     const [searchParams] = useSearchParams();
 
     const { undo, redo } = useShapeState();
-    const { setRefresh } = useCanvasState();
     const { zoom, setZoom } = useCanvasState();
+    const { setRefresh, setUserMedia } = useCanvasState();
 
     const room = searchParams.get("room");
 
@@ -24,13 +26,71 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
                 style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 24px 0 0" }}
             >
-                <IconButton onClick={() => {}}>
+                <IconButton>
                     <MdGrid3X3 />
                 </IconButton>
-                <IconButton onClick={() => {}}>
+                <IconButton
+                    onClick={() => {
+                        const canvas = fabricRef.current;
+
+                        if (canvas) {
+                            navigator.mediaDevices
+                                .getUserMedia({ video: { width: 320, height: 320 } })
+                                .then((stream) => {
+                                    setUserMedia(stream);
+
+                                    const webcam = document.getElementById("webcam") as HTMLVideoElement;
+                                    webcam.srcObject = stream;
+
+                                    webcam.onloadedmetadata = () => {
+                                        const object = new fabric.FabricImage(webcam, {
+                                            objectId: "webcam",
+                                            objectCaching: false,
+                                            ...objectCorner,
+                                        });
+
+                                        object.scaleToWidth(100);
+                                        canvas.add(object);
+
+                                        fabric.util.requestAnimFrame(function render() {
+                                            canvas.requestRenderAll();
+                                            fabric.util.requestAnimFrame(render);
+                                        });
+                                    };
+                                })
+                                .catch((error) => {
+                                    switch (error.name) {
+                                        case "NotAllowedError":
+                                            toast.error("Permission denied: User or browser blocked access.");
+                                            break;
+                                        case "NotFoundError":
+                                            toast.error("No media devices found: Check camera/microphone connection.");
+                                            break;
+                                        case "NotReadableError":
+                                            toast.error("Device inaccessible: Already in use or hardware error.");
+                                            break;
+                                        case "OverconstrainedError":
+                                            toast.error(`Constraint '${error.constraint}' cannot be met.`);
+                                            break;
+                                        case "SecurityError":
+                                            toast.error("Access blocked due to security restrictions.");
+                                            break;
+                                        case "TypeError":
+                                            toast.error("Invalid constraints provided.");
+                                            break;
+                                        case "AbortError":
+                                            toast.error("Operation aborted by the user or browser.");
+                                            break;
+                                        default:
+                                            toast.error(`Something went wrong! ${error.message}`);
+                                    }
+                                });
+                        }
+                    }}
+                >
                     <BiSolidWebcam />
                 </IconButton>
-                <IconButton onClick={() => {}}>
+                <IconButton>
                     <PiVinylRecord />
                 </IconButton>
                 <Divider orientation="vertical" />

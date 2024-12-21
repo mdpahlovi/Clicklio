@@ -58,7 +58,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
                     {...{ currentObject, handleInputChange }}
                 />
                 <Divider orientation="vertical" />
-                <Actions {...{ fabricRef }} />
+                <Actions {...{ fabricRef, currentObject }} />
             </Sheet>
         );
     } else {

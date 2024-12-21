@@ -101,8 +101,7 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
 
     reader.onload = () => {
         fabric.FabricImage.fromURL(reader.result as string).then((image) => {
-            image.scaleToWidth(160);
-            image.scaleToHeight(160);
+            image.scaleToWidth(100);
             image.set({ objectId: uuidv4(), ...objectCorner });
 
             // sync shape in storage
@@ -160,7 +159,7 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
     fabricRef.current.requestRenderAll();
 
     // sync shape in storage
-    if (selectedElement?.objectId) {
+    if (selectedElement?.objectId && selectedElement?.objectId !== "webcam") {
         updateShape({ objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
         if (room) socket.emit("update:shape", { room, objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
     }

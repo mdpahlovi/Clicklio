@@ -19,6 +19,8 @@ export default function CanvasContainer({ children, style }: React.HTMLAttribute
             }}
         >
             {children}
+
+            <video id="webcam" width={320} height={320} autoPlay hidden />
         </div>
     );
 }

@@ -1,4 +1,5 @@
 import * as fabric from "fabric";
+import toast from "react-hot-toast";
 import { circle, navElements } from "@/constants";
 import { handleImageUpload } from "@/utils/shapes";
 import { useSearchParams } from "react-router-dom";
@@ -15,6 +16,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
     const videoInputRef = useRef<HTMLInputElement | null>(null);
+    const documentInputRef = useRef<HTMLInputElement | null>(null);
 
     const room = searchParams.get("room");
 
@@ -73,6 +75,11 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 
                 case "video":
                     videoInputRef.current?.click();
+                    setTimeout(() => setTool("select"), 500);
+                    break;
+
+                case "document":
+                    documentInputRef.current?.click();
                     setTimeout(() => setTool("select"), 500);
                     break;
 
@@ -177,8 +184,25 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     const files = e?.target?.files;
 
                     if (files && e?.target?.files?.length) {
-                        // upload video
+                        toast.error("Video upload is not supported yet.");
+
                         if (videoInputRef.current) videoInputRef.current.value = "";
+                    }
+                }}
+            />
+
+            <input
+                hidden
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                ref={documentInputRef}
+                onChange={(e) => {
+                    const files = e?.target?.files;
+
+                    if (files && e?.target?.files?.length) {
+                        toast.error("Document upload is not supported yet.");
+
+                        if (documentInputRef.current) documentInputRef.current.value = "";
                     }
                 }}
             />

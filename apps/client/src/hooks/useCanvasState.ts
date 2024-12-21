@@ -9,6 +9,7 @@ type CanvasStateStore = {
     helpModal: boolean;
     currentObject: fabric.FabricObject | null;
     openedFloatingMenu: { [key: string]: boolean };
+    userMedia: MediaStream | null;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setRefresh: () => void;
@@ -16,6 +17,7 @@ type CanvasStateStore = {
     setCurrentObject: (object: fabric.FabricObject) => void;
     removeCurrentObject: () => void;
     setOpenedFloatingMenu: (key: string) => void;
+    setUserMedia: (media: MediaStream | null) => void;
 };
 
 export const useCanvasState = create<CanvasStateStore>((set) => ({
@@ -25,6 +27,7 @@ export const useCanvasState = create<CanvasStateStore>((set) => ({
     helpModal: false,
     currentObject: null,
     openedFloatingMenu: {},
+    userMedia: null,
     setTool: (tool) => set({ tool }),
     setZoom: (zoom) => set({ zoom }),
     setRefresh: () => set({ refresh: Math.random() * 100 }),
@@ -37,4 +40,5 @@ export const useCanvasState = create<CanvasStateStore>((set) => ({
                 ? { openedFloatingMenu: { [key]: !openedFloatingMenu[key] } }
                 : { openedFloatingMenu: { [key]: true } }
         ),
+    setUserMedia: (media) => set({ userMedia: media }),
 }));

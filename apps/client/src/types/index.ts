@@ -26,6 +26,7 @@ export type Tool =
     | "i-text"
     | "image"
     | "video"
+    | "document"
     | "eraser";
 
 export type ModifyShape = {
@@ -72,6 +73,7 @@ export type FloatingMenuSubItemProps = {
 
 export type ActionsProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
+    currentObject: fabric.FabricObject;
 };
 
 export type ToolbarProps = {

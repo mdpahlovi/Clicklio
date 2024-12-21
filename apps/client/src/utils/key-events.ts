@@ -105,8 +105,10 @@ export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteS
             canvas.remove(object);
 
             // sync in storage
-            deleteShape(object?.objectId);
-            if (room) socket.emit("delete:shape", { room, objectId: object?.objectId });
+            if (object?.objectId && object?.objectId !== "webcam") {
+                deleteShape(object?.objectId);
+                if (room) socket.emit("delete:shape", { room, objectId: object?.objectId });
+            }
         });
     }
 
