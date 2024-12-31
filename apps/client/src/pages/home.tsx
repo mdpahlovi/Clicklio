@@ -17,7 +17,6 @@ import RemoteCursor from "@/components/ui/remote-cursor";
 import FloatingMenu from "@/components/home/floating-menu";
 import BottomToolbar from "@/components/home/buttom-toolbar";
 import CanvasContainer from "@/components/home/canvas-container";
-import { Box } from "@mui/joy";
 
 export default function HomePage() {
     const [shareTo, setShareTo] = useState(null);
@@ -112,7 +111,7 @@ export default function HomePage() {
     }, [shareTo]);
 
     return (
-        <Box sx={{ position: "fixed", width: "100vw", height: "100vh" }}>
+        <div>
             <Navbar />
             <div style={{ display: "flex" }}>
                 <Sidebar {...{ fabricRef, saveShapes, isUpToDate }} />
@@ -127,6 +126,6 @@ export default function HomePage() {
 
             <HelpModal />
             <ShareModal {...{ roomRef }} />
-        </Box>
+        </div>
     );
 }

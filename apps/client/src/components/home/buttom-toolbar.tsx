@@ -147,11 +147,11 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     <PiPlus />
                 </IconButton>
 
-                <Divider orientation="vertical" />
+                <Divider orientation="vertical" sx={{ display: { xs: "none", sm: "block" } }} />
                 <Button
                     color="neutral"
                     variant="plain"
-                    sx={{ width: { xs: 64, sm: 96 } }}
+                    sx={{ display: { xs: "none", sm: "block" }, width: 96 }}
                     onClick={() => {
                         if (fabricRef.current) {
                             setZoom(2);
