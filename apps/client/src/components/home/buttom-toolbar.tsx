@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 import { BiSolidWebcam } from "react-icons/bi";
 import { FaRegCircleStop } from "react-icons/fa6";
 import { GrRedo, GrUndo } from "react-icons/gr";
-import { MdGrid3X3 } from "react-icons/md";
 import { PiMinus, PiPlus, PiVinylRecord } from "react-icons/pi";
 import { useSearchParams } from "react-router-dom";
 
@@ -30,11 +29,6 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
                 style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 24px 0 0" }}
             >
-                <Tooltip title="Grid" placement="top">
-                    <IconButton>
-                        <MdGrid3X3 />
-                    </IconButton>
-                </Tooltip>
                 <Tooltip title="Webcam" placement="top">
                     <IconButton
                         onClick={() => {
