@@ -25,7 +25,7 @@ const signupSchema = yup.object().shape({
 
 export default function SignupPage() {
     const navigate = useNavigate();
-    const { user, loading, error, signup } = useAuthState();
+    const { user, signupLoading, error, signup } = useAuthState();
 
     useEffect(() => {
         if (user && user?.id) navigate("/rooms");
@@ -59,7 +59,7 @@ export default function SignupPage() {
                 <FormInput type="password" name="c_password" label="Confirm Password" />
                 <Stack gap={4} sx={{ mt: 2 }}>
                     <Checkbox size="sm" label="Remember me" name="persistent" />
-                    <Button type="submit" {...{ loading }} fullWidth>
+                    <Button type="submit" loading={signupLoading} fullWidth>
                         Sign in
                     </Button>
                 </Stack>
