@@ -29,6 +29,12 @@ export type Tool =
     | "document"
     | "eraser";
 
+export type CanvasProps = {
+    canvasRef: React.RefObject<HTMLCanvasElement | null>;
+    fabricRef: React.RefObject<fabric.Canvas | null>;
+    selectedToolRef: React.RefObject<Tool | null>;
+};
+
 export type ModifyShape = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
     property: keyof Attributes;
@@ -51,8 +57,6 @@ export type ImageUpload = {
 
 export type SidebarProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    saveShapes: () => void;
-    isUpToDate: boolean;
 };
 
 export type FloatingMenuProps = {

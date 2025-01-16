@@ -1,13 +1,12 @@
-import { socket } from "@/utils/socket";
-import { GrPowerReset } from "react-icons/gr";
-import { ImHome, ImUpload } from "react-icons/im";
 import { useShapeState } from "@/hooks/useShapeState";
-import { IconButton, Sheet, Tooltip } from "@mui/joy";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
 import type { SidebarProps } from "@/types";
+import { socket } from "@/utils/socket";
+import { IconButton, Sheet, Tooltip } from "@mui/joy";
+import { GrPowerReset } from "react-icons/gr";
+import { ImHome } from "react-icons/im";
+import { Link, useSearchParams } from "react-router-dom";
 
-export default function Sidebar({ fabricRef, saveShapes, isUpToDate }: SidebarProps) {
-    const { pathname } = useLocation();
+export default function Sidebar({ fabricRef }: SidebarProps) {
     const [searchParams] = useSearchParams();
     const { shapes, setShapes } = useShapeState();
 
@@ -39,12 +38,6 @@ export default function Sidebar({ fabricRef, saveShapes, isUpToDate }: SidebarPr
                     <GrPowerReset />
                 </IconButton>
             </Tooltip>
-
-            {pathname !== "/" ? (
-                <IconButton onClick={saveShapes} disabled={isUpToDate}>
-                    <ImUpload />
-                </IconButton>
-            ) : null}
         </Sheet>
     );
 }

@@ -1,12 +1,12 @@
-import * as yup from "yup";
+import { Form, FormInput } from "@/components/form";
+import { useAuthState } from "@/hooks/useAuthState";
+import AuthLayout from "@/layout/auth";
+import { Button, Checkbox, Divider, Link, Stack, Typography } from "@mui/joy";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import AuthLayout from "@/layout/auth";
 import { RiGoogleLine } from "react-icons/ri";
-import { useAuthState } from "@/hooks/useAuthState";
-import { Form, FormInput } from "@/components/form";
-import { useNavigate, Link as RLink } from "react-router-dom";
-import { Button, Checkbox, Divider, Typography, Stack, Link } from "@mui/joy";
+import { Link as RLink, useNavigate } from "react-router-dom";
+import * as yup from "yup";
 
 import { type Credentials } from "@/hooks/useAuthState";
 
@@ -21,7 +21,7 @@ const signinSchema = yup.object().shape({
 
 export default function JoySignInSideTemplate() {
     const navigate = useNavigate();
-    const { user, loading, error, signin, googleSignin } = useAuthState();
+    const { user, signinLoading, socialLoading, error, signin, googleSignin } = useAuthState();
 
     useEffect(() => {
         if (user && user?.id) navigate("/rooms");
@@ -44,7 +44,7 @@ export default function JoySignInSideTemplate() {
                     </Link>
                 </Typography>
             </Stack>
-            <Button variant="soft" color="neutral" startDecorator={<RiGoogleLine />} onClick={googleSignin} {...{ loading }}>
+            <Button variant="soft" color="neutral" startDecorator={<RiGoogleLine />} onClick={googleSignin} loading={socialLoading}>
                 Continue with Google
             </Button>
             <Divider sx={{ mt: 2, mb: 1 }}>OR</Divider>
@@ -62,7 +62,7 @@ export default function JoySignInSideTemplate() {
                             Forgot your password?
                         </Link>
                     </Stack>
-                    <Button type="submit" {...{ loading }}>
+                    <Button type="submit" loading={signinLoading}>
                         Sign in
                     </Button>
                 </Stack>

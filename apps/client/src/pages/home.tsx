@@ -1,22 +1,16 @@
-import { useEffect, useState } from "react";
-import { socket } from "@/utils/socket";
-import { renderCanvas } from "@/utils/canvas";
-import { useCanvas } from "@/hooks/useCanvas";
 import { useAuthState } from "@/hooks/useAuthState";
-import { useShapeState } from "@/hooks/useShapeState";
+import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { usePeriodicSave } from "@/hooks/usePeriodicSave";
 import { User, useRoomState } from "@/hooks/useRoomState";
+import { useShapeState } from "@/hooks/useShapeState";
+import { renderCanvas } from "@/utils/canvas";
+import { socket } from "@/utils/socket";
+import { useEffect, useState } from "react";
 
+import Canvas from "@/components/canvas";
+import HelpModal from "@/components/canvas/help-modal";
 import Navbar from "@/components/home/navbar";
-import Toolbar from "@/components/home/toolbar";
-import Sidebar from "@/components/home/sidebar";
-import HelpModal from "@/components/home/help-modal";
 import ShareModal from "@/components/home/share-modal";
-import RemoteCursor from "@/components/ui/remote-cursor";
-import FloatingMenu from "@/components/home/floating-menu";
-import BottomToolbar from "@/components/home/buttom-toolbar";
-import CanvasContainer from "@/components/home/canvas-container";
 
 export default function HomePage() {
     const [shareTo, setShareTo] = useState(null);
@@ -24,7 +18,6 @@ export default function HomePage() {
     const { setUsers } = useRoomState();
     const { refresh, setRefresh } = useCanvasState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
-    const { saveShapes, isUpToDate } = usePeriodicSave({ fabricRef });
     const { shapes, history, position, setShapes, setShape, updateShape, deleteShape, setInitialState, undo, redo } = useShapeState();
 
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
@@ -113,16 +106,7 @@ export default function HomePage() {
     return (
         <div>
             <Navbar />
-            <div style={{ display: "flex" }}>
-                <Sidebar {...{ fabricRef, saveShapes, isUpToDate }} />
-                <CanvasContainer>
-                    <RemoteCursor />
-                    <FloatingMenu {...{ fabricRef }} />
-                    <Toolbar {...{ fabricRef, selectedToolRef }} />
-                    <BottomToolbar {...{ fabricRef }} />
-                    <canvas ref={canvasRef} />
-                </CanvasContainer>
-            </div>
+            <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
 
             <HelpModal />
             <ShareModal {...{ roomRef }} />

@@ -3,10 +3,10 @@ import { modifyShape } from "@/utils/shapes";
 import { useSearchParams } from "react-router-dom";
 import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import Text from "@/components/home/floating-menu/Text";
-import Colors from "@/components/home/floating-menu/Colors";
-import Actions from "@/components/home/floating-menu/Actions";
-import Opacity from "@/components/home/floating-menu/Opacity";
+import Text from "@/components/canvas/floating-menu/Text";
+import Colors from "@/components/canvas/floating-menu/Colors";
+import Actions from "@/components/canvas/floating-menu/Actions";
+import Opacity from "@/components/canvas/floating-menu/Opacity";
 import type { Attributes, FloatingMenuProps } from "@/types";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {

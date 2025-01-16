@@ -1,4 +1,4 @@
-import StrokeWidth from "@/components/home/floating-menu/StrokeWidth";
+import StrokeWidth from "@/components/canvas/floating-menu/StrokeWidth";
 import { Box, BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip, useColorScheme, useTheme } from "@mui/joy";
 import type { FloatingMenuItemProps } from "@/types";
 

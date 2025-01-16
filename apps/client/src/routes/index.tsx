@@ -1,13 +1,13 @@
-import { Suspense, lazy } from "react";
 import Loader from "@/components/ui/loader";
-import ProtectedRoute from "@/routes/protected-route";
 import DashboardLayout from "@/layout/dashboard";
+import ProtectedRoute from "@/routes/protected-route";
+import { Suspense, lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
-import RoomPage from "@/pages/room";
-import SettingPage from "@/pages/setting";
 import SigninPage from "@/pages/auth/signin";
 import SignupPage from "@/pages/auth/signup";
+import RoomPage from "@/pages/room";
+import SettingPage from "@/pages/setting";
 
 const HomePage = lazy(() => import("@/pages/home"));
 
@@ -17,16 +17,6 @@ const router = createBrowserRouter([
         element: (
             <Suspense fallback={<Loader />}>
                 <HomePage />
-            </Suspense>
-        ),
-    },
-    {
-        path: "/room/:id",
-        element: (
-            <Suspense fallback={<Loader />}>
-                <ProtectedRoute>
-                    <HomePage />
-                </ProtectedRoute>{" "}
             </Suspense>
         ),
     },

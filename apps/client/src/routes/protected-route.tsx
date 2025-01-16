@@ -2,9 +2,9 @@ import { Navigate } from "react-router-dom";
 import { useAuthState } from "@/hooks/useAuthState";
 
 export default function ProtectedRoute({ children }: React.PropsWithChildren) {
-    const { user, loading } = useAuthState();
+    const { user, signinLoading, signupLoading, socialLoading } = useAuthState();
 
-    if (!loading) {
+    if (!signinLoading && !signupLoading && !socialLoading) {
         if (user && user?.id) {
             return children;
         } else {

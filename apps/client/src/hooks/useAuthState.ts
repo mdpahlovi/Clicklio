@@ -16,7 +16,10 @@ export type Credentials = { email: string; password: string };
 
 type AuthStateStore = {
     user: User | null;
-    loading: boolean;
+    signinLoading: boolean;
+    signupLoading: boolean;
+    socialLoading: boolean;
+    signoutLoading: boolean;
     error: string | null;
     setUser: (user: User | null) => void;
     setError: (error: string | null) => void;
@@ -28,14 +31,17 @@ type AuthStateStore = {
 
 export const useAuthState = create<AuthStateStore>((set) => ({
     user: null,
-    loading: false,
+    signinLoading: false,
+    signupLoading: false,
+    socialLoading: false,
+    signoutLoading: false,
     error: null,
 
     setUser: (user) => set({ user }),
     setError: (error) => set({ error }),
 
     signin: async ({ email, password }) => {
-        set({ loading: true, error: null });
+        set({ signinLoading: true, error: null });
         try {
             const data = await signInWithEmailAndPassword(auth, email, password);
             const userDoc = await getDoc(doc(db, "users", data.user.uid));
@@ -50,12 +56,12 @@ export const useAuthState = create<AuthStateStore>((set) => ({
                 setTimeout(() => set({ error: null }), 1500);
             }
         } finally {
-            set({ loading: false });
+            set({ signinLoading: false });
         }
     },
 
     signup: async ({ name, email, password }) => {
-        set({ loading: true, error: null });
+        set({ signupLoading: true, error: null });
         try {
             const data = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(data.user, { displayName: name });
@@ -68,12 +74,12 @@ export const useAuthState = create<AuthStateStore>((set) => ({
                 setTimeout(() => set({ error: null }), 1500);
             }
         } finally {
-            set({ loading: false });
+            set({ signupLoading: false });
         }
     },
 
     googleSignin: async () => {
-        set({ loading: true, error: null });
+        set({ socialLoading: true, error: null });
         try {
             const provider = new GoogleAuthProvider();
             const {
@@ -93,12 +99,12 @@ export const useAuthState = create<AuthStateStore>((set) => ({
                 setTimeout(() => set({ error: null }), 1500);
             }
         } finally {
-            set({ loading: false });
+            set({ socialLoading: false });
         }
     },
 
     signOut: async () => {
-        set({ loading: true, error: null });
+        set({ signoutLoading: true, error: null });
         try {
             await signOut(auth);
             set({ user: null });
@@ -108,7 +114,7 @@ export const useAuthState = create<AuthStateStore>((set) => ({
                 setTimeout(() => set({ error: null }), 1500);
             }
         } finally {
-            set({ loading: false });
+            set({ signoutLoading: false });
         }
     },
 }));
