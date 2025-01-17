@@ -30,7 +30,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
         return (
             <Sheet
                 onClick={(e) => e.stopPropagation()}
-                sx={{ position: "absolute", zIndex: 1, p: 0.75, display: "flex", gap: 0.5 }}
+                sx={{ position: "absolute", zIndex: 10, p: 0.75, display: "flex", gap: 0.5 }}
                 style={{ top, left, transform: "translateX(-50%)", height: 36, borderRadius: 24 }}
             >
                 {currentObject?.type === "i-text" ? (

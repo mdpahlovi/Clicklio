@@ -1,4 +1,3 @@
-import { useAuthState } from "@/hooks/useAuthState";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { User, useRoomState } from "@/hooks/useRoomState";
@@ -14,7 +13,6 @@ import ShareModal from "@/components/home/share-modal";
 
 export default function HomePage() {
     const [shareTo, setShareTo] = useState(null);
-    const { user } = useAuthState();
     const { setUsers } = useRoomState();
     const { refresh, setRefresh } = useCanvasState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
@@ -23,7 +21,7 @@ export default function HomePage() {
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        if (roomRef.current) socket.emit("join:room", { room: roomRef.current, name: user?.name });
+        if (roomRef.current) socket.emit("join:room", { room: roomRef.current });
 
         socket.on("room:users", ({ users: userData, to }) => {
             const users: User[] = userData.map((user: string) => JSON.parse(user));

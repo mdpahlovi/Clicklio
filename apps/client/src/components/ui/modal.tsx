@@ -11,9 +11,9 @@ type ModalProps = {
 export default function Modal({ sx, open, onClose, title, children }: ModalProps) {
     return (
         <JUIModal open={open} onClose={onClose}>
-            <Sheet variant="outlined" sx={{ width: "100%", maxWidth: 512, borderRadius: "md", p: 3, boxShadow: "lg", ...sx }}>
+            <Sheet variant="outlined" sx={{ width: "100%", maxWidth: 512, borderRadius: 24, p: 3, boxShadow: "lg", ...sx }}>
                 <ModalClose variant="plain" sx={{ m: 1 }} />
-                <Typography level="h4" fontWeight="lg" mb={1}>
+                <Typography level="h4" fontWeight="lg" mt={-0.75} mb={1}>
                     {title}
                 </Typography>
                 {children}
