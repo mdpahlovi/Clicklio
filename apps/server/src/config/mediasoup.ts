@@ -1,37 +1,33 @@
 import mediasoup from "mediasoup";
+import { config } from "./config.js";
 
-const workerSettings: mediasoup.types.WorkerSettings = {
-    logLevel: "warn",
-    rtcMinPort: 10000,
-    rtcMaxPort: 10100,
-};
-
-const routerOptions = {
-    mediaCodecs: [
-        {
-            kind: "audio",
-            mimeType: "audio/opus",
-            clockRate: 48000,
-            channels: 2,
-        },
-        {
-            kind: "video",
-            mimeType: "video/VP8",
-            clockRate: 90000,
-        },
-    ],
-};
-
-let worker;
-let router;
+let workers: mediasoup.types.Worker<mediasoup.types.AppData>[];
 
 const createWorker = async () => {
-    worker = await mediasoup.createWorker(workerSettings);
-    worker.on("died", () => {
-        console.error("MediaSoup worker has died");
-    });
+    let { numWorkers } = config.mediasoup;
 
-    router = await worker.createRouter({ mediaCodecs: routerOptions.mediaCodecs });
+    for (let i = 0; i < numWorkers; i++) {
+        let worker = await mediasoup.createWorker({
+            logLevel: config.mediasoup.worker.logLevel,
+            logTags: config.mediasoup.worker.logTags,
+            rtcMinPort: config.mediasoup.worker.rtcMinPort,
+            rtcMaxPort: config.mediasoup.worker.rtcMaxPort,
+        });
+
+        worker.on("died", () => {
+            console.error("mediasoup worker died, exiting in 2 seconds... [pid:%d]", worker.pid);
+            setTimeout(() => process.exit(1), 2000);
+        });
+
+        workers.push(worker);
+
+        // log worker resource usage
+        setInterval(async () => {
+            const usage = await worker.getResourceUsage();
+
+            console.info("mediasoup Worker resource usage [pid:%d]: %o", worker.pid, usage);
+        }, 120000);
+    }
 };
 
-export { createWorker, worker, router };
+export { createWorker, workers };

@@ -1,48 +1,103 @@
+import { useChatState } from "@/hooks/useChatState";
 import { IconButton, Sheet } from "@mui/joy";
 import { useState } from "react";
 import { BiSolidWebcam } from "react-icons/bi";
 import { MdMic, MdScreenShare } from "react-icons/md";
+import ReactPlayer from "react-player";
 
-export default function Video() {
-    const [isHover, setIsHover] = useState(false);
+export default function Video({ withControl }: { withControl?: boolean }) {
+    const { isMicEnabled, toggleMic, isCameraEnabled, toggleCamera, isScreenSharing, toggleScreen, currentMedia } = useChatState();
 
-    return (
-        <div
-            style={{
-                position: "relative",
-                width: "100%",
-                aspectRatio: 16 / 9,
-                backgroundColor: "red",
-                borderRadius: 16,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-end",
-                overflow: "hidden",
-            }}
-            onMouseEnter={() => setIsHover(true)}
-            onMouseLeave={() => setIsHover(false)}
-        >
+    const [isHover, setIsHover] = useState(true);
+
+    if (withControl) {
+        return (
             <Sheet
-                style={{
-                    transition: "all 300ms ease-in-out",
-                    transform: isHover ? "translateY(-6px)" : "translateY(100%)",
+                variant="solid"
+                onMouseEnter={() => setIsHover(true)}
+                onMouseLeave={() => setIsHover(false)}
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "flex-end",
                 }}
-                sx={{ opacity: isHover ? 1 : 0, display: "flex", borderRadius: 24 }}
+                style={{
+                    position: "relative",
+                    aspectRatio: 16 / 9,
+                    borderRadius: 16,
+                    overflow: "hidden",
+                }}
             >
-                <div style={{ padding: 6 }}>
-                    <IconButton variant="solid" color="primary">
-                        <MdMic size={20} />
-                    </IconButton>
-                </div>
-                <Sheet sx={{ p: 0.75, display: "flex", gap: 0.5, borderRadius: 24, borderWidth: "0 0 0 1px" }}>
-                    <IconButton variant="solid" color="primary">
-                        <BiSolidWebcam size={18} />
-                    </IconButton>
-                    <IconButton>
-                        <MdScreenShare size={16} />
-                    </IconButton>
+                {currentMedia ? (
+                    <ReactPlayer width="100%" height="100%" style={{ position: "absolute" }} url={currentMedia} playing />
+                ) : null}
+
+                <Sheet
+                    style={{
+                        transition: "all 300ms ease-in-out",
+                        transform: isHover ? "translateY(-6px)" : "translateY(100%)",
+                    }}
+                    sx={{ opacity: isHover ? 1 : 0, display: "flex", borderRadius: 24 }}
+                >
+                    <div style={{ padding: 6 }}>
+                        <IconButton
+                            {...(isMicEnabled ? { variant: "solid", color: "primary" } : {})}
+                            onClick={() => {
+                                if (currentMedia) {
+                                    const audioTrack = currentMedia.getAudioTracks()[0];
+                                    if (audioTrack) {
+                                        audioTrack.enabled = !isMicEnabled;
+                                        toggleMic();
+                                    }
+                                }
+                            }}
+                        >
+                            <MdMic size={20} />
+                        </IconButton>
+                    </div>
+                    <Sheet
+                        sx={{
+                            p: 0.75,
+                            display: "flex",
+                            gap: 0.5,
+                            borderRadius: 24,
+                            borderWidth: "0 0 0 1px",
+                        }}
+                    >
+                        <IconButton
+                            {...(isCameraEnabled ? { variant: "solid", color: "primary" } : {})}
+                            onClick={() => {
+                                if (currentMedia) {
+                                    const videoTrack = currentMedia.getVideoTracks()[0];
+                                    if (videoTrack) {
+                                        videoTrack.enabled = !isCameraEnabled;
+                                        toggleCamera();
+                                    }
+                                }
+                            }}
+                        >
+                            <BiSolidWebcam size={18} />
+                        </IconButton>
+                        <IconButton
+                            {...(isScreenSharing ? { variant: "solid", color: "primary" } : {})}
+                            onClick={() => {
+                                toggleScreen();
+                            }}
+                            disabled
+                        >
+                            <MdScreenShare size={16} />
+                        </IconButton>
+                    </Sheet>
                 </Sheet>
             </Sheet>
-        </div>
-    );
+        );
+    } else {
+        return (
+            <Sheet variant="solid" style={{ position: "relative", aspectRatio: 16 / 9, borderRadius: 16 }}>
+                {currentMedia ? (
+                    <ReactPlayer width="100%" height="100%" style={{ position: "absolute" }} url={currentMedia} playing />
+                ) : null}
+            </Sheet>
+        );
+    }
 }

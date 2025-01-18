@@ -1,11 +1,11 @@
 import { objectCorner } from "@/constants";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { useShapeState } from "@/hooks/useShapeState";
+import { handleNavigatorError } from "@/utils/error-handle";
 import { socket } from "@/utils/socket";
 import { Button, Divider, IconButton, Sheet, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { BiSolidWebcam } from "react-icons/bi";
 import { FaRegCircleStop } from "react-icons/fa6";
 import { GrRedo, GrUndo } from "react-icons/gr";
@@ -59,33 +59,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                                             });
                                         };
                                     })
-                                    .catch((error) => {
-                                        switch (error.name) {
-                                            case "NotAllowedError":
-                                                toast.error("Permission denied: User or browser blocked access.");
-                                                break;
-                                            case "NotFoundError":
-                                                toast.error("No media devices found: Check camera/microphone connection.");
-                                                break;
-                                            case "NotReadableError":
-                                                toast.error("Device inaccessible: Already in use or hardware error.");
-                                                break;
-                                            case "OverconstrainedError":
-                                                toast.error(`Constraint '${error.constraint}' cannot be met.`);
-                                                break;
-                                            case "SecurityError":
-                                                toast.error("Access blocked due to security restrictions.");
-                                                break;
-                                            case "TypeError":
-                                                toast.error("Invalid constraints provided.");
-                                                break;
-                                            case "AbortError":
-                                                toast.error("Operation aborted by the user or browser.");
-                                                break;
-                                            default:
-                                                toast.error(`Something went wrong! ${error.message}`);
-                                        }
-                                    });
+                                    .catch((error) => handleNavigatorError(error));
                             }
                         }}
                     >

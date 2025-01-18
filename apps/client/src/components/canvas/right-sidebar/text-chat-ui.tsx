@@ -19,7 +19,7 @@ export default function TextChatUI({ messages }: { messages: MessageProps[] }) {
         <>
             <TabPanel value={1} sx={{ px: 1.25, py: 0.75, overflowY: "auto", display: "flex" }}>
                 {chatMessages?.length ? (
-                    <Stack spacing={2} sx={{ justifyContent: "flex-end" }}>
+                    <Stack width="100%" spacing={0.75} sx={{ justifyContent: "flex-end" }}>
                         {chatMessages.map((message: MessageProps, index: number) => (
                             <Stack
                                 key={index}
