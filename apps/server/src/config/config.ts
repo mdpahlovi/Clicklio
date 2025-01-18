@@ -3,26 +3,26 @@ import mediasoup from "mediasoup";
 
 interface MediasoupConfig {
     numWorkers: number;
-    worker: mediasoup.types.WorkerSettings<mediasoup.types.AppData>;
-    router: mediasoup.types.RouterOptions<mediasoup.types.AppData>;
-    webRtcTransport: mediasoup.types.WebRtcTransportOptions<mediasoup.types.AppData>;
+    worker: mediasoup.types.WorkerSettings;
+    router: mediasoup.types.RouterOptions;
+    webRtcTransport: mediasoup.types.WebRtcTransportOptions;
 }
 
 interface Config {
+    listenPort: number;
     sslCrt: string;
     sslKey: string;
     mediasoup: MediasoupConfig;
 }
 
 const config: Config = {
+    listenPort: 4000,
     sslCrt: "../ssl/cert.pem",
     sslKey: "../ssl/key.pem",
 
     mediasoup: {
         numWorkers: Object.keys(os.cpus()).length,
         worker: {
-            rtcMinPort: 10000,
-            rtcMaxPort: 10100,
             logLevel: "warn",
             logTags: ["info", "ice", "dtls", "rtp", "srtp", "rtcp", "rtx", "bwe", "score", "simulcast", "svc"],
         },
