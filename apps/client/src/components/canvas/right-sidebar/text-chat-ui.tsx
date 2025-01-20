@@ -11,7 +11,9 @@ type MessageProps = {
     attachment?: { fileName: string; type: string; size: string };
 };
 
-export default function TextChatUI({ messages }: { messages: MessageProps[] }) {
+export default function TextChatUI({ room, messages }: { room: string; messages: MessageProps[] }) {
+    console.log({ room });
+
     const [chatMessages, setChatMessages] = useState(messages);
     const [message, setMessage] = useState("");
 

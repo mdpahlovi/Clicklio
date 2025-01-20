@@ -1,9 +1,7 @@
 import mediasoup from "mediasoup";
 import { config } from "./config.js";
 
-let workers: mediasoup.types.Worker[] = [];
-
-const createWorker = async () => {
+const createWorker = async (workers: mediasoup.types.Worker[]) => {
     let { numWorkers } = config.mediasoup;
 
     for (let i = 0; i < numWorkers; i++) {
@@ -28,4 +26,4 @@ const createWorker = async () => {
     }
 };
 
-export { createWorker, workers };
+export { createWorker };

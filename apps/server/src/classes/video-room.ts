@@ -3,21 +3,22 @@ import { Server } from "socket.io";
 import { config } from "../config/config.js";
 import { Peer } from "./peer.js";
 
-interface RoomState {
-    room: string;
+interface VideoRoomState {
+    roomId: string;
     router: mediasoup.types.Router;
     peers: Map<string, Peer>;
     io: Server;
 }
 
-export class Room implements RoomState {
-    room: string;
+export class VideoRoom implements VideoRoomState {
+    roomId: string;
     router: mediasoup.types.Router;
     peers: Map<string, Peer>;
     io: Server;
 
-    constructor(room: string, worker: mediasoup.types.Worker, io) {
-        this.room = room;
+    constructor(roomId: string, worker: mediasoup.types.Worker, io: Server) {
+        this.roomId = roomId;
+        this.peers = new Map();
         this.io = io;
 
         const mediaCodecs = config.mediasoup.router.mediaCodecs;
@@ -30,6 +31,7 @@ export class Room implements RoomState {
 
     // Rest of the methods remain the same
     addPeer(peer: Peer) {
+        console.log({ peer });
         this.peers.set(peer.id, peer);
     }
 
@@ -104,7 +106,7 @@ export class Room implements RoomState {
                 resolve(producer.id);
 
                 for (let otherSocketId of Array.from(this.peers.keys()).filter((id) => id !== socketId)) {
-                    this.io.to(otherSocketId).emit("newProducers", { producerId: producer.id, producerSocketId: socketId });
+                    this.io.to(otherSocketId).emit("newProducers", [{ producerId: producer.id, producerSocketId: socketId }]);
                 }
             }.bind(this)
         );
@@ -147,6 +149,6 @@ export class Room implements RoomState {
     }
 
     toJson() {
-        return { room: this.room, peers: JSON.stringify([...this.peers]) };
+        return { roomId: this.roomId, peers: Array.from(this.peers.values()) };
     }
 }

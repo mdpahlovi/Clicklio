@@ -27,8 +27,8 @@ export default function RightSidebar() {
                         </Tab>
                     </TabList>
 
-                    {tab === 0 ? <VideoChatUI /> : null}
-                    {tab === 1 ? <TextChatUI messages={[]} /> : null}
+                    {tab === 0 ? <VideoChatUI room={room} /> : null}
+                    {tab === 1 ? <TextChatUI room={room} messages={[]} /> : null}
                 </Tabs>
             </Sheet>
         );
