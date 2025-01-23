@@ -1,9 +1,9 @@
-import * as fabric from "fabric";
-import { useRef, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { handleKeyDown } from "@/utils/key-events";
-import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
+import { useShapeState } from "@/hooks/useShapeState";
+import { handleKeyDown } from "@/utils/key-events";
+import * as fabric from "fabric";
+import { useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import {
     handleCanvasMouseDown,
@@ -16,8 +16,8 @@ import {
     initializeFabric,
 } from "@/utils/canvas";
 
-import { useColorScheme } from "@mui/joy";
 import type { Pointer, Tool } from "@/types";
+import { useColorScheme } from "@mui/joy";
 
 export function useCanvas() {
     const { mode, setMode } = useColorScheme();
@@ -32,6 +32,7 @@ export function useCanvas() {
 
     const isClicked = useRef(false);
     const isPanning = useRef<Pointer | null>(null);
+    const isEditing = useRef<boolean>(false); // Means Talking Input From Keyboard
     const shapeRef = useRef<fabric.FabricObject | null>(null);
 
     const selectedToolRef = useRef<Tool | null>(null);
@@ -111,6 +112,10 @@ export function useCanvas() {
 
         canvas.on("selection:cleared", () => removeCurrentObject());
 
+        canvas.on("text:editing:entered", () => (isEditing.current = true));
+
+        canvas.on("text:editing:exited", () => (isEditing.current = false));
+
         canvas.on("mouse:wheel", (options) => handleCanvasZoom({ options, canvas, setZoom }));
 
         window.addEventListener("resize", () => handleResize({ canvas }));
@@ -120,6 +125,7 @@ export function useCanvas() {
                 e,
                 canvas,
                 roomRef,
+                isEditing,
                 copiedObjectRef,
                 setShape,
                 deleteShape,
@@ -141,6 +147,7 @@ export function useCanvas() {
                     e,
                     canvas: null,
                     roomRef,
+                    isEditing,
                     copiedObjectRef,
                     setShape,
                     deleteShape,

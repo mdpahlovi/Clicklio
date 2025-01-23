@@ -147,6 +147,7 @@ export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
     roomRef: React.RefObject<string | null>;
+    isEditing: React.RefObject<boolean>;
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>;
     setShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;

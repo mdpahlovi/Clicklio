@@ -1,11 +1,11 @@
-import { Divider } from "@mui/joy";
-import { TfiPencil } from "react-icons/tfi";
-import { IoIosBrush, IoMdBrush } from "react-icons/io";
-import { LuShapes, LuCloudUpload } from "react-icons/lu";
-import { CiEraser, CiImageOn, CiText } from "react-icons/ci";
-import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
-import { PiCursor, PiSquare, PiTriangle, PiCircle, PiMinus, PiVideoLight, PiFilePdfLight } from "react-icons/pi";
+import { EraserIcon, ShapersIcon, TextIcon, UploadIcon } from "@/components/icons";
 import type { Tool } from "@/types";
+import { Divider } from "@mui/joy";
+import { CiImageOn } from "react-icons/ci";
+import { IoIosBrush, IoMdBrush } from "react-icons/io";
+import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
+import { PiCircle, PiCursor, PiFilePdfLight, PiMinus, PiSquare, PiTriangle, PiVideoLight } from "react-icons/pi";
+import { TfiPencil } from "react-icons/tfi";
 
 export const navElements: {
     value?: Tool;
@@ -19,7 +19,7 @@ export const navElements: {
     { icon: <PiCursor />, name: "Select", value: "select", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     {
-        icon: <LuShapes />,
+        icon: <ShapersIcon />,
         name: "Shapes",
         values: ["rect", "triangle", "circle", "line", "arrow"],
         type: "dropdown",
@@ -42,9 +42,9 @@ export const navElements: {
             { icon: <IoIosBrush />, name: "Brush S:10", value: "path-10" },
         ],
     },
-    { icon: <CiText />, name: "Text", value: "i-text", type: "tool" },
+    { icon: <TextIcon />, name: "Text", value: "i-text", type: "tool" },
     {
-        icon: <LuCloudUpload />,
+        icon: <UploadIcon />,
         name: "Files",
         values: ["image", "video", "document"],
         type: "dropdown",
@@ -55,7 +55,7 @@ export const navElements: {
         ],
     },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
-    { icon: <CiEraser />, name: "Eraser", value: "eraser", type: "tool" },
+    { icon: <EraserIcon />, name: "Eraser", value: "eraser", type: "tool" },
 ];
 
 export const fontFamilyOptions = [

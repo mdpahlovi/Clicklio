@@ -121,6 +121,7 @@ export const handleKeyDown = ({
     e,
     canvas,
     roomRef,
+    isEditing,
     copiedObjectRef,
     setShape,
     deleteShape,
@@ -133,6 +134,8 @@ export const handleKeyDown = ({
 }: WindowKeyDown) => {
     const zoom = canvas?.getZoom();
     const light = localStorage.getItem("joy-mode") === "light";
+
+    if (isEditing.current) return;
 
     // Tool Selection Shortcuts
     // Check if key pressed is H (Hand Tool)

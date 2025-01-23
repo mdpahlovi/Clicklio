@@ -51,7 +51,7 @@ const config: Config = {
                 {
                     protocol: "udp",
                     ip: "0.0.0.0",
-                    announcedAddress: "clicklio.onrender.com", // replace by public IP address
+                    announcedAddress: "192.168.0.102", // replace by public IP address
                 },
             ],
             initialAvailableOutgoingBitrate: 1000000,
