@@ -34,44 +34,44 @@ export const useShapeState = create<ShapeStateStore>()(
             previous: [],
             setShapes: (shapes) =>
                 set((state) => {
-                    const newHistory = [...state.history.slice(0, state.position + 1), shapes];
+                    const newHistory = [...state.history.slice(0, state.position + 1), shapes].slice(-20);
                     return {
                         shapes,
                         history: newHistory,
-                        position: newHistory.length - 1,
+                        position: Math.min(newHistory.length - 1, 19),
                     };
                 }),
 
             setShape: (shape) =>
                 set((state) => {
                     const updatedShapes = [...state.shapes, shape];
-                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes];
+                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes].slice(-20);
                     return {
                         shapes: updatedShapes,
                         history: newHistory,
-                        position: newHistory.length - 1,
+                        position: Math.min(newHistory.length - 1, 19),
                     };
                 }),
 
             updateShape: (shape) =>
                 set((state) => {
                     const updatedShapes = state.shapes.map((s) => (s?.objectId === shape?.objectId ? shape : s));
-                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes];
+                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes].slice(-20);
                     return {
                         shapes: updatedShapes,
                         history: newHistory,
-                        position: newHistory.length - 1,
+                        position: Math.min(newHistory.length - 1, 19),
                     };
                 }),
 
             deleteShape: (id) =>
                 set((state) => {
                     const updatedShapes = state.shapes.filter(({ objectId }) => objectId !== id);
-                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes];
+                    const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes].slice(-20);
                     return {
                         shapes: updatedShapes,
                         history: newHistory,
-                        position: newHistory.length - 1,
+                        position: Math.min(newHistory.length - 1, 19),
                     };
                 }),
 
