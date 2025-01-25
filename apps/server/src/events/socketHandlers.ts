@@ -1,39 +1,51 @@
-import mediasoup from "mediasoup";
+import { types } from "mediasoup";
 import { Server } from "socket.io";
-import { Peer } from "../classes/peer.js";
+import { Room } from "../classes/room.js";
 import { VideoRoom } from "../classes/video-room.js";
-import { client } from "../config/redis.js";
-import { generateName } from "../utils/utils.js";
 
 let VideoChatRoomList = new Map<string, VideoRoom>();
 
-export const handleConnection = (io: Server, worker: mediasoup.types.Worker) => {
-    io.on("connection", (socket) => {
-        console.log("user connected", socket.id);
+export const handleConnection = (io: Server, worker: types.Worker) => {
+    const rooms: Map<string, Room> = new Map();
 
-        socket.on("join:room", async ({ room, name }) => {
+    io.on("connection", (socket) => {
+        socket.on("join:room", ({ room, name }) => {
             if (room) {
                 socket.join(room);
+                if (!rooms.has(room)) rooms.set(room, new Room());
 
-                const userData = { id: socket.id, name: name || generateName() };
-                await client.rPush(`${room}_users`, JSON.stringify(userData));
-                io.in(room).emit("room:users", { users: await client.lRange(`${room}_users`, 0, -1), to: userData.id });
+                const currRoom = rooms.get(room);
+                const userData = currRoom.addUser(socket.id, name);
+
+                io.in(room).emit("room:users", { users: currRoom.getUsers(), to: userData.id });
             }
         });
 
-        socket.on("leave:room", async ({ room }) => {
+        socket.on("leave:room", ({ room }) => {
             if (room) {
                 socket.leave(room);
-                const users = await client.lRange(`${room}_users`, 0, -1);
-                const userIndex = users.findIndex((u) => JSON.parse(u).id === socket.id);
+                const currRoom = rooms.get(room);
 
-                if (userIndex !== -1) await client.lRem(`${room}_users`, 0, users[userIndex]);
+                if (currRoom) {
+                    currRoom.removeUser(socket.id);
+                    const restUsers = currRoom.getUsers();
 
-                const remainingUsers = await client.lLen(`${room}_users`);
-                if (remainingUsers === 0) {
-                    await client.del(`${room}_users`);
-                } else {
-                    io.in(room).emit("room:users", { users: await client.lRange(`${room}_users`, 0, -1) });
+                    if (restUsers.length === 0) {
+                        rooms.delete(room);
+                    } else {
+                        io.in(room).emit("room:users", { users: restUsers });
+                    }
+                }
+            }
+        });
+
+        socket.on("update:name", ({ room, name }) => {
+            if (room) {
+                const currRoom = rooms.get(room);
+
+                if (currRoom) {
+                    currRoom.updateName(socket.id, name);
+                    socket.to(room).emit("update:name", { id: socket.id, name });
                 }
             }
         });
@@ -70,22 +82,23 @@ export const handleConnection = (io: Server, worker: mediasoup.types.Worker) => 
             if (room) socket.to(room).emit("cursor", { id: socket.id, ...cursor });
         });
 
-        socket.on("disconnecting", async () => {
-            const rooms = Array.from(socket.rooms).filter((r) => r !== socket.id);
+        socket.on("disconnecting", () => {
+            const socketRooms = Array.from(socket.rooms).filter((r) => r !== socket.id);
 
-            for (const room of rooms) {
-                const users = await client.lRange(`${room}_users`, 0, -1);
-                const userIndex = users.findIndex((u) => JSON.parse(u).id === socket.id);
+            socketRooms.forEach((room) => {
+                const currRoom = rooms.get(room);
 
-                if (userIndex !== -1) await client.lRem(`${room}_users`, 0, users[userIndex]);
+                if (currRoom) {
+                    currRoom.removeUser(socket.id);
+                    const restUsers = currRoom.getUsers();
 
-                const remainingUsers = await client.lLen(`${room}_users`);
-                if (remainingUsers === 0) {
-                    await client.del(`${room}_users`);
-                } else {
-                    io.in(room).emit("room:users", { users: await client.lRange(`${room}_users`, 0, -1) });
+                    if (restUsers.length === 0) {
+                        rooms.delete(room);
+                    } else {
+                        io.in(room).emit("room:users", { users: restUsers });
+                    }
                 }
-            }
+            });
         });
     });
 };

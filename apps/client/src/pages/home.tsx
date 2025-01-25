@@ -1,3 +1,7 @@
+import Canvas from "@/components/canvas";
+import HelpModal from "@/components/canvas/help-modal";
+import Navbar from "@/components/home/navbar";
+import ShareModal from "@/components/home/share-modal";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { User, useRoomState } from "@/hooks/useRoomState";
@@ -6,29 +10,26 @@ import { renderCanvas } from "@/utils/canvas";
 import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
 
-import Canvas from "@/components/canvas";
-import HelpModal from "@/components/canvas/help-modal";
-import Navbar from "@/components/home/navbar";
-import ShareModal from "@/components/home/share-modal";
-
 export default function HomePage() {
     const [shareTo, setShareTo] = useState(null);
-    const { setUsers } = useRoomState();
     const { refresh, setRefresh } = useCanvasState();
+    const { name, setName, updateName, setUsers } = useRoomState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
     const { shapes, history, position, setShapes, setShape, updateShape, deleteShape, setInitialState, undo, redo } = useShapeState();
 
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        if (roomRef.current) socket.emit("join:room", { room: roomRef.current });
+        if (roomRef.current) socket.emit("join:room", { room: roomRef.current, name });
 
-        socket.on("room:users", ({ users: userData, to }) => {
-            const users: User[] = userData.map((user: string) => JSON.parse(user));
+        socket.on("room:users", ({ users, to }) => {
+            setName(users?.find((user: User) => user.id === socket.id)?.name);
             setUsers(users);
 
             if (to && users?.length > 1 && users[0]?.id === socket.id) setShareTo(to);
         });
+
+        socket.on("update:name", ({ id, name }) => updateName(id, name));
 
         socket.on("initial:state", ({ shapes, history, position }) => {
             setInitialState({ shapes, history, position });
