@@ -30,7 +30,6 @@ export function useCanvas() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
-    const isClicked = useRef(false);
     const isPanning = useRef<Pointer | null>(null);
     const isEditing = useRef<boolean>(false); // Means Talking Input From Keyboard
     const shapeRef = useRef<fabric.FabricObject | null>(null);
@@ -67,20 +66,14 @@ export function useCanvas() {
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
         canvas.on("mouse:down", (options) => {
-            isClicked.current = true;
             handleCanvasMouseDown({ options, canvas, isPanning, shapeRef, selectedToolRef, baseColorRef });
         });
 
         canvas.on("mouse:move", (options) => {
-            isClicked.current && options?.target?.objectId ? removeCurrentObject() : null;
             handleCanvasMouseMove({ options, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
         });
 
-        canvas.on("mouse:up", (options) => {
-            isClicked.current && options?.target?.objectId && selectedToolRef.current !== "eraser"
-                ? setCurrentObject(options?.target)
-                : null;
-            isClicked.current = false;
+        canvas.on("mouse:up", () => {
             handleCanvasMouseUp({
                 canvas,
                 roomRef,
