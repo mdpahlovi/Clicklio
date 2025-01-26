@@ -3,7 +3,7 @@ import { useChatState } from "@/hooks/useChatState";
 import { handleNavigatorError } from "@/utils/error-handle";
 import { Button, Stack, TabPanel } from "@mui/joy";
 
-export default function VideoChatUI({ room }: { room: string }) {
+export default function VideoChatUI({}: { room: string }) {
     const { isCallActive, toggleCal, setCurrentMedia } = useChatState();
 
     return (

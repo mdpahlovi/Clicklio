@@ -11,7 +11,7 @@ type MessageProps = {
     attachment?: { fileName: string; type: string; size: string };
 };
 
-export default function TextChatUI({ room, messages }: { room: string; messages: MessageProps[] }) {
+export default function TextChatUI({ messages }: { room: string; messages: MessageProps[] }) {
     const [chatMessages, setChatMessages] = useState(messages);
     const [message, setMessage] = useState("");
 

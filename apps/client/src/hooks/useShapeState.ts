@@ -2,6 +2,12 @@ import * as fabric from "fabric";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+type InitialState = {
+    shapes: fabric.FabricObject[];
+    history: fabric.FabricObject[][];
+    position: number;
+};
+
 type ShapeStateStore = {
     shapes: fabric.FabricObject[];
     history: fabric.FabricObject[][];
@@ -12,15 +18,7 @@ type ShapeStateStore = {
     updateShape: (shape: fabric.FabricObject) => void;
     deleteShape: (id: string) => void;
     setPrevious: (shape: fabric.FabricObject[]) => void;
-    setInitialState: ({
-        shapes,
-        history,
-        position,
-    }: {
-        shapes: fabric.FabricObject[];
-        history: fabric.FabricObject[][];
-        position: number;
-    }) => void;
+    setInitialState: ({ shapes, history, position }: InitialState) => void;
     undo: () => void;
     redo: () => void;
 };

@@ -1,37 +1,29 @@
-import { Divider, Sheet } from "@mui/joy";
-import { modifyShape } from "@/utils/shapes";
-import { useSearchParams } from "react-router-dom";
-import { useShapeState } from "@/hooks/useShapeState";
-import { useCanvasState } from "@/hooks/useCanvasState";
-import Text from "@/components/canvas/floating-menu/Text";
-import Colors from "@/components/canvas/floating-menu/Colors";
 import Actions from "@/components/canvas/floating-menu/Actions";
+import Colors from "@/components/canvas/floating-menu/Colors";
 import Opacity from "@/components/canvas/floating-menu/Opacity";
+import Text from "@/components/canvas/floating-menu/Text";
+import { useCanvasState } from "@/hooks/useCanvasState";
+import { useShapeState } from "@/hooks/useShapeState";
 import type { Attributes, FloatingMenuProps } from "@/types";
+import { modifyShape } from "@/utils/shapes";
+import { Divider, Sheet } from "@mui/joy";
+import { useSearchParams } from "react-router-dom";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     const { updateShape } = useShapeState();
     const [searchParams] = useSearchParams();
-    const { zoom, currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
+    const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
 
     const room = searchParams.get("room");
 
     const handleInputChange = (property: keyof Attributes, value: string) => modifyShape({ fabricRef, room, property, value, updateShape });
 
     if (fabricRef?.current && currentObject) {
-        const { top: OTop, left: OLeft, width } = currentObject.getBoundingRect();
-
-        const top = Math.max(10, OTop * zoom - 96);
-        const left = Math.min(
-            fabricRef?.current?.width! - (currentObject?.type === "i-text" ? 137.3 : 117.3),
-            Math.max(currentObject?.type === "i-text" ? 137.3 : 117.3, OLeft * zoom + (width * zoom) / 2)
-        );
-
         return (
             <Sheet
                 onClick={(e) => e.stopPropagation()}
-                sx={{ position: "absolute", zIndex: 10, p: 0.75, display: "flex", gap: 0.5 }}
-                style={{ top, left, transform: "translateX(-50%)", height: 36, borderRadius: 24 }}
+                sx={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", p: 0.75, gap: 0.5 }}
+                style={{ zIndex: 10, display: "flex", height: 36, borderTopWidth: 0, borderRadius: "0 0 24px 24px" }}
             >
                 {currentObject?.type === "i-text" ? (
                     <Text
