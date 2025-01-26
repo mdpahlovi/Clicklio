@@ -4,8 +4,6 @@ import { handleNavigatorError } from "@/utils/error-handle";
 import { Button, Stack, TabPanel } from "@mui/joy";
 
 export default function VideoChatUI({ room }: { room: string }) {
-    console.log({ room });
-
     const { isCallActive, toggleCal, setCurrentMedia } = useChatState();
 
     return (

@@ -31,7 +31,6 @@ export class VideoRoom implements VideoRoomState {
 
     // Rest of the methods remain the same
     addPeer(peer: Peer) {
-        console.log({ peer });
         this.peers.set(peer.id, peer);
     }
 
