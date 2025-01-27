@@ -1,19 +1,22 @@
-import { Arrow } from "./arrow";
-import * as fabric from "fabric";
-import { v4 as uuid4 } from "uuid";
-import { socket } from "@/utils/socket";
-import { objectCorner } from "@/constants";
-import { createSpecificShape } from "@/utils/shapes";
 import type {
-    InitializeFabric,
     CanvasMouseDown,
     CanvasMouseMove,
     CanvasMouseUp,
     CanvasObjectModified,
     CanvasPathCreated,
     CanvasZoom,
+    InitializeFabric,
     RenderCanvas,
 } from "@/types";
+import { createSpecificShape } from "@/utils/shapes";
+import { socket } from "@/utils/socket";
+import * as fabric from "fabric";
+import { v4 as uuid4 } from "uuid";
+import { Arrow } from "./arrow";
+
+fabric.FabricObject.ownDefaults.cornerColor = "#4882ED";
+fabric.FabricObject.ownDefaults.cornerStyle = "circle";
+fabric.FabricObject.ownDefaults.transparentCorners = false;
 
 // initialize fabric canvas
 export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => {
@@ -189,8 +192,8 @@ export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: Ca
     const target = options.target;
     if (!target) return;
 
-    if (target?.type == "activeSelection") {
-        // fix this
+    if (target instanceof fabric.ActiveSelection) {
+        // console.log("activeselection", { target });
     } else {
         // sync shape in storage
         if (target?.objectId) {
@@ -207,7 +210,7 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
     if (!path) return;
 
     // set unique id to path object
-    path.set({ objectId: uuid4(), ...objectCorner });
+    path.set({ objectId: uuid4() });
 
     // sync shape in storage
     if (path?.objectId) {
@@ -227,11 +230,8 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
             enlivenedObjects.forEach((enlivenedObj) => {
                 const object = enlivenedObj as fabric.FabricObject;
 
-                if (object?.objectId) {
-                    object.set({ ...objectCorner });
-                    // add object to canvas
-                    fabricRef.current?.add(object);
-                }
+                // add object to canvas
+                if (object?.objectId) fabricRef.current?.add(object);
             });
         });
     });

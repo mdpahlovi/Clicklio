@@ -1,9 +1,8 @@
-import { Arrow } from "./arrow";
+import type { ImageUpload, ModifyShape, Pointer, Tool } from "@/types";
 import * as fabric from "fabric";
-import { socket } from "./socket";
 import { v4 as uuidv4 } from "uuid";
-import { objectCorner } from "@/constants";
-import type { Pointer, ImageUpload, ModifyShape, Tool } from "@/types";
+import { Arrow } from "./arrow";
+import { socket } from "./socket";
 
 export const createRectangle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.Rect({
@@ -13,7 +12,6 @@ export const createRectangle = (pointer: Pointer, baseColorRef: React.RefObject<
         height: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
-        ...objectCorner,
     });
 };
 
@@ -25,7 +23,6 @@ export const createTriangle = (pointer: Pointer, baseColorRef: React.RefObject<s
         height: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
-        ...objectCorner,
     });
 };
 
@@ -36,7 +33,6 @@ export const createCircle = (pointer: Pointer, baseColorRef: React.RefObject<str
         radius: 0,
         fill: baseColorRef.current,
         objectId: uuidv4(),
-        ...objectCorner,
     });
 };
 
@@ -45,7 +41,6 @@ export const createLine = (pointer: Pointer, baseColorRef: React.RefObject<strin
         stroke: baseColorRef.current,
         strokeWidth: 2,
         objectId: uuidv4(),
-        ...objectCorner,
     });
 };
 
@@ -54,7 +49,6 @@ export const createArrow = (pointer: Pointer, baseColorRef: React.RefObject<stri
         stroke: baseColorRef.current,
         strokeWidth: 2,
         objectId: uuidv4(),
-        ...objectCorner,
     });
 };
 
@@ -67,7 +61,6 @@ export const createText = (pointer: Pointer, baseColorRef: React.RefObject<strin
         fontSize: 16,
         fontWeight: "400",
         objectId: uuidv4(),
-        ...objectCorner,
     });
 };
 
@@ -102,7 +95,7 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
     reader.onload = () => {
         fabric.FabricImage.fromURL(reader.result as string).then((image) => {
             image.scaleToWidth(100);
-            image.set({ objectId: uuidv4(), ...objectCorner });
+            image.set({ objectId: uuidv4() });
 
             // sync shape in storage
             if (image?.objectId) {

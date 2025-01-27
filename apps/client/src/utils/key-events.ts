@@ -1,8 +1,7 @@
+import type { WindowKeyDown } from "@/types";
+import { socket } from "@/utils/socket";
 import * as fabric from "fabric";
 import { v4 as uuidv4 } from "uuid";
-import { socket } from "@/utils/socket";
-import { objectCorner } from "@/constants";
-import type { WindowKeyDown } from "@/types";
 
 export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObject<fabric.FabricObject | null>) => {
     const activeObjects = canvas.getActiveObject();
@@ -25,7 +24,7 @@ export const handlePaste = async (
         // active selection needs a reference to the canvas.
         clonedObj.canvas = canvas;
         clonedObj.forEachObject((obj) => {
-            obj.set({ objectId: uuidv4(), ...objectCorner });
+            obj.set({ objectId: uuidv4() });
             canvas.add(obj);
 
             // sync in storage
@@ -37,7 +36,7 @@ export const handlePaste = async (
         // this should solve the unselectability
         clonedObj.setCoords();
     } else {
-        clonedObj.set({ objectId: uuidv4(), ...objectCorner });
+        clonedObj.set({ objectId: uuidv4() });
         canvas.add(clonedObj);
 
         // sync in storage
@@ -69,7 +68,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
         // If it's an active selection (multiple objects selected), handle each object
         clonedObj.canvas = canvas;
         clonedObj.forEachObject((obj) => {
-            obj.set({ objectId: uuidv4(), ...objectCorner });
+            obj.set({ objectId: uuidv4() });
             canvas.add(obj);
 
             // Sync in storage
@@ -81,7 +80,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
         clonedObj.setCoords();
     } else {
         // Handle single object duplication
-        clonedObj.set({ objectId: uuidv4(), ...objectCorner });
+        clonedObj.set({ objectId: uuidv4() });
         canvas.add(clonedObj);
 
         // Sync in storage

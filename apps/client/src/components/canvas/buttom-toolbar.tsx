@@ -1,4 +1,3 @@
-import { objectCorner } from "@/constants";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { useShapeState } from "@/hooks/useShapeState";
 import { handleNavigatorError } from "@/utils/error-handle";
@@ -47,7 +46,6 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                                             const object = new fabric.FabricImage(webcam, {
                                                 objectId: "webcam",
                                                 objectCaching: false,
-                                                ...objectCorner,
                                             });
 
                                             object.scaleToWidth(100);
