@@ -1,4 +1,25 @@
 import mediasoup, { types } from "mediasoup";
+import { Socket } from "socket.io";
+
+type Peer = {
+    socket: Socket;
+    roomId: string;
+    transports: string[];
+    producers: string[];
+    consumers: string[];
+    peerDetails: { name: string; isAdmin: boolean };
+};
+
+type Room = {
+    router: types.Router;
+    peers: Peer[];
+};
+
+let rooms: { [key: string]: Room } = {};
+let peers: { [key: string]: Peer } = {};
+let transports: { roomId: string; socketId: string; transport: types.WebRtcTransport; consumer: types.Consumer }[] = [];
+let producers: { roomId: string; socketId: string; producer: types.Producer }[] = [];
+let consumers: { roomId: string; socketId: string; consumer: types.Consumer }[] = [];
 
 const mediaCodecs: types.RtpCodecCapability[] = [
     {
@@ -31,9 +52,9 @@ export const createWorker = async () => {
     return worker;
 };
 
-export const createRoom = async (worker: types.Worker, rooms, roomId: string, socketId: string) => {
+export const createRoom = async (worker: types.Worker, socket: Socket, roomId: string) => {
     let router: types.Router;
-    let peers = [];
+    let peers: Peer[] = [];
 
     if (rooms[roomId]) {
         router = rooms[roomId].router;
@@ -42,9 +63,48 @@ export const createRoom = async (worker: types.Worker, rooms, roomId: string, so
         router = await worker.createRouter({ mediaCodecs });
     }
 
-    rooms[roomId] = { router, peers: [...peers, socketId] };
+    const newPeer: Peer = (peers[socket.id] = {
+        socket,
+        roomId,
+        transports: [],
+        producers: [],
+        consumers: [],
+        peerDetails: {
+            name: "",
+            isAdmin: false,
+        },
+    });
+
+    rooms[roomId] = { router, peers: [...peers, newPeer] };
 
     return router;
+};
+
+export const addTransport = (transport: types.WebRtcTransport, socketId: string, roomId: string, consumer: types.Consumer) => {
+    transports = [...transports, { socketId, transport, roomId, consumer }];
+
+    peers[socketId] = {
+        ...peers[socketId],
+        transports: [...peers[socketId].transports, transport.id],
+    };
+};
+
+export const addProducer = (producer: types.Producer, socketId: string, roomId: string) => {
+    producers = [...producers, { socketId, producer, roomId }];
+
+    peers[socketId] = {
+        ...peers[socketId],
+        producers: [...peers[socketId].producers, producer.id],
+    };
+};
+
+export const addConsumer = (consumer: types.Consumer, socketId: string, roomId: string) => {
+    consumers = [...consumers, { socketId, consumer, roomId }];
+
+    peers[socketId] = {
+        ...peers[socketId],
+        consumers: [...peers[socketId].consumers, consumer.id],
+    };
 };
 
 export const createWebRtcTransport = async (router: types.Router) => {
