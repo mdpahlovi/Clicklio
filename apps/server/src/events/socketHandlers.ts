@@ -1,9 +1,6 @@
 import { types } from "mediasoup";
 import { Server } from "socket.io";
 import { Room } from "../classes/room.js";
-import { VideoRoom } from "../classes/video-room.js";
-
-let VideoChatRoomList = new Map<string, VideoRoom>();
 
 export const handleConnection = (io: Server, worker: types.Worker) => {
     const rooms: Map<string, Room> = new Map();
