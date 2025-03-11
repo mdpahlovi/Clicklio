@@ -6,7 +6,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import ToolbarPlugin from "@/components/setting/toolbar-plugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 
