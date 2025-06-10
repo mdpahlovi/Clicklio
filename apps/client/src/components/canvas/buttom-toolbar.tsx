@@ -1,5 +1,8 @@
+import { PreviewIcon } from "@/components/icons";
+import Modal from "@/components/ui/modal";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { useShapeState } from "@/hooks/useShapeState";
+import { downloadMedia } from "@/utils/download";
 import { handleNavigatorError } from "@/utils/error-handle";
 import { socket } from "@/utils/socket";
 import { Button, Divider, IconButton, Sheet, Tooltip } from "@mui/joy";
@@ -9,6 +12,7 @@ import { BiSolidWebcam } from "react-icons/bi";
 import { FaRegCircleStop } from "react-icons/fa6";
 import { GrRedo, GrUndo } from "react-icons/gr";
 import { PiMinus, PiPlus, PiVinylRecord } from "react-icons/pi";
+import { useReactMediaRecorder } from "react-media-recorder";
 import { useSearchParams } from "react-router-dom";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
@@ -18,12 +22,44 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
     const { zoom, setZoom } = useCanvasState();
     const { setRefresh, setUserMedia } = useCanvasState();
 
-    const [isRecording, setIsRecording] = useState(false);
+    const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+        audio: true,
+        screen: true,
+    });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const room = searchParams.get("room");
 
     return (
         <>
+            <Modal
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Recorded Media"
+                sx={{ maxWidth: 768 }}
+            >
+                <video style={{ aspectRatio: "16 / 9", width: "100%", borderRadius: 12 }} controls src={mediaBlobUrl} />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
+                    <Button
+                        color="warning"
+                        onClick={() => {
+                            startRecording();
+                            setIsModalOpen(false);
+                        }}
+                    >
+                        Rerecord
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            if (mediaBlobUrl) downloadMedia(mediaBlobUrl);
+                        }}
+                        disabled={!mediaBlobUrl}
+                    >
+                        Download
+                    </Button>
+                </div>
+            </Modal>
             <Sheet
                 sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
                 style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 24px 0 0" }}
@@ -64,19 +100,31 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                         <BiSolidWebcam />
                     </IconButton>
                 </Tooltip>
-                {!isRecording ? (
+                {status !== "recording" ? (
                     <Tooltip title="Record" placement="top">
-                        <IconButton onClick={() => setIsRecording(true)}>
+                        <IconButton onClick={() => startRecording()}>
                             <PiVinylRecord />
                         </IconButton>
                     </Tooltip>
                 ) : (
                     <Tooltip title="Stop Recording" placement="top">
-                        <IconButton onClick={() => setIsRecording(false)}>
+                        <IconButton
+                            onClick={() => {
+                                stopRecording();
+                                setIsModalOpen(true);
+                            }}
+                        >
                             <FaRegCircleStop />
                         </IconButton>
                     </Tooltip>
                 )}
+                {mediaBlobUrl ? (
+                    <Tooltip title="Preview" placement="top">
+                        <IconButton onClick={() => setIsModalOpen(true)}>
+                            <PreviewIcon />
+                        </IconButton>
+                    </Tooltip>
+                ) : null}
                 <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
@@ -99,7 +147,13 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
             </Sheet>
             <Sheet
                 sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
-                style={{ borderWidth: "1px 0 0 1px", position: "absolute", bottom: 0, right: 0, borderRadius: "24px 0 0 0" }}
+                style={{
+                    borderWidth: "1px 0 0 1px",
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    borderRadius: "24px 0 0 0",
+                }}
             >
                 <IconButton
                     onClick={() => {
