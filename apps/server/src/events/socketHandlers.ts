@@ -17,9 +17,9 @@ export const handleConnection = (io: Server, worker: types.Worker) => {
                 if (!rooms.has(room)) rooms.set(room, new Room());
 
                 const currRoom = rooms.get(room);
-                const userData = currRoom.addUser(socket.id, name);
+                const userData = currRoom?.addUser(socket.id, name);
 
-                io.in(room).emit("room:users", { users: currRoom.getUsers(), to: userData.id });
+                io.in(room).emit("room:users", { users: currRoom?.getUsers(), to: userData?.id });
             }
         });
 

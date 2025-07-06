@@ -2,9 +2,9 @@
     "name": "clicklio",
     "private": true,
     "scripts": {
-        "dev": "dotenv -- turbo dev",
-        "build": "dotenv -- turbo build",
-        "start": "turbo start"
+        "dev": "turbo run dev",
+        "build": "turbo run build",
+        "start": "turbo run start"
     },
     "devDependencies": {
         "dotenv-cli": "^8.0.0",
@@ -13,5 +13,5 @@
     "workspaces": [
         "apps/*"
     ],
-    "packageManager": "npm@11.4.1"
+    "packageManager": "npm@11.4.2"
 }
