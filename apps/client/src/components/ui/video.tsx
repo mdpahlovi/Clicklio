@@ -3,7 +3,6 @@ import { IconButton, Sheet } from "@mui/joy";
 import { useState } from "react";
 import { BiSolidWebcam } from "react-icons/bi";
 import { MdMic, MdScreenShare } from "react-icons/md";
-import ReactPlayer from "react-player";
 
 export default function Video({ withControl }: { withControl?: boolean }) {
     const { isMicEnabled, toggleMic, isCameraEnabled, toggleCamera, isScreenSharing, toggleScreen, currentMedia } = useChatState();
@@ -28,9 +27,7 @@ export default function Video({ withControl }: { withControl?: boolean }) {
                     overflow: "hidden",
                 }}
             >
-                {currentMedia ? (
-                    <ReactPlayer width="100%" height="100%" style={{ position: "absolute" }} url={currentMedia} playing />
-                ) : null}
+                {/* Users Video */}
 
                 <Sheet
                     style={{
@@ -94,9 +91,7 @@ export default function Video({ withControl }: { withControl?: boolean }) {
     } else {
         return (
             <Sheet variant="solid" style={{ position: "relative", aspectRatio: 16 / 9, borderRadius: 16 }}>
-                {currentMedia ? (
-                    <ReactPlayer width="100%" height="100%" style={{ position: "absolute" }} url={currentMedia} playing />
-                ) : null}
+                {currentMedia ? /* Remote Video */ "" : null}
             </Sheet>
         );
     }
