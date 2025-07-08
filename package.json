@@ -2,7 +2,7 @@
     "name": "clicklio",
     "private": true,
     "scripts": {
-        "dev": "turbo run dev",
+        "dev": "dotenv -- turbo run dev",
         "build": "turbo run build",
         "start": "turbo run start"
     },
