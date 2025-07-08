@@ -38,7 +38,7 @@ export const useCanvasState = create<CanvasStateStore>((set) => ({
         set(({ openedFloatingMenu }) =>
             Object.keys(openedFloatingMenu).includes(key)
                 ? { openedFloatingMenu: { [key]: !openedFloatingMenu[key] } }
-                : { openedFloatingMenu: { [key]: true } }
+                : { openedFloatingMenu: { [key]: true } },
         ),
     setUserMedia: (media) => set({ userMedia: media }),
 }));

@@ -13,7 +13,7 @@ export const handlePaste = async (
     canvas: fabric.Canvas,
     room: string | null,
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>,
-    setShape: (shape: fabric.FabricObject) => void
+    setShape: (shape: fabric.FabricObject) => void,
 ) => {
     // if no copiedObject, return
     if (!copiedObjectRef.current) return;

@@ -128,7 +128,7 @@ export function useCanvas() {
                 setZoom,
                 setMode,
                 setRefresh,
-            })
+            }),
         );
 
         return () => {
@@ -150,7 +150,7 @@ export function useCanvas() {
                     setZoom,
                     setMode,
                     setRefresh,
-                })
+                }),
             );
         };
     }, []);

@@ -31,8 +31,8 @@ export const useRoomState = create<RoomStateStore>()(
             deleteCursor: (id) => set(({ cursor }) => ({ cursor: cursor.filter((c) => c.id !== id) })),
             toggleShareModal: () => set(({ shareModal }) => ({ shareModal: !shareModal })),
         }),
-        { name: "clicklio-room", partialize: (state) => ({ name: state.name }) }
-    )
+        { name: "clicklio-room", partialize: (state) => ({ name: state.name }) },
+    ),
 );
 
 function updateCursor(allCursor: Cursor[], cursor: Cursor) {

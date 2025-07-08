@@ -106,6 +106,6 @@ export const useShapeState = create<ShapeStateStore>()(
                     return {};
                 }),
         }),
-        { name: "clicklio-shapes" }
-    )
+        { name: "clicklio-shapes" },
+    ),
 );
