@@ -1,6 +1,6 @@
+import type { Tool } from "@/types";
 import * as fabric from "fabric";
 import { create } from "zustand";
-import type { Tool } from "@/types";
 
 type CanvasStateStore = {
     tool: Tool;

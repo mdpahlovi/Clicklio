@@ -1,14 +1,14 @@
-import { MdErrorOutline } from "react-icons/md";
 import { config } from "@/components/setting/config";
-import { Box, Textarea, Typography } from "@mui/joy";
 import HtmlPlugin from "@/components/setting/html-plugin";
-import { Controller, useFormContext } from "react-hook-form";
 import ToolbarPlugin from "@/components/setting/toolbar-plugin";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { Box, Textarea, Typography } from "@mui/joy";
+import { Controller, useFormContext } from "react-hook-form";
+import { MdErrorOutline } from "react-icons/md";
 
 export default function FormTexteditor({ name }: { name: string; disabled?: boolean }) {
     const { setValue } = useFormContext();

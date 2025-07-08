@@ -1,9 +1,9 @@
-import toast from "react-hot-toast";
-import { auth, db } from "@/utils/firebase";
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
 import { useAuthState, type User } from "@/hooks/useAuthState";
+import { auth, db } from "@/utils/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export function useAuthStateChange() {
     const { user, setUser } = useAuthState();

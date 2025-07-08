@@ -1,8 +1,8 @@
+import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
+import type { FloatingMenuItemProps, FloatingMenuSubItemProps } from "@/types";
+import { Dropdown, IconButton, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { MdFormatTextdirectionLToR } from "react-icons/md";
-import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
-import { Dropdown, Tooltip, MenuButton, Menu, IconButton, styled } from "@mui/joy";
-import type { FloatingMenuItemProps, FloatingMenuSubItemProps } from "@/types";
 
 type Property = "fontFamily" | "fontSize" | "fontWeight";
 type SelectConfig = { property: Property; options: { label: string; value: string }[] };

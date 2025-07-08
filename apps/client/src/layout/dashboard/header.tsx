@@ -1,9 +1,9 @@
-import Logo from "@/components/ui/logo";
-import { useBasicState } from "@/hooks/useBasicState";
-import ThemeToggle from "@/components/ui/theme-toggle";
-import { IoMdMenu, IoIosSearch } from "react-icons/io";
 import AuthDropdown from "@/components/ui/auth-dropdown";
-import { Box, Typography, IconButton, Input } from "@mui/joy";
+import Logo from "@/components/ui/logo";
+import ThemeToggle from "@/components/ui/theme-toggle";
+import { useBasicState } from "@/hooks/useBasicState";
+import { Box, IconButton, Input, Typography } from "@mui/joy";
+import { IoIosSearch, IoMdMenu } from "react-icons/io";
 
 export default function Header() {
     const { toggleSidebar } = useBasicState();

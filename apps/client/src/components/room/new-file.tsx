@@ -1,11 +1,11 @@
+import { useAuthState } from "@/hooks/useAuthState";
+import { db } from "@/utils/firebase";
+import { Box, Button, Card, Input } from "@mui/joy";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { useId } from "react";
 import toast from "react-hot-toast";
-import { db } from "@/utils/firebase";
 import { MdAdd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { Card, Button, Input, Box } from "@mui/joy";
-import { useAuthState } from "@/hooks/useAuthState";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
 
 export default function NewFile() {
     const id = useId();

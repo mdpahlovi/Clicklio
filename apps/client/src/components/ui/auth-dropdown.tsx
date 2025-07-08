@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { useAuthState } from "@/hooks/useAuthState";
-import { RiFolder5Fill, RiSettings3Fill, RiArtboardFill, RiLogoutBoxRLine } from "react-icons/ri";
 import { Avatar, Box, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
+import { RiArtboardFill, RiFolder5Fill, RiLogoutBoxRLine, RiSettings3Fill } from "react-icons/ri";
+import { Link } from "react-router-dom";
 
 export default function AuthDropdown() {
     const { user, signOut } = useAuthState();

@@ -1,13 +1,13 @@
-import * as fabric from "fabric";
-import toast from "react-hot-toast";
 import { circle, navElements } from "@/constants";
-import { handleImageUpload } from "@/utils/shapes";
-import { useSearchParams } from "react-router-dom";
-import { Fragment, useEffect, useRef } from "react";
-import { useShapeState } from "@/hooks/useShapeState";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { Sheet, IconButton, Dropdown, MenuButton, Menu, MenuItem, useColorScheme, Tooltip } from "@mui/joy";
+import { useShapeState } from "@/hooks/useShapeState";
 import type { ToolbarProps } from "@/types";
+import { handleImageUpload } from "@/utils/shapes";
+import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Tooltip, useColorScheme } from "@mui/joy";
+import * as fabric from "fabric";
+import { Fragment, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
+import { useSearchParams } from "react-router-dom";
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { mode } = useColorScheme();
@@ -93,6 +93,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     break;
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tool, mode]);
 
     return (

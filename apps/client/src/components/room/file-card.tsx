@@ -1,12 +1,12 @@
-import toast from "react-hot-toast";
-import { db } from "@/utils/firebase";
-import type { File } from "@/pages/room";
 import Modal from "@/components/ui/modal";
-import { useNavigate } from "react-router-dom";
 import { useBasicState } from "@/hooks/useBasicState";
+import type { File } from "@/pages/room";
+import { db } from "@/utils/firebase";
+import { Box, Button, Card, CardOverflow, Dropdown, IconButton, Input, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { RiMore2Fill, RiEdit2Fill, RiDeleteBin5Fill } from "react-icons/ri";
-import { Box, Card, CardOverflow, Typography, IconButton, Dropdown, Menu, MenuButton, MenuItem, Button, Input } from "@mui/joy";
+import toast from "react-hot-toast";
+import { RiDeleteBin5Fill, RiEdit2Fill, RiMore2Fill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export default function FileCard({ file: { id, name, image, updatedAt }, refetch }: { file: { id: string } & File; refetch: () => void }) {
     const navigate = useNavigate();

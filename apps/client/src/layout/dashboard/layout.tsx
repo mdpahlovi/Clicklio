@@ -1,6 +1,6 @@
 import { Box, Sheet } from "@mui/joy";
 
-function Root({ children }: React.PropsWithChildren) {
+export function Root({ children }: React.PropsWithChildren) {
     return (
         <Box
             style={{ minHeight: "100vh", display: "grid", gridTemplateRows: "64px 1fr" }}
@@ -11,7 +11,7 @@ function Root({ children }: React.PropsWithChildren) {
     );
 }
 
-function Header({ children }: React.PropsWithChildren) {
+export function Header({ children }: React.PropsWithChildren) {
     return (
         <Sheet
             component="header"
@@ -23,12 +23,10 @@ function Header({ children }: React.PropsWithChildren) {
     );
 }
 
-function SideNav({ children }: React.PropsWithChildren) {
+export function SideNav({ children }: React.PropsWithChildren) {
     return (
         <Sheet style={{ borderWidth: "0 1px 0 0" }} sx={{ p: 2, display: { xs: "none", xl: "initial" } }}>
             {children}
         </Sheet>
     );
 }
-
-export default { Root, Header, SideNav };

@@ -1,5 +1,5 @@
-import { PiMoon, PiSun } from "react-icons/pi";
 import { IconButton, useColorScheme } from "@mui/joy";
+import { PiMoon, PiSun } from "react-icons/pi";
 
 export default function ThemeToggle() {
     const { mode, setMode } = useColorScheme();

@@ -3,6 +3,7 @@ import { useChatState } from "@/hooks/useChatState";
 import { handleNavigatorError } from "@/utils/error-handle";
 import { Button, Stack, TabPanel } from "@mui/joy";
 
+// eslint-disable-next-line no-empty-pattern
 export default function VideoChatUI({}: { room: string }) {
     const { isCallActive, toggleCal, setCurrentMedia } = useChatState();
 

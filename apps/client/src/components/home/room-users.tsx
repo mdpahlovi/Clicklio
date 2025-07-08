@@ -1,7 +1,7 @@
-import { socket } from "@/utils/socket";
 import { useRoomState } from "@/hooks/useRoomState";
-import { useSearchParams } from "react-router-dom";
+import { socket } from "@/utils/socket";
 import { Avatar, AvatarGroup } from "@mui/joy";
+import { useSearchParams } from "react-router-dom";
 
 export default function RoomUsers() {
     const { users } = useRoomState();

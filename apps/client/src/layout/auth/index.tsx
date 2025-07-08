@@ -1,6 +1,6 @@
 import Logo from "@/components/ui/logo";
-import { Link } from "react-router-dom";
 import { Box, Sheet, Stack, Typography } from "@mui/joy";
+import { Link } from "react-router-dom";
 
 export default function AuthLayout({ children }: React.PropsWithChildren) {
     return (

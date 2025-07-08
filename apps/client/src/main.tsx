@@ -1,5 +1,5 @@
 import "@/styles/index.css";
-import "@fontsource/poppins";
+import "@fontsource/poppins/400.css";
 
 import App from "@/app";
 import { createRoot } from "react-dom/client";
@@ -13,5 +13,5 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
         <App />
         <Analytics />
-    </QueryClientProvider>
+    </QueryClientProvider>,
 );

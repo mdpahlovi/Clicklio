@@ -4,7 +4,7 @@ import type { SxProps } from "@mui/joy/styles/types";
 type ModalProps = {
     sx?: SxProps;
     open: boolean;
-    onClose: (event: {}, reason: "backdropClick" | "escapeKeyDown" | "closeClick") => void;
+    onClose: (event: object, reason: "backdropClick" | "escapeKeyDown" | "closeClick") => void;
     title: string;
 } & React.PropsWithChildren;
 

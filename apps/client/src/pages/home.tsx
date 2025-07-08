@@ -4,7 +4,7 @@ import Navbar from "@/components/home/navbar";
 import ShareModal from "@/components/home/share-modal";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/useCanvasState";
-import { User, useRoomState } from "@/hooks/useRoomState";
+import { type User, useRoomState } from "@/hooks/useRoomState";
 import { useShapeState } from "@/hooks/useShapeState";
 import { renderCanvas } from "@/utils/canvas";
 import { socket } from "@/utils/socket";
@@ -17,6 +17,7 @@ export default function HomePage() {
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
     const { shapes, history, position, setShapes, setShape, updateShape, deleteShape, setInitialState, undo, redo } = useShapeState();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
@@ -88,11 +89,13 @@ export default function HomePage() {
             socket.off("reset:canvas", ({ status }) => {
                 if (status) {
                     setShapes([]);
+                    // eslint-disable-next-line react-hooks/exhaustive-deps
                     fabricRef.current?.clear();
                 }
                 setRefresh();
             });
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -100,6 +103,7 @@ export default function HomePage() {
             socket.emit("initial:state", { to: shareTo, shapes, history, position });
             setShareTo(null);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shareTo]);
 
     return (

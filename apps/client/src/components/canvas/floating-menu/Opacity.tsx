@@ -1,6 +1,6 @@
-import { MdOpacity } from "react-icons/md";
-import { Dropdown, IconButton, Menu, MenuButton, Slider, Tooltip } from "@mui/joy";
 import type { FloatingMenuItemProps } from "@/types";
+import { Dropdown, IconButton, Menu, MenuButton, Slider, Tooltip } from "@mui/joy";
+import { MdOpacity } from "react-icons/md";
 
 export default function Opacity({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
     const value = currentObject?.opacity;

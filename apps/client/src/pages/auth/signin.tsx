@@ -25,6 +25,7 @@ export default function JoySignInSideTemplate() {
 
     useEffect(() => {
         if (user && user?.id) navigate("/rooms");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     useEffect(() => {

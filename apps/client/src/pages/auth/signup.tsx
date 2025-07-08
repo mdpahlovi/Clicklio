@@ -29,6 +29,7 @@ export default function SignupPage() {
 
     useEffect(() => {
         if (user && user?.id) navigate("/rooms");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     useEffect(() => {

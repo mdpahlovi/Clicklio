@@ -1,5 +1,5 @@
-import { Slider } from "@mui/joy";
 import type { FloatingMenuSubItemProps } from "@/types";
+import { Slider } from "@mui/joy";
 
 export default function StrokeWidth({ currentObject, handleInputChange }: FloatingMenuSubItemProps) {
     const value = currentObject?.strokeWidth;

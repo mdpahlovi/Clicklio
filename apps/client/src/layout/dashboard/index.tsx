@@ -1,10 +1,10 @@
 import Logo from "@/components/ui/logo";
-import { Outlet } from "react-router-dom";
-import Layout from "@/layout/dashboard/layout";
-import Header from "@/layout/dashboard/header";
 import { useBasicState } from "@/hooks/useBasicState";
+import Header from "@/layout/dashboard/header";
+import * as Layout from "@/layout/dashboard/layout";
 import Navigation from "@/layout/dashboard/navigation";
 import { Box, DialogTitle, Drawer, ModalClose } from "@mui/joy";
+import { Outlet } from "react-router-dom";
 
 export default function DashboardLayout() {
     const { sidebar, toggleSidebar } = useBasicState();

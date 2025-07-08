@@ -1,4 +1,4 @@
-import { Box, Card, CardOverflow, CardProps, Skeleton } from "@mui/joy";
+import { Box, Card, CardOverflow, type CardProps, Skeleton } from "@mui/joy";
 
 export default function FileLoader(props: CardProps) {
     return (

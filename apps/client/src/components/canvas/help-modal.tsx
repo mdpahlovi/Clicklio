@@ -1,8 +1,8 @@
-import React from "react";
 import Modal from "@/components/ui/modal";
-import { views, tools, editors } from "@/constants";
+import { editors, tools, views } from "@/constants";
 import { useCanvasState } from "@/hooks/useCanvasState";
 import { Box, Divider, Sheet, Typography } from "@mui/joy";
+import React from "react";
 
 export default function HelpModal() {
     const { helpModal, toggleHelpModal } = useCanvasState();

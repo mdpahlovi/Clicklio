@@ -1,4 +1,4 @@
-import { CanvasProps } from "@/types";
+import { type CanvasProps } from "@/types";
 import RemoteCursor from "../ui/remote-cursor";
 import BottomToolbar from "./buttom-toolbar";
 import CanvasContainer from "./canvas-container";

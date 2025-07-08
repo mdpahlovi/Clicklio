@@ -1,3 +1,4 @@
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
     $getSelection,
@@ -11,12 +12,11 @@ import {
     UNDO_COMMAND,
 } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
-import { CiUndo, CiRedo } from "react-icons/ci";
+import { Box, type BoxProps, Divider, type IconButtonProps, IconButton as JoyIconButton } from "@mui/joy";
+import { CiRedo, CiUndo } from "react-icons/ci";
+import { FiAlignCenter, FiAlignJustify, FiAlignLeft, FiAlignRight, FiBold, FiItalic, FiUnderline } from "react-icons/fi";
 import { GoStrikethrough } from "react-icons/go";
-import { Box, BoxProps, Divider, IconButtonProps, IconButton as JoyIconButton } from "@mui/joy";
-import { FiBold, FiItalic, FiUnderline, FiAlignLeft, FiAlignCenter, FiAlignRight, FiAlignJustify } from "react-icons/fi";
 
 const LowPriority = 1;
 
@@ -49,11 +49,11 @@ export default function ToolbarPlugin({ sx, ...props }: BoxProps) {
             }),
             editor.registerCommand(
                 SELECTION_CHANGE_COMMAND,
-                (_payload, _newEditor) => {
+                () => {
                     $updateToolbar();
                     return false;
                 },
-                LowPriority
+                LowPriority,
             ),
             editor.registerCommand(
                 CAN_UNDO_COMMAND,
@@ -61,7 +61,7 @@ export default function ToolbarPlugin({ sx, ...props }: BoxProps) {
                     setCanUndo(payload);
                     return false;
                 },
-                LowPriority
+                LowPriority,
             ),
             editor.registerCommand(
                 CAN_REDO_COMMAND,
@@ -69,8 +69,8 @@ export default function ToolbarPlugin({ sx, ...props }: BoxProps) {
                     setCanRedo(payload);
                     return false;
                 },
-                LowPriority
-            )
+                LowPriority,
+            ),
         );
     }, [editor, $updateToolbar]);
 

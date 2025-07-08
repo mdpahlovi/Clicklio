@@ -1,15 +1,15 @@
-import { create } from "zustand";
 import { auth, db } from "@/utils/firebase";
 import { FirebaseError } from "firebase/app";
-import { doc, setDoc, getDoc } from "firebase/firestore";
 import {
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
     GoogleAuthProvider,
+    signInWithEmailAndPassword,
     signInWithPopup,
+    signOut,
     updateProfile,
 } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { create } from "zustand";
 
 export type User = { id: string; name: string; role?: string; email: string; phone?: string; image?: string; biography?: string };
 export type Credentials = { email: string; password: string };

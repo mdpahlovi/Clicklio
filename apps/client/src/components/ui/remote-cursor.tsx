@@ -1,10 +1,10 @@
-import { useTheme } from "@mui/joy";
-import { socket } from "@/utils/socket";
 import { useRoomState } from "@/hooks/useRoomState";
+import { socket } from "@/utils/socket";
+import { useTheme } from "@mui/joy";
 import { useCallback, useEffect, useRef } from "react";
 
-import { BsCursor } from "react-icons/bs";
 import type { Cursor } from "@/hooks/useRoomState";
+import { BsCursor } from "react-icons/bs";
 import { useSearchParams } from "react-router-dom";
 
 export default function RemoteCursor() {
@@ -25,6 +25,7 @@ export default function RemoteCursor() {
         return () => {
             window.removeEventListener("mousemove", (e) => emitCursorPoint(e));
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -33,14 +34,16 @@ export default function RemoteCursor() {
         return () => {
             socket.off("cursor", (cursor) => handleCursorUpdate(cursor));
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleCursorUpdate = useCallback((cursor: Cursor) => {
         setCursor(cursor);
 
         // Reset the timeout if cursor is updated
-        timerRef.current ? clearTimeout(timerRef.current) : null;
+        if (timerRef.current) clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => deleteCursor(cursor.id), 500);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return cursor.map(({ id, x, y }) => {

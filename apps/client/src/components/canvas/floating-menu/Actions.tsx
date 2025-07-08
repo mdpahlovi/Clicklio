@@ -1,11 +1,11 @@
+import { useCanvasState } from "@/hooks/useCanvasState";
+import { useShapeState } from "@/hooks/useShapeState";
+import type { ActionsProps } from "@/types";
+import { handleDelete, handleDuplicate } from "@/utils/key-events";
 import { IconButton, Tooltip } from "@mui/joy";
+import { IoDuplicateOutline } from "react-icons/io5";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { useSearchParams } from "react-router-dom";
-import { IoDuplicateOutline } from "react-icons/io5";
-import { useShapeState } from "@/hooks/useShapeState";
-import { useCanvasState } from "@/hooks/useCanvasState";
-import { handleDelete, handleDuplicate } from "@/utils/key-events";
-import type { ActionsProps } from "@/types";
 
 export default function Actions({ fabricRef, currentObject }: ActionsProps) {
     const [searchParams] = useSearchParams();
