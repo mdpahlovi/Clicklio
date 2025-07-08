@@ -3,7 +3,7 @@ import { auth, db } from "@/utils/firebase";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { useAuthState, User } from "@/hooks/useAuthState";
+import { useAuthState, type User } from "@/hooks/useAuthState";
 
 export function useAuthStateChange() {
     const { user, setUser } = useAuthState();
@@ -20,6 +20,7 @@ export function useAuthStateChange() {
                 setLoading(false);
             }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -38,6 +39,7 @@ export function useAuthStateChange() {
                     setUser(null);
                 });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
 
     return { loading };

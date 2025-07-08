@@ -41,7 +41,14 @@ export function useCanvas() {
     const baseColorRef = useRef<string | null>(null);
 
     useEffect(() => {
-        mode === "light" ? (baseColorRef.current = "#000000") : (baseColorRef.current = "#FFFFFF");
+        switch (mode) {
+            case "light":
+                baseColorRef.current = "#000000";
+                break;
+            case "dark":
+                baseColorRef.current = "#FFFFFF";
+                break;
+        }
 
         if (fabricRef.current)
             fabricRef.current.forEachObject((object) => {
@@ -153,6 +160,7 @@ export function useCanvas() {
                 }),
             );
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return { canvasRef, fabricRef, roomRef, selectedToolRef };

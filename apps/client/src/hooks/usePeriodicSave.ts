@@ -41,12 +41,14 @@ export function usePeriodicSave({ fabricRef }: { fabricRef: React.RefObject<fabr
                 }
             })
             .catch(() => navigator("/rooms"));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         const saveInterval = setInterval(() => saveShapes(), 600000);
 
         return () => clearInterval(saveInterval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shapes]);
 
     return { saveShapes, isUpToDate: isEqual(shapes, previous) };

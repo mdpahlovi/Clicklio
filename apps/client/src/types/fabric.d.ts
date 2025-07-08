@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { FabricObject } from "fabric";
 
 declare module "fabric" {

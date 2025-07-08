@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 
-export const handleNavigatorError = (error: any) => {
+export const handleNavigatorError = (error: { name: string; message: string; constraint: string }) => {
     switch (error.name) {
         case "NotAllowedError":
             toast.error("Permission denied: User or browser blocked access.");

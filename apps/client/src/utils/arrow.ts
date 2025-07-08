@@ -4,7 +4,7 @@ import { Line, classRegistry } from "fabric";
 export class Arrow extends Line {
     static type = "arrow";
 
-    constructor(points: [number, number, number, number], options: any = {}) {
+    constructor(points: [number, number, number, number], options = {}) {
         super(points, options);
     }
 
