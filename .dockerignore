@@ -1,8 +1,8 @@
 **/node_modules
 **/dist
 
-.env
-.gitignore
+.git
+.dockerignore
 
 **/.turbo
 **/.vercel
