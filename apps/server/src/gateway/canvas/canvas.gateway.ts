@@ -1,12 +1,12 @@
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from "@nestjs/websockets";
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: "canvas" })
 export class CanvasGateway implements OnGatewayConnection, OnGatewayDisconnect {
     handleConnection(client) {
-        console.log("YjsGateway connected", typeof client);
+        console.log("CanvasGateway connected", typeof client);
     }
 
     handleDisconnect() {
-        console.log("YjsGateway disconnected");
+        console.log("CanvasGateway disconnected");
     }
 }

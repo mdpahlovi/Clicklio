@@ -1,4 +1,4 @@
-import { useRoomState } from "@/hooks/useRoomState";
+import { useRoomState } from "@/hooks/zustand/useRoomState";
 import { socket } from "@/utils/socket";
 import { Avatar, AvatarGroup } from "@mui/joy";
 import { useSearchParams } from "react-router-dom";

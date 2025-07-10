@@ -1,4 +1,4 @@
-import { useShapeState } from "@/hooks/useShapeState";
+import { useShapeState } from "@/hooks/zustand/useShapeState";
 import type { SidebarProps } from "@/types";
 import { socket } from "@/utils/socket";
 import { IconButton, Sheet, Tooltip } from "@mui/joy";

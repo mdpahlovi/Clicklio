@@ -1,9 +1,9 @@
 import AuthDropdown from "@/components/ui/auth-dropdown";
 import Logo from "@/components/ui/logo";
 import ThemeToggle from "@/components/ui/theme-toggle";
-import { useAuthState } from "@/hooks/useAuthState";
-import { useCanvasState } from "@/hooks/useCanvasState";
-import { useRoomState } from "@/hooks/useRoomState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useRoomState } from "@/hooks/zustand/useRoomState";
 import { Box, Button, Divider, IconButton, Sheet, Stack } from "@mui/joy";
 import { PiQuestion, PiShareFat } from "react-icons/pi";
 import { SlLogin } from "react-icons/sl";

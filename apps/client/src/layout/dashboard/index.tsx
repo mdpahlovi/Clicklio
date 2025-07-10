@@ -1,5 +1,5 @@
 import Logo from "@/components/ui/logo";
-import { useBasicState } from "@/hooks/useBasicState";
+import { useBasicState } from "@/hooks/zustand/useBasicState";
 import Header from "@/layout/dashboard/header";
 import * as Layout from "@/layout/dashboard/layout";
 import Navigation from "@/layout/dashboard/navigation";

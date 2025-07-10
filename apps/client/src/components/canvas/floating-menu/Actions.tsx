@@ -1,5 +1,5 @@
-import { useCanvasState } from "@/hooks/useCanvasState";
-import { useShapeState } from "@/hooks/useShapeState";
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useShapeState } from "@/hooks/zustand/useShapeState";
 import type { ActionsProps } from "@/types";
 import { handleDelete, handleDuplicate } from "@/utils/key-events";
 import { IconButton, Tooltip } from "@mui/joy";

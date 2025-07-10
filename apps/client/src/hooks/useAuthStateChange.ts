@@ -1,4 +1,4 @@
-import { useAuthState, type User } from "@/hooks/useAuthState";
+import { useAuthState, type User } from "@/hooks/zustand/useAuthState";
 import { auth, db } from "@/utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";

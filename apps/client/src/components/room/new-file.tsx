@@ -1,4 +1,4 @@
-import { useAuthState } from "@/hooks/useAuthState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { db } from "@/utils/firebase";
 import { Box, Button, Card, Input } from "@mui/joy";
 import { addDoc, collection, Timestamp } from "firebase/firestore";

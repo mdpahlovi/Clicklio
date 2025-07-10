@@ -1,7 +1,7 @@
 import AuthDropdown from "@/components/ui/auth-dropdown";
 import Logo from "@/components/ui/logo";
 import ThemeToggle from "@/components/ui/theme-toggle";
-import { useBasicState } from "@/hooks/useBasicState";
+import { useBasicState } from "@/hooks/zustand/useBasicState";
 import { Box, IconButton, Input, Typography } from "@mui/joy";
 import { IoIosSearch, IoMdMenu } from "react-icons/io";
 

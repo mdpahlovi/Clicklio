@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useAuthState } from "@/hooks/useAuthState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
 
 export default function ProtectedRoute({ children }: React.PropsWithChildren) {
     const { user, signinLoading, signupLoading, socialLoading } = useAuthState();

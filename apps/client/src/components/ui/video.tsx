@@ -1,12 +1,9 @@
-import { useChatState } from "@/hooks/useChatState";
 import { IconButton, Sheet } from "@mui/joy";
 import { useState } from "react";
 import { BiSolidWebcam } from "react-icons/bi";
 import { MdMic, MdScreenShare } from "react-icons/md";
 
 export default function Video({ withControl }: { withControl?: boolean }) {
-    const { isMicEnabled, toggleMic, isCameraEnabled, toggleCamera, isScreenSharing, toggleScreen, currentMedia } = useChatState();
-
     const [isHover, setIsHover] = useState(true);
 
     if (withControl) {
@@ -38,16 +35,16 @@ export default function Video({ withControl }: { withControl?: boolean }) {
                 >
                     <div style={{ padding: 6 }}>
                         <IconButton
-                            {...(isMicEnabled ? { variant: "solid", color: "primary" } : {})}
-                            onClick={() => {
-                                if (currentMedia) {
-                                    const audioTrack = currentMedia.getAudioTracks()[0];
-                                    if (audioTrack) {
-                                        audioTrack.enabled = !isMicEnabled;
-                                        toggleMic();
-                                    }
-                                }
-                            }}
+                        // {...(isMicEnabled ? { variant: "solid", color: "primary" } : {})}
+                        // onClick={() => {
+                        //     if (currentMedia) {
+                        //         const audioTrack = currentMedia.getAudioTracks()[0];
+                        //         if (audioTrack) {
+                        //             audioTrack.enabled = !isMicEnabled;
+                        //             toggleMic();
+                        //         }
+                        //     }
+                        // }}
                         >
                             <MdMic size={20} />
                         </IconButton>
@@ -62,25 +59,25 @@ export default function Video({ withControl }: { withControl?: boolean }) {
                         }}
                     >
                         <IconButton
-                            {...(isCameraEnabled ? { variant: "solid", color: "primary" } : {})}
-                            onClick={() => {
-                                if (currentMedia) {
-                                    const videoTrack = currentMedia.getVideoTracks()[0];
-                                    if (videoTrack) {
-                                        videoTrack.enabled = !isCameraEnabled;
-                                        toggleCamera();
-                                    }
-                                }
-                            }}
+                        // {...(isCameraEnabled ? { variant: "solid", color: "primary" } : {})}
+                        // onClick={() => {
+                        //     if (currentMedia) {
+                        //         const videoTrack = currentMedia.getVideoTracks()[0];
+                        //         if (videoTrack) {
+                        //             videoTrack.enabled = !isCameraEnabled;
+                        //             toggleCamera();
+                        //         }
+                        //     }
+                        // }}
                         >
                             <BiSolidWebcam size={18} />
                         </IconButton>
                         <IconButton
-                            {...(isScreenSharing ? { variant: "solid", color: "primary" } : {})}
-                            onClick={() => {
-                                toggleScreen();
-                            }}
-                            disabled
+                        // {...(isScreenSharing ? { variant: "solid", color: "primary" } : {})}
+                        // onClick={() => {
+                        //     toggleScreen();
+                        // }}
+                        // disabled
                         >
                             <MdScreenShare size={16} />
                         </IconButton>
@@ -89,10 +86,6 @@ export default function Video({ withControl }: { withControl?: boolean }) {
             </Sheet>
         );
     } else {
-        return (
-            <Sheet variant="solid" style={{ position: "relative", aspectRatio: 16 / 9, borderRadius: 16 }}>
-                {currentMedia ? /* Remote Video */ "" : null}
-            </Sheet>
-        );
+        return <Sheet variant="solid" style={{ position: "relative", aspectRatio: 16 / 9, borderRadius: 16 }}></Sheet>;
     }
 }

@@ -1,6 +1,6 @@
 import { circle, navElements } from "@/constants";
-import { useCanvasState } from "@/hooks/useCanvasState";
-import { useShapeState } from "@/hooks/useShapeState";
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useShapeState } from "@/hooks/zustand/useShapeState";
 import type { ToolbarProps } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Tooltip, useColorScheme } from "@mui/joy";

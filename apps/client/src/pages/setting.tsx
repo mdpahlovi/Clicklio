@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import toast from "react-hot-toast";
 import { db } from "@/utils/firebase";
-import { useAuthState } from "@/hooks/useAuthState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { doc, updateDoc } from "firebase/firestore";
 import { Box, Button, Stack, Typography, Card } from "@mui/joy";
 import { Form, FormInput, FormImage } from "@/components/form";

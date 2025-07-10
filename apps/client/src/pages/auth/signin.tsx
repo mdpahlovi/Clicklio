@@ -1,5 +1,5 @@
 import { Form, FormInput } from "@/components/form";
-import { useAuthState } from "@/hooks/useAuthState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
 import AuthLayout from "@/layout/auth";
 import { Button, Checkbox, Divider, Link, Stack, Typography } from "@mui/joy";
 import { useEffect } from "react";
@@ -8,7 +8,7 @@ import { RiGoogleLine } from "react-icons/ri";
 import { Link as RLink, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
-import { type Credentials } from "@/hooks/useAuthState";
+import { type Credentials } from "@/hooks/zustand/useAuthState";
 
 const signinSchema = yup.object().shape({
     email: yup.string().required("Please provide your email.").email("Please provide a valid email."),

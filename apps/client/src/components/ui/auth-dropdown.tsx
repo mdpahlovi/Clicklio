@@ -1,4 +1,4 @@
-import { useAuthState } from "@/hooks/useAuthState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { Avatar, Box, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
 import { RiArtboardFill, RiFolder5Fill, RiLogoutBoxRLine, RiSettings3Fill } from "react-icons/ri";
 import { Link } from "react-router-dom";

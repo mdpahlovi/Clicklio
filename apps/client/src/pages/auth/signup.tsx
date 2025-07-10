@@ -2,12 +2,12 @@ import * as yup from "yup";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import AuthLayout from "@/layout/auth";
-import { useAuthState } from "@/hooks/useAuthState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { Form, FormInput } from "@/components/form";
 import { useNavigate, Link as RLink } from "react-router-dom";
 import { Button, Checkbox, Typography, Stack, Link } from "@mui/joy";
 
-import type { Credentials } from "@/hooks/useAuthState";
+import type { Credentials } from "@/hooks/zustand/useAuthState";
 
 const signupSchema = yup.object().shape({
     name: yup.string().required("Please provide your name"),

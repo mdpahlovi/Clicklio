@@ -1,5 +1,5 @@
 import Modal from "@/components/ui/modal";
-import { useRoomState } from "@/hooks/useRoomState";
+import { useRoomState } from "@/hooks/zustand/useRoomState";
 import { socket } from "@/utils/socket";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
 import { useRef } from "react";

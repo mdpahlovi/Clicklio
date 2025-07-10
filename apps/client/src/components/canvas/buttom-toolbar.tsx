@@ -1,7 +1,7 @@
 import { PreviewIcon } from "@/components/icons";
 import Modal from "@/components/ui/modal";
-import { useCanvasState } from "@/hooks/useCanvasState";
-import { useShapeState } from "@/hooks/useShapeState";
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useShapeState } from "@/hooks/zustand/useShapeState";
 import { downloadMedia } from "@/utils/download";
 import { handleNavigatorError } from "@/utils/error-handle";
 import { socket } from "@/utils/socket";
@@ -33,12 +33,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
 
     return (
         <>
-            <Modal
-                open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title="Recorded Media"
-                sx={{ maxWidth: 768 }}
-            >
+            <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title="Recorded Media" sx={{ maxWidth: 768 }}>
                 <video style={{ aspectRatio: "16 / 9", width: "100%", borderRadius: 12 }} controls src={mediaBlobUrl} />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
                     <Button

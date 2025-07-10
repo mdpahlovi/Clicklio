@@ -1,6 +1,6 @@
 import Modal from "@/components/ui/modal";
 import { editors, tools, views } from "@/constants";
-import { useCanvasState } from "@/hooks/useCanvasState";
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { Box, Divider, Sheet, Typography } from "@mui/joy";
 import React from "react";
 

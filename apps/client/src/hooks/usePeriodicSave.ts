@@ -3,9 +3,9 @@ import { isEqual } from "lodash";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { db } from "@/utils/firebase";
-import { useAuthState } from "@/hooks/useAuthState";
-import { useShapeState } from "@/hooks/useShapeState";
-import { useCanvasState } from "@/hooks/useCanvasState";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
+import { useShapeState } from "@/hooks/zustand/useShapeState";
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 

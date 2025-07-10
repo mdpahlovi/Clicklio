@@ -1,10 +1,2 @@
-export type RoomUser = {
-    id: string;
-    ip: string;
-    name: string;
-    email: string;
-    isAuthenticated: boolean;
-    role: "ADMIN" | "MODERATOR" | "USER";
-    roomId: string;
-    socketId: string;
-};
+export type RoomUserRole = "ADMIN" | "MODERATOR" | "USER";
+export type RoomUser = { id: string; name: string; role: RoomUserRole; roomId: string };

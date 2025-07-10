@@ -1,5 +1,5 @@
 import Modal from "@/components/ui/modal";
-import { useBasicState } from "@/hooks/useBasicState";
+import { useBasicState } from "@/hooks/zustand/useBasicState";
 import type { File } from "@/pages/room";
 import { db } from "@/utils/firebase";
 import { Box, Button, Card, CardOverflow, Dropdown, IconButton, Input, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
