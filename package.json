@@ -18,8 +18,5 @@
     "workspaces": [
         "apps/*"
     ],
-    "packageManager": "npm@11.4.2",
-    "dependencies": {
-        "ioredis": "^5.6.1"
-    }
+    "packageManager": "npm@11.4.2"
 }
