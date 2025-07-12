@@ -15,7 +15,7 @@ export default function RemoteCursor() {
 
     const throttledEmitCursor = useThrottledCallback(
         (e: MouseEvent) => {
-            if (!room && typeof e.clientX !== "number" && typeof e.clientY !== "number") return;
+            if (!room || typeof e?.clientX !== "number" || typeof e?.clientY !== "number") return;
 
             socket.emit("cursor", { room, cursor: { x: e.clientX, y: e.clientY } });
         },
@@ -25,7 +25,7 @@ export default function RemoteCursor() {
 
     const handleCursorUpdate = useCallback(
         ({ key, value }: { key: string; value: Pointer }) => {
-            if ((key && typeof value.x !== "number") || typeof value.y !== "number") return;
+            if (!key || typeof value?.x !== "number" || typeof value?.y !== "number") return;
 
             setPointer(key, value);
 
