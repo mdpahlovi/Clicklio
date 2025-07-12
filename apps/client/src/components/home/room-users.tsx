@@ -1,24 +1,21 @@
-import { useRoomState } from "@/hooks/zustand/useRoomState";
-import { socket } from "@/utils/socket";
+import { useRoomUserStore } from "@/stores/useRoomUserStore";
 import { Avatar, AvatarGroup } from "@mui/joy";
 import { useSearchParams } from "react-router-dom";
 
 export default function RoomUsers() {
-    const { users } = useRoomState();
     const [searchParams] = useSearchParams();
+    const { currUser, roomUser } = useRoomUserStore();
 
     const room = searchParams.get("room");
 
-    if (room && users?.length) {
-        const currentUserIndex = users.findIndex(({ id }) => id === socket.id);
+    if (room && currUser) {
+        const users = Array.from(roomUser.values());
 
-        if (currentUserIndex !== -1) {
-            return (
-                <AvatarGroup>
-                    <Avatar alt={users[currentUserIndex].name} />
-                    {users.length - 1 ? <Avatar>+{(users.length - 1).toString().padStart(2, "0")}</Avatar> : null}
-                </AvatarGroup>
-            );
-        }
+        return (
+            <AvatarGroup>
+                <Avatar alt={currUser.name} />
+                {users?.length ? <Avatar>+{`${users.length}`.padStart(2, "0")}</Avatar> : null}
+            </AvatarGroup>
+        );
     }
 }
