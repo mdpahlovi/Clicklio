@@ -2,10 +2,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { RedisService } from "src/common/service/redis.service";
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class CanvasGateway {
     @WebSocketServer() server: Server;
+
+    constructor(private readonly redisService: RedisService) {}
 
     @SubscribeMessage("initial:state")
     handleInitialState(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
