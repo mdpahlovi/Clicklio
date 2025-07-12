@@ -3,7 +3,7 @@ import Logo from "@/components/ui/logo";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useRoomState } from "@/hooks/zustand/useRoomState";
+import { useRoomUserStore } from "@/stores/useRoomUserStore";
 import { Box, Button, Divider, IconButton, Sheet, Stack } from "@mui/joy";
 import { PiQuestion, PiShareFat } from "react-icons/pi";
 import { SlLogin } from "react-icons/sl";
@@ -12,7 +12,7 @@ import RoomUsers from "./room-users";
 
 export default function Navbar() {
     const { user } = useAuthState();
-    const { toggleShareModal } = useRoomState();
+    const { setShareModal } = useRoomUserStore();
     const { toggleHelpModal } = useCanvasState();
 
     return (
@@ -26,7 +26,7 @@ export default function Navbar() {
             </Box>
             <Stack direction="row" alignItems="center" gap={{ xs: 1.5, md: 2.5 }}>
                 <RoomUsers />
-                <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={toggleShareModal}>
+                <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={() => setShareModal(true)}>
                     Share
                 </Button>
                 <ThemeToggle />

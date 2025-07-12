@@ -4,8 +4,8 @@ import Navbar from "@/components/home/navbar";
 import ShareModal from "@/components/home/share-modal";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { type User, useRoomState } from "@/hooks/zustand/useRoomState";
 import { useShapeState } from "@/hooks/zustand/useShapeState";
+import { useRoomUserStore, type RoomUser } from "@/stores/useRoomUserStore";
 import { renderCanvas } from "@/utils/canvas";
 import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
@@ -13,24 +13,31 @@ import { useEffect, useState } from "react";
 export default function HomePage() {
     const [shareTo, setShareTo] = useState(null);
     const { refresh, setRefresh } = useCanvasState();
-    const { name, setName, updateName, setUsers } = useRoomState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
+    const { setCurUser, createUser, updateUser, deleteUser } = useRoomUserStore();
     const { shapes, history, position, setShapes, setShape, updateShape, deleteShape, setInitialState, undo, redo } = useShapeState();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        if (roomRef.current) socket.emit("join:room", { room: roomRef.current, name });
+        if (roomRef.current) {
+            const currUser = JSON.parse(sessionStorage.getItem("currUser") || "null");
+            socket.emit("join:room", { room: roomRef.current, user: currUser });
+        }
 
-        socket.on("room:users", ({ users, to }) => {
-            setName(users?.find((user: User) => user.id === socket.id)?.name);
-            setUsers(users);
-
-            if (to && users?.length > 1 && users[0]?.id === socket.id) setShareTo(to);
+        // Room user events
+        socket.on("join:room", ({ users }: { users: Record<string, RoomUser> }) => {
+            Object.entries(users).forEach(([key, value]) => {
+                if (key === socket.id) {
+                    setCurUser(value);
+                } else {
+                    createUser(key, value);
+                }
+            });
         });
-
-        socket.on("update:name", ({ id, name }) => updateName(id, name));
+        socket.on("update:user", ({ key, value }: { key: string; value: RoomUser }) => updateUser(key, value));
+        socket.on("delete:user", ({ key }: { key: string }) => deleteUser(key));
 
         socket.on("initial:state", ({ shapes, history, position }) => {
             setInitialState({ shapes, history, position });
@@ -65,36 +72,7 @@ export default function HomePage() {
             setRefresh();
         });
 
-        return () => {
-            socket.off("set:shape", (shape) => {
-                setShape(shape);
-                setRefresh();
-            });
-            socket.off("update:shape", (shape) => {
-                updateShape(shape);
-                setRefresh();
-            });
-            socket.off("delete:shape", ({ objectId }) => {
-                deleteShape(objectId);
-                setRefresh();
-            });
-            socket.off("undo:shape", ({ status }) => {
-                if (status) undo();
-                setRefresh();
-            });
-            socket.off("redo:shape", ({ status }) => {
-                if (status) redo();
-                setRefresh();
-            });
-            socket.off("reset:canvas", ({ status }) => {
-                if (status) {
-                    setShapes([]);
-                    // eslint-disable-next-line react-hooks/exhaustive-deps
-                    fabricRef.current?.clear();
-                }
-                setRefresh();
-            });
-        };
+        return () => {};
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

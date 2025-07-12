@@ -19,6 +19,7 @@
         "@vercel/analytics": "^1.5.0",
         "fabric": "^6.7.0",
         "firebase": "^11.10.0",
+        "immer": "^10.1.1",
         "lexical": "^0.33.0",
         "lodash": "^4.17.21",
         "mediasoup-client": "^3.12.4",
@@ -32,6 +33,7 @@
         "react-query": "^3.39.3",
         "react-router-dom": "^7.6.3",
         "socket.io-client": "^4.8.1",
+        "use-debounce": "^10.0.5",
         "uuid": "^11.1.0",
         "yup": "^1.6.1",
         "zustand": "^5.0.6"

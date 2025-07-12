@@ -1,33 +1,32 @@
 import Modal from "@/components/ui/modal";
-import { useRoomState } from "@/hooks/zustand/useRoomState";
+import { useRoomUserStore, type RoomUser } from "@/stores/useRoomUserStore";
 import { socket } from "@/utils/socket";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
-import { useRef } from "react";
 import { FaPlay, FaRegCopy, FaStop } from "react-icons/fa6";
 import { useSearchParams } from "react-router-dom";
+import { useDebouncedCallback } from "use-debounce";
 import { v4 as uuid } from "uuid";
 
 export default function ShareModal({ roomRef }: { roomRef: React.RefObject<string | null> }) {
     const [searchParams, setSearchParams] = useSearchParams();
-    const { name, shareModal, setName, toggleShareModal } = useRoomState();
+    const { shareModal, currUser, setShareModal, setCurUser } = useRoomUserStore();
 
     const room = searchParams.get("room");
 
-    const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const debounceUpdate = useDebouncedCallback((user: RoomUser) => {
+        setCurUser(user);
+        socket.emit("update:user", { room, user });
+    }, 500);
 
     return (
-        <Modal open={shareModal} onClose={toggleShareModal} title="Live collaboration">
-            {room ? (
+        <Modal open={shareModal} onClose={() => setShareModal(false)} title="Live collaboration">
+            {room && currUser ? (
                 <>
                     <Input
                         placeholder="Type Your Name!..."
                         sx={{ mt: 1.75, mb: 1.5 }}
-                        value={name}
-                        onChange={({ target: { value: name } }) => {
-                            setName(name);
-                            if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
-                            updateTimeoutRef.current = setTimeout(() => socket.emit("update:name", { room, name }), 1000);
-                        }}
+                        value={currUser?.name}
+                        onChange={(e) => debounceUpdate({ ...currUser, name: e.target.value })}
                         onKeyDown={(e) => e.stopPropagation()}
                     />
                     <Stack flexDirection="row" gap={1.5}>
@@ -50,8 +49,11 @@ export default function ShareModal({ roomRef }: { roomRef: React.RefObject<strin
                             startDecorator={<FaStop size={18} />}
                             color="danger"
                             onClick={() => {
-                                toggleShareModal();
+                                // Leave room
+                                setShareModal(false);
                                 socket.emit("leave:room", { room });
+
+                                // Remove room from url
                                 roomRef.current = null;
                                 searchParams.delete("room");
                                 setSearchParams(searchParams);
@@ -70,10 +72,11 @@ export default function ShareModal({ roomRef }: { roomRef: React.RefObject<strin
                     <Stack mt={1.75} flexDirection="row" justifyContent="center">
                         <Button
                             onClick={() => {
+                                // Create and join room
                                 const room = uuid();
                                 roomRef.current = room;
                                 setSearchParams({ room });
-                                socket.emit("join:room", { room });
+                                socket.emit("join:room", { room, user: { role: "ADMIN" } });
                             }}
                             startDecorator={<FaPlay size={18} />}
                         >
