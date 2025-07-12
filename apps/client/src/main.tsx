@@ -2,10 +2,9 @@ import "@/styles/index.css";
 import "@fontsource/poppins/400.css";
 
 import App from "@/app";
-import { createRoot } from "react-dom/client";
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { createRoot } from "react-dom/client";
 
 const queryClient = new QueryClient();
 
