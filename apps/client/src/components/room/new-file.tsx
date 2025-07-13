@@ -1,4 +1,4 @@
-import { useAuthState } from "@/hooks/zustand/useAuthState";
+import { useAuthState } from "@/stores/auth/useAuthStore";
 import { Box, Button, Card, Input } from "@mui/joy";
 import { useId } from "react";
 import toast from "react-hot-toast";

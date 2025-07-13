@@ -1,5 +1,5 @@
 import Loader from "@/components/ui/loader";
-import { useAuthState } from "@/hooks/zustand/useAuthState";
+import { useAuthState } from "@/stores/auth/useAuthStore";
 import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children }: React.PropsWithChildren) {

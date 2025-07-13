@@ -1,5 +1,5 @@
 import { Form, FormImage, FormInput } from "@/components/form";
-import { useAuthState } from "@/hooks/zustand/useAuthState";
+import { useAuthState } from "@/stores/auth/useAuthStore";
 import { Box, Button, Card, Stack, Typography } from "@mui/joy";
 import { lazy, Suspense, useState } from "react";
 

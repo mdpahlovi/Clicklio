@@ -1,7 +1,7 @@
 import axios, { type AxiosResponse, type ErrorResponse } from "@/utils/axios";
 import { toast } from "react-hot-toast";
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export type User = {
     id: number;

@@ -1,5 +1,5 @@
-import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { useShapeState } from "@/hooks/zustand/useShapeState";
+import { useAuthState } from "@/stores/auth/useAuthStore";
 import * as fabric from "fabric";
 import { isEqual } from "lodash";
 import { useEffect } from "react";
