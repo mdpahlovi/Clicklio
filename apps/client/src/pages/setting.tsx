@@ -27,7 +27,10 @@ export default function MyProfile() {
                                   }
                                 : null
                         }
-                        onSubmit={({ first_name, last_name, ...rest }) => updateProfile({ name: `${first_name} ${last_name}`, ...rest })}
+                        onSubmit={({ first_name, last_name, ...rest }) => {
+                            updateProfile({ name: `${first_name} ${last_name}`, ...rest });
+                            setEditProfile(false);
+                        }}
                     >
                         <CardHeader
                             title="Personal info"
@@ -53,7 +56,10 @@ export default function MyProfile() {
                 <Card style={{ overflow: "hidden" }}>
                     <Form
                         defaultValues={user ? { biography: user?.otherInfo?.biography ? user?.otherInfo?.biography : "" } : null}
-                        onSubmit={(value) => updateProfile({ otherInfo: { biography: value.biography } })}
+                        onSubmit={(value) => {
+                            updateProfile({ otherInfo: { biography: value.biography } });
+                            setEditBot(false);
+                        }}
                     >
                         <CardHeader
                             title="Bio"

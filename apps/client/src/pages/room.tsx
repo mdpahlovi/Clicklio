@@ -1,8 +1,7 @@
 import { Typography } from "@mui/joy";
 import * as fabric from "fabric";
-import { Timestamp } from "firebase/firestore";
 
-export type File = { name: string; shapes: fabric.FabricObject[]; image: string; updatedAt: Timestamp };
+export type File = { name: string; shapes: fabric.FabricObject[]; image: string; updatedAt: Date };
 
 export default function RoomPage() {
     // const { data, isLoading, refetch } = useQuery({

@@ -1,7 +1,5 @@
 import { useAuthState } from "@/hooks/zustand/useAuthState";
-import { db } from "@/utils/firebase";
 import { Box, Button, Card, Input } from "@mui/joy";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { useId } from "react";
 import toast from "react-hot-toast";
 import { MdAdd } from "react-icons/md";
@@ -18,9 +16,8 @@ export default function NewFile() {
         if (!user || !user?.id) return;
 
         const name = new FormData(event.currentTarget).get("name");
-        addDoc(collection(db, "shapes"), { name, user: user?.id, shapes: [], updatedAt: Timestamp.now() })
-            .then((value) => navigator(`/room/${value.id}`))
-            .catch(() => toast.error("Failed To Create Room"));
+        navigator(`/rooms`);
+        toast.success(`Create File ${name}`);
     };
 
     return (

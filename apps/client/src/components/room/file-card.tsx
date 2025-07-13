@@ -1,8 +1,6 @@
 import Modal from "@/components/ui/modal";
 import type { File } from "@/pages/room";
-import { db } from "@/utils/firebase";
 import { Box, Button, Card, CardOverflow, Dropdown, IconButton, Input, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { RiDeleteBin5Fill, RiEdit2Fill, RiMore2Fill } from "react-icons/ri";
@@ -15,9 +13,8 @@ export default function FileCard({ file: { id, name, image, updatedAt }, refetch
 
     // Delete File Actions
     const handleDelete = () => {
-        deleteDoc(doc(db, "shapes", id))
-            .then(() => refetch())
-            .catch(() => toast.error("Filed To Delete File"));
+        refetch();
+        toast.success("Delete File");
     };
 
     // Rename File Actions
@@ -25,13 +22,8 @@ export default function FileCard({ file: { id, name, image, updatedAt }, refetch
         event.preventDefault();
 
         setIsRenaming(true);
-        updateDoc(doc(db, "shapes", id), { name: new FormData(event.currentTarget).get("name") })
-            .then(() => {
-                refetch();
-                setIsOpen(false);
-            })
-            .catch(() => toast.error("Failed To Rename File"))
-            .finally(() => setIsRenaming(false));
+        refetch();
+        toast.success("Rename File");
     };
 
     return (
@@ -61,7 +53,7 @@ export default function FileCard({ file: { id, name, image, updatedAt }, refetch
                     <img src={image} alt={name} style={{ width: "100%", height: "100%", aspectRatio: "16 / 9" }} />
                 </CardOverflow>
                 <Typography level="body-xs">
-                    {updatedAt.toDate().toDateString()}, {updatedAt.toDate().toLocaleTimeString()}
+                    {updatedAt.toDateString()}, {updatedAt.toDateString()}
                 </Typography>
             </Card>
 

@@ -152,7 +152,7 @@ export class AuthService {
             ...(body?.otherInfo ? { otherInfo: body.otherInfo } : {}),
         };
 
-        await this.userRepository.update(user.uid, updateUserPayload);
+        await this.userRepository.update(user.id, updateUserPayload);
 
         const updatedUser = (await this.userRepository.findOne({
             where: { uid: user.uid },

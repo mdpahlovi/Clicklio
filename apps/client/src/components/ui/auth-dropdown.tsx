@@ -1,6 +1,6 @@
 import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { Avatar, Box, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
-import { RiArtboardFill, RiFolder5Fill, RiLogoutBoxRLine, RiSettings3Fill } from "react-icons/ri";
+import { RiFolder5Fill, RiLogoutBoxRLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
 export default function AuthDropdown() {
@@ -12,7 +12,7 @@ export default function AuthDropdown() {
             <MenuButton sx={{ p: 0, border: "none" }}>
                 <Avatar src={user?.photo || undefined} sx={{ "--Avatar-size": "36px" }} />
             </MenuButton>
-            <Menu placement="bottom-end" style={{ zIndex: 9999 }}>
+            <Menu placement="bottom-end" sx={{ zIndex: 9999 }}>
                 <MenuItem>
                     <Avatar src={user?.photo || undefined} />
                     <Box>
@@ -27,17 +27,7 @@ export default function AuthDropdown() {
                 <ListDivider />
                 <MenuItem component={Link} to="/rooms">
                     <RiFolder5Fill size={20} />
-                    My Files
-                </MenuItem>
-                <ListDivider />
-                <MenuItem component={Link} to="/setting">
-                    <RiSettings3Fill size={20} />
-                    Settings
-                </MenuItem>
-                <ListDivider />
-                <MenuItem component={Link} to="/">
-                    <RiArtboardFill size={20} />
-                    Canvas
+                    Dashboard
                 </MenuItem>
                 <ListDivider />
                 <MenuItem color="danger" onClick={signOut}>

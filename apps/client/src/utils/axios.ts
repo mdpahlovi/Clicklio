@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAuthState } from "../hooks/zustand/useAuthState";
 
 const BASE_URL = import.meta.env.VITE_APP_SERVER;
 const baseAxios = axios.create({ baseURL: `${BASE_URL}/api/v1`, timeout: 60000 });
@@ -7,14 +8,13 @@ export type ErrorResponse = { status: number; message: string };
 export type AxiosResponse<T> = { status: number; message: string; data: T };
 
 baseAxios.interceptors.request.use(function (config) {
-    const authState = JSON.parse(localStorage.getItem("clicklio-auth") || "{}");
+    const authState = useAuthState.getState();
 
     if (authState?.accessToken && authState?.refreshToken) {
         config.headers.Authorization = `Bearer ${authState?.accessToken}`;
         config.headers["x-refresh-token"] = authState?.refreshToken;
     }
 
-    console.log({ config });
     return config;
 });
 
@@ -27,9 +27,7 @@ baseAxios.interceptors.response.use(
         const message = axios.isAxiosError(error) ? error.response?.data?.message : error?.message || "Something went wrong...";
 
         if (status === 401) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            localStorage.removeItem("auth-storage");
+            useAuthState.setState({ user: null, accessToken: null, refreshToken: null });
         }
 
         return Promise.reject({ status, message });
