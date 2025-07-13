@@ -5,7 +5,7 @@ import Navbar from "@/components/home/navbar";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useShapeState } from "@/hooks/zustand/useShapeState";
-import { useRoomUserStore, type RoomUser } from "@/stores/useRoomUserStore";
+import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
 import { renderCanvas } from "@/utils/canvas";
 import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ export default function HomePage() {
     const [shareTo, setShareTo] = useState(null);
     const { refresh, setRefresh } = useCanvasState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
-    const { setCurUser, createUser, updateUser, deleteUser } = useRoomUserStore();
+    const { setCurUser, createUser, updateUser, deleteUser } = useUserStore();
     const { shapes, history, position, setShapes, setShape, updateShape, deleteShape, setInitialState, undo, redo } = useShapeState();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

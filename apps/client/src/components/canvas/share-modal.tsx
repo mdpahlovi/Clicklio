@@ -1,5 +1,5 @@
 import Modal from "@/components/ui/modal";
-import { useRoomUserStore, type RoomUser } from "@/stores/useRoomUserStore";
+import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
 import { socket } from "@/utils/socket";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
 import { FaPlay, FaRegCopy, FaStop } from "react-icons/fa6";
@@ -14,9 +14,9 @@ type ShareModalProps = {
 };
 
 export default function ShareModal({ isOpen, setIsOpen, roomRef }: ShareModalProps) {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const { currUser, setCurUser } = useRoomUserStore();
+    const { currUser, setCurUser } = useUserStore();
 
+    const [searchParams, setSearchParams] = useSearchParams();
     const room = searchParams.get("room");
 
     const debounceUpdate = useDebouncedCallback((user: RoomUser) => {

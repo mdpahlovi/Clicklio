@@ -1,12 +1,11 @@
-import { useRoomUserStore } from "@/stores/useRoomUserStore";
+import { useUserStore } from "@/stores/room/useUserStore";
 import { Avatar, AvatarGroup } from "@mui/joy";
 import { useSearchParams } from "react-router-dom";
 
 export default function RoomUsers() {
-    const [searchParams] = useSearchParams();
-    const { currUser, roomUser } = useRoomUserStore();
+    const { currUser, roomUser } = useUserStore();
 
-    const room = searchParams.get("room");
+    const room = useSearchParams()[0].get("room");
 
     if (room && currUser) {
         const users = Array.from(roomUser.values());

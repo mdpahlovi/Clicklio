@@ -1,4 +1,5 @@
-import { useRoomUserStore, type Pointer } from "@/stores/useRoomUserStore";
+import { usePointerStore, type Pointer } from "@/stores/room/usePointerStore";
+import { useUserStore } from "@/stores/room/useUserStore";
 import { socket } from "@/utils/socket";
 import { useTheme } from "@mui/joy";
 import { useCallback, useEffect, useRef } from "react";
@@ -8,10 +9,12 @@ import { useThrottledCallback } from "use-debounce";
 
 export default function RemoteCursor() {
     const { palette } = useTheme();
-    const [searchParams] = useSearchParams();
-    const { roomUser, pointers, setPointer, deletePointer } = useRoomUserStore();
+    const { roomUser } = useUserStore();
+    const { pointers, setPointer, deletePointer } = usePointerStore();
+
+    const room = useSearchParams()[0].get("room");
+
     const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
-    const room = searchParams.get("room");
 
     const throttledEmitCursor = useThrottledCallback(
         (e: MouseEvent) => {
