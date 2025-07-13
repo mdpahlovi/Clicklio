@@ -1,120 +1,139 @@
-import { auth, db } from "@/utils/firebase";
-import { FirebaseError } from "firebase/app";
-import {
-    createUserWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithEmailAndPassword,
-    signInWithPopup,
-    signOut,
-    updateProfile,
-} from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import axios, { type AxiosResponse, type ErrorResponse } from "@/utils/axios";
+import { toast } from "react-hot-toast";
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
-export type User = { id: string; name: string; role?: string; email: string; phone?: string; image?: string; biography?: string };
+export type User = {
+    id: number;
+    uid: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    photo: string | null;
+    otherInfo: Record<string, string> | null;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
 export type Credentials = { email: string; password: string };
+export type ApiResponse = AxiosResponse<{ user: User; accessToken: string; refreshToken: string }>;
 
 type AuthStateStore = {
     user: User | null;
+    accessToken: string | null;
+    refreshToken: string | null;
     signinLoading: boolean;
     signupLoading: boolean;
-    socialLoading: boolean;
+    oAuthSigninLoading: boolean;
     signoutLoading: boolean;
-    error: string | null;
-    setUser: (user: User | null) => void;
-    setError: (error: string | null) => void;
+    isProfileUpdateing: boolean;
     signin: (credentials: Credentials) => Promise<void>;
     signup: (credentials: { name: string } & Credentials) => Promise<void>;
-    googleSignin: () => Promise<void>;
+    oAuthSignin: () => Promise<void>;
     signOut: () => Promise<void>;
+    updateProfile: (user: Partial<User>) => Promise<void>;
 };
 
-export const useAuthState = create<AuthStateStore>((set) => ({
-    user: null,
-    signinLoading: false,
-    signupLoading: false,
-    socialLoading: false,
-    signoutLoading: false,
-    error: null,
+export const useAuthState = create<AuthStateStore>()(
+    persist(
+        (set) => ({
+            user: null,
+            accessToken: null,
+            refreshToken: null,
+            signinLoading: false,
+            signupLoading: false,
+            oAuthSigninLoading: false,
+            signoutLoading: false,
+            isProfileUpdateing: false,
 
-    setUser: (user) => set({ user }),
-    setError: (error) => set({ error }),
+            signin: async ({ email, password }) => {
+                set({ signinLoading: true });
+                try {
+                    const response = (await axios.post("/auth/signin", { email, password })) as ApiResponse;
+                    set({
+                        user: response.data.user,
+                        accessToken: response.data.accessToken,
+                        refreshToken: response.data.refreshToken,
+                    });
+                    toast.success(response.message);
+                } catch (error) {
+                    toast.error((error as ErrorResponse)?.message);
+                } finally {
+                    set({ signinLoading: false });
+                }
+            },
 
-    signin: async ({ email, password }) => {
-        set({ signinLoading: true, error: null });
-        try {
-            const data = await signInWithEmailAndPassword(auth, email, password);
-            const userDoc = await getDoc(doc(db, "users", data.user.uid));
-            if (userDoc.exists()) {
-                set({ user: { id: userDoc.id, ...userDoc.data() } as User });
-            } else {
-                set({ error: "User data not found" });
-            }
-        } catch (error) {
-            if (error instanceof FirebaseError) {
-                set({ error: error.message });
-                setTimeout(() => set({ error: null }), 1500);
-            }
-        } finally {
-            set({ signinLoading: false });
-        }
-    },
+            signup: async ({ name, email, password }) => {
+                set({ signupLoading: true });
+                try {
+                    const response = (await axios.post("/auth/signup", { name, email, password })) as ApiResponse;
+                    set({
+                        user: response.data.user,
+                        accessToken: response.data.accessToken,
+                        refreshToken: response.data.refreshToken,
+                    });
+                    toast.success(response.message);
+                } catch (error) {
+                    toast.error((error as ErrorResponse)?.message);
+                } finally {
+                    set({ signupLoading: false });
+                }
+            },
 
-    signup: async ({ name, email, password }) => {
-        set({ signupLoading: true, error: null });
-        try {
-            const data = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(data.user, { displayName: name });
-            const user = { id: data.user.uid, name, email };
-            await setDoc(doc(db, "users", user.id), user);
-            set({ user });
-        } catch (error) {
-            if (error instanceof FirebaseError) {
-                set({ error: error.message });
-                setTimeout(() => set({ error: null }), 1500);
-            }
-        } finally {
-            set({ signupLoading: false });
-        }
-    },
+            oAuthSignin: async () => {
+                set({ oAuthSigninLoading: true });
+                try {
+                    const response = (await axios.post("/auth/oauth-signin", {
+                        name: "",
+                        email: "",
+                        photo: "",
+                        provider: "GOOGLE",
+                    })) as ApiResponse;
+                    set({
+                        user: response.data.user,
+                        accessToken: response.data.accessToken,
+                        refreshToken: response.data.refreshToken,
+                    });
+                    toast.success(response.message);
+                } catch (error) {
+                    toast.error((error as ErrorResponse)?.message);
+                } finally {
+                    set({ oAuthSigninLoading: false }); // Fixed: was setting signupLoading instead
+                }
+            },
 
-    googleSignin: async () => {
-        set({ socialLoading: true, error: null });
-        try {
-            const provider = new GoogleAuthProvider();
-            const {
-                user: { uid, email, displayName, photoURL },
-            } = await signInWithPopup(auth, provider);
-            const userDoc = await getDoc(doc(db, "users", uid));
-            if (userDoc.exists()) {
-                set({ user: { id: userDoc.id, ...userDoc.data() } as User });
-            } else {
-                const user = { id: uid, name: displayName || "", email: email || "", image: photoURL || "" };
-                await setDoc(doc(db, "users", user.id), user);
-                set({ user });
-            }
-        } catch (error) {
-            if (error instanceof FirebaseError) {
-                set({ error: error.message });
-                setTimeout(() => set({ error: null }), 1500);
-            }
-        } finally {
-            set({ socialLoading: false });
-        }
-    },
+            signOut: async () => {
+                set({ signoutLoading: true });
+                setTimeout(() => {
+                    set({ user: null, accessToken: null, refreshToken: null });
+                    set({ signoutLoading: false });
+                }, 1500);
+            },
 
-    signOut: async () => {
-        set({ signoutLoading: true, error: null });
-        try {
-            await signOut(auth);
-            set({ user: null });
-        } catch (error) {
-            if (error instanceof FirebaseError) {
-                set({ error: error.message });
-                setTimeout(() => set({ error: null }), 1500);
-            }
-        } finally {
-            set({ signoutLoading: false });
-        }
-    },
-}));
+            updateProfile: async (user) => {
+                set({ isProfileUpdateing: true });
+                try {
+                    const response = await axios.post("/auth/update-profile", user);
+                    set({ user: response.data });
+
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    toast.success(response.message);
+                } catch (error) {
+                    toast.error((error as ErrorResponse)?.message);
+                } finally {
+                    set({ isProfileUpdateing: false });
+                }
+            },
+        }),
+        {
+            name: "clicklio-auth",
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({
+                user: state.user,
+                accessToken: state.accessToken,
+                refreshToken: state.refreshToken,
+            }),
+        },
+    ),
+);

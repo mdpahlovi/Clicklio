@@ -3,7 +3,6 @@ import { useAuthState } from "@/hooks/zustand/useAuthState";
 import AuthLayout from "@/layout/auth";
 import { Button, Checkbox, Divider, Link, Stack, Typography } from "@mui/joy";
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 import { RiGoogleLine } from "react-icons/ri";
 import { Link as RLink, useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -21,16 +20,12 @@ const signinSchema = yup.object().shape({
 
 export default function JoySignInSideTemplate() {
     const navigate = useNavigate();
-    const { user, signinLoading, socialLoading, error, signin, googleSignin } = useAuthState();
+    const { user, signinLoading, signin, oAuthSigninLoading, oAuthSignin } = useAuthState();
 
     useEffect(() => {
         if (user && user?.id) navigate("/rooms");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
-
-    useEffect(() => {
-        if (error) toast.error(error);
-    }, [error]);
 
     return (
         <AuthLayout>
@@ -45,7 +40,7 @@ export default function JoySignInSideTemplate() {
                     </Link>
                 </Typography>
             </Stack>
-            <Button variant="soft" color="neutral" startDecorator={<RiGoogleLine />} onClick={googleSignin} loading={socialLoading}>
+            <Button variant="soft" color="neutral" startDecorator={<RiGoogleLine />} onClick={oAuthSignin} loading={oAuthSigninLoading}>
                 Continue with Google
             </Button>
             <Divider sx={{ mt: 2, mb: 1 }}>OR</Divider>

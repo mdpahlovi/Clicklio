@@ -1,19 +1,14 @@
-import { lazy, Suspense, useState } from "react";
-import toast from "react-hot-toast";
-import { db } from "@/utils/firebase";
+import { Form, FormImage, FormInput } from "@/components/form";
 import { useAuthState } from "@/hooks/zustand/useAuthState";
-import { doc, updateDoc } from "firebase/firestore";
-import { Box, Button, Stack, Typography, Card } from "@mui/joy";
-import { Form, FormInput, FormImage } from "@/components/form";
+import { Box, Button, Card, Stack, Typography } from "@mui/joy";
+import { lazy, Suspense, useState } from "react";
 
 const FormTexteditor = lazy(() => import("@/components/form/form-texteditor"));
 
 export default function MyProfile() {
-    const { user, setUser } = useAuthState();
     const [editBio, setEditBot] = useState(false);
     const [editProfile, setEditProfile] = useState(false);
-    const [editBioLoading, setEditBotLoading] = useState(false);
-    const [editProfileLoading, setEditProfileLoading] = useState(false);
+    const { user, isProfileUpdateing, updateProfile } = useAuthState();
 
     return (
         <Box sx={{ px: 3, py: 2 }}>
@@ -26,30 +21,13 @@ export default function MyProfile() {
                                 ? {
                                       first_name: user?.name?.split(" ")[0] ? user?.name?.split(" ")[0] : "",
                                       last_name: user?.name?.split(" ")[1] ? user?.name?.split(" ")[1] : "",
-                                      role: user?.role ? user?.role : "",
                                       email: user?.email ? user?.email : "",
                                       phone: user?.phone ? user?.phone : "",
-                                      image: user?.image ? user?.image : "",
+                                      photo: user?.photo ? user?.photo : "",
                                   }
-                                : undefined
+                                : null
                         }
-                        onSubmit={({ first_name, last_name, ...rest }) => {
-                            const value = { name: `${first_name} ${last_name}`, ...rest };
-
-                            if (user) {
-                                setEditProfileLoading(true);
-                                updateDoc(doc(db, "users", user?.id), value)
-                                    .then(() => {
-                                        setEditProfile(false);
-                                        setEditProfileLoading(false);
-                                        setUser({ ...user, ...value });
-                                    })
-                                    .catch(() => {
-                                        setEditProfileLoading(false);
-                                        toast.error("Failed To Update Profile");
-                                    });
-                            }
-                        }}
+                        onSubmit={({ first_name, last_name, ...rest }) => updateProfile({ name: `${first_name} ${last_name}`, ...rest })}
                     >
                         <CardHeader
                             title="Personal info"
@@ -58,39 +36,24 @@ export default function MyProfile() {
                         />
                         <Stack direction="column" spacing={2}>
                             <Stack direction={{ md: "row" }}>
-                                <FormImage name="image" disabled={!editProfile} />
+                                <FormImage name="photo" disabled={!editProfile} />
                                 <Stack spacing={1} sx={{ flexGrow: 1, pt: { xs: 2, md: 0 }, pl: { md: 2 } }}>
                                     <FormInput name="first_name" label="First Name" disabled={!editProfile} />
                                     <FormInput name="last_name" label="Last Name" disabled={!editProfile} />
                                 </Stack>
                             </Stack>
-                            <Stack spacing={1} style={{ marginTop: 8 }}>
-                                <FormInput name="role" label="Your Role" disabled={!editProfile} />
+                            <Stack spacing={1} style={{ marginTop: 12 }}>
                                 <FormInput name="email" label="Your Email" disabled />
                                 <FormInput name="phone" label="Your Phone" disabled={!editProfile} />
                             </Stack>
                         </Stack>
-                        {editProfile ? <CardAction loading={editProfileLoading} toggleEdit={() => setEditProfile(false)} /> : null}
+                        {editProfile ? <CardAction loading={isProfileUpdateing} toggleEdit={() => setEditProfile(false)} /> : null}
                     </Form>
                 </Card>
                 <Card style={{ overflow: "hidden" }}>
                     <Form
-                        defaultValues={user ? { biography: user?.biography ? user?.biography : "" } : undefined}
-                        onSubmit={(value) => {
-                            if (user) {
-                                setEditBotLoading(true);
-                                updateDoc(doc(db, "users", user?.id), value)
-                                    .then(() => {
-                                        setEditBot(false);
-                                        setEditBotLoading(false);
-                                        setUser({ ...user, ...value });
-                                    })
-                                    .catch(() => {
-                                        setEditBotLoading(false);
-                                        toast.error("Failed To Update Biography");
-                                    });
-                            }
-                        }}
+                        defaultValues={user ? { biography: user?.otherInfo?.biography ? user?.otherInfo?.biography : "" } : null}
+                        onSubmit={(value) => updateProfile({ otherInfo: { biography: value.biography } })}
                     >
                         <CardHeader
                             title="Bio"
@@ -100,7 +63,7 @@ export default function MyProfile() {
                         <Suspense fallback={<Typography level="body-sm">Text Editor Loading...</Typography>}>
                             <FormTexteditor name="biography" />
                         </Suspense>
-                        {editBio ? <CardAction loading={editBioLoading} toggleEdit={() => setEditBot(false)} /> : null}
+                        {editBio ? <CardAction loading={isProfileUpdateing} toggleEdit={() => setEditBot(false)} /> : null}
                     </Form>
                 </Card>
             </Stack>

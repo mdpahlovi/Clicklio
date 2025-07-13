@@ -9,7 +9,6 @@
         "format": "prettier --write \"apps/client/src/**/*.ts\" \"apps/server/src/**/*.ts\""
     },
     "devDependencies": {
-        "@types/bcryptjs": "^2.4.6",
         "dotenv-cli": "^8.0.0",
         "eslint-config-prettier": "^10.1.5",
         "eslint-plugin-prettier": "^5.5.1",

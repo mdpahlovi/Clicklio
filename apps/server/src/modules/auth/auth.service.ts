@@ -32,7 +32,7 @@ export class AuthService {
         // If user has no password, throw error
         if (!user.password) {
             if (user.provider !== Provider.CREDENTIAL) {
-                throw new BadRequestException(`Please use ${user.provider.toLowerCase()} to login`);
+                throw new BadRequestException(`Please use ${user.provider.toLowerCase()} to sign in`);
             } else {
                 throw new BadRequestException("Please reset your password");
             }
@@ -43,13 +43,11 @@ export class AuthService {
             throw new NotFoundException("Please check your credentials");
         }
 
+        const tokens = await this.jwtSignin(user);
+
         return {
-            message: "User logged in successfully",
-            data: {
-                user,
-                accessToken: this.jwtService.sign(user, { expiresIn: "1h" }),
-                refreshToken: this.jwtService.sign(user, { expiresIn: "7d" }),
-            },
+            message: "User signed in successfully",
+            data: { user, ...tokens },
         };
     }
 
@@ -62,7 +60,7 @@ export class AuthService {
 
         // If user already exists, throw error
         if (existingUser) {
-            throw new BadRequestException(`An account already exists with '${email}'. Please login.`);
+            throw new BadRequestException(`An account already exists with '${email}'. Please sign in.`);
         }
 
         const hashedPassword = await this.hashService.hash(password);
@@ -76,18 +74,15 @@ export class AuthService {
         };
 
         const createdUser = await this.userRepository.save(createUserPayload);
+        const tokens = await this.jwtSignin(createdUser);
 
         return {
-            message: "User registered successfully",
-            data: {
-                user: createdUser,
-                accessToken: this.jwtService.sign(createdUser, { expiresIn: "1h" }),
-                refreshToken: this.jwtService.sign(createdUser, { expiresIn: "7d" }),
-            },
+            message: "User signed up successfully",
+            data: { user: createdUser, ...tokens },
         };
     }
 
-    async oAuthLogin(oAuthUserDto: OAuthUserDto) {
+    async oAuthSignin(oAuthUserDto: OAuthUserDto) {
         const { name, email, photo, provider } = oAuthUserDto;
 
         const user = await this.userRepository.findOne({
@@ -119,12 +114,62 @@ export class AuthService {
             createdUser = await this.userRepository.save(createUserPayload);
         }
 
+        const tokens = await this.jwtSignin(createdUser);
+
         return {
-            message: "User logged in successfully",
+            message: "User signed in successfully",
+            data: { user: createdUser, ...tokens },
+        };
+    }
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    async jwtSignin(user: User) {
+        const payload = {
+            id: user.id,
+            uid: user.uid,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            photo: user.photo,
+            otherInfo: user.otherInfo,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        };
+
+        return {
+            accessToken: this.jwtService.sign(payload, { expiresIn: "1h" }),
+            refreshToken: this.jwtService.sign(payload, { expiresIn: "7d" }),
+        };
+    }
+
+    async updateProfile(body: Partial<User>, user: User) {
+        const updateUserPayload: DeepPartial<User> = {
+            ...(body?.isActive ? { isActive: body.isActive } : {}),
+            ...(body?.name ? { name: body.name } : {}),
+            ...(body?.email ? { email: body.email } : {}),
+            ...(body?.phone ? { phone: body.phone } : {}),
+            ...(body?.photo ? { photo: body.photo } : {}),
+            ...(body?.otherInfo ? { otherInfo: body.otherInfo } : {}),
+        };
+
+        await this.userRepository.update(user.uid, updateUserPayload);
+
+        const updatedUser = (await this.userRepository.findOne({
+            where: { uid: user.uid },
+        })) as User;
+
+        return {
+            message: "User profile updated successfully",
             data: {
-                user: createdUser,
-                accessToken: this.jwtService.sign(createdUser, { expiresIn: "1h" }),
-                refreshToken: this.jwtService.sign(createdUser, { expiresIn: "7d" }),
+                id: updatedUser.id,
+                uid: updatedUser.uid,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                photo: updatedUser.photo,
+                otherInfo: updatedUser.otherInfo,
+                createdAt: updatedUser.createdAt,
+                updatedAt: updatedUser.updatedAt,
             },
         };
     }

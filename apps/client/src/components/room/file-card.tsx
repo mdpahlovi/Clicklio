@@ -1,16 +1,17 @@
 import Modal from "@/components/ui/modal";
-import { useBasicState } from "@/hooks/zustand/useBasicState";
 import type { File } from "@/pages/room";
 import { db } from "@/utils/firebase";
 import { Box, Button, Card, CardOverflow, Dropdown, IconButton, Input, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { RiDeleteBin5Fill, RiEdit2Fill, RiMore2Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
 export default function FileCard({ file: { id, name, image, updatedAt }, refetch }: { file: { id: string } & File; refetch: () => void }) {
     const navigate = useNavigate();
-    const { renameModal, toggleRenameModal, renameLoading, toggleRenameLoading } = useBasicState();
+    const [isOpen, setIsOpen] = useState(false);
+    const [isRenaming, setIsRenaming] = useState(false);
 
     // Delete File Actions
     const handleDelete = () => {
@@ -23,14 +24,14 @@ export default function FileCard({ file: { id, name, image, updatedAt }, refetch
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        toggleRenameLoading();
+        setIsRenaming(true);
         updateDoc(doc(db, "shapes", id), { name: new FormData(event.currentTarget).get("name") })
             .then(() => {
                 refetch();
-                toggleRenameModal();
+                setIsOpen(false);
             })
             .catch(() => toast.error("Failed To Rename File"))
-            .finally(() => toggleRenameLoading());
+            .finally(() => setIsRenaming(false));
     };
 
     return (
@@ -45,7 +46,7 @@ export default function FileCard({ file: { id, name, image, updatedAt }, refetch
                             <RiMore2Fill size={20} />
                         </MenuButton>
                         <Menu placement="bottom-end">
-                            <MenuItem onClick={toggleRenameModal}>
+                            <MenuItem onClick={() => setIsOpen(true)}>
                                 <RiEdit2Fill size={16} />
                                 Rename file
                             </MenuItem>
@@ -64,10 +65,10 @@ export default function FileCard({ file: { id, name, image, updatedAt }, refetch
                 </Typography>
             </Card>
 
-            <Modal open={renameModal} onClose={toggleRenameModal} title="Rename File">
+            <Modal open={isOpen} onClose={() => setIsOpen(false)} title="Rename File">
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "end" }}>
                     <Input name="name" placeholder="File Name" defaultValue={name} required fullWidth />
-                    <Button type="submit" loading={renameLoading} sx={{ mt: 2 }}>
+                    <Button type="submit" loading={isRenaming} sx={{ mt: 2 }}>
                         Submit
                     </Button>
                 </form>

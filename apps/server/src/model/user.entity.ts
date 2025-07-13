@@ -25,13 +25,13 @@ export class User {
     email: string;
 
     @Column({ type: "text", nullable: true })
-    phone?: string;
+    phone: string | null;
 
     @Column({ type: "text", nullable: true })
-    photo?: string;
+    photo: string | null;
 
     @Column({ type: "text", nullable: true })
-    password?: string;
+    password: string | null;
 
     @Column({
         type: "enum",
@@ -45,7 +45,7 @@ export class User {
         type: "jsonb",
         nullable: true,
     })
-    otherInfo?: any;
+    otherInfo: object | null;
 
     @CreateDateColumn({
         name: "created_at",

@@ -22,6 +22,7 @@ import { RedisService } from "./service/redis.service";
             inject: [ConfigService],
         }),
         JwtModule.registerAsync({
+            global: true,
             useFactory: (configService: ConfigService) => ({
                 secret: configService.get("jwt.secret"),
             }),

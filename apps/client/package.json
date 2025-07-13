@@ -18,6 +18,7 @@
         "@mui/joy": "^5.0.0-beta.52",
         "@tanstack/react-query": "^5.83.0",
         "@vercel/analytics": "^1.5.0",
+        "axios": "^1.10.0",
         "fabric": "^6.7.0",
         "firebase": "^11.10.0",
         "immer": "^10.1.1",

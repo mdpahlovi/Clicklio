@@ -1,11 +1,10 @@
-import * as yup from "yup";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
-import AuthLayout from "@/layout/auth";
-import { useAuthState } from "@/hooks/zustand/useAuthState";
 import { Form, FormInput } from "@/components/form";
-import { useNavigate, Link as RLink } from "react-router-dom";
-import { Button, Checkbox, Typography, Stack, Link } from "@mui/joy";
+import { useAuthState } from "@/hooks/zustand/useAuthState";
+import AuthLayout from "@/layout/auth";
+import { Button, Checkbox, Link, Stack, Typography } from "@mui/joy";
+import { useEffect } from "react";
+import { Link as RLink, useNavigate } from "react-router-dom";
+import * as yup from "yup";
 
 import type { Credentials } from "@/hooks/zustand/useAuthState";
 
@@ -25,16 +24,12 @@ const signupSchema = yup.object().shape({
 
 export default function SignupPage() {
     const navigate = useNavigate();
-    const { user, signupLoading, error, signup } = useAuthState();
+    const { user, signupLoading, signup } = useAuthState();
 
     useEffect(() => {
         if (user && user?.id) navigate("/rooms");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
-
-    useEffect(() => {
-        if (error) toast.error(error);
-    }, [error]);
 
     return (
         <AuthLayout>

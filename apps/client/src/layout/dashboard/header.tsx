@@ -1,18 +1,15 @@
 import AuthDropdown from "@/components/ui/auth-dropdown";
 import Logo from "@/components/ui/logo";
 import ThemeToggle from "@/components/ui/theme-toggle";
-import { useBasicState } from "@/hooks/zustand/useBasicState";
 import { Box, IconButton, Input, Typography } from "@mui/joy";
 import { IoIosSearch, IoMdMenu } from "react-icons/io";
 
-export default function Header() {
-    const { toggleSidebar } = useBasicState();
-
+export default function Header({ setIsOpen }: { setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
     return (
         <>
             <Logo sx={{ display: { xs: "none", xl: "flex" } }} />
 
-            <IconButton onClick={toggleSidebar} sx={{ display: { xl: "none" } }}>
+            <IconButton onClick={() => setIsOpen(true)} sx={{ display: { xl: "none" } }}>
                 <IoMdMenu size={24} />
             </IconButton>
 
