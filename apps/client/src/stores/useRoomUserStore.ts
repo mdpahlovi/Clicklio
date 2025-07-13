@@ -5,12 +5,10 @@ export type RoomUser = { id: string; name: string; role: RoomUserRole; roomId: s
 export type Pointer = { x: number; y: number };
 
 type RoomUserState = {
-    shareModal: boolean;
     currUser: RoomUser | null;
     roomUser: Map<string, RoomUser>;
     pointers: Map<string, Pointer>;
 
-    setShareModal: (shareModal: boolean) => void;
     setCurUser: (user: RoomUser) => void;
     createUser: (key: string, value: RoomUser) => void;
     updateUser: (key: string, value: RoomUser) => void;
@@ -22,12 +20,9 @@ type RoomUserState = {
 };
 
 export const useRoomUserStore = create<RoomUserState>((set) => ({
-    shareModal: false,
     currUser: null,
     roomUser: new Map<string, RoomUser>(),
     pointers: new Map<string, Pointer>(),
-
-    setShareModal: (shareModal: boolean) => set({ shareModal }),
 
     setCurUser: (user: RoomUser) => {
         sessionStorage.setItem("currUser", JSON.stringify(user));

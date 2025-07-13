@@ -1,16 +1,13 @@
 import Modal from "@/components/ui/modal";
 import { editors, tools, views } from "@/constants";
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { Box, Divider, Sheet, Typography } from "@mui/joy";
 import React from "react";
 
-export default function HelpModal() {
-    const { helpModal, toggleHelpModal } = useCanvasState();
-
+export default function GuideModal({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
     return (
         <Modal
-            open={helpModal}
-            onClose={toggleHelpModal}
+            open={isOpen}
+            onClose={() => setIsOpen(false)}
             title="Keyboard shortcuts"
             sx={{ maxWidth: 768, maxHeight: "80vh", overflowY: "scroll" }}
         >

@@ -2,18 +2,19 @@ import AuthDropdown from "@/components/ui/auth-dropdown";
 import Logo from "@/components/ui/logo";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import { useAuthState } from "@/hooks/zustand/useAuthState";
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useRoomUserStore } from "@/stores/useRoomUserStore";
 import { Box, Button, Divider, IconButton, Sheet, Stack } from "@mui/joy";
 import { PiQuestion, PiShareFat } from "react-icons/pi";
 import { SlLogin } from "react-icons/sl";
 import { Link } from "react-router-dom";
 import RoomUsers from "./room-users";
 
-export default function Navbar() {
+type NavbarProps = {
+    setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function Navbar({ setIsGuideModalOpen, setIsShareModalOpen }: NavbarProps) {
     const { user } = useAuthState();
-    const { setShareModal } = useRoomUserStore();
-    const { toggleHelpModal } = useCanvasState();
 
     return (
         <Sheet
@@ -26,12 +27,17 @@ export default function Navbar() {
             </Box>
             <Stack direction="row" alignItems="center" gap={{ xs: 1.5, md: 2.5 }}>
                 <RoomUsers />
-                <Button variant="outlined" color="neutral" startDecorator={<PiShareFat size={20} />} onClick={() => setShareModal(true)}>
+                <Button
+                    variant="outlined"
+                    color="neutral"
+                    startDecorator={<PiShareFat size={20} />}
+                    onClick={() => setIsShareModalOpen(true)}
+                >
                     Share
                 </Button>
                 <ThemeToggle />
                 <Divider orientation="vertical" sx={{ mr: { xs: 1, sm: 0 } }} />
-                <IconButton onClick={toggleHelpModal} sx={{ display: { xs: "none", md: "inline-flex" } }}>
+                <IconButton onClick={() => setIsGuideModalOpen(true)} sx={{ display: { xs: "none", md: "inline-flex" } }}>
                     <PiQuestion size={24} />
                 </IconButton>
 

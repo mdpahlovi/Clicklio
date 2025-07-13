@@ -7,9 +7,15 @@ import { useSearchParams } from "react-router-dom";
 import { useDebouncedCallback } from "use-debounce";
 import { v4 as uuid } from "uuid";
 
-export default function ShareModal({ roomRef }: { roomRef: React.RefObject<string | null> }) {
+type ShareModalProps = {
+    isOpen: boolean;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    roomRef: React.RefObject<string | null>;
+};
+
+export default function ShareModal({ isOpen, setIsOpen, roomRef }: ShareModalProps) {
     const [searchParams, setSearchParams] = useSearchParams();
-    const { shareModal, currUser, setShareModal, setCurUser } = useRoomUserStore();
+    const { currUser, setCurUser } = useRoomUserStore();
 
     const room = searchParams.get("room");
 
@@ -19,7 +25,7 @@ export default function ShareModal({ roomRef }: { roomRef: React.RefObject<strin
     }, 500);
 
     return (
-        <Modal open={shareModal} onClose={() => setShareModal(false)} title="Live collaboration">
+        <Modal open={isOpen} onClose={() => setIsOpen(false)} title="Live collaboration">
             {room && currUser ? (
                 <>
                     <Input
@@ -50,7 +56,7 @@ export default function ShareModal({ roomRef }: { roomRef: React.RefObject<strin
                             color="danger"
                             onClick={() => {
                                 // Leave room
-                                setShareModal(false);
+                                setIsOpen(false);
                                 socket.emit("leave:room", { room });
 
                                 // Remove room from url

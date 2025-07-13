@@ -1,7 +1,7 @@
 import Canvas from "@/components/canvas";
-import HelpModal from "@/components/canvas/help-modal";
+import GuideModal from "@/components/canvas/guide-modal";
+import ShareModal from "@/components/canvas/share-modal";
 import Navbar from "@/components/home/navbar";
-import ShareModal from "@/components/home/share-modal";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useShapeState } from "@/hooks/zustand/useShapeState";
@@ -11,6 +11,9 @@ import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
+    const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
     const [shareTo, setShareTo] = useState(null);
     const { refresh, setRefresh } = useCanvasState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
@@ -86,11 +89,11 @@ export default function HomePage() {
 
     return (
         <div>
-            <Navbar />
+            <Navbar {...{ setIsGuideModalOpen, setIsShareModalOpen }} />
             <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
 
-            <HelpModal />
-            <ShareModal {...{ roomRef }} />
+            <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
+            <ShareModal isOpen={isShareModalOpen} setIsOpen={setIsShareModalOpen} {...{ roomRef }} />
         </div>
     );
 }
