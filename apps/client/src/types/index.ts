@@ -40,7 +40,7 @@ export type ModifyShape = {
     property: keyof Attributes;
     value: string;
     room: string | null;
-    updateShape: (shape: fabric.FabricObject) => void;
+    updateShape: (key: string, value: Record<string, unknown>) => void;
 };
 
 export type ElementDirection = {
@@ -52,7 +52,7 @@ export type ImageUpload = {
     file: File;
     room: string | null;
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    setShape: (shape: fabric.FabricObject) => void;
+    createShape: (key: string, value: Record<string, unknown>) => void;
 };
 
 export type SidebarProps = {
@@ -116,24 +116,24 @@ export type CanvasMouseUp = {
     deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
     roomRef: React.RefObject<string | null>;
     setTool: (tool: Tool) => void;
-    setShape: (shape: fabric.FabricObject) => void;
-    deleteShape: (id: string) => void;
+    createShape: (key: string, value: Record<string, unknown>) => void;
+    deleteShape: (key: string) => void;
 };
 
 export type CanvasObjectModified = {
     options: fabric.ModifiedEvent<fabric.TPointerEvent>;
     roomRef: React.RefObject<string | null>;
-    updateShape: (shape: fabric.FabricObject) => void;
+    updateShape: (key: string, value: Record<string, unknown>) => void;
 };
 
 export type CanvasPathCreated = {
     roomRef: React.RefObject<string | null>;
-    setShape: (shape: fabric.FabricObject) => void;
+    createShape: (key: string, value: Record<string, unknown>) => void;
     options: { path: fabric.FabricObject };
 };
 
 export type RenderCanvas = {
-    shapes: fabric.FabricObject[];
+    shapes: Map<string, Record<string, unknown>>;
     fabricRef: React.RefObject<fabric.Canvas | null>;
 };
 
@@ -149,12 +149,11 @@ export type WindowKeyDown = {
     roomRef: React.RefObject<string | null>;
     isEditing: React.RefObject<boolean>;
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>;
-    setShape: (shape: fabric.FabricObject) => void;
-    deleteShape: (id: string) => void;
-    undo: (steps?: number) => void;
-    redo: (steps?: number) => void;
+    createShape: (key: string, value: Record<string, unknown>) => void;
+    deleteShape: (key: string) => void;
+    undo: () => void;
+    redo: () => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setMode: (mode: "light" | "dark" | null) => void;
-    setRefresh: () => void;
 };

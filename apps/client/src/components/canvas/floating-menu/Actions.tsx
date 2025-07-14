@@ -1,5 +1,5 @@
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useShapeState } from "@/hooks/zustand/useShapeState";
+import { useShapeStore } from "@/stores/room/useShapeStore";
 import type { ActionsProps } from "@/types";
 import { handleDelete, handleDuplicate } from "@/utils/key-events";
 import { IconButton, Tooltip } from "@mui/joy";
@@ -8,11 +8,10 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { useSearchParams } from "react-router-dom";
 
 export default function Actions({ fabricRef, currentObject }: ActionsProps) {
-    const [searchParams] = useSearchParams();
-    const { setShape, deleteShape } = useShapeState();
     const { userMedia, setUserMedia } = useCanvasState();
+    const { createShape, deleteShape } = useShapeStore();
 
-    const room = searchParams.get("room");
+    const room = useSearchParams()[0].get("room");
 
     return (
         <>
@@ -21,7 +20,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     <IconButton
                         color="primary"
                         variant="soft"
-                        onClick={() => (fabricRef.current ? handleDuplicate(fabricRef.current, room, setShape) : null)}
+                        onClick={() => (fabricRef.current ? handleDuplicate(fabricRef.current, room, createShape) : null)}
                     >
                         <IoDuplicateOutline />
                     </IconButton>

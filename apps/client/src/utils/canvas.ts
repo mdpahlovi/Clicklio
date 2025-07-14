@@ -44,7 +44,7 @@ export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedTool
     if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
     // get pointer coordinates
-    const pointer = canvas.getPointer(options.e);
+    const pointer = canvas.getScenePoint(options.e);
 
     // if selected shape is panning, set panning points
     if (selectedToolRef.current === "panning") return (isPanning.current = pointer);
@@ -62,7 +62,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
     if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
     // get pointer coordinates
-    const pointer = canvas.getPointer(options.e);
+    const pointer = canvas.getScenePoint(options.e);
 
     // calculate deltaX and deltaY points for panning
     if (selectedToolRef.current === "panning" && isPanning.current) {
@@ -95,21 +95,21 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
     switch (selectedToolRef?.current) {
         case "rect":
             (shapeRef.current as fabric.Rect).set({
-                width: pointer.x - (left || 0),
-                height: pointer.y - (top || 0),
+                width: pointer.x - left,
+                height: pointer.y - top,
             });
             break;
 
         case "triangle":
             (shapeRef.current as fabric.Triangle).set({
-                width: pointer.x - (left || 0),
-                height: pointer.y - (top || 0),
+                width: pointer.x - left,
+                height: pointer.y - top,
             });
             break;
 
         case "circle":
             (shapeRef.current as fabric.Circle).set({
-                radius: Math.abs(pointer.x - (left || 0)) / 2,
+                radius: Math.abs(pointer.x - left) / 2,
             });
             break;
 
@@ -142,7 +142,7 @@ export const handleCanvasMouseUp = ({
     selectedToolRef,
     deleteObjectRef,
     setTool,
-    setShape,
+    createShape,
     deleteShape,
 }: CanvasMouseUp) => {
     // if canvas is in DrawingMode, return
@@ -159,7 +159,6 @@ export const handleCanvasMouseUp = ({
             canvas.remove(object);
 
             // sync in storage
-
             deleteShape(object?.uid);
             if (roomRef.current) socket.emit("delete:shape", { room: roomRef.current, uid: object?.uid });
         });
@@ -174,8 +173,13 @@ export const handleCanvasMouseUp = ({
         canvas.setActiveObject(shapeRef.current);
         shapeRef.current.setCoords();
 
-        setShape({ uid: shapeRef.current?.uid, ...shapeRef.current.toJSON() });
-        if (roomRef.current) socket.emit("set:shape", { room: roomRef.current, uid: shapeRef.current?.uid, ...shapeRef.current.toJSON() });
+        createShape(shapeRef.current?.uid, shapeRef.current.toJSON());
+        if (roomRef.current)
+            socket.emit("create:shape", {
+                room: roomRef.current,
+                key: shapeRef.current?.uid,
+                value: shapeRef.current.toJSON(),
+            });
     }
 
     // set everything to null
@@ -196,14 +200,19 @@ export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: Ca
     } else {
         // sync shape in storage
         if (target?.uid) {
-            updateShape({ uid: target?.uid, ...target.toJSON() });
-            if (roomRef.current) socket.emit("update:shape", { room: roomRef.current, uid: target?.uid, ...target.toJSON() });
+            updateShape(target?.uid, target.toJSON());
+            if (roomRef.current)
+                socket.emit("update:shape", {
+                    room: roomRef.current,
+                    key: target?.uid,
+                    value: target.toJSON(),
+                });
         }
     }
 };
 
 // update shape in storage when path is created when in path mode
-export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCreated) => {
+export const handlePathCreated = ({ options, roomRef, createShape }: CanvasPathCreated) => {
     // get path object
     const path = options.path;
     if (!path) return;
@@ -213,8 +222,13 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
 
     // sync shape in storage
     if (path?.uid) {
-        setShape({ uid: path?.uid, ...path.toJSON() });
-        if (roomRef.current) socket.emit("set:shape", { room: roomRef.current, uid: path?.uid, ...path.toJSON() });
+        createShape(path?.uid, path.toJSON());
+        if (roomRef.current)
+            socket.emit("create:shape", {
+                room: roomRef.current,
+                key: path?.uid,
+                value: path.toJSON(),
+            });
     }
 };
 
@@ -224,10 +238,11 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
     fabricRef.current?.clear();
 
     // render all objects on canvas
-    shapes.forEach((object) => {
+    shapes.forEach((object, key) => {
         fabric.util.enlivenObjects([object]).then((enlivenedObjects) => {
             enlivenedObjects.forEach((enlivenedObj) => {
                 const object = enlivenedObj as fabric.FabricObject;
+                object.set({ uid: key });
 
                 // add object to canvas
                 if (object?.uid) fabricRef.current?.add(object);

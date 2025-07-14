@@ -89,7 +89,7 @@ export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseCo
     }
 };
 
-export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUpload) => {
+export const handleImageUpload = ({ file, room, fabricRef, createShape }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -99,8 +99,13 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
 
             // sync shape in storage
             if (image?.uid) {
-                setShape({ uid: image?.uid, ...image.toJSON() });
-                if (room) socket.emit("set:shape", { room, uid: image?.uid, ...image.toJSON() });
+                createShape(image?.uid, image.toJSON());
+                if (room)
+                    socket.emit("create:shape", {
+                        room,
+                        key: image?.uid,
+                        value: image.toJSON(),
+                    });
             }
 
             if (fabricRef?.current) {
@@ -153,7 +158,12 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
 
     // sync shape in storage
     if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
-        updateShape({ uid: selectedElement?.uid, ...selectedElement.toJSON() });
-        if (room) socket.emit("update:shape", { room, uid: selectedElement?.uid, ...selectedElement.toJSON() });
+        updateShape(selectedElement?.uid, selectedElement.toJSON());
+        if (room)
+            socket.emit("update:shape", {
+                room,
+                key: selectedElement?.uid,
+                value: selectedElement.toJSON(),
+            });
     }
 };

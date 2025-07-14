@@ -1,6 +1,6 @@
 import { circle, navElements } from "@/constants";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useShapeState } from "@/hooks/zustand/useShapeState";
+import { useShapeStore } from "@/stores/room/useShapeStore";
 import type { ToolbarProps } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Tooltip, useColorScheme } from "@mui/joy";
@@ -11,7 +11,7 @@ import { useSearchParams } from "react-router-dom";
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { mode } = useColorScheme();
-    const { setShape } = useShapeState();
+    const { createShape } = useShapeStore();
     const [searchParams] = useSearchParams();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -170,7 +170,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     const files = e?.target?.files;
 
                     if (files && e?.target?.files?.length) {
-                        handleImageUpload({ file: files[0], room, fabricRef, setShape });
+                        handleImageUpload({ file: files[0], room, fabricRef, createShape });
                         if (imageInputRef.current) imageInputRef.current.value = "";
                     }
                 }}

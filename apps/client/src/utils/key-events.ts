@@ -13,7 +13,7 @@ export const handlePaste = async (
     canvas: fabric.Canvas,
     room: string | null,
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>,
-    setShape: (shape: fabric.FabricObject) => void,
+    createShape: (key: string, value: Record<string, unknown>) => void,
 ) => {
     // if no copiedObject, return
     if (!copiedObjectRef.current) return;
@@ -29,8 +29,8 @@ export const handlePaste = async (
 
             // sync in storage
             if (obj?.uid) {
-                setShape({ uid: obj?.uid, ...obj.toJSON() });
-                if (room) socket.emit("set:shape", { room, uid: obj?.uid, ...obj.toJSON() });
+                createShape(obj?.uid, obj.toJSON());
+                if (room) socket.emit("create:shape", { room, key: obj?.uid, value: obj.toJSON() });
             }
         });
         // this should solve the unselectable behavior
@@ -41,8 +41,13 @@ export const handlePaste = async (
 
         // sync in storage
         if (clonedObj?.uid) {
-            setShape({ uid: clonedObj?.uid, ...clonedObj.toJSON() });
-            if (room) socket.emit("set:shape", { room, uid: clonedObj?.uid, ...clonedObj.toJSON() });
+            createShape(clonedObj?.uid, clonedObj.toJSON());
+            if (room)
+                socket.emit("create:shape", {
+                    room,
+                    key: clonedObj?.uid,
+                    value: clonedObj.toJSON(),
+                });
         }
     }
     copiedObjectRef.current.top += 20;
@@ -51,7 +56,11 @@ export const handlePaste = async (
     canvas.requestRenderAll();
 };
 
-export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null, setShape: (shape: fabric.FabricObject) => void) => {
+export const handleDuplicate = async (
+    canvas: fabric.Canvas,
+    room: string | null,
+    createShape: (key: string, value: Record<string, unknown>) => void,
+) => {
     // Get the active object from the canvas
     const activeObject = canvas.getActiveObject();
 
@@ -73,8 +82,8 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
 
             // Sync in storage
             if (obj?.uid) {
-                setShape({ uid: obj?.uid, ...obj.toJSON() });
-                if (room) socket.emit("set:shape", { room, uid: obj?.uid, ...obj.toJSON() });
+                createShape(obj?.uid, obj.toJSON());
+                if (room) socket.emit("create:shape", { room, key: obj?.uid, value: obj.toJSON() });
             }
         });
         clonedObj.setCoords();
@@ -85,8 +94,13 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
 
         // Sync in storage
         if (clonedObj?.uid) {
-            setShape({ uid: clonedObj?.uid, ...clonedObj.toJSON() });
-            if (room) socket.emit("set:shape", { room, uid: clonedObj?.uid, ...clonedObj.toJSON() });
+            createShape(clonedObj?.uid, clonedObj.toJSON());
+            if (room)
+                socket.emit("create:shape", {
+                    room,
+                    key: clonedObj?.uid,
+                    value: clonedObj.toJSON(),
+                });
         }
     }
 
@@ -95,7 +109,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
     canvas.requestRenderAll();
 };
 
-export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteShape: (id: string) => void) => {
+export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteShape: (key: string) => void) => {
     const activeObjects = canvas.getActiveObjects();
     if (!activeObjects || activeObjects.length === 0) return;
 
@@ -106,7 +120,7 @@ export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteS
             // sync in storage
             if (object?.uid && object?.uid !== "webcam") {
                 deleteShape(object?.uid);
-                if (room) socket.emit("delete:shape", { room, uid: object?.uid });
+                if (room) socket.emit("delete:shape", { room, key: object?.uid });
             }
         });
     }
@@ -122,14 +136,13 @@ export const handleKeyDown = ({
     roomRef,
     isEditing,
     copiedObjectRef,
-    setShape,
+    createShape,
     deleteShape,
     undo,
     redo,
     setTool,
     setZoom,
     setMode,
-    setRefresh,
 }: WindowKeyDown) => {
     const zoom = canvas?.getZoom();
     const light = localStorage.getItem("joy-mode") === "light";
@@ -195,12 +208,12 @@ export const handleKeyDown = ({
     }
     // Check if the key pressed is ctrl/cmd + v (Paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas, roomRef.current, copiedObjectRef, setShape);
+        handlePaste(canvas, roomRef.current, copiedObjectRef, createShape);
     }
     // Check if the key pressed is ctrl/cmd + d (Duplicate)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68 && !e.altKey) {
         e.preventDefault();
-        handleDuplicate(canvas, roomRef.current, setShape);
+        handleDuplicate(canvas, roomRef.current, createShape);
     }
     // Check if the key pressed is delete (Delete Selection)
     if (canvas && e.keyCode === 46) {
@@ -214,14 +227,12 @@ export const handleKeyDown = ({
     // Check if the key pressed is ctrl/cmd + z (Undo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90 && !e.shiftKey) {
         undo();
-        setRefresh();
-        if (roomRef.current) socket.emit("undo:shape", { room: roomRef.current, status: true });
+        // UNDO REDO FUNCTIONALITY
     }
     // Check if the key pressed is ctrl/cmd + shift + z (Redo)
     if ((e?.ctrlKey || e?.metaKey) && e.shiftKey && e.keyCode === 90) {
         redo();
-        setRefresh();
-        if (roomRef.current) socket.emit("redo:shape", { room: roomRef.current, status: true });
+        // UNDO REDO FUNCTIONALITY
     }
     // Check if the key pressed is space (Temporary Pan)
     if (e.keyCode === 32) setTool("panning");

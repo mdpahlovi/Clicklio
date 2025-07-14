@@ -51,20 +51,35 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await client.join(room);
         await this.redisService.client.hset(`room:${room}:user:${client.id}`, roomUser);
 
-        const users = {};
-        let cursor = "0";
+        // Current users
+        let users = {};
+        let userCursor = "0";
         do {
-            const result = await this.redisService.client.scan(cursor, "MATCH", `room:${room}:user:*`);
-            cursor = result[0];
+            const result = await this.redisService.client.scan(userCursor, "MATCH", `room:${room}:user:*`);
+            userCursor = result[0];
             const keys = result[1];
 
             for (const key of keys) {
                 const userData = await this.redisService.client.hgetall(key);
-                users[`${key.split(":")[3]}`] = userData;
+                users = { ...users, [`${key.split(":")[3]}`]: userData };
             }
-        } while (cursor !== "0");
+        } while (userCursor !== "0");
 
-        this.server.to(room).emit("join:room", { users });
+        // Current shapes
+        let shapes = {};
+        let shapeCursor = "0";
+        do {
+            const result = await this.redisService.client.scan(shapeCursor, "MATCH", `room:${room}:shape:*`);
+            shapeCursor = result[0];
+            const keys = result[1];
+
+            for (const key of keys) {
+                const shapeData = await this.redisService.client.hgetall(key);
+                shapes = { ...shapes, [`${key.split(":")[3]}`]: shapeData };
+            }
+        } while (shapeCursor !== "0");
+
+        this.server.to(room).emit("join:room", { users, shapes });
     }
 
     @SubscribeMessage("leave:room")

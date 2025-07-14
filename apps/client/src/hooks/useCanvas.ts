@@ -1,5 +1,5 @@
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useShapeState } from "@/hooks/zustand/useShapeState";
+import { useShapeStore } from "@/stores/room/useShapeStore";
 import { handleKeyDown } from "@/utils/key-events";
 import * as fabric from "fabric";
 import { useEffect, useRef } from "react";
@@ -21,8 +21,8 @@ import { useColorScheme } from "@mui/joy";
 
 export function useCanvas() {
     const { mode, setMode } = useColorScheme();
-    const { setShape, updateShape, deleteShape, undo, redo } = useShapeState();
-    const { setTool, setZoom, setCurrentObject, removeCurrentObject, setRefresh } = useCanvasState();
+    const { createShape, updateShape, deleteShape } = useShapeStore();
+    const { setTool, setZoom, setCurrentObject, removeCurrentObject } = useCanvasState();
 
     const [searchParams] = useSearchParams();
     const roomRef = useRef<string | null>(null);
@@ -89,13 +89,13 @@ export function useCanvas() {
                 selectedToolRef,
                 deleteObjectRef,
                 setTool,
-                setShape,
+                createShape,
                 deleteShape,
             });
         });
 
         canvas.on("path:created", (options) => {
-            handlePathCreated({ options, roomRef, setShape });
+            handlePathCreated({ options, roomRef, createShape });
         });
 
         canvas.on("object:modified", (options) => {
@@ -127,14 +127,17 @@ export function useCanvas() {
                 roomRef,
                 isEditing,
                 copiedObjectRef,
-                setShape,
+                createShape,
                 deleteShape,
-                undo,
-                redo,
+                undo: () => {
+                    // UNDO REDO FUNCTIONALITY
+                },
+                redo: () => {
+                    // UNDO REDO FUNCTIONALITY
+                },
                 setTool,
                 setZoom,
                 setMode,
-                setRefresh,
             }),
         );
 
@@ -149,14 +152,17 @@ export function useCanvas() {
                     roomRef,
                     isEditing,
                     copiedObjectRef,
-                    setShape,
+                    createShape,
                     deleteShape,
-                    undo,
-                    redo,
+                    undo: () => {
+                        // UNDO REDO FUNCTIONALITY
+                    },
+                    redo: () => {
+                        // UNDO REDO FUNCTIONALITY
+                    },
                     setTool,
                     setZoom,
                     setMode,
-                    setRefresh,
                 }),
             );
         };

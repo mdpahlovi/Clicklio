@@ -1,16 +1,14 @@
-import { useShapeState } from "@/hooks/zustand/useShapeState";
 import type { SidebarProps } from "@/types";
-import { socket } from "@/utils/socket";
 import { IconButton, Sheet, Tooltip } from "@mui/joy";
 import { GrPowerReset } from "react-icons/gr";
 import { ImHome } from "react-icons/im";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Sidebar({ fabricRef }: SidebarProps) {
-    const [searchParams] = useSearchParams();
-    const { shapes, setShapes } = useShapeState();
+    // const [searchParams] = useSearchParams();
+    // const { shapes, createShape } = useShapeStore();
 
-    const room = searchParams.get("room");
+    // const room = searchParams.get("room");
 
     return (
         <Sheet
@@ -28,12 +26,12 @@ export default function Sidebar({ fabricRef }: SidebarProps) {
                     color="danger"
                     onClick={() => {
                         if (fabricRef.current) {
-                            setShapes([]);
-                            fabricRef.current.clear();
-                            if (room) socket.emit("reset:canvas", { room, status: true });
+                            // setShapes([]);
+                            // fabricRef.current.clear();
+                            // if (room) socket.emit("reset:canvas", { room, status: true });
                         }
                     }}
-                    disabled={!shapes?.length}
+                    // disabled={!shapes?.length}
                 >
                     <GrPowerReset />
                 </IconButton>

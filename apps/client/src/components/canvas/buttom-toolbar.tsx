@@ -1,10 +1,8 @@
 import { PreviewIcon } from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useShapeState } from "@/hooks/zustand/useShapeState";
 import { downloadMedia } from "@/utils/download";
 import { handleNavigatorError } from "@/utils/error-handle";
-import { socket } from "@/utils/socket";
 import { Button, Divider, IconButton, Sheet, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { useState } from "react";
@@ -13,34 +11,23 @@ import { FaRegCircleStop } from "react-icons/fa6";
 import { GrRedo, GrUndo } from "react-icons/gr";
 import { PiMinus, PiPlus, PiVinylRecord } from "react-icons/pi";
 import { useReactMediaRecorder } from "react-media-recorder";
-import { useSearchParams } from "react-router-dom";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
-    const [searchParams] = useSearchParams();
+    const { zoom, setZoom, setUserMedia } = useCanvasState();
+    const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({ audio: true, screen: true });
 
-    const { undo, redo } = useShapeState();
-    const { zoom, setZoom } = useCanvasState();
-    const { setRefresh, setUserMedia } = useCanvasState();
-
-    const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
-        audio: true,
-        screen: true,
-    });
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const room = searchParams.get("room");
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <>
-            <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title="Recorded Media" sx={{ maxWidth: 768 }}>
+            <Modal open={isOpen} onClose={() => setIsOpen(false)} title="Recorded Media" sx={{ maxWidth: 768 }}>
                 <video style={{ aspectRatio: "16 / 9", width: "100%", borderRadius: 12 }} controls src={mediaBlobUrl} />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
                     <Button
                         color="warning"
                         onClick={() => {
                             startRecording();
-                            setIsModalOpen(false);
+                            setIsOpen(false);
                         }}
                     >
                         Rerecord
@@ -106,7 +93,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                         <IconButton
                             onClick={() => {
                                 stopRecording();
-                                setIsModalOpen(true);
+                                setIsOpen(true);
                             }}
                         >
                             <FaRegCircleStop />
@@ -115,7 +102,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 )}
                 {mediaBlobUrl ? (
                     <Tooltip title="Preview" placement="top">
-                        <IconButton onClick={() => setIsModalOpen(true)}>
+                        <IconButton onClick={() => setIsOpen(true)}>
                             <PreviewIcon />
                         </IconButton>
                     </Tooltip>
@@ -123,19 +110,17 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
-                        undo();
-                        setRefresh();
-                        if (room) socket.emit("undo:shape", { room, status: true });
+                        // UNDO REDO FUNCTIONALITY
                     }}
+                    disabled
                 >
                     <GrUndo />
                 </IconButton>
                 <IconButton
                     onClick={() => {
-                        redo();
-                        setRefresh();
-                        if (room) socket.emit("redo:shape", { room, status: true });
+                        // UNDO REDO FUNCTIONALITY
                     }}
+                    disabled
                 >
                     <GrRedo />
                 </IconButton>

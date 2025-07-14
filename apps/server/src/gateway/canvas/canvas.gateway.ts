@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { RedisService } from "src/common/service/redis.service";
+
+type CreateMessage = { room: string; key: string; value: Record<string, unknown> };
+type UpdateMessage = { room: string; key: string; value: Record<string, unknown> };
+type DeleteMessage = { room: string; uid: string };
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class CanvasGateway {
@@ -10,51 +12,27 @@ export class CanvasGateway {
 
     constructor(private readonly redisService: RedisService) {}
 
-    @SubscribeMessage("initial:state")
-    handleInitialState(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { to, ...state } = data;
-        if (to) this.server.to(to).emit("initial:state", state);
-    }
+    @SubscribeMessage("create:shape")
+    async handleSetShape(@ConnectedSocket() client: Socket, @MessageBody() data: CreateMessage) {
+        if (!data.room || !data.key) return;
 
-    @SubscribeMessage("set:shape")
-    handleSetShape(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, ...shape } = data;
-        if (room) client.to(room).emit("set:shape", shape);
+        await this.redisService.client.hset(`room:${data.room}:shape:${data.key}`, data.value);
+        client.to(data.room).emit("create:shape", data);
     }
 
     @SubscribeMessage("update:shape")
-    handleUpdateShape(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, ...shape } = data;
-        if (room) client.to(room).emit("update:shape", shape);
+    async handleUpdateShape(@ConnectedSocket() client: Socket, @MessageBody() data: UpdateMessage) {
+        if (!data.room || !data.key) return;
+
+        await this.redisService.client.hset(`room:${data.room}:shape:${data.key}`, data.value);
+        client.to(data.room).emit("update:shape", data);
     }
 
     @SubscribeMessage("delete:shape")
-    handleDeleteShape(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, uid } = data;
-        if (room) client.to(room).emit("delete:shape", { uid });
-    }
+    async handleDeleteShape(@ConnectedSocket() client: Socket, @MessageBody() data: DeleteMessage) {
+        if (!data.room || !data.uid) return;
 
-    @SubscribeMessage("undo:shape")
-    handleUndoShape(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, status } = data;
-        if (room) client.to(room).emit("undo:shape", { status });
-    }
-
-    @SubscribeMessage("redo:shape")
-    handleRedoShape(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, status } = data;
-        if (room) client.to(room).emit("redo:shape", { status });
-    }
-
-    @SubscribeMessage("reset:canvas")
-    handleResetCanvas(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, status } = data;
-        if (room) client.to(room).emit("reset:canvas", { status });
-    }
-
-    @SubscribeMessage("cursor")
-    handleCursor(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, cursor } = data;
-        if (room) client.to(room).emit("cursor", { id: client.id, ...cursor });
+        await this.redisService.client.del(`room:${data.room}:shape:${data.uid}`);
+        client.to(data.room).emit("delete:shape", data);
     }
 }
