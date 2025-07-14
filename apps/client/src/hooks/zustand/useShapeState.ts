@@ -53,7 +53,7 @@ export const useShapeState = create<ShapeStateStore>()(
 
             updateShape: (shape) =>
                 set((state) => {
-                    const updatedShapes = state.shapes.map((s) => (s?.objectId === shape?.objectId ? shape : s));
+                    const updatedShapes = state.shapes.map((s) => (s?.uid === shape?.uid ? shape : s));
                     const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes].slice(-20);
                     return {
                         shapes: updatedShapes,
@@ -64,7 +64,7 @@ export const useShapeState = create<ShapeStateStore>()(
 
             deleteShape: (id) =>
                 set((state) => {
-                    const updatedShapes = state.shapes.filter(({ objectId }) => objectId !== id);
+                    const updatedShapes = state.shapes.filter(({ uid }) => uid !== id);
                     const newHistory = [...state.history.slice(0, state.position + 1), updatedShapes].slice(-20);
                     return {
                         shapes: updatedShapes,

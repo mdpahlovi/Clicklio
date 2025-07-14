@@ -30,8 +30,8 @@ export class CanvasGateway {
 
     @SubscribeMessage("delete:shape")
     handleDeleteShape(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        const { room, objectId } = data;
-        if (room) client.to(room).emit("delete:shape", { objectId });
+        const { room, uid } = data;
+        if (room) client.to(room).emit("delete:shape", { uid });
     }
 
     @SubscribeMessage("undo:shape")

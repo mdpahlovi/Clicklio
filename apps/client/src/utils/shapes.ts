@@ -1,6 +1,6 @@
 import type { ImageUpload, ModifyShape, Pointer, Tool } from "@/types";
 import * as fabric from "fabric";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuid } from "uuid";
 import { Arrow } from "./arrow";
 import { socket } from "./socket";
 
@@ -11,7 +11,7 @@ export const createRectangle = (pointer: Pointer, baseColorRef: React.RefObject<
         width: 0,
         height: 0,
         fill: baseColorRef.current,
-        objectId: uuidv4(),
+        uid: uuid(),
     });
 };
 
@@ -22,7 +22,7 @@ export const createTriangle = (pointer: Pointer, baseColorRef: React.RefObject<s
         width: 0,
         height: 0,
         fill: baseColorRef.current,
-        objectId: uuidv4(),
+        uid: uuid(),
     });
 };
 
@@ -32,7 +32,7 @@ export const createCircle = (pointer: Pointer, baseColorRef: React.RefObject<str
         top: pointer.y,
         radius: 0,
         fill: baseColorRef.current,
-        objectId: uuidv4(),
+        uid: uuid(),
     });
 };
 
@@ -40,7 +40,7 @@ export const createLine = (pointer: Pointer, baseColorRef: React.RefObject<strin
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
         stroke: baseColorRef.current,
         strokeWidth: 2,
-        objectId: uuidv4(),
+        uid: uuid(),
     });
 };
 
@@ -48,7 +48,7 @@ export const createArrow = (pointer: Pointer, baseColorRef: React.RefObject<stri
     return new Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
         stroke: baseColorRef.current,
         strokeWidth: 2,
-        objectId: uuidv4(),
+        uid: uuid(),
     });
 };
 
@@ -60,7 +60,7 @@ export const createText = (pointer: Pointer, baseColorRef: React.RefObject<strin
         fontFamily: "Helvetica",
         fontSize: 16,
         fontWeight: "400",
-        objectId: uuidv4(),
+        uid: uuid(),
     });
 };
 
@@ -95,12 +95,12 @@ export const handleImageUpload = ({ file, room, fabricRef, setShape }: ImageUplo
     reader.onload = () => {
         fabric.FabricImage.fromURL(reader.result as string).then((image) => {
             image.scaleToWidth(100);
-            image.set({ objectId: uuidv4() });
+            image.set({ uid: uuid() });
 
             // sync shape in storage
-            if (image?.objectId) {
-                setShape({ objectId: image?.objectId, ...image.toJSON() });
-                if (room) socket.emit("set:shape", { room, objectId: image?.objectId, ...image.toJSON() });
+            if (image?.uid) {
+                setShape({ uid: image?.uid, ...image.toJSON() });
+                if (room) socket.emit("set:shape", { room, uid: image?.uid, ...image.toJSON() });
             }
 
             if (fabricRef?.current) {
@@ -152,8 +152,8 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
     fabricRef.current.requestRenderAll();
 
     // sync shape in storage
-    if (selectedElement?.objectId && selectedElement?.objectId !== "webcam") {
-        updateShape({ objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
-        if (room) socket.emit("update:shape", { room, objectId: selectedElement?.objectId, ...selectedElement.toJSON() });
+    if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
+        updateShape({ uid: selectedElement?.uid, ...selectedElement.toJSON() });
+        if (room) socket.emit("update:shape", { room, uid: selectedElement?.uid, ...selectedElement.toJSON() });
     }
 };

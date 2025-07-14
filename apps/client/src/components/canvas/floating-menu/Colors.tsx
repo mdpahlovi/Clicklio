@@ -1,6 +1,6 @@
 import StrokeWidth from "@/components/canvas/floating-menu/StrokeWidth";
 import type { FloatingMenuItemProps } from "@/types";
-import { Box, type BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip, useColorScheme, useTheme } from "@mui/joy";
+import { Box, type BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip, useTheme } from "@mui/joy";
 
 type ColorProps = { name: "fill" | "stroke" } & FloatingMenuItemProps;
 
@@ -9,9 +9,8 @@ const backgroundImage =
 
 export default function Colors({ name, open, onOpenChange, currentObject, handleInputChange }: ColorProps) {
     const { palette } = useTheme();
-    const { mode } = useColorScheme();
     const iconProps: React.CSSProperties = { width: 14, height: 14, borderRadius: 9999, border: "2px solid" };
-    const baseColor = mode === "light" ? "#000000" : "#FFFFFF";
+    const baseColor = palette.mode === "light" ? "#000000" : "#FFFFFF";
 
     return (
         <Dropdown open={open} onOpenChange={onOpenChange}>
@@ -60,8 +59,8 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
 }
 
 function ColorBox({ active, ...props }: { active: boolean } & BoxProps) {
-    const { mode } = useColorScheme();
-    const baseColor = mode === "light" ? "#000000" : "#FFFFFF";
+    const { palette } = useTheme();
+    const baseColor = palette.mode === "light" ? "#000000" : "#FFFFFF";
 
     return (
         <Box

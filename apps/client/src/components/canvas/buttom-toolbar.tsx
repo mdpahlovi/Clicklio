@@ -75,7 +75,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
 
                                         webcam.onloadedmetadata = () => {
                                             const object = new fabric.FabricImage(webcam, {
-                                                objectId: "webcam",
+                                                uid: "webcam",
                                                 objectCaching: false,
                                             });
 

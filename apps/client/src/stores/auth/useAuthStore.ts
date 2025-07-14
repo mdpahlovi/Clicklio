@@ -26,7 +26,7 @@ type AuthStateStore = {
     signupLoading: boolean;
     oAuthSigninLoading: boolean;
     signoutLoading: boolean;
-    isProfileUpdateing: boolean;
+    updateProfileLoading: boolean;
     signin: (credentials: Credentials) => Promise<void>;
     signup: (credentials: { name: string } & Credentials) => Promise<void>;
     oAuthSignin: () => Promise<void>;
@@ -44,7 +44,7 @@ export const useAuthState = create<AuthStateStore>()(
             signupLoading: false,
             oAuthSigninLoading: false,
             signoutLoading: false,
-            isProfileUpdateing: false,
+            updateProfileLoading: false,
 
             signin: async ({ email, password }) => {
                 set({ signinLoading: true });
@@ -111,7 +111,7 @@ export const useAuthState = create<AuthStateStore>()(
             },
 
             updateProfile: async (user) => {
-                set({ isProfileUpdateing: true });
+                set({ updateProfileLoading: true });
                 try {
                     const response = await axios.post("/auth/update-profile", user);
                     set({ user: response.data });
@@ -122,7 +122,7 @@ export const useAuthState = create<AuthStateStore>()(
                 } catch (error) {
                     toast.error((error as ErrorResponse)?.message);
                 } finally {
-                    set({ isProfileUpdateing: false });
+                    set({ updateProfileLoading: false });
                 }
             },
         }),

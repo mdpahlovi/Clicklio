@@ -1,14 +1,11 @@
 import { Form, FormImage, FormInput } from "@/components/form";
 import { useAuthState } from "@/stores/auth/useAuthStore";
 import { Box, Button, Card, Stack, Typography } from "@mui/joy";
-import { lazy, Suspense, useState } from "react";
-
-const FormTexteditor = lazy(() => import("@/components/form/form-texteditor"));
+import { useState } from "react";
 
 export default function MyProfile() {
-    const [editBio, setEditBot] = useState(false);
     const [editProfile, setEditProfile] = useState(false);
-    const { user, isProfileUpdateing, updateProfile } = useAuthState();
+    const { user, updateProfileLoading, updateProfile } = useAuthState();
 
     return (
         <Box sx={{ px: 3, py: 2 }}>
@@ -24,11 +21,12 @@ export default function MyProfile() {
                                       email: user?.email ? user?.email : "",
                                       phone: user?.phone ? user?.phone : "",
                                       photo: user?.photo ? user?.photo : "",
+                                      address: user?.otherInfo?.address ? user?.otherInfo?.address : "",
                                   }
                                 : null
                         }
-                        onSubmit={({ first_name, last_name, ...rest }) => {
-                            updateProfile({ name: `${first_name} ${last_name}`, ...rest });
+                        onSubmit={({ first_name, last_name, address, ...rest }) => {
+                            updateProfile({ name: `${first_name} ${last_name}`, ...rest, otherInfo: { address } });
                             setEditProfile(false);
                         }}
                     >
@@ -48,28 +46,10 @@ export default function MyProfile() {
                             <Stack spacing={1} style={{ marginTop: 12 }}>
                                 <FormInput name="email" label="Your Email" disabled />
                                 <FormInput name="phone" label="Your Phone" disabled={!editProfile} />
+                                <FormInput name="address" label="Your Address" disabled={!editProfile} />
                             </Stack>
                         </Stack>
-                        {editProfile ? <CardAction loading={isProfileUpdateing} toggleEdit={() => setEditProfile(false)} /> : null}
-                    </Form>
-                </Card>
-                <Card style={{ overflow: "hidden" }}>
-                    <Form
-                        defaultValues={user ? { biography: user?.otherInfo?.biography ? user?.otherInfo?.biography : "" } : null}
-                        onSubmit={(value) => {
-                            updateProfile({ otherInfo: { biography: value.biography } });
-                            setEditBot(false);
-                        }}
-                    >
-                        <CardHeader
-                            title="Bio"
-                            body="Write a short introduction to be displayed on your profile"
-                            toggleEdit={() => setEditBot(true)}
-                        />
-                        <Suspense fallback={<Typography level="body-sm">Text Editor Loading...</Typography>}>
-                            <FormTexteditor name="biography" />
-                        </Suspense>
-                        {editBio ? <CardAction loading={isProfileUpdateing} toggleEdit={() => setEditBot(false)} /> : null}
+                        {editProfile ? <CardAction loading={updateProfileLoading} toggleEdit={() => setEditProfile(false)} /> : null}
                     </Form>
                 </Card>
             </Stack>

@@ -16,7 +16,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
 
     return (
         <>
-            {currentObject?.objectId !== "webcam" ? (
+            {currentObject?.uid !== "webcam" ? (
                 <Tooltip title="Duplicate">
                     <IconButton
                         color="primary"
@@ -34,7 +34,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     onClick={() => {
                         if (fabricRef.current) {
                             handleDelete(fabricRef.current, room, deleteShape);
-                            if (currentObject?.objectId === "webcam" && userMedia) {
+                            if (currentObject?.uid === "webcam" && userMedia) {
                                 userMedia.getTracks().forEach((track) => track.stop());
 
                                 setUserMedia(null);

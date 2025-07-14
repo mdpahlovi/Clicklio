@@ -55,8 +55,8 @@ export default function HomePage() {
             updateShape(shape);
             setRefresh();
         });
-        socket.on("delete:shape", ({ objectId }) => {
-            deleteShape(objectId);
+        socket.on("delete:shape", ({ uid }) => {
+            deleteShape(uid);
             setRefresh();
         });
         socket.on("undo:shape", ({ status }) => {

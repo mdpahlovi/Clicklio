@@ -1,7 +1,7 @@
 import type { WindowKeyDown } from "@/types";
 import { socket } from "@/utils/socket";
 import * as fabric from "fabric";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuid } from "uuid";
 
 export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObject<fabric.FabricObject | null>) => {
     const activeObjects = canvas.getActiveObject();
@@ -24,25 +24,25 @@ export const handlePaste = async (
         // active selection needs a reference to the canvas.
         clonedObj.canvas = canvas;
         clonedObj.forEachObject((obj) => {
-            obj.set({ objectId: uuidv4() });
+            obj.set({ uid: uuid() });
             canvas.add(obj);
 
             // sync in storage
-            if (obj?.objectId) {
-                setShape({ objectId: obj?.objectId, ...obj.toJSON() });
-                if (room) socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
+            if (obj?.uid) {
+                setShape({ uid: obj?.uid, ...obj.toJSON() });
+                if (room) socket.emit("set:shape", { room, uid: obj?.uid, ...obj.toJSON() });
             }
         });
-        // this should solve the unselectability
+        // this should solve the unselectable behavior
         clonedObj.setCoords();
     } else {
-        clonedObj.set({ objectId: uuidv4() });
+        clonedObj.set({ uid: uuid() });
         canvas.add(clonedObj);
 
         // sync in storage
-        if (clonedObj?.objectId) {
-            setShape({ objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
-            if (room) socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
+        if (clonedObj?.uid) {
+            setShape({ uid: clonedObj?.uid, ...clonedObj.toJSON() });
+            if (room) socket.emit("set:shape", { room, uid: clonedObj?.uid, ...clonedObj.toJSON() });
         }
     }
     copiedObjectRef.current.top += 20;
@@ -68,25 +68,25 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
         // If it's an active selection (multiple objects selected), handle each object
         clonedObj.canvas = canvas;
         clonedObj.forEachObject((obj) => {
-            obj.set({ objectId: uuidv4() });
+            obj.set({ uid: uuid() });
             canvas.add(obj);
 
             // Sync in storage
-            if (obj?.objectId) {
-                setShape({ objectId: obj?.objectId, ...obj.toJSON() });
-                if (room) socket.emit("set:shape", { room, objectId: obj?.objectId, ...obj.toJSON() });
+            if (obj?.uid) {
+                setShape({ uid: obj?.uid, ...obj.toJSON() });
+                if (room) socket.emit("set:shape", { room, uid: obj?.uid, ...obj.toJSON() });
             }
         });
         clonedObj.setCoords();
     } else {
         // Handle single object duplication
-        clonedObj.set({ objectId: uuidv4() });
+        clonedObj.set({ uid: uuid() });
         canvas.add(clonedObj);
 
         // Sync in storage
-        if (clonedObj?.objectId) {
-            setShape({ objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
-            if (room) socket.emit("set:shape", { room, objectId: clonedObj?.objectId, ...clonedObj.toJSON() });
+        if (clonedObj?.uid) {
+            setShape({ uid: clonedObj?.uid, ...clonedObj.toJSON() });
+            if (room) socket.emit("set:shape", { room, uid: clonedObj?.uid, ...clonedObj.toJSON() });
         }
     }
 
@@ -104,9 +104,9 @@ export const handleDelete = (canvas: fabric.Canvas, room: string | null, deleteS
             canvas.remove(object);
 
             // sync in storage
-            if (object?.objectId && object?.objectId !== "webcam") {
-                deleteShape(object?.objectId);
-                if (room) socket.emit("delete:shape", { room, objectId: object?.objectId });
+            if (object?.uid && object?.uid !== "webcam") {
+                deleteShape(object?.uid);
+                if (room) socket.emit("delete:shape", { room, uid: object?.uid });
             }
         });
     }

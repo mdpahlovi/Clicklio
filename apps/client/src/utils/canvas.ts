@@ -76,8 +76,8 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
 
     // set target object to deleteObjectRef for eraser
     if (selectedToolRef.current === "eraser") {
-        if (!options.target?.objectId) return;
-        if (!deleteObjectRef.current.find(({ objectId }) => objectId === options.target?.objectId)) {
+        if (!options.target?.uid) return;
+        if (!deleteObjectRef.current.find(({ uid }) => uid === options.target?.uid)) {
             options.target.set({ opacity: 0.25 });
             deleteObjectRef.current.push(options.target);
 
@@ -160,8 +160,8 @@ export const handleCanvasMouseUp = ({
 
             // sync in storage
 
-            deleteShape(object?.objectId);
-            if (roomRef.current) socket.emit("delete:shape", { room: roomRef.current, objectId: object?.objectId });
+            deleteShape(object?.uid);
+            if (roomRef.current) socket.emit("delete:shape", { room: roomRef.current, uid: object?.uid });
         });
 
         canvas.requestRenderAll();
@@ -169,14 +169,13 @@ export const handleCanvasMouseUp = ({
     }
 
     // sync shape in storage
-    if (shapeRef.current?.objectId) {
+    if (shapeRef.current?.uid) {
         // set active object to current shape
         canvas.setActiveObject(shapeRef.current);
         shapeRef.current.setCoords();
 
-        setShape({ objectId: shapeRef.current?.objectId, ...shapeRef.current.toJSON() });
-        if (roomRef.current)
-            socket.emit("set:shape", { room: roomRef.current, objectId: shapeRef.current?.objectId, ...shapeRef.current.toJSON() });
+        setShape({ uid: shapeRef.current?.uid, ...shapeRef.current.toJSON() });
+        if (roomRef.current) socket.emit("set:shape", { room: roomRef.current, uid: shapeRef.current?.uid, ...shapeRef.current.toJSON() });
     }
 
     // set everything to null
@@ -196,9 +195,9 @@ export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: Ca
         // console.log("activeselection", { target });
     } else {
         // sync shape in storage
-        if (target?.objectId) {
-            updateShape({ objectId: target?.objectId, ...target.toJSON() });
-            if (roomRef.current) socket.emit("update:shape", { room: roomRef.current, objectId: target?.objectId, ...target.toJSON() });
+        if (target?.uid) {
+            updateShape({ uid: target?.uid, ...target.toJSON() });
+            if (roomRef.current) socket.emit("update:shape", { room: roomRef.current, uid: target?.uid, ...target.toJSON() });
         }
     }
 };
@@ -210,12 +209,12 @@ export const handlePathCreated = ({ options, roomRef, setShape }: CanvasPathCrea
     if (!path) return;
 
     // set unique id to path object
-    path.set({ objectId: uuid4() });
+    path.set({ uid: uuid4() });
 
     // sync shape in storage
-    if (path?.objectId) {
-        setShape({ objectId: path?.objectId, ...path.toJSON() });
-        if (roomRef.current) socket.emit("set:shape", { room: roomRef.current, objectId: path?.objectId, ...path.toJSON() });
+    if (path?.uid) {
+        setShape({ uid: path?.uid, ...path.toJSON() });
+        if (roomRef.current) socket.emit("set:shape", { room: roomRef.current, uid: path?.uid, ...path.toJSON() });
     }
 };
 
@@ -231,7 +230,7 @@ export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
                 const object = enlivenedObj as fabric.FabricObject;
 
                 // add object to canvas
-                if (object?.objectId) fabricRef.current?.add(object);
+                if (object?.uid) fabricRef.current?.add(object);
             });
         });
     });
