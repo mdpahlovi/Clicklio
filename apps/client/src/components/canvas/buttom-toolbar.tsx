@@ -1,8 +1,10 @@
 import { PreviewIcon } from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import { downloadMedia } from "@/utils/download";
 import { handleNavigatorError } from "@/utils/error-handle";
+import { handleCreateEvent } from "@/utils/event";
 import { Button, Divider, IconButton, Sheet, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { useState } from "react";
@@ -13,6 +15,7 @@ import { PiMinus, PiPlus, PiVinylRecord } from "react-icons/pi";
 import { useReactMediaRecorder } from "react-media-recorder";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
+    const { createEvent, canUndo, canRedo } = useEventStore();
     const { zoom, setZoom, setUserMedia } = useCanvasState();
     const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({ audio: true, screen: true });
 
@@ -110,17 +113,17 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
-                        // UNDO REDO FUNCTIONALITY
+                        handleCreateEvent({ action: "UNDO", object: null, createEvent });
                     }}
-                    disabled
+                    disabled={!canUndo()}
                 >
                     <GrUndo />
                 </IconButton>
                 <IconButton
                     onClick={() => {
-                        // UNDO REDO FUNCTIONALITY
+                        handleCreateEvent({ action: "REDO", object: null, createEvent });
                     }}
-                    disabled
+                    disabled={!canRedo()}
                 >
                     <GrRedo />
                 </IconButton>

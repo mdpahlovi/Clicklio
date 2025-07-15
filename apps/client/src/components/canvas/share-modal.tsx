@@ -85,8 +85,8 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                                     setSearchParams({ room });
 
                                     // Set current user
-                                    createCurrUser(room, "ADMIN");
-                                    socket.emit("join:room", { room, user: { role: "ADMIN" } });
+                                    const user = createCurrUser(room, "ADMIN");
+                                    socket.emit("join:room", { room, user });
                                 }
                             }}
                             startDecorator={<FaPlay size={18} />}

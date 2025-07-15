@@ -1,6 +1,6 @@
 export interface BaseEvent {
     eventId: string;
-    firedAt: number;
+    firedAt: string;
     userId: string;
 }
 

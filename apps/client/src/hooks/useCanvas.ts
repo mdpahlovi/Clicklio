@@ -19,7 +19,7 @@ import type { Pointer, Tool } from "@/types";
 import { useColorScheme } from "@mui/joy";
 
 export function useCanvas() {
-    const { addEvent } = useEventStore();
+    const { createEvent } = useEventStore();
     const { mode, setMode } = useColorScheme();
     const { setTool, setZoom, setCurrentObject } = useCanvasState();
 
@@ -82,16 +82,16 @@ export function useCanvas() {
                 selectedToolRef,
                 deleteObjectRef,
                 setTool,
-                addEvent,
+                createEvent,
             });
         });
 
         canvas.on("path:created", (options) => {
-            handlePathCreated({ options, addEvent });
+            handlePathCreated({ options, createEvent });
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, addEvent });
+            handleCanvasObjectModified({ options, createEvent });
         });
 
         canvas.on("selection:created", (options) => {
@@ -118,13 +118,7 @@ export function useCanvas() {
                 canvas,
                 isEditing,
                 copiedObjectRef,
-                addEvent,
-                undo: () => {
-                    // UNDO REDO FUNCTIONALITY
-                },
-                redo: () => {
-                    // UNDO REDO FUNCTIONALITY
-                },
+                createEvent,
                 setTool,
                 setZoom,
                 setMode,
@@ -141,13 +135,7 @@ export function useCanvas() {
                     canvas: null,
                     isEditing,
                     copiedObjectRef,
-                    addEvent,
-                    undo: () => {
-                        // UNDO REDO FUNCTIONALITY
-                    },
-                    redo: () => {
-                        // UNDO REDO FUNCTIONALITY
-                    },
+                    createEvent,
                     setTool,
                     setZoom,
                     setMode,

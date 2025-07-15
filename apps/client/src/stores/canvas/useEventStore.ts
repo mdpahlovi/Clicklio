@@ -1,3 +1,4 @@
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import type { ShapeEvent } from "@/types/event";
 import { create } from "zustand";
 
@@ -8,10 +9,10 @@ interface EventStore {
     userUndoStacks: Map<string, string[]>;
     userRedoStacks: Map<string, string[]>;
 
-    addEvent: (event: ShapeEvent) => void;
-    computeState: () => Map<string, Record<string, unknown>>;
-    canUndo: (userId: string) => boolean;
-    canRedo: (userId: string) => boolean;
+    createEvent: (event: ShapeEvent) => void;
+    outputShape: () => Map<string, Record<string, unknown>>;
+    canUndo: () => boolean;
+    canRedo: () => boolean;
 }
 
 export const useEventStore = create<EventStore>((set, get) => ({
@@ -20,7 +21,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
     userUndoStacks: new Map(),
     userRedoStacks: new Map(),
 
-    addEvent: (event: ShapeEvent) => {
+    createEvent: (event: ShapeEvent) => {
         const state = get();
         const newEvents = [...state.events, event];
 
@@ -66,7 +67,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
             }
         }
 
-        const newShapes = get().computeState();
+        const newShapes = get().outputShape();
 
         set({
             events: newEvents,
@@ -76,7 +77,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
         });
     },
 
-    computeState: () => {
+    outputShape: () => {
         const state = get();
         const shapes = new Map<string, Record<string, unknown>>();
         const undoneEvents = new Set<string>();
@@ -108,15 +109,15 @@ export const useEventStore = create<EventStore>((set, get) => ({
         return shapes;
     },
 
-    canUndo: (userId: string) => {
-        const state = get();
-        const userStack = state.userUndoStacks.get(userId) || [];
+    canUndo: () => {
+        const userId = useCanvasState.getState().user;
+        const userStack = get().userUndoStacks.get(userId) || [];
         return userStack.length > 0;
     },
 
-    canRedo: (userId: string) => {
-        const state = get();
-        const userStack = state.userRedoStacks.get(userId) || [];
+    canRedo: () => {
+        const userId = useCanvasState.getState().user;
+        const userStack = get().userRedoStacks.get(userId) || [];
         return userStack.length > 0;
     },
 }));

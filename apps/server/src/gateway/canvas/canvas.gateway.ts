@@ -2,9 +2,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from "socket.io";
 import { RedisService } from "src/common/service/redis.service";
 
-type CreateMessage = { room: string; key: string; value: Record<string, unknown> };
-type UpdateMessage = { room: string; key: string; value: Record<string, unknown> };
-type DeleteMessage = { room: string; uid: string };
+type CreateMessage = { room: string; event: Record<string, unknown> };
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class CanvasGateway {
@@ -12,27 +10,13 @@ export class CanvasGateway {
 
     constructor(private readonly redisService: RedisService) {}
 
-    @SubscribeMessage("create:shape")
+    @SubscribeMessage("create:event")
     async handleSetShape(@ConnectedSocket() client: Socket, @MessageBody() data: CreateMessage) {
-        if (!data.room || !data.key) return;
+        if (!data.room) return;
 
-        await this.redisService.client.hset(`room:${data.room}:shape:${data.key}`, data.value);
-        client.to(data.room).emit("create:shape", data);
-    }
+        const { room, event } = data;
+        await this.redisService.client.sadd(`room:${room}:event`, JSON.stringify(event));
 
-    @SubscribeMessage("update:shape")
-    async handleUpdateShape(@ConnectedSocket() client: Socket, @MessageBody() data: UpdateMessage) {
-        if (!data.room || !data.key) return;
-
-        await this.redisService.client.hset(`room:${data.room}:shape:${data.key}`, data.value);
-        client.to(data.room).emit("update:shape", data);
-    }
-
-    @SubscribeMessage("delete:shape")
-    async handleDeleteShape(@ConnectedSocket() client: Socket, @MessageBody() data: DeleteMessage) {
-        if (!data.room || !data.uid) return;
-
-        await this.redisService.client.del(`room:${data.room}:shape:${data.uid}`);
-        client.to(data.room).emit("delete:shape", data);
+        client.to(data.room).emit("create:event", { event });
     }
 }

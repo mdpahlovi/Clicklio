@@ -12,7 +12,7 @@ import { createSpecificShape } from "@/utils/shapes";
 import * as fabric from "fabric";
 import { v4 as uuid4 } from "uuid";
 import { Arrow } from "./arrow";
-import { handleAddEvent } from "./event";
+import { handleCreateEvent } from "./event";
 
 fabric.FabricObject.ownDefaults.cornerColor = "#4882ED";
 fabric.FabricObject.ownDefaults.cornerStyle = "circle";
@@ -141,7 +141,7 @@ export const handleCanvasMouseUp = ({
     selectedToolRef,
     deleteObjectRef,
     setTool,
-    addEvent,
+    createEvent,
 }: CanvasMouseUp) => {
     // if canvas is in DrawingMode, return
     if (canvas.isDrawingMode) return;
@@ -158,10 +158,10 @@ export const handleCanvasMouseUp = ({
                 canvas.remove(object);
 
                 // sync in storage
-                handleAddEvent({
+                handleCreateEvent({
                     action: "DELETE",
                     object,
-                    addEvent,
+                    createEvent,
                 });
             }
         });
@@ -177,10 +177,10 @@ export const handleCanvasMouseUp = ({
         shapeRef.current.setCoords();
 
         // sync in storage
-        handleAddEvent({
+        handleCreateEvent({
             action: "CREATE",
             object: shapeRef.current,
-            addEvent,
+            createEvent,
         });
     }
 
@@ -193,7 +193,7 @@ export const handleCanvasMouseUp = ({
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, addEvent }: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, createEvent }: CanvasObjectModified) => {
     const target = options.target;
     if (!target) return;
 
@@ -202,17 +202,17 @@ export const handleCanvasObjectModified = ({ options, addEvent }: CanvasObjectMo
     } else {
         // sync shape in storage
         if (target?.uid) {
-            handleAddEvent({
+            handleCreateEvent({
                 action: "UPDATE",
                 object: target,
-                addEvent,
+                createEvent,
             });
         }
     }
 };
 
 // update shape in storage when path is created when in path mode
-export const handlePathCreated = ({ options, addEvent }: CanvasPathCreated) => {
+export const handlePathCreated = ({ options, createEvent }: CanvasPathCreated) => {
     // get path object
     const path = options.path;
     if (!path) return;
@@ -222,10 +222,10 @@ export const handlePathCreated = ({ options, addEvent }: CanvasPathCreated) => {
 
     // sync shape in storage
     if (path?.uid) {
-        handleAddEvent({
+        handleCreateEvent({
             action: "CREATE",
             object: path,
-            addEvent,
+            createEvent,
         });
     }
 };

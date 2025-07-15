@@ -7,7 +7,7 @@ import { IoDuplicateOutline } from "react-icons/io5";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
 export default function Actions({ fabricRef, currentObject }: ActionsProps) {
-    const { addEvent } = useEventStore();
+    const { createEvent } = useEventStore();
     const { userMedia, setUserMedia } = useCanvasState();
 
     return (
@@ -19,7 +19,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                         variant="soft"
                         onClick={() => {
                             if (fabricRef.current) {
-                                handleDuplicate(fabricRef.current, addEvent);
+                                handleDuplicate(fabricRef.current, createEvent);
                             }
                         }}
                     >
@@ -33,7 +33,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     variant="soft"
                     onClick={() => {
                         if (fabricRef.current) {
-                            handleDelete(fabricRef.current, addEvent);
+                            handleDelete(fabricRef.current, createEvent);
                             if (currentObject?.uid === "webcam" && userMedia) {
                                 userMedia.getTracks().forEach((track) => track.stop());
 

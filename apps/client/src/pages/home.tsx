@@ -4,8 +4,10 @@ import ShareModal from "@/components/canvas/share-modal";
 import Navbar from "@/components/home/navbar";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import { useShapeStore } from "@/stores/room/useShapeStore";
 import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
+import type { ShapeEvent } from "@/types/event";
 import { renderCanvas } from "@/utils/canvas";
 import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
@@ -20,9 +22,10 @@ export default function HomePage() {
 
     const room = searchParams.get("room");
 
+    const { createEvent } = useEventStore();
     const { refresh, setRefresh } = useCanvasState();
     const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
-    const { shapes, createShape, updateShape, deleteShape } = useShapeStore();
+    const { shapes, createShape } = useShapeStore();
     const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser } = useUserStore();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -54,39 +57,14 @@ export default function HomePage() {
         socket.on("update:user", ({ key, value }: { key: string; value: RoomUser }) => updateUser(key, value));
         socket.on("delete:user", ({ key }: { key: string }) => deleteUser(key));
 
-        socket.on("create:shape", ({ key, value }: { key: string; value: Record<string, unknown> }) => {
-            createShape(key, value);
+        socket.on("create:event", ({ event }: { event: ShapeEvent }) => {
+            createEvent(event);
             setRefresh();
         });
-        socket.on("update:shape", ({ key, value }: { key: string; value: Record<string, unknown> }) => {
-            updateShape(key, value);
-            setRefresh();
-        });
-        socket.on("delete:shape", ({ key }: { key: string }) => {
-            deleteShape(key);
-            setRefresh();
-        });
-        // socket.on("undo:shape", ({ status }) => {
-        //     // UNDO REDO FUNCTIONALITY
-        // });
-        // socket.on("redo:shape", ({ status }) => {
-        //     // UNDO REDO FUNCTIONALITY
-        // });
-        // socket.on("reset:canvas", ({ status }) => {
-        //     // RESET CANVAS FUNCTIONALITY
-        // });
 
         return () => {};
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    // useEffect(() => {
-    //     if (shareTo) {
-    //         socket.emit("initial:state", { to: shareTo, shapes, history, position });
-    //         setShareTo(null);
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [shareTo]);
 
     return (
         <div>

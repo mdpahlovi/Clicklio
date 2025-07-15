@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { mode } = useColorScheme();
-    const { addEvent } = useEventStore();
+    const { createEvent } = useEventStore();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
     const videoInputRef = useRef<HTMLInputElement | null>(null);
@@ -166,7 +166,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     const files = e?.target?.files;
 
                     if (files && e?.target?.files?.length) {
-                        handleImageUpload({ file: files[0], fabricRef, addEvent });
+                        handleImageUpload({ file: files[0], fabricRef, createEvent });
                         if (imageInputRef.current) imageInputRef.current.value = "";
                     }
                 }}

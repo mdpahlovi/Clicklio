@@ -2,7 +2,7 @@ import type { WindowKeyDown } from "@/types";
 import type { ShapeEvent } from "@/types/event";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
-import { handleAddEvent } from "./event";
+import { handleCreateEvent } from "./event";
 
 export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObject<fabric.FabricObject | null>) => {
     const activeObjects = canvas.getActiveObject();
@@ -13,7 +13,7 @@ export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObje
 export const handlePaste = async (
     canvas: fabric.Canvas,
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>,
-    addEvent: (event: ShapeEvent) => void,
+    createEvent: (event: ShapeEvent) => void,
 ) => {
     // if no copiedObject, return
     if (!copiedObjectRef.current) return;
@@ -30,10 +30,10 @@ export const handlePaste = async (
                 canvas.add(object);
 
                 // sync in storage
-                handleAddEvent({
+                handleCreateEvent({
                     action: "CREATE",
                     object,
-                    addEvent,
+                    createEvent,
                 });
             }
         });
@@ -46,10 +46,10 @@ export const handlePaste = async (
             canvas.add(clonedObj);
 
             // sync in storage
-            handleAddEvent({
+            handleCreateEvent({
                 action: "CREATE",
                 object: clonedObj,
-                addEvent,
+                createEvent,
             });
         }
     }
@@ -59,7 +59,7 @@ export const handlePaste = async (
     canvas.requestRenderAll();
 };
 
-export const handleDuplicate = async (canvas: fabric.Canvas, addEvent: (event: ShapeEvent) => void) => {
+export const handleDuplicate = async (canvas: fabric.Canvas, createEvent: (event: ShapeEvent) => void) => {
     // Get the active object from the canvas
     const activeObject = canvas.getActiveObject();
 
@@ -82,10 +82,10 @@ export const handleDuplicate = async (canvas: fabric.Canvas, addEvent: (event: S
                 canvas.add(object);
 
                 // sync in storage
-                handleAddEvent({
+                handleCreateEvent({
                     action: "CREATE",
                     object,
-                    addEvent,
+                    createEvent,
                 });
             }
         });
@@ -98,10 +98,10 @@ export const handleDuplicate = async (canvas: fabric.Canvas, addEvent: (event: S
             canvas.add(clonedObj);
 
             // sync in storage
-            handleAddEvent({
+            handleCreateEvent({
                 action: "CREATE",
                 object: clonedObj,
-                addEvent,
+                createEvent,
             });
         }
     }
@@ -111,7 +111,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, addEvent: (event: S
     canvas.requestRenderAll();
 };
 
-export const handleDelete = (canvas: fabric.Canvas, addEvent: (event: ShapeEvent) => void) => {
+export const handleDelete = (canvas: fabric.Canvas, createEvent: (event: ShapeEvent) => void) => {
     const activeObjects = canvas.getActiveObjects();
     if (!activeObjects || activeObjects.length === 0) return;
 
@@ -120,10 +120,10 @@ export const handleDelete = (canvas: fabric.Canvas, addEvent: (event: ShapeEvent
             if (object?.uid) {
                 canvas.remove(object);
 
-                handleAddEvent({
+                handleCreateEvent({
                     action: "DELETE",
                     object,
-                    addEvent,
+                    createEvent,
                 });
             }
         });
@@ -134,18 +134,7 @@ export const handleDelete = (canvas: fabric.Canvas, addEvent: (event: ShapeEvent
 };
 
 // create a handleKeyDown function that listen to different keydown events
-export const handleKeyDown = ({
-    e,
-    canvas,
-    isEditing,
-    copiedObjectRef,
-    addEvent,
-    undo,
-    redo,
-    setTool,
-    setZoom,
-    setMode,
-}: WindowKeyDown) => {
+export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom, setMode }: WindowKeyDown) => {
     const zoom = canvas?.getZoom();
     const light = localStorage.getItem("joy-mode") === "light";
 
@@ -210,31 +199,29 @@ export const handleKeyDown = ({
     }
     // Check if the key pressed is ctrl/cmd + v (Paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas, copiedObjectRef, addEvent);
+        handlePaste(canvas, copiedObjectRef, createEvent);
     }
     // Check if the key pressed is ctrl/cmd + d (Duplicate)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68 && !e.altKey) {
         e.preventDefault();
-        handleDuplicate(canvas, addEvent);
+        handleDuplicate(canvas, createEvent);
     }
     // Check if the key pressed is delete (Delete Selection)
     if (canvas && e.keyCode === 46) {
-        handleDelete(canvas, addEvent);
+        handleDelete(canvas, createEvent);
     }
     // Check if the key pressed is ctrl/cmd + x (Cut)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
         handleCopy(canvas, copiedObjectRef);
-        handleDelete(canvas, addEvent);
+        handleDelete(canvas, createEvent);
     }
     // Check if the key pressed is ctrl/cmd + z (Undo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90 && !e.shiftKey) {
-        undo();
-        // UNDO REDO FUNCTIONALITY
+        handleCreateEvent({ action: "UNDO", object: null, createEvent });
     }
     // Check if the key pressed is ctrl/cmd + shift + z (Redo)
     if ((e?.ctrlKey || e?.metaKey) && e.shiftKey && e.keyCode === 90) {
-        redo();
-        // UNDO REDO FUNCTIONALITY
+        handleCreateEvent({ action: "REDO", object: null, createEvent });
     }
     // Check if the key pressed is space (Temporary Pan)
     if (e.keyCode === 32) setTool("panning");

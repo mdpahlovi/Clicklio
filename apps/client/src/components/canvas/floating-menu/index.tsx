@@ -9,7 +9,7 @@ import { modifyShape } from "@/utils/shapes";
 import { Divider, Sheet } from "@mui/joy";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
-    const { addEvent } = useEventStore();
+    const { createEvent } = useEventStore();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
 
     const handleInputChange = (property: keyof Attributes, value: string) =>
@@ -17,7 +17,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
             fabricRef,
             property,
             value,
-            addEvent,
+            createEvent,
         });
 
     if (fabricRef?.current && currentObject) {

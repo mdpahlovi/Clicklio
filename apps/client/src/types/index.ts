@@ -41,7 +41,7 @@ export type ModifyShape = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
     property: keyof Attributes;
     value: string;
-    addEvent: (event: ShapeEvent) => void;
+    createEvent: (event: ShapeEvent) => void;
 };
 
 export type ElementDirection = {
@@ -52,7 +52,7 @@ export type ElementDirection = {
 export type ImageUpload = {
     file: File;
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    addEvent: (event: ShapeEvent) => void;
+    createEvent: (event: ShapeEvent) => void;
 };
 
 export type SidebarProps = {
@@ -115,16 +115,16 @@ export type CanvasMouseUp = {
     selectedToolRef: React.RefObject<Tool | null>;
     deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
     setTool: (tool: Tool) => void;
-    addEvent: (event: ShapeEvent) => void;
+    createEvent: (event: ShapeEvent) => void;
 };
 
 export type CanvasObjectModified = {
     options: fabric.ModifiedEvent<fabric.TPointerEvent>;
-    addEvent: (event: ShapeEvent) => void;
+    createEvent: (event: ShapeEvent) => void;
 };
 
 export type CanvasPathCreated = {
-    addEvent: (event: ShapeEvent) => void;
+    createEvent: (event: ShapeEvent) => void;
     options: { path: fabric.FabricObject };
 };
 
@@ -144,16 +144,14 @@ export type WindowKeyDown = {
     canvas: fabric.Canvas | null;
     isEditing: React.RefObject<boolean>;
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>;
-    addEvent: (event: ShapeEvent) => void;
-    undo: () => void;
-    redo: () => void;
+    createEvent: (event: ShapeEvent) => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setMode: (mode: "light" | "dark" | null) => void;
 };
 
-export type StoreAddEvent = {
+export type StoreCreateEvent = {
     action: Action;
-    object: fabric.FabricObject;
-    addEvent: (event: ShapeEvent) => void;
+    object: fabric.FabricObject | null;
+    createEvent: (event: ShapeEvent) => void;
 };

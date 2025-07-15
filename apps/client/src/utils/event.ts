@@ -1,6 +1,63 @@
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import type { StoreAddEvent } from "@/types";
+import { useEventStore } from "@/stores/canvas/useEventStore";
+import type { StoreCreateEvent } from "@/types";
+import type { ShapeEvent } from "@/types/event";
+import { v4 as uuid } from "uuid";
+import { socket } from "./socket";
 
-export const handleAddEvent = (data: StoreAddEvent) => {
-    console.log({ data, room: useCanvasState.getState().room });
+export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEvent) => {
+    const user = useCanvasState.getState().user;
+    const room = useCanvasState.getState().room;
+
+    let event: ShapeEvent | null = null;
+    switch (action) {
+        case "CREATE":
+        case "UPDATE":
+        case "DELETE": {
+            if (object?.uid) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                event = {
+                    eventId: uuid(),
+                    type: action,
+                    shapeId: object?.uid,
+                    ...(action !== "DELETE" ? { data: object.toJSON() } : {}),
+                    userId: user,
+                    firedAt: new Date().toISOString(),
+                };
+            }
+            break;
+        }
+        case "UNDO": {
+            const userUndoStack = useEventStore.getState().userUndoStacks.get(user) || [];
+            if (userUndoStack.length > 0) {
+                event = {
+                    eventId: uuid(),
+                    type: "UNDO",
+                    targetEventId: userUndoStack[userUndoStack.length - 1],
+                    userId: user,
+                    firedAt: new Date().toISOString(),
+                };
+            }
+            break;
+        }
+        case "REDO": {
+            const userRedoStack = useEventStore.getState().userRedoStacks.get(user) || [];
+            if (userRedoStack.length > 0) {
+                event = {
+                    eventId: uuid(),
+                    type: "REDO",
+                    targetEventId: userRedoStack[userRedoStack.length - 1],
+                    userId: user,
+                    firedAt: new Date().toISOString(),
+                };
+            }
+            break;
+        }
+    }
+
+    if (event) {
+        createEvent(event);
+        if (socket.connected && room) socket.emit("create:event", { room, event });
+    }
 };

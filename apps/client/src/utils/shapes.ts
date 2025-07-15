@@ -2,7 +2,7 @@ import type { ImageUpload, ModifyShape, Pointer, Tool } from "@/types";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
 import { Arrow } from "./arrow";
-import { handleAddEvent } from "./event";
+import { handleCreateEvent } from "./event";
 
 export const createRectangle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.Rect({
@@ -89,7 +89,7 @@ export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseCo
     }
 };
 
-export const handleImageUpload = ({ file, fabricRef, addEvent }: ImageUpload) => {
+export const handleImageUpload = ({ file, fabricRef, createEvent }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -101,10 +101,10 @@ export const handleImageUpload = ({ file, fabricRef, addEvent }: ImageUpload) =>
                 fabricRef.current.add(image);
 
                 // sync in storage
-                handleAddEvent({
+                handleCreateEvent({
                     action: "CREATE",
                     object: image,
-                    addEvent,
+                    createEvent,
                 });
 
                 fabricRef.current.requestRenderAll();
@@ -115,7 +115,7 @@ export const handleImageUpload = ({ file, fabricRef, addEvent }: ImageUpload) =>
     reader.readAsDataURL(file);
 };
 
-export const modifyShape = ({ fabricRef, property, value, addEvent }: ModifyShape) => {
+export const modifyShape = ({ fabricRef, property, value, createEvent }: ModifyShape) => {
     if (!fabricRef.current) return;
     const selectedElement = fabricRef.current.getActiveObject();
     if (!selectedElement || selectedElement?.type === "activeSelection") return;
@@ -155,10 +155,10 @@ export const modifyShape = ({ fabricRef, property, value, addEvent }: ModifyShap
 
     // sync in storage
     if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
-        handleAddEvent({
+        handleCreateEvent({
             action: "UPDATE",
             object: selectedElement,
-            addEvent,
+            createEvent,
         });
     }
 };
