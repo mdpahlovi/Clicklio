@@ -2,7 +2,7 @@ import type { ImageUpload, ModifyShape, Pointer, Tool } from "@/types";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
 import { Arrow } from "./arrow";
-import { socket } from "./socket";
+import { handleAddEvent } from "./event";
 
 export const createRectangle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
     return new fabric.Rect({
@@ -89,7 +89,7 @@ export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseCo
     }
 };
 
-export const handleImageUpload = ({ file, room, fabricRef, createShape }: ImageUpload) => {
+export const handleImageUpload = ({ file, room, fabricRef, addEvent }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -97,19 +97,17 @@ export const handleImageUpload = ({ file, room, fabricRef, createShape }: ImageU
             image.scaleToWidth(100);
             image.set({ uid: uuid() });
 
-            // sync shape in storage
-            if (image?.uid) {
-                createShape(image?.uid, image.toJSON());
-                if (room)
-                    socket.emit("create:shape", {
-                        room,
-                        key: image?.uid,
-                        value: image.toJSON(),
-                    });
-            }
-
-            if (fabricRef?.current) {
+            if (fabricRef?.current && image?.uid) {
                 fabricRef.current.add(image);
+
+                // sync in storage
+                handleAddEvent({
+                    action: "CREATE",
+                    object: image,
+                    room,
+                    addEvent,
+                });
+
                 fabricRef.current.requestRenderAll();
             }
         });
@@ -118,7 +116,7 @@ export const handleImageUpload = ({ file, room, fabricRef, createShape }: ImageU
     reader.readAsDataURL(file);
 };
 
-export const modifyShape = ({ fabricRef, room, property, value, updateShape }: ModifyShape) => {
+export const modifyShape = ({ fabricRef, room, property, value, addEvent }: ModifyShape) => {
     if (!fabricRef.current) return;
     const selectedElement = fabricRef.current.getActiveObject();
     if (!selectedElement || selectedElement?.type === "activeSelection") return;
@@ -156,14 +154,13 @@ export const modifyShape = ({ fabricRef, room, property, value, updateShape }: M
 
     fabricRef.current.requestRenderAll();
 
-    // sync shape in storage
+    // sync in storage
     if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
-        updateShape(selectedElement?.uid, selectedElement.toJSON());
-        if (room)
-            socket.emit("update:shape", {
-                room,
-                key: selectedElement?.uid,
-                value: selectedElement.toJSON(),
-            });
+        handleAddEvent({
+            action: "UPDATE",
+            object: selectedElement,
+            room,
+            addEvent,
+        });
     }
 };

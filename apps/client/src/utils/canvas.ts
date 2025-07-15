@@ -9,10 +9,10 @@ import type {
     RenderCanvas,
 } from "@/types";
 import { createSpecificShape } from "@/utils/shapes";
-import { socket } from "@/utils/socket";
 import * as fabric from "fabric";
 import { v4 as uuid4 } from "uuid";
 import { Arrow } from "./arrow";
+import { handleAddEvent } from "./event";
 
 fabric.FabricObject.ownDefaults.cornerColor = "#4882ED";
 fabric.FabricObject.ownDefaults.cornerStyle = "circle";
@@ -142,8 +142,7 @@ export const handleCanvasMouseUp = ({
     selectedToolRef,
     deleteObjectRef,
     setTool,
-    createShape,
-    deleteShape,
+    addEvent,
 }: CanvasMouseUp) => {
     // if canvas is in DrawingMode, return
     if (canvas.isDrawingMode) return;
@@ -156,11 +155,17 @@ export const handleCanvasMouseUp = ({
     // eraser all shape from deleteObjectRef
     if (selectedToolRef.current === "eraser" && deleteObjectRef.current.length) {
         deleteObjectRef.current.forEach((object) => {
-            canvas.remove(object);
+            if (object?.uid) {
+                canvas.remove(object);
 
-            // sync in storage
-            deleteShape(object?.uid);
-            if (roomRef.current) socket.emit("delete:shape", { room: roomRef.current, uid: object?.uid });
+                // sync in storage
+                handleAddEvent({
+                    action: "DELETE",
+                    object,
+                    addEvent,
+                    room: roomRef.current,
+                });
+            }
         });
 
         canvas.requestRenderAll();
@@ -173,13 +178,13 @@ export const handleCanvasMouseUp = ({
         canvas.setActiveObject(shapeRef.current);
         shapeRef.current.setCoords();
 
-        createShape(shapeRef.current?.uid, shapeRef.current.toJSON());
-        if (roomRef.current)
-            socket.emit("create:shape", {
-                room: roomRef.current,
-                key: shapeRef.current?.uid,
-                value: shapeRef.current.toJSON(),
-            });
+        // sync in storage
+        handleAddEvent({
+            action: "CREATE",
+            object: shapeRef.current,
+            addEvent,
+            room: roomRef.current,
+        });
     }
 
     // set everything to null
@@ -191,7 +196,7 @@ export const handleCanvasMouseUp = ({
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, roomRef, addEvent }: CanvasObjectModified) => {
     const target = options.target;
     if (!target) return;
 
@@ -200,19 +205,18 @@ export const handleCanvasObjectModified = ({ options, roomRef, updateShape }: Ca
     } else {
         // sync shape in storage
         if (target?.uid) {
-            updateShape(target?.uid, target.toJSON());
-            if (roomRef.current)
-                socket.emit("update:shape", {
-                    room: roomRef.current,
-                    key: target?.uid,
-                    value: target.toJSON(),
-                });
+            handleAddEvent({
+                action: "UPDATE",
+                object: target,
+                addEvent,
+                room: roomRef.current,
+            });
         }
     }
 };
 
 // update shape in storage when path is created when in path mode
-export const handlePathCreated = ({ options, roomRef, createShape }: CanvasPathCreated) => {
+export const handlePathCreated = ({ options, roomRef, addEvent }: CanvasPathCreated) => {
     // get path object
     const path = options.path;
     if (!path) return;
@@ -222,13 +226,12 @@ export const handlePathCreated = ({ options, roomRef, createShape }: CanvasPathC
 
     // sync shape in storage
     if (path?.uid) {
-        createShape(path?.uid, path.toJSON());
-        if (roomRef.current)
-            socket.emit("create:shape", {
-                room: roomRef.current,
-                key: path?.uid,
-                value: path.toJSON(),
-            });
+        handleAddEvent({
+            action: "CREATE",
+            object: path,
+            addEvent,
+            room: roomRef.current,
+        });
     }
 };
 

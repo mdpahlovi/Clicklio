@@ -1,5 +1,5 @@
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useShapeStore } from "@/stores/room/useShapeStore";
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ActionsProps } from "@/types";
 import { handleDelete, handleDuplicate } from "@/utils/key-events";
 import { IconButton, Tooltip } from "@mui/joy";
@@ -8,8 +8,8 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { useSearchParams } from "react-router-dom";
 
 export default function Actions({ fabricRef, currentObject }: ActionsProps) {
+    const { addEvent } = useEventStore();
     const { userMedia, setUserMedia } = useCanvasState();
-    const { createShape, deleteShape } = useShapeStore();
 
     const room = useSearchParams()[0].get("room");
 
@@ -20,7 +20,11 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     <IconButton
                         color="primary"
                         variant="soft"
-                        onClick={() => (fabricRef.current ? handleDuplicate(fabricRef.current, room, createShape) : null)}
+                        onClick={() => {
+                            if (fabricRef.current) {
+                                handleDuplicate(fabricRef.current, room, addEvent);
+                            }
+                        }}
                     >
                         <IoDuplicateOutline />
                     </IconButton>
@@ -32,7 +36,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     variant="soft"
                     onClick={() => {
                         if (fabricRef.current) {
-                            handleDelete(fabricRef.current, room, deleteShape);
+                            handleDelete(fabricRef.current, room, addEvent);
                             if (currentObject?.uid === "webcam" && userMedia) {
                                 userMedia.getTracks().forEach((track) => track.stop());
 

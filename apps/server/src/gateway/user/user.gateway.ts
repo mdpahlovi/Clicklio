@@ -7,11 +7,9 @@ import {
     WebSocketGateway,
     WebSocketServer,
 } from "@nestjs/websockets";
-import { randomUUID } from "crypto";
 import { Server, Socket } from "socket.io";
 import { RedisService } from "src/common/service/redis.service";
 import { Pointer, RoomUser } from "src/types/user";
-import { getRandomName } from "src/utils/getRandomName";
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -36,20 +34,12 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage("join:room")
-    async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: { room: string; user: RoomUser | null }) {
+    async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: { room: string; user: RoomUser }) {
         if (!data.room) return;
 
         const { room, user } = data;
-        const roomUser: RoomUser = {
-            id: user?.id || randomUUID(),
-            name: user?.name || getRandomName(),
-            role: user?.role || "USER",
-            roomId: room,
-            joinAt: new Date().toISOString(),
-        };
-
         await client.join(room);
-        await this.redisService.client.hset(`room:${room}:user:${client.id}`, roomUser);
+        await this.redisService.client.hset(`room:${room}:user:${client.id}`, user);
 
         // Current users
         let users = {};
@@ -79,7 +69,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
         } while (shapeCursor !== "0");
 
-        this.server.to(room).emit("join:room", { users, shapes });
+        client.to(room).emit("join:room", { users, shapes });
     }
 
     @SubscribeMessage("leave:room")

@@ -1,6 +1,8 @@
 import * as fabric from "fabric";
+import type { ShapeEvent } from "./event";
 
 export type Pointer = { x: number; y: number };
+type Action = "CREATE" | "UPDATE" | "DELETE" | "UNDO" | "REDO";
 
 export type Attributes = {
     fontSize: string;
@@ -40,7 +42,7 @@ export type ModifyShape = {
     property: keyof Attributes;
     value: string;
     room: string | null;
-    updateShape: (key: string, value: Record<string, unknown>) => void;
+    addEvent: (event: ShapeEvent) => void;
 };
 
 export type ElementDirection = {
@@ -52,7 +54,7 @@ export type ImageUpload = {
     file: File;
     room: string | null;
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    createShape: (key: string, value: Record<string, unknown>) => void;
+    addEvent: (event: ShapeEvent) => void;
 };
 
 export type SidebarProps = {
@@ -116,19 +118,18 @@ export type CanvasMouseUp = {
     deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
     roomRef: React.RefObject<string | null>;
     setTool: (tool: Tool) => void;
-    createShape: (key: string, value: Record<string, unknown>) => void;
-    deleteShape: (key: string) => void;
+    addEvent: (event: ShapeEvent) => void;
 };
 
 export type CanvasObjectModified = {
     options: fabric.ModifiedEvent<fabric.TPointerEvent>;
     roomRef: React.RefObject<string | null>;
-    updateShape: (key: string, value: Record<string, unknown>) => void;
+    addEvent: (event: ShapeEvent) => void;
 };
 
 export type CanvasPathCreated = {
     roomRef: React.RefObject<string | null>;
-    createShape: (key: string, value: Record<string, unknown>) => void;
+    addEvent: (event: ShapeEvent) => void;
     options: { path: fabric.FabricObject };
 };
 
@@ -149,11 +150,17 @@ export type WindowKeyDown = {
     roomRef: React.RefObject<string | null>;
     isEditing: React.RefObject<boolean>;
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>;
-    createShape: (key: string, value: Record<string, unknown>) => void;
-    deleteShape: (key: string) => void;
+    addEvent: (event: ShapeEvent) => void;
     undo: () => void;
     redo: () => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setMode: (mode: "light" | "dark" | null) => void;
+};
+
+export type StoreAddEvent = {
+    action: Action;
+    object: fabric.FabricObject;
+    addEvent: (event: ShapeEvent) => void;
+    room: string | null;
 };

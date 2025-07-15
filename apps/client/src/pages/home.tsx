@@ -18,7 +18,7 @@ export default function HomePage() {
 
     const { refresh, setRefresh } = useCanvasState();
     const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
-    const { setCurUser, createUser, updateUser, deleteUser } = useUserStore();
+    const { currUser, createCurrUser, createUser, updateUser, deleteUser } = useUserStore();
     const { shapes, createShape, updateShape, deleteShape } = useShapeStore();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -26,21 +26,20 @@ export default function HomePage() {
 
     useEffect(() => {
         if (roomRef.current) {
-            const currUser = JSON.parse(sessionStorage.getItem("currUser") || "null");
-            socket.emit("join:room", { room: roomRef.current, user: currUser });
+            if (socket.connected) {
+                if (!currUser) createCurrUser(roomRef.current, "USER");
+
+                socket.emit("join:room", { room: roomRef.current, user: currUser });
+            } else {
+                roomRef.current = null;
+            }
         }
 
         // Room user events
         socket.on("join:room", ({ users, shapes }: JoinRoomResponse) => {
-            Object.entries(users).forEach(([key, value]) => {
-                if (key === socket.id) {
-                    setCurUser(value);
-                } else {
-                    createUser(key, value);
-                }
-            });
-
+            Object.entries(users).forEach(([key, value]) => createUser(key, value));
             Object.entries(shapes).forEach(([key, value]) => createShape(key, value));
+
             setRefresh();
         });
         socket.on("update:user", ({ key, value }: { key: string; value: RoomUser }) => updateUser(key, value));

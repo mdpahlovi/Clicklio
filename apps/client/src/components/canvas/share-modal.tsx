@@ -14,13 +14,13 @@ type ShareModalProps = {
 };
 
 export default function ShareModal({ isOpen, setIsOpen, roomRef }: ShareModalProps) {
-    const { currUser, setCurUser } = useUserStore();
+    const { currUser, createCurrUser, updateCurrUser } = useUserStore();
 
     const [searchParams, setSearchParams] = useSearchParams();
     const room = searchParams.get("room");
 
     const debounceUpdate = useDebouncedCallback((user: RoomUser) => {
-        setCurUser(user);
+        updateCurrUser(user);
         socket.emit("update:user", { room, user });
     }, 500);
 
@@ -80,9 +80,16 @@ export default function ShareModal({ isOpen, setIsOpen, roomRef }: ShareModalPro
                             onClick={() => {
                                 // Create and join room
                                 const room = uuid();
-                                roomRef.current = room;
-                                setSearchParams({ room });
-                                socket.emit("join:room", { room, user: { role: "ADMIN" } });
+
+                                if (socket.connected) {
+                                    // Set room in url
+                                    roomRef.current = room;
+                                    setSearchParams({ room });
+
+                                    // Set current user
+                                    createCurrUser(room, "ADMIN");
+                                    socket.emit("join:room", { room, user: { role: "ADMIN" } });
+                                }
                             }}
                             startDecorator={<FaPlay size={18} />}
                         >

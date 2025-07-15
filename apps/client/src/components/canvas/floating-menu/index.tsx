@@ -3,14 +3,14 @@ import Colors from "@/components/canvas/floating-menu/Colors";
 import Opacity from "@/components/canvas/floating-menu/Opacity";
 import Text from "@/components/canvas/floating-menu/Text";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useShapeStore } from "@/stores/room/useShapeStore";
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
 import { modifyShape } from "@/utils/shapes";
 import { Divider, Sheet } from "@mui/joy";
 import { useSearchParams } from "react-router-dom";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
-    const { updateShape } = useShapeStore();
+    const { addEvent } = useEventStore();
     const [searchParams] = useSearchParams();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
 
@@ -22,7 +22,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
             room,
             property,
             value,
-            updateShape,
+            addEvent,
         });
 
     if (fabricRef?.current && currentObject) {

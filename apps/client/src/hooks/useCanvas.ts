@@ -1,5 +1,4 @@
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { useShapeStore } from "@/stores/room/useShapeStore";
 import { handleKeyDown } from "@/utils/key-events";
 import * as fabric from "fabric";
 import { useEffect, useRef } from "react";
@@ -16,12 +15,13 @@ import {
     initializeFabric,
 } from "@/utils/canvas";
 
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Pointer, Tool } from "@/types";
 import { useColorScheme } from "@mui/joy";
 
 export function useCanvas() {
+    const { addEvent } = useEventStore();
     const { mode, setMode } = useColorScheme();
-    const { createShape, updateShape, deleteShape } = useShapeStore();
     const { setTool, setZoom, setCurrentObject, removeCurrentObject } = useCanvasState();
 
     const [searchParams] = useSearchParams();
@@ -89,17 +89,16 @@ export function useCanvas() {
                 selectedToolRef,
                 deleteObjectRef,
                 setTool,
-                createShape,
-                deleteShape,
+                addEvent,
             });
         });
 
         canvas.on("path:created", (options) => {
-            handlePathCreated({ options, roomRef, createShape });
+            handlePathCreated({ options, roomRef, addEvent });
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, roomRef, updateShape });
+            handleCanvasObjectModified({ options, roomRef, addEvent });
         });
 
         canvas.on("selection:created", (options) => {
@@ -127,8 +126,7 @@ export function useCanvas() {
                 roomRef,
                 isEditing,
                 copiedObjectRef,
-                createShape,
-                deleteShape,
+                addEvent,
                 undo: () => {
                     // UNDO REDO FUNCTIONALITY
                 },
@@ -152,8 +150,7 @@ export function useCanvas() {
                     roomRef,
                     isEditing,
                     copiedObjectRef,
-                    createShape,
-                    deleteShape,
+                    addEvent,
                     undo: () => {
                         // UNDO REDO FUNCTIONALITY
                     },
