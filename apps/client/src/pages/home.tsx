@@ -9,30 +9,37 @@ import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
 import { renderCanvas } from "@/utils/canvas";
 import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 type JoinRoomResponse = { users: Record<string, RoomUser>; shapes: Record<string, Record<string, unknown>> };
 
 export default function HomePage() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
+    const room = searchParams.get("room");
+
     const { refresh, setRefresh } = useCanvasState();
-    const { canvasRef, fabricRef, roomRef, selectedToolRef } = useCanvas();
-    const { currUser, createCurrUser, createUser, updateUser, deleteUser } = useUserStore();
+    const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
     const { shapes, createShape, updateShape, deleteShape } = useShapeStore();
+    const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser } = useUserStore();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        if (roomRef.current) {
+        if (room) {
             if (socket.connected) {
-                if (!currUser) createCurrUser(roomRef.current, "USER");
-
-                socket.emit("join:room", { room: roomRef.current, user: currUser });
+                let user = currUser;
+                if (!user) user = createCurrUser(room, "USER");
+                socket.emit("join:room", { room: room, user });
             } else {
-                roomRef.current = null;
+                searchParams.delete("room");
+                setSearchParams(searchParams);
             }
+        } else {
+            deleteCurrUser();
         }
 
         // Room user events
@@ -42,6 +49,8 @@ export default function HomePage() {
 
             setRefresh();
         });
+
+        socket.on("create:user", ({ key, value }: { key: string; value: RoomUser }) => createUser(key, value));
         socket.on("update:user", ({ key, value }: { key: string; value: RoomUser }) => updateUser(key, value));
         socket.on("delete:user", ({ key }: { key: string }) => deleteUser(key));
 
@@ -85,7 +94,7 @@ export default function HomePage() {
             <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
-            <ShareModal isOpen={isShareModalOpen} setIsOpen={setIsShareModalOpen} {...{ roomRef }} />
+            <ShareModal isOpen={isShareModalOpen} setIsOpen={setIsShareModalOpen} />
         </div>
     );
 }

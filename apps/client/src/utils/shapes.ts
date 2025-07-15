@@ -89,7 +89,7 @@ export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseCo
     }
 };
 
-export const handleImageUpload = ({ file, room, fabricRef, addEvent }: ImageUpload) => {
+export const handleImageUpload = ({ file, fabricRef, addEvent }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -104,7 +104,6 @@ export const handleImageUpload = ({ file, room, fabricRef, addEvent }: ImageUplo
                 handleAddEvent({
                     action: "CREATE",
                     object: image,
-                    room,
                     addEvent,
                 });
 
@@ -116,7 +115,7 @@ export const handleImageUpload = ({ file, room, fabricRef, addEvent }: ImageUplo
     reader.readAsDataURL(file);
 };
 
-export const modifyShape = ({ fabricRef, room, property, value, addEvent }: ModifyShape) => {
+export const modifyShape = ({ fabricRef, property, value, addEvent }: ModifyShape) => {
     if (!fabricRef.current) return;
     const selectedElement = fabricRef.current.getActiveObject();
     if (!selectedElement || selectedElement?.type === "activeSelection") return;
@@ -159,7 +158,6 @@ export const modifyShape = ({ fabricRef, room, property, value, addEvent }: Modi
         handleAddEvent({
             action: "UPDATE",
             object: selectedElement,
-            room,
             addEvent,
         });
     }

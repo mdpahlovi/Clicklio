@@ -5,13 +5,10 @@ import { handleDelete, handleDuplicate } from "@/utils/key-events";
 import { IconButton, Tooltip } from "@mui/joy";
 import { IoDuplicateOutline } from "react-icons/io5";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import { useSearchParams } from "react-router-dom";
 
 export default function Actions({ fabricRef, currentObject }: ActionsProps) {
     const { addEvent } = useEventStore();
     const { userMedia, setUserMedia } = useCanvasState();
-
-    const room = useSearchParams()[0].get("room");
 
     return (
         <>
@@ -22,7 +19,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                         variant="soft"
                         onClick={() => {
                             if (fabricRef.current) {
-                                handleDuplicate(fabricRef.current, room, addEvent);
+                                handleDuplicate(fabricRef.current, addEvent);
                             }
                         }}
                     >
@@ -36,7 +33,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     variant="soft"
                     onClick={() => {
                         if (fabricRef.current) {
-                            handleDelete(fabricRef.current, room, addEvent);
+                            handleDelete(fabricRef.current, addEvent);
                             if (currentObject?.uid === "webcam" && userMedia) {
                                 userMedia.getTracks().forEach((track) => track.stop());
 

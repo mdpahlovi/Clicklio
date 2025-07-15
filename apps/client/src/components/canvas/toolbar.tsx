@@ -7,18 +7,14 @@ import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Tooltip, useCo
 import * as fabric from "fabric";
 import { Fragment, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import { useSearchParams } from "react-router-dom";
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { mode } = useColorScheme();
     const { addEvent } = useEventStore();
-    const [searchParams] = useSearchParams();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
     const videoInputRef = useRef<HTMLInputElement | null>(null);
     const documentInputRef = useRef<HTMLInputElement | null>(null);
-
-    const room = searchParams.get("room");
 
     useEffect(() => {
         const canvas = fabricRef.current;
@@ -170,7 +166,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     const files = e?.target?.files;
 
                     if (files && e?.target?.files?.length) {
-                        handleImageUpload({ file: files[0], room, fabricRef, addEvent });
+                        handleImageUpload({ file: files[0], fabricRef, addEvent });
                         if (imageInputRef.current) imageInputRef.current.value = "";
                     }
                 }}

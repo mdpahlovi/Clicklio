@@ -10,11 +10,10 @@ import { v4 as uuid } from "uuid";
 type ShareModalProps = {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    roomRef: React.RefObject<string | null>;
 };
 
-export default function ShareModal({ isOpen, setIsOpen, roomRef }: ShareModalProps) {
-    const { currUser, createCurrUser, updateCurrUser } = useUserStore();
+export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
+    const { currUser, createCurrUser, updateCurrUser, deleteCurrUser } = useUserStore();
 
     const [searchParams, setSearchParams] = useSearchParams();
     const room = searchParams.get("room");
@@ -57,10 +56,10 @@ export default function ShareModal({ isOpen, setIsOpen, roomRef }: ShareModalPro
                             onClick={() => {
                                 // Leave room
                                 setIsOpen(false);
+                                deleteCurrUser();
                                 socket.emit("leave:room", { room });
 
-                                // Remove room from url
-                                roomRef.current = null;
+                                // Leave room in url
                                 searchParams.delete("room");
                                 setSearchParams(searchParams);
                             }}
@@ -83,7 +82,6 @@ export default function ShareModal({ isOpen, setIsOpen, roomRef }: ShareModalPro
 
                                 if (socket.connected) {
                                     // Set room in url
-                                    roomRef.current = room;
                                     setSearchParams({ room });
 
                                     // Set current user

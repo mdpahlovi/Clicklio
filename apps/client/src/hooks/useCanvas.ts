@@ -2,7 +2,6 @@ import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { handleKeyDown } from "@/utils/key-events";
 import * as fabric from "fabric";
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
 
 import {
     handleCanvasMouseDown,
@@ -22,10 +21,7 @@ import { useColorScheme } from "@mui/joy";
 export function useCanvas() {
     const { addEvent } = useEventStore();
     const { mode, setMode } = useColorScheme();
-    const { setTool, setZoom, setCurrentObject, removeCurrentObject } = useCanvasState();
-
-    const [searchParams] = useSearchParams();
-    const roomRef = useRef<string | null>(null);
+    const { setTool, setZoom, setCurrentObject } = useCanvasState();
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -68,8 +64,6 @@ export function useCanvas() {
     }, [mode]);
 
     useEffect(() => {
-        roomRef.current = searchParams.get("room");
-
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
         canvas.on("mouse:down", (options) => {
@@ -83,7 +77,6 @@ export function useCanvas() {
         canvas.on("mouse:up", () => {
             handleCanvasMouseUp({
                 canvas,
-                roomRef,
                 isPanning,
                 shapeRef,
                 selectedToolRef,
@@ -94,11 +87,11 @@ export function useCanvas() {
         });
 
         canvas.on("path:created", (options) => {
-            handlePathCreated({ options, roomRef, addEvent });
+            handlePathCreated({ options, addEvent });
         });
 
         canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, roomRef, addEvent });
+            handleCanvasObjectModified({ options, addEvent });
         });
 
         canvas.on("selection:created", (options) => {
@@ -109,7 +102,7 @@ export function useCanvas() {
             if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
         });
 
-        canvas.on("selection:cleared", () => removeCurrentObject());
+        canvas.on("selection:cleared", () => setCurrentObject(null));
 
         canvas.on("text:editing:entered", () => (isEditing.current = true));
 
@@ -123,7 +116,6 @@ export function useCanvas() {
             handleKeyDown({
                 e,
                 canvas,
-                roomRef,
                 isEditing,
                 copiedObjectRef,
                 addEvent,
@@ -147,7 +139,6 @@ export function useCanvas() {
                 handleKeyDown({
                     e,
                     canvas: null,
-                    roomRef,
                     isEditing,
                     copiedObjectRef,
                     addEvent,
@@ -166,5 +157,5 @@ export function useCanvas() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return { canvasRef, fabricRef, roomRef, selectedToolRef };
+    return { canvasRef, fabricRef, selectedToolRef };
 }

@@ -5,11 +5,6 @@ import { ImHome } from "react-icons/im";
 import { Link } from "react-router-dom";
 
 export default function Sidebar({ fabricRef }: SidebarProps) {
-    // const [searchParams] = useSearchParams();
-    // const { shapes, createShape } = useShapeStore();
-
-    // const room = searchParams.get("room");
-
     return (
         <Sheet
             style={{ width: 64, height: "calc(100vh - 97px)", borderWidth: "0 1px 0 0" }}

@@ -7,19 +7,14 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
 import { modifyShape } from "@/utils/shapes";
 import { Divider, Sheet } from "@mui/joy";
-import { useSearchParams } from "react-router-dom";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     const { addEvent } = useEventStore();
-    const [searchParams] = useSearchParams();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
-
-    const room = searchParams.get("room");
 
     const handleInputChange = (property: keyof Attributes, value: string) =>
         modifyShape({
             fabricRef,
-            room,
             property,
             value,
             addEvent,

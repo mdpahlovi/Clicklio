@@ -136,7 +136,6 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
 // handle mouse up event on canvas to stop drawing shapes
 export const handleCanvasMouseUp = ({
     canvas,
-    roomRef,
     isPanning,
     shapeRef,
     selectedToolRef,
@@ -163,7 +162,6 @@ export const handleCanvasMouseUp = ({
                     action: "DELETE",
                     object,
                     addEvent,
-                    room: roomRef.current,
                 });
             }
         });
@@ -183,7 +181,6 @@ export const handleCanvasMouseUp = ({
             action: "CREATE",
             object: shapeRef.current,
             addEvent,
-            room: roomRef.current,
         });
     }
 
@@ -196,7 +193,7 @@ export const handleCanvasMouseUp = ({
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, roomRef, addEvent }: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, addEvent }: CanvasObjectModified) => {
     const target = options.target;
     if (!target) return;
 
@@ -209,14 +206,13 @@ export const handleCanvasObjectModified = ({ options, roomRef, addEvent }: Canva
                 action: "UPDATE",
                 object: target,
                 addEvent,
-                room: roomRef.current,
             });
         }
     }
 };
 
 // update shape in storage when path is created when in path mode
-export const handlePathCreated = ({ options, roomRef, addEvent }: CanvasPathCreated) => {
+export const handlePathCreated = ({ options, addEvent }: CanvasPathCreated) => {
     // get path object
     const path = options.path;
     if (!path) return;
@@ -230,7 +226,6 @@ export const handlePathCreated = ({ options, roomRef, addEvent }: CanvasPathCrea
             action: "CREATE",
             object: path,
             addEvent,
-            room: roomRef.current,
         });
     }
 };

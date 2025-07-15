@@ -41,7 +41,6 @@ export type ModifyShape = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
     property: keyof Attributes;
     value: string;
-    room: string | null;
     addEvent: (event: ShapeEvent) => void;
 };
 
@@ -52,7 +51,6 @@ export type ElementDirection = {
 
 export type ImageUpload = {
     file: File;
-    room: string | null;
     fabricRef: React.RefObject<fabric.Canvas | null>;
     addEvent: (event: ShapeEvent) => void;
 };
@@ -116,19 +114,16 @@ export type CanvasMouseUp = {
     shapeRef: React.RefObject<fabric.FabricObject | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
-    roomRef: React.RefObject<string | null>;
     setTool: (tool: Tool) => void;
     addEvent: (event: ShapeEvent) => void;
 };
 
 export type CanvasObjectModified = {
     options: fabric.ModifiedEvent<fabric.TPointerEvent>;
-    roomRef: React.RefObject<string | null>;
     addEvent: (event: ShapeEvent) => void;
 };
 
 export type CanvasPathCreated = {
-    roomRef: React.RefObject<string | null>;
     addEvent: (event: ShapeEvent) => void;
     options: { path: fabric.FabricObject };
 };
@@ -147,7 +142,6 @@ export type CanvasZoom = {
 export type WindowKeyDown = {
     e: KeyboardEvent;
     canvas: fabric.Canvas | null;
-    roomRef: React.RefObject<string | null>;
     isEditing: React.RefObject<boolean>;
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>;
     addEvent: (event: ShapeEvent) => void;
@@ -162,5 +156,4 @@ export type StoreAddEvent = {
     action: Action;
     object: fabric.FabricObject;
     addEvent: (event: ShapeEvent) => void;
-    room: string | null;
 };

@@ -41,7 +41,9 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await client.join(room);
         await this.redisService.client.hset(`room:${room}:user:${client.id}`, user);
 
-        // Current users
+        client.to(room).emit("create:user", { key: client.id, value: user });
+
+        // Set initial to current user
         let users = {};
         let userCursor = "0";
         do {
@@ -51,11 +53,13 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             for (const key of keys) {
                 const userData = await this.redisService.client.hgetall(key);
+
+                // Skip current user
+                if (key === `room:${room}:user:${client.id}`) continue;
                 users = { ...users, [`${key.split(":")[3]}`]: userData };
             }
         } while (userCursor !== "0");
 
-        // Current shapes
         let shapes = {};
         let shapeCursor = "0";
         do {
@@ -65,11 +69,12 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             for (const key of keys) {
                 const shapeData = await this.redisService.client.hgetall(key);
+
                 shapes = { ...shapes, [`${key.split(":")[3]}`]: shapeData };
             }
         } while (shapeCursor !== "0");
 
-        client.to(room).emit("join:room", { users, shapes });
+        client.emit("join:room", { users, shapes });
     }
 
     @SubscribeMessage("leave:room")

@@ -12,7 +12,6 @@ export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObje
 
 export const handlePaste = async (
     canvas: fabric.Canvas,
-    room: string | null,
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>,
     addEvent: (event: ShapeEvent) => void,
 ) => {
@@ -35,7 +34,6 @@ export const handlePaste = async (
                     action: "CREATE",
                     object,
                     addEvent,
-                    room,
                 });
             }
         });
@@ -52,7 +50,6 @@ export const handlePaste = async (
                 action: "CREATE",
                 object: clonedObj,
                 addEvent,
-                room,
             });
         }
     }
@@ -62,7 +59,7 @@ export const handlePaste = async (
     canvas.requestRenderAll();
 };
 
-export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null, addEvent: (event: ShapeEvent) => void) => {
+export const handleDuplicate = async (canvas: fabric.Canvas, addEvent: (event: ShapeEvent) => void) => {
     // Get the active object from the canvas
     const activeObject = canvas.getActiveObject();
 
@@ -89,7 +86,6 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
                     action: "CREATE",
                     object,
                     addEvent,
-                    room,
                 });
             }
         });
@@ -106,7 +102,6 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
                 action: "CREATE",
                 object: clonedObj,
                 addEvent,
-                room,
             });
         }
     }
@@ -116,7 +111,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, room: string | null
     canvas.requestRenderAll();
 };
 
-export const handleDelete = (canvas: fabric.Canvas, room: string | null, addEvent: (event: ShapeEvent) => void) => {
+export const handleDelete = (canvas: fabric.Canvas, addEvent: (event: ShapeEvent) => void) => {
     const activeObjects = canvas.getActiveObjects();
     if (!activeObjects || activeObjects.length === 0) return;
 
@@ -129,7 +124,6 @@ export const handleDelete = (canvas: fabric.Canvas, room: string | null, addEven
                     action: "DELETE",
                     object,
                     addEvent,
-                    room,
                 });
             }
         });
@@ -143,7 +137,6 @@ export const handleDelete = (canvas: fabric.Canvas, room: string | null, addEven
 export const handleKeyDown = ({
     e,
     canvas,
-    roomRef,
     isEditing,
     copiedObjectRef,
     addEvent,
@@ -217,21 +210,21 @@ export const handleKeyDown = ({
     }
     // Check if the key pressed is ctrl/cmd + v (Paste)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas, roomRef.current, copiedObjectRef, addEvent);
+        handlePaste(canvas, copiedObjectRef, addEvent);
     }
     // Check if the key pressed is ctrl/cmd + d (Duplicate)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68 && !e.altKey) {
         e.preventDefault();
-        handleDuplicate(canvas, roomRef.current, addEvent);
+        handleDuplicate(canvas, addEvent);
     }
     // Check if the key pressed is delete (Delete Selection)
     if (canvas && e.keyCode === 46) {
-        handleDelete(canvas, roomRef.current, addEvent);
+        handleDelete(canvas, addEvent);
     }
     // Check if the key pressed is ctrl/cmd + x (Cut)
     if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
         handleCopy(canvas, copiedObjectRef);
-        handleDelete(canvas, roomRef.current, addEvent);
+        handleDelete(canvas, addEvent);
     }
     // Check if the key pressed is ctrl/cmd + z (Undo)
     if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90 && !e.shiftKey) {
