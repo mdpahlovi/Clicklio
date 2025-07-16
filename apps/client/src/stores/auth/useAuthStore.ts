@@ -4,8 +4,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export type User = {
-    id: number;
-    uid: string;
+    id: string;
     name: string;
     email: string;
     phone: string | null;

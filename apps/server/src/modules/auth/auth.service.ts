@@ -91,16 +91,16 @@ export class AuthService {
 
         let createdUser: User;
         if (user) {
-            const updateUserPayload: DeepPartial<User> = {
+            const updateUserPayload = {
                 name,
                 photo,
                 provider,
             };
 
-            await this.userRepository.update(user.uid, updateUserPayload);
+            await this.userRepository.update(user.id, updateUserPayload);
 
             createdUser = (await this.userRepository.findOne({
-                where: { uid: user.uid },
+                where: { id: user.id },
             })) as User;
         } else {
             const createUserPayload: DeepPartial<User> = {
@@ -126,7 +126,6 @@ export class AuthService {
     async jwtSignin(user: User) {
         const payload = {
             id: user.id,
-            uid: user.uid,
             name: user.name,
             email: user.email,
             phone: user.phone,
@@ -143,7 +142,7 @@ export class AuthService {
     }
 
     async updateProfile(body: Partial<User>, user: User) {
-        const updateUserPayload: DeepPartial<User> = {
+        const updateUserPayload = {
             ...(body?.isActive ? { isActive: body.isActive } : {}),
             ...(body?.name ? { name: body.name } : {}),
             ...(body?.email ? { email: body.email } : {}),
@@ -155,14 +154,13 @@ export class AuthService {
         await this.userRepository.update(user.id, updateUserPayload);
 
         const updatedUser = (await this.userRepository.findOne({
-            where: { uid: user.uid },
+            where: { id: user.id },
         })) as User;
 
         return {
             message: "User profile updated successfully",
             data: {
                 id: updatedUser.id,
-                uid: updatedUser.uid,
                 name: updatedUser.name,
                 email: updatedUser.email,
                 phone: updatedUser.phone,

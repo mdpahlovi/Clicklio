@@ -9,6 +9,7 @@ import { CanvasModule } from "./gateway/canvas/canvas.module";
 import { UserModule } from "./gateway/user/user.module";
 import { AuthGuard } from "./guards/auth.guard";
 import { AuthModule } from "./modules/auth/auth.module";
+import { RoomModule } from "./modules/room/room.module";
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from "./modules/auth/auth.module";
         UserModule,
         CanvasModule,
         AuthModule,
+        RoomModule,
     ],
     controllers: [AppController],
     providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
