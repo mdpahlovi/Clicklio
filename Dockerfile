@@ -6,7 +6,6 @@ COPY apps/server/package*.json ./
 
 RUN npm install
 
-COPY apps/server/ssl ./ssl
 COPY apps/server/src ./src
 COPY apps/server/eslint.config.mjs ./
 COPY apps/server/tsconfig*.json ./
