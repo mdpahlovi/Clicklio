@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeepPartial, Repository } from "typeorm";
 import { HashService } from "../../common/service/hash.service";
-import { Provider, User } from "../../model/user.entity";
+import { Provider, User } from "../../models/user.entity";
 import { OAuthUserDto, SigninUserDto, SignupUserDto } from "./auth.dto";
 import { RedisService } from "src/common/service/redis.service";
 

@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { CurrentUser } from "src/decorators/current-user.decorator";
-import { User } from "src/model/user.entity";
+import { User } from "src/models/user.entity";
 import { Public } from "../../decorators/public.decorator";
 import { OAuthUserDto, SigninUserDto, SignupUserDto } from "./auth.dto";
 import { AuthService } from "./auth.service";

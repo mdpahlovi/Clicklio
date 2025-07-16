@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
-import { Provider } from "../../model/user.entity";
+import { Provider } from "../../models/user.entity";
 
 export class SigninUserDto {
     @IsEmail()
