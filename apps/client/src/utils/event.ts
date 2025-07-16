@@ -18,7 +18,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 event = {
-                    eventId: uuid(),
+                    id: uuid(),
                     type: action,
                     shapeId: object?.uid,
                     ...(action !== "DELETE" ? { data: object.toJSON() } : {}),
@@ -32,9 +32,9 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
             const userUndoStack = useEventStore.getState().userUndoStacks.get(user) || [];
             if (userUndoStack.length > 0) {
                 event = {
-                    eventId: uuid(),
+                    id: uuid(),
                     type: "UNDO",
-                    targetEventId: userUndoStack[userUndoStack.length - 1],
+                    eventId: userUndoStack[userUndoStack.length - 1],
                     userId: user,
                     firedAt: new Date().toISOString(),
                 };
@@ -45,9 +45,9 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
             const userRedoStack = useEventStore.getState().userRedoStacks.get(user) || [];
             if (userRedoStack.length > 0) {
                 event = {
-                    eventId: uuid(),
+                    id: uuid(),
                     type: "REDO",
-                    targetEventId: userRedoStack[userRedoStack.length - 1],
+                    eventId: userRedoStack[userRedoStack.length - 1],
                     userId: user,
                     firedAt: new Date().toISOString(),
                 };
@@ -58,6 +58,13 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
 
     if (event) {
         createEvent(event);
+
+        // Refresh canvas
+        if (event.type === "UNDO" || event.type === "REDO") {
+            useCanvasState.setState({ refresh: Math.random() * 100 });
+        }
+
+        // Emit event to server
         if (socket.connected && room) socket.emit("create:event", { room, event });
     }
 };

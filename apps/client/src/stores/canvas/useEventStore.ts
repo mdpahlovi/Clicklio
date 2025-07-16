@@ -10,7 +10,6 @@ interface EventStore {
     userRedoStacks: Map<string, string[]>;
 
     createEvent: (event: ShapeEvent) => void;
-    outputShape: () => Map<string, Record<string, unknown>>;
     canUndo: () => boolean;
     canRedo: () => boolean;
 }
@@ -24,6 +23,8 @@ export const useEventStore = create<EventStore>((set, get) => ({
     createEvent: (event: ShapeEvent) => {
         const state = get();
         const newEvents = [...state.events, event];
+        const newShapes = new Map();
+        const undoneEvents = new Set<string>();
 
         const newUserUndoStacks = new Map(state.userUndoStacks);
         const newUserRedoStacks = new Map(state.userRedoStacks);
@@ -33,7 +34,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
             case "UPDATE":
             case "DELETE": {
                 const undoStack = newUserUndoStacks.get(event.userId) || [];
-                undoStack.push(event.eventId);
+                undoStack.push(event.id);
                 newUserUndoStacks.set(event.userId, undoStack);
 
                 newUserRedoStacks.set(event.userId, []);
@@ -67,7 +68,29 @@ export const useEventStore = create<EventStore>((set, get) => ({
             }
         }
 
-        const newShapes = get().outputShape();
+        for (const op of newEvents) {
+            if (op.type === "UNDO") {
+                undoneEvents.add(op.eventId);
+            } else if (op.type === "REDO") {
+                undoneEvents.delete(op.eventId);
+            }
+        }
+
+        for (const op of newEvents) {
+            if (undoneEvents.has(op.id)) {
+                continue;
+            }
+
+            switch (op.type) {
+                case "CREATE":
+                case "UPDATE":
+                    newShapes.set(op.shapeId, op.data);
+                    break;
+                case "DELETE":
+                    newShapes.delete(op.shapeId);
+                    break;
+            }
+        }
 
         set({
             events: newEvents,
@@ -75,38 +98,6 @@ export const useEventStore = create<EventStore>((set, get) => ({
             userUndoStacks: newUserUndoStacks,
             userRedoStacks: newUserRedoStacks,
         });
-    },
-
-    outputShape: () => {
-        const state = get();
-        const shapes = new Map<string, Record<string, unknown>>();
-        const undoneEvents = new Set<string>();
-
-        for (const op of state.events) {
-            if (op.type === "UNDO") {
-                undoneEvents.add(op.targetEventId);
-            } else if (op.type === "REDO") {
-                undoneEvents.delete(op.targetEventId);
-            }
-        }
-
-        for (const op of state.events) {
-            if (undoneEvents.has(op.eventId)) {
-                continue;
-            }
-
-            switch (op.type) {
-                case "CREATE":
-                case "UPDATE":
-                    shapes.set(op.shapeId, op.data);
-                    break;
-                case "DELETE":
-                    shapes.delete(op.shapeId);
-                    break;
-            }
-        }
-
-        return shapes;
     },
 
     canUndo: () => {

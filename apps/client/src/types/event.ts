@@ -1,7 +1,7 @@
 export interface BaseEvent {
-    eventId: string;
-    firedAt: string;
+    id: string;
     userId: string;
+    firedAt: string;
 }
 
 export interface CreateEvent extends BaseEvent {
@@ -23,12 +23,12 @@ export interface DeleteEvent extends BaseEvent {
 
 export interface UndoEvent extends BaseEvent {
     type: "UNDO";
-    targetEventId: string;
+    eventId: string;
 }
 
 export interface RedoEvent extends BaseEvent {
     type: "REDO";
-    targetEventId: string;
+    eventId: string;
 }
 
 export type ShapeEvent = CreateEvent | UpdateEvent | DeleteEvent | UndoEvent | RedoEvent;

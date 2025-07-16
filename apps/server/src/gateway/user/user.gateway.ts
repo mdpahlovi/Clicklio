@@ -27,6 +27,8 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const keys = await this.redisService.client.scan(0, "MATCH", `room:*:user:${client.id}`);
         if (keys[1].length) {
             const room = keys[1][0].split(":")[1];
+
+            await this.redisService.client.srem(`room:${room}:users`, client.id);
             await this.redisService.client.del(`room:${room}:user:${client.id}`);
 
             client.to(room).emit("delete:user", { key: client.id });
@@ -39,42 +41,35 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         const { room, user } = data;
         await client.join(room);
+
+        await this.redisService.client.sadd(`room:${room}:users`, client.id);
         await this.redisService.client.hset(`room:${room}:user:${client.id}`, user);
 
         client.to(room).emit("create:user", { key: client.id, value: user });
 
-        // Set initial to current user
-        let users = {};
-        let userCursor = "0";
-        do {
-            const result = await this.redisService.client.scan(userCursor, "MATCH", `room:${room}:user:*`);
-            userCursor = result[0];
-            const keys = result[1];
+        // Set initial users to current user
+        const users = {};
+        const userIds = await this.redisService.client.smembers(`room:${room}:users`);
+        for (const id of userIds) {
+            if (id === client.id) continue;
 
-            for (const key of keys) {
-                const userData = await this.redisService.client.hgetall(key);
+            const userData = await this.redisService.client.hgetall(`room:${room}:user:${id}`);
+            users[id] = userData;
+        }
 
-                // Skip current user
-                if (key === `room:${room}:user:${client.id}`) continue;
-                users = { ...users, [`${key.split(":")[3]}`]: userData };
-            }
-        } while (userCursor !== "0");
+        // Set initial events to current user
+        const events = {};
+        const eventIds = await this.redisService.client.smembers(`room:${room}:events`);
+        for (const id of eventIds) {
+            const eventData = await this.redisService.client.hgetall(`room:${room}:event:${id}`);
+            events[id] = {
+                ...eventData,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                ...(eventData?.data ? { data: JSON.parse(eventData?.data) } : {}),
+            };
+        }
 
-        let shapes = {};
-        let shapeCursor = "0";
-        do {
-            const result = await this.redisService.client.scan(shapeCursor, "MATCH", `room:${room}:shape:*`);
-            shapeCursor = result[0];
-            const keys = result[1];
-
-            for (const key of keys) {
-                const shapeData = await this.redisService.client.hgetall(key);
-
-                shapes = { ...shapes, [`${key.split(":")[3]}`]: shapeData };
-            }
-        } while (shapeCursor !== "0");
-
-        client.emit("join:room", { users, shapes });
+        client.emit("join:room", { users, events });
     }
 
     @SubscribeMessage("leave:room")
@@ -84,6 +79,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const { room } = data;
 
         await client.leave(room);
+        await this.redisService.client.srem(`room:${room}:users`, client.id);
         await this.redisService.client.del(`room:${room}:user:${client.id}`);
 
         client.to(room).emit("delete:user", { key: client.id });
