@@ -10,7 +10,7 @@ export default function FormImage({ name, disabled }: { name: string; disabled?:
             name={name}
             render={({ field: { value } }) => (
                 <>
-                    <AspectRatio ratio="1" sx={{ width: 132, height: 132, borderRadius: "100%" }}>
+                    <AspectRatio ratio="1" sx={{ width: 140, height: 140, borderRadius: "100%" }}>
                         <Avatar src={value} sx={{ "--Avatar-size": "132px" }} />
                     </AspectRatio>
                     {!disabled ? (

@@ -18,6 +18,7 @@ import { RedisService } from "./service/redis.service";
                 database: configService.get("postgres.database"),
                 autoLoadEntities: true,
                 synchronize: true,
+                logging: true,
             }),
             inject: [ConfigService],
         }),

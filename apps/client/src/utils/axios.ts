@@ -12,7 +12,7 @@ baseAxios.interceptors.request.use(function (config) {
 
     if (authState?.accessToken && authState?.refreshToken) {
         config.headers.Authorization = `Bearer ${authState?.accessToken}`;
-        config.headers["x-refresh-token"] = authState?.refreshToken;
+        // config.headers["x-refresh-token"] = authState?.refreshToken;
     }
 
     return config;
@@ -23,8 +23,8 @@ baseAxios.interceptors.response.use(
         return res.data;
     },
     function (error) {
-        const status = axios.isAxiosError(error) ? error.response?.status : 500;
-        const message = axios.isAxiosError(error) ? error.response?.data?.message : error?.message || "Something went wrong...";
+        const status = error?.response?.status || 500;
+        const message = error?.response?.data?.message || error?.message || "Something went wrong...";
 
         if (status === 401) {
             useAuthState.setState({ user: null, accessToken: null, refreshToken: null });

@@ -27,7 +27,7 @@ export enum EventType {
 }
 
 @Entity("rooms")
-@Index(["owner_id"])
+@Index(["ownerId"])
 export class Room {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -35,16 +35,16 @@ export class Room {
     @Column({ name: "is_active", type: "boolean", default: true })
     isActive: boolean;
 
-    @Column()
+    @Column({ type: "text" })
     name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "text", nullable: true })
     photo: string | null;
 
-    @Column({ nullable: true })
+    @Column({ type: "text", nullable: true })
     description: string | null;
 
-    @Column({ name: "owner_id" })
+    @Column({ name: "owner_id", type: "uuid" })
     ownerId: string;
 
     @ManyToOne(() => User, (user) => user.ownedRooms, { onDelete: "CASCADE" })
@@ -65,19 +65,19 @@ export class Room {
 }
 
 @Entity("room_users")
-@Unique(["room_id", "user_id"])
+@Unique(["roomId", "userId"])
 export class RoomUser {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ name: "room_id" })
+    @Column({ name: "room_id", type: "uuid" })
     roomId: string;
 
     @ManyToOne(() => Room, (room) => room.roomUsers, { onDelete: "CASCADE" })
     @JoinColumn({ name: "room_id" })
     roomInfo: Room;
 
-    @Column({ name: "user_id" })
+    @Column({ name: "user_id", type: "uuid" })
     userId: string;
 
     @ManyToOne(() => User, (user) => user.joinedRooms, { onDelete: "CASCADE" })
@@ -92,19 +92,19 @@ export class RoomUser {
 }
 
 @Entity("shape_events")
-@Index(["room_id", "user_id"])
+@Index(["roomId", "userId"])
 export class ShapeEvent {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ name: "room_id" })
+    @Column({ name: "room_id", type: "uuid" })
     roomId: string;
 
     @ManyToOne(() => Room, (room) => room.shapeEvents, { onDelete: "CASCADE" })
     @JoinColumn({ name: "room_id" })
     roomInfo: Room;
 
-    @Column({ name: "user_id" })
+    @Column({ name: "user_id", type: "uuid" })
     userId: string;
 
     @ManyToOne(() => User, (user) => user.shapeEvents, { onDelete: "CASCADE" })
@@ -114,10 +114,10 @@ export class ShapeEvent {
     @Column({ type: "enum", enum: EventType })
     type: EventType;
 
-    @Column({ name: "shape_id", nullable: true })
+    @Column({ name: "shape_id", type: "uuid", nullable: true })
     shapeId: string | null;
 
-    @Column({ name: "event_id", nullable: true })
+    @Column({ name: "event_id", type: "uuid", nullable: true })
     eventId: string | null;
 
     @Column({ type: "jsonb", nullable: true })

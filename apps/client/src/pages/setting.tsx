@@ -11,7 +11,7 @@ export default function MyProfile() {
         <Box sx={{ px: 3, py: 2 }}>
             <Typography level="h2">My Profile</Typography>
             <Stack spacing={2} sx={{ maxWidth: "800px", py: 2 }}>
-                <Card style={{ overflow: "hidden" }}>
+                <Card style={{ overflow: "hidden", borderRadius: 16 }}>
                     <Form
                         defaultValues={
                             user
@@ -38,12 +38,12 @@ export default function MyProfile() {
                         <Stack direction="column" spacing={2}>
                             <Stack direction={{ md: "row" }}>
                                 <FormImage name="photo" disabled={!editProfile} />
-                                <Stack spacing={1} sx={{ flexGrow: 1, pt: { xs: 2, md: 0 }, pl: { md: 2 } }}>
+                                <Stack spacing={2} sx={{ flexGrow: 1, pt: { xs: 2, md: 0 }, pl: { md: 2 } }}>
                                     <FormInput name="first_name" label="First Name" disabled={!editProfile} />
                                     <FormInput name="last_name" label="Last Name" disabled={!editProfile} />
                                 </Stack>
                             </Stack>
-                            <Stack spacing={1} style={{ marginTop: 12 }}>
+                            <Stack spacing={2} style={{ marginTop: 12 }}>
                                 <FormInput name="email" label="Your Email" disabled />
                                 <FormInput name="phone" label="Your Phone" disabled={!editProfile} />
                                 <FormInput name="address" label="Your Address" disabled={!editProfile} />
@@ -64,7 +64,7 @@ function CardHeader({ title, body, toggleEdit }: { title: string; body: string; 
                 <Typography level="title-md">{title}</Typography>
                 <Typography level="body-sm">{body}</Typography>
             </Box>
-            <Button onClick={toggleEdit} sx={{ position: "absolute", right: 0, top: 0, borderRadius: "0 16px 0 16px" }}>
+            <Button onClick={toggleEdit} sx={{ position: "absolute", right: 0, top: 0, borderRadius: "0 14px 0 14px" }}>
                 Edit
             </Button>
         </>

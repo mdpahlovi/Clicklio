@@ -11,14 +11,16 @@ export default function DashboardLayout() {
 
     return (
         <>
+            <Layout.Header>
+                <Header setIsOpen={setIsOpen} />
+            </Layout.Header>
             <Layout.Root>
-                <Layout.Header>
-                    <Header setIsOpen={setIsOpen} />
-                </Layout.Header>
                 <Layout.SideNav>
                     <Navigation />
                 </Layout.SideNav>
-                <Outlet />
+                <div style={{ flex: 1, overflow: "auto" }}>
+                    <Outlet />
+                </div>
             </Layout.Root>
 
             {/* Mobile SideBar */}

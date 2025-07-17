@@ -19,8 +19,9 @@ async function bootstrap() {
 
     // CORS
     app.enableCors({
-        origin: true,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        origin: configService.get<string>("origin")?.split(","),
+        methods: ["GET", "POST", "PATCH", "DELETE"],
+        allowedHeaders: "*",
         credentials: true,
     });
 
@@ -35,9 +36,6 @@ async function bootstrap() {
             },
         }),
     );
-
-    // Global interceptor
-    // app.useGlobalInterceptors(new ErrorInterceptor(), new ResponseInterceptor());
 
     // API versioning
     app.enableVersioning({

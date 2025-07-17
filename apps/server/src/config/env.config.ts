@@ -3,6 +3,7 @@ export const config = () => ({
     port: process.env.PORT || 4000,
     apiPrefix: process.env.API_PREFIX,
     appVersion: process.env.APP_VERSION,
+    origin: process.env.ORIGIN,
 
     // Postgres
     postgres: {

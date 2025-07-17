@@ -57,7 +57,7 @@ export const createText = (pointer: Pointer, baseColorRef: React.RefObject<strin
         left: pointer.x,
         top: pointer.y,
         fill: baseColorRef.current,
-        fontFamily: "Helvetica",
+        fontFamily: "Poppins",
         fontSize: 16,
         fontWeight: "400",
         uid: uuid(),

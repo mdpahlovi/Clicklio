@@ -1,12 +1,11 @@
-import React from "react";
+import { List, ListItem, ListItemButton, ListItemContent, ListItemDecorator, ListSubheader } from "@mui/joy";
+import { RiArtboardFill, RiFolder5Fill, RiSettings3Fill } from "react-icons/ri";
 import { useLocation, useNavigate } from "react-router-dom";
-import { RiFolder5Fill, RiSettings3Fill, RiArtboardFill } from "react-icons/ri";
-import { List, ListSubheader, ListItem, ListItemButton, ListItemDecorator, ListItemContent } from "@mui/joy";
 
 const navItems = [
     {
         type: "Browse",
-        children: [{ href: "/rooms", label: "My Files", icon: <RiFolder5Fill size={20} /> }],
+        children: [{ href: "/rooms", label: "Rooms", icon: <RiFolder5Fill size={20} /> }],
     },
     {
         type: "Navigation",
@@ -25,7 +24,7 @@ export default function Navigation() {
         <List sx={{ "--ListItem-radius": "8px", "--List-gap": "4px" }}>
             <ListItem nested>
                 {navItems.map(({ type, children }, idx) => (
-                    <React.Fragment key={idx}>
+                    <div key={idx}>
                         <ListSubheader sx={{ mt: idx !== 0 ? 2.5 : 0, letterSpacing: "2px", fontWeight: "800" }}>{type}</ListSubheader>
                         <List sx={{ "& .JoyListItemButton-root": { p: "8px" } }}>
                             {children.map(({ href, icon, label }, idx) => (
@@ -37,7 +36,7 @@ export default function Navigation() {
                                 </ListItem>
                             ))}
                         </List>
-                    </React.Fragment>
+                    </div>
                 ))}
             </ListItem>
         </List>

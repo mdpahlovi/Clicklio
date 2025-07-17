@@ -56,7 +56,7 @@ export default function SignupPage() {
                 <Stack gap={4} sx={{ mt: 2 }}>
                     <Checkbox size="sm" label="Remember me" name="persistent" />
                     <Button type="submit" loading={signupLoading} fullWidth>
-                        Sign in
+                        Sign up
                     </Button>
                 </Stack>
             </Form>

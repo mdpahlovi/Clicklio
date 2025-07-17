@@ -59,10 +59,11 @@ export const navElements: {
 ];
 
 export const fontFamilyOptions = [
+    { value: "Poppins", label: "Poppins" },
+    { value: "Inter", label: "Inter" },
+    { value: "Lato", label: "Lato" },
+    { value: "Roboto", label: "Roboto" },
     { value: "Helvetica", label: "Helvetica" },
-    { value: "Times New Roman", label: "Times New Roman" },
-    { value: "Comic Sans MS", label: "Comic Sans MS" },
-    { value: "Brush Script MT", label: "Brush Script MT" },
 ];
 
 export const fontSizeOptions = [
