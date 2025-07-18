@@ -4,10 +4,11 @@ import RoomNavbar from "@/components/rooms/room-navbar";
 import ApiError from "@/components/ui/api-error";
 import Loader from "@/components/ui/loader";
 import { useCanvas } from "@/hooks/useCanvas";
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ApiResponse, Room } from "@/types/room";
 import axios from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 type Response = ApiResponse<{ room: Room; events: [] }>;
@@ -28,7 +29,15 @@ export default function RoomPage() {
 
 function Room({ room }: { room: Room }) {
     const [isOpen, setIsOpen] = useState(false);
+    const { resetEvent } = useEventStore();
     const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
+
+    useEffect(() => {
+        return () => {
+            resetEvent();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <>

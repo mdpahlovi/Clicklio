@@ -75,15 +75,7 @@ export function useCanvas() {
         });
 
         canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({
-                canvas,
-                isPanning,
-                shapeRef,
-                selectedToolRef,
-                deleteObjectRef,
-                setTool,
-                createEvent,
-            });
+            handleCanvasMouseUp({ canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef, setTool, createEvent });
         });
 
         canvas.on("path:created", (options) => {
@@ -113,16 +105,7 @@ export function useCanvas() {
         window.addEventListener("resize", () => handleResize({ canvas }));
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
         window.addEventListener("keydown", (e) =>
-            handleKeyDown({
-                e,
-                canvas,
-                isEditing,
-                copiedObjectRef,
-                createEvent,
-                setTool,
-                setZoom,
-                setMode,
-            }),
+            handleKeyDown({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom, setMode }),
         );
 
         return () => {
@@ -130,16 +113,7 @@ export function useCanvas() {
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
-                handleKeyDown({
-                    e,
-                    canvas: null,
-                    isEditing,
-                    copiedObjectRef,
-                    createEvent,
-                    setTool,
-                    setZoom,
-                    setMode,
-                }),
+                handleKeyDown({ e, canvas: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom, setMode }),
             );
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps

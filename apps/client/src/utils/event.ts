@@ -15,14 +15,13 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
         case "UPDATE":
         case "DELETE": {
             if (object?.uid) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 event = {
                     id: uuid(),
                     type: action,
-                    shapeId: object?.uid,
-                    ...(action !== "DELETE" ? { data: object.toJSON() } : {}),
                     userId: user,
+                    shapeId: object?.uid,
+                    eventId: null,
+                    data: action !== "DELETE" ? object?.toJSON() : null,
                     firedAt: new Date().toISOString(),
                 };
             }
@@ -34,8 +33,10 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: "UNDO",
-                    eventId: userUndoStack[userUndoStack.length - 1],
                     userId: user,
+                    eventId: userUndoStack[userUndoStack.length - 1],
+                    shapeId: null,
+                    data: null,
                     firedAt: new Date().toISOString(),
                 };
             }
@@ -47,8 +48,10 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: "REDO",
-                    eventId: userRedoStack[userRedoStack.length - 1],
                     userId: user,
+                    eventId: userRedoStack[userRedoStack.length - 1],
+                    shapeId: null,
+                    data: null,
                     firedAt: new Date().toISOString(),
                 };
             }
@@ -66,10 +69,9 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
 
         // Emit event to server
         if (socket.connected && room) {
-            if (event.type === "CREATE" || event.type === "UPDATE") {
-                // @ts-expect-error
-                event.data = JSON.stringify(event.data);
-            }
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            if (event?.data !== null) event.data = JSON.stringify(event.data);
 
             socket.emit("create:event", { room, event });
         }

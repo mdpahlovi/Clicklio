@@ -31,6 +31,8 @@ end
 return {users, events}
 `;
 
+type JoinRoom = { room: string; user: RoomUser; events: Record<string, string>[] };
+
 @WebSocketGateway({ cors: { origin: "*" } })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
@@ -54,24 +56,35 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage("join:room")
-    async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: { room: string; user: RoomUser }) {
+    async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: JoinRoom) {
         if (!data.room) return;
 
-        const { room, user } = data;
+        const { room, user, events } = data;
         await client.join(room);
 
-        await this.redisService.client.sadd(`room:${room}:users`, client.id);
-        await this.redisService.client.hset(`room:${room}:user:${client.id}`, user);
+        const pipeline = this.redisService.client.pipeline();
+
+        pipeline.sadd(`room:${room}:users`, client.id);
+        pipeline.hset(`room:${room}:user:${client.id}`, user);
+
+        events.forEach((e) => {
+            if (e?.data !== null) e.data = JSON.stringify(e.data);
+
+            pipeline.sadd(`room:${room}:events`, e.id);
+            pipeline.hset(`room:${room}:event:${e.id}`, e);
+        });
+
+        await pipeline.exec();
 
         client.to(room).emit("create:user", { key: client.id, value: user });
 
         // Get initial room data
-        const [users, events] = (await this.redisService.client.eval(GET_ROOM_DATA_SCRIPT, 1, room)) as [
+        const result = (await this.redisService.client.eval(GET_ROOM_DATA_SCRIPT, 1, room)) as [
             Record<string, string[]>,
             Record<string, string[]>,
         ];
 
-        client.emit("join:room", { users, events });
+        client.emit("join:room", { users: result[0], events: result[1] });
     }
 
     @SubscribeMessage("leave:room")

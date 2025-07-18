@@ -38,9 +38,11 @@ const router = createBrowserRouter([
     {
         path: "/room/:id",
         element: (
-            <Suspense fallback={<Loader />}>
-                <RoomPage />
-            </Suspense>
+            <ProtectedRoute>
+                <Suspense fallback={<Loader />}>
+                    <RoomPage />
+                </Suspense>
+            </ProtectedRoute>
         ),
     },
 ]);

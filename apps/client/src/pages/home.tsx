@@ -21,8 +21,8 @@ export default function HomePage() {
 
     const room = searchParams.get("room");
 
-    const { shapes, createEvent } = useEventStore();
     const { refresh, setRefresh } = useCanvasState();
+    const { shapes, createEvent } = useEventStore();
     const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
     const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser } = useUserStore();
 
@@ -47,10 +47,9 @@ export default function HomePage() {
         socket.on("join:room", ({ users, events }: JoinRoomResponse) => {
             Object.entries(users).forEach(([key, value]) => createUser(key, value));
             Object.values(events).forEach((event) => {
-                if (event.type === "CREATE" || event.type === "UPDATE") {
-                    // @ts-expect-error
-                    event.data = JSON.parse(event.data);
-                }
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                if (event?.data !== null) event.data = JSON.parse(event?.data);
 
                 createEvent(event);
             });
@@ -67,7 +66,13 @@ export default function HomePage() {
             setRefresh();
         });
 
-        return () => {};
+        return () => {
+            socket.off("join:room");
+            socket.off("create:user");
+            socket.off("update:user");
+            socket.off("delete:user");
+            socket.off("create:event");
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

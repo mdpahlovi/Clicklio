@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Room, RoomUser, RoomUserRole } from "src/models/room.entity";
+import { Room, RoomUser, RoomUserRole, ShapeEvent } from "src/models/room.entity";
 import { User } from "src/models/user.entity";
 import { DeepPartial, FindOptionsWhere, In, Repository } from "typeorm";
 import { CreateRoomDto } from "./room.dto";
@@ -12,6 +12,8 @@ export class RoomService {
         private readonly roomRepository: Repository<Room>,
         @InjectRepository(RoomUser)
         private readonly roomUserRepository: Repository<RoomUser>,
+        @InjectRepository(ShapeEvent)
+        private readonly shapeEventRepository: Repository<ShapeEvent>,
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto, user: User) {
@@ -112,10 +114,24 @@ export class RoomService {
             throw new NotFoundException("Room not found");
         }
 
+        const events = await this.shapeEventRepository.find({
+            where: { roomId: id },
+            order: { firedAt: "DESC" },
+            select: {
+                id: true,
+                type: true,
+                userId: true,
+                shapeId: true,
+                eventId: true,
+                data: true,
+                firedAt: true,
+            },
+        });
+
         return {
             status: 200,
             message: "Room fetched successfully",
-            data: { room },
+            data: { room, events },
         };
     }
 }

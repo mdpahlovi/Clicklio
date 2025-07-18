@@ -1,4 +1,5 @@
 import Modal from "@/components/ui/modal";
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
 import { socket } from "@/utils/socket";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
@@ -13,6 +14,7 @@ type ShareModalProps = {
 };
 
 export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
+    const { events } = useEventStore();
     const { currUser, createCurrUser, updateCurrUser, deleteCurrUser } = useUserStore();
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -86,7 +88,7 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
 
                                     // Set current user
                                     const user = createCurrUser(room, "ADMIN");
-                                    socket.emit("join:room", { room, user });
+                                    socket.emit("join:room", { room, user, events });
                                 }
                             }}
                             startDecorator={<FaPlay size={18} />}

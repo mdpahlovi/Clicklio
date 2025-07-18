@@ -12,6 +12,8 @@ interface EventStore {
     createEvent: (event: ShapeEvent) => void;
     canUndo: () => boolean;
     canRedo: () => boolean;
+
+    resetEvent: () => void;
 }
 
 export const useEventStore = create<EventStore>((set, get) => ({
@@ -69,9 +71,9 @@ export const useEventStore = create<EventStore>((set, get) => ({
         }
 
         for (const op of newEvents) {
-            if (op.type === "UNDO") {
+            if (op.type === "UNDO" && op.eventId) {
                 undoneEvents.add(op.eventId);
-            } else if (op.type === "REDO") {
+            } else if (op.type === "REDO" && op.eventId) {
                 undoneEvents.delete(op.eventId);
             }
         }
@@ -110,5 +112,14 @@ export const useEventStore = create<EventStore>((set, get) => ({
         const userId = useCanvasState.getState().user;
         const userStack = get().userRedoStacks.get(userId) || [];
         return userStack.length > 0;
+    },
+
+    resetEvent: () => {
+        set({
+            events: [],
+            shapes: new Map(),
+            userUndoStacks: new Map(),
+            userRedoStacks: new Map(),
+        });
     },
 }));
