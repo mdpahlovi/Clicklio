@@ -11,6 +11,26 @@ import { Server, Socket } from "socket.io";
 import { RedisService } from "src/common/service/redis.service";
 import { Pointer, RoomUser } from "src/types/user";
 
+const GET_ROOM_DATA_SCRIPT = `
+local room = KEYS[1]
+
+-- Get all users
+local user_ids = redis.call('SMEMBERS', 'room:' .. room .. ':users')
+local users = {}
+for _, id in ipairs(user_ids) do
+    users[id] = redis.call('HGETALL', 'room:' .. room .. ':user:' .. id)
+end
+
+-- Get all events
+local event_ids = redis.call('SMEMBERS', 'room:' .. room .. ':events')
+local events = {}
+for _, id in ipairs(event_ids) do
+    events[id] = redis.call('HGETALL', 'room:' .. room .. ':event:' .. id)
+end
+
+return {users, events}
+`;
+
 @WebSocketGateway({ cors: { origin: "*" } })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
@@ -19,20 +39,18 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     handleConnection(client: Socket) {
         console.log(`Client connected: ${client.id}`);
+
+        client.on("disconnecting", async () => {
+            const rooms = Array.from(client.rooms).filter((room) => room !== client.id);
+
+            for (const room of rooms) {
+                await this.handleDelete(client, room);
+            }
+        });
     }
 
-    async handleDisconnect(client: Socket) {
+    handleDisconnect(client: Socket) {
         console.log(`Client disconnected: ${client.id}`);
-
-        const keys = await this.redisService.client.scan(0, "MATCH", `room:*:user:${client.id}`);
-        if (keys[1].length) {
-            const room = keys[1][0].split(":")[1];
-
-            await this.redisService.client.srem(`room:${room}:users`, client.id);
-            await this.redisService.client.del(`room:${room}:user:${client.id}`);
-
-            client.to(room).emit("delete:user", { key: client.id });
-        }
     }
 
     @SubscribeMessage("join:room")
@@ -47,27 +65,11 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         client.to(room).emit("create:user", { key: client.id, value: user });
 
-        // Set initial users to current user
-        const users = {};
-        const userIds = await this.redisService.client.smembers(`room:${room}:users`);
-        for (const id of userIds) {
-            if (id === client.id) continue;
-
-            const userData = await this.redisService.client.hgetall(`room:${room}:user:${id}`);
-            users[id] = userData;
-        }
-
-        // Set initial events to current user
-        const events = {};
-        const eventIds = await this.redisService.client.smembers(`room:${room}:events`);
-        for (const id of eventIds) {
-            const eventData = await this.redisService.client.hgetall(`room:${room}:event:${id}`);
-            events[id] = {
-                ...eventData,
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                ...(eventData?.data ? { data: JSON.parse(eventData?.data) } : {}),
-            };
-        }
+        // Get initial room data
+        const [users, events] = (await this.redisService.client.eval(GET_ROOM_DATA_SCRIPT, 1, room)) as [
+            Record<string, string[]>,
+            Record<string, string[]>,
+        ];
 
         client.emit("join:room", { users, events });
     }
@@ -79,10 +81,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const { room } = data;
 
         await client.leave(room);
-        await this.redisService.client.srem(`room:${room}:users`, client.id);
-        await this.redisService.client.del(`room:${room}:user:${client.id}`);
-
-        client.to(room).emit("delete:user", { key: client.id });
+        await this.handleDelete(client, room);
     }
 
     @SubscribeMessage("update:user")
@@ -96,10 +95,35 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage("cursor")
-    handleDeleteUser(@ConnectedSocket() client: Socket, @MessageBody() data: { room: string; cursor: Pointer }) {
+    handleCursor(@ConnectedSocket() client: Socket, @MessageBody() data: { room: string; cursor: Pointer }) {
         if (!data.room) return;
 
         const { room, cursor } = data;
         client.to(room).emit("cursor", { key: client.id, value: cursor });
+    }
+
+    async handleDelete(client: Socket, room: string): Promise<void> {
+        const [users, events] = await Promise.all([
+            this.redisService.client.smembers(`room:${room}:users`),
+            this.redisService.client.smembers(`room:${room}:events`),
+        ]);
+
+        const pipeline = this.redisService.client.pipeline();
+
+        // Remove user from room
+        pipeline.srem(`room:${room}:users`, client.id);
+        pipeline.del(`room:${room}:user:${client.id}`);
+
+        // Remove user if there is only one user
+        if (users?.length === 1) {
+            pipeline.del(`room:${room}:events`);
+            events.forEach((e) => {
+                pipeline.del(`room:${room}:event:${e}`);
+            });
+        }
+
+        await pipeline.exec();
+
+        client.to(room).emit("delete:user", { key: client.id });
     }
 }

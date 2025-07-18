@@ -16,10 +16,7 @@ export class CanvasGateway {
 
         const { room, event } = data;
         await this.redisService.client.sadd(`room:${room}:events`, event?.id as string);
-        await this.redisService.client.hset(`room:${room}:event:${event?.id as string}`, {
-            ...event,
-            ...(event?.data ? { data: JSON.stringify(event?.data) } : {}),
-        });
+        await this.redisService.client.hset(`room:${room}:event:${event?.id as string}`, event);
 
         client.to(data.room).emit("create:event", { event });
     }

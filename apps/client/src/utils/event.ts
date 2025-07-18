@@ -65,6 +65,13 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
         }
 
         // Emit event to server
-        if (socket.connected && room) socket.emit("create:event", { room, event });
+        if (socket.connected && room) {
+            if (event.type === "CREATE" || event.type === "UPDATE") {
+                // @ts-expect-error
+                event.data = JSON.stringify(event.data);
+            }
+
+            socket.emit("create:event", { room, event });
+        }
     }
 };

@@ -46,7 +46,14 @@ export default function HomePage() {
         // Room user events
         socket.on("join:room", ({ users, events }: JoinRoomResponse) => {
             Object.entries(users).forEach(([key, value]) => createUser(key, value));
-            Object.values(events).forEach((value) => createEvent(value));
+            Object.values(events).forEach((event) => {
+                if (event.type === "CREATE" || event.type === "UPDATE") {
+                    // @ts-expect-error
+                    event.data = JSON.parse(event.data);
+                }
+
+                createEvent(event);
+            });
 
             setRefresh();
         });
