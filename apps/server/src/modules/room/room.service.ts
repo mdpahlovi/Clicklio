@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Room, RoomUserRole } from "src/models/room.entity";
+import { Room, RoomUser, RoomUserRole } from "src/models/room.entity";
 import { User } from "src/models/user.entity";
 import { DeepPartial, FindOptionsWhere, In, Repository } from "typeorm";
 import { CreateRoomDto } from "./room.dto";
@@ -10,16 +10,26 @@ export class RoomService {
     constructor(
         @InjectRepository(Room)
         private readonly roomRepository: Repository<Room>,
+        @InjectRepository(RoomUser)
+        private readonly roomUserRepository: Repository<RoomUser>,
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto, user: User) {
         const createRoomPayload: DeepPartial<Room> = {
             name: createRoomDto.name,
+            description: createRoomDto.description,
             ownerId: user.id,
-            roomUsers: [{ role: RoomUserRole.ADMIN, userId: user.id }],
         };
 
         const createRoom = await this.roomRepository.save(createRoomPayload);
+
+        const roomUserPayload: DeepPartial<RoomUser> = {
+            userId: user.id,
+            roomId: createRoom.id,
+            role: RoomUserRole.ADMIN,
+        };
+
+        await this.roomUserRepository.save(roomUserPayload);
 
         return {
             status: 201,
@@ -29,9 +39,6 @@ export class RoomService {
     }
 
     async getRooms(query: Record<string, string>, user: User) {
-        const page: number = parseInt(query?.page || "1");
-        const size: number = parseInt(query?.size || "6");
-
         const roomWhere: FindOptionsWhere<Room> = {
             roomUsers: { userId: In([user.id]) },
         };
@@ -40,16 +47,19 @@ export class RoomService {
 
         const rooms = await this.roomRepository.find({
             where: roomWhere,
-            skip: (page - 1) * size,
-            take: size,
-            cache: true,
             order: { createdAt: "DESC" },
-            relations: ["roomUsers", "roomUsers.userInfo"],
+            relations: ["ownerInfo", "roomUsers", "roomUsers.userInfo"],
             select: {
                 id: true,
                 name: true,
                 photo: true,
                 description: true,
+                ownerInfo: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    photo: true,
+                },
                 roomUsers: {
                     role: true,
                     userInfo: {
@@ -67,6 +77,45 @@ export class RoomService {
             status: 200,
             message: "Rooms fetched successfully",
             data: { total, rooms },
+        };
+    }
+
+    async getOneRoom(id: string) {
+        const room = await this.roomRepository.findOne({
+            where: { id },
+            relations: ["ownerInfo", "roomUsers", "roomUsers.userInfo"],
+            select: {
+                id: true,
+                name: true,
+                photo: true,
+                description: true,
+                ownerInfo: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    photo: true,
+                },
+                roomUsers: {
+                    role: true,
+                    userInfo: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        photo: true,
+                    },
+                },
+                createdAt: true,
+            },
+        });
+
+        if (!room) {
+            throw new NotFoundException("Room not found");
+        }
+
+        return {
+            status: 200,
+            message: "Room fetched successfully",
+            data: { room },
         };
     }
 }

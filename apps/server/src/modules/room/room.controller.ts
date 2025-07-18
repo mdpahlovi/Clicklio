@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { CurrentUser } from "src/decorators/current-user.decorator";
 import { User } from "src/models/user.entity";
 import { CreateRoomDto } from "./room.dto";
@@ -16,5 +16,10 @@ export class RoomController {
     @Get()
     async getRooms(@Query() query: Record<string, string>, @CurrentUser() user: User) {
         return await this.roomService.getRooms(query, user);
+    }
+
+    @Get(":id")
+    async getOneRoom(@Param("id") id: string) {
+        return await this.roomService.getOneRoom(id);
     }
 }

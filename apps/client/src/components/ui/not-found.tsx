@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography } from "@mui/joy";
 import { BiPlus, BiSearchAlt } from "react-icons/bi";
 
-export default function NotFound() {
+export default function NotFound({ onClick }: { onClick?: () => void }) {
     return (
         <div style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
             <Stack spacing={2} alignItems="center">
@@ -34,7 +34,7 @@ export default function NotFound() {
                     variant="solid"
                     color="primary"
                     startDecorator={<BiPlus size={20} />}
-                    onClick={() => (window.location.href = "/create")}
+                    onClick={onClick}
                     sx={{ mt: 1, transition: "transform 0.15s ease-in-out", "&:hover": { transform: "scale(1.02)" } }}
                 >
                     Create Room

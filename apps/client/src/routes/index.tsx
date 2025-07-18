@@ -7,6 +7,7 @@ import { createBrowserRouter } from "react-router-dom";
 import SigninPage from "@/pages/auth/signin";
 import SignupPage from "@/pages/auth/signup";
 import RoomPage from "@/pages/room";
+import RoomsPage from "@/pages/rooms";
 import SettingPage from "@/pages/setting";
 
 const HomePage = lazy(() => import("@/pages/home"));
@@ -30,9 +31,17 @@ const router = createBrowserRouter([
             </ProtectedRoute>
         ),
         children: [
-            { path: "/rooms", element: <RoomPage /> },
+            { path: "/rooms", element: <RoomsPage /> },
             { path: "/setting", element: <SettingPage /> },
         ],
+    },
+    {
+        path: "/room/:id",
+        element: (
+            <Suspense fallback={<Loader />}>
+                <RoomPage />
+            </Suspense>
+        ),
     },
 ]);
 

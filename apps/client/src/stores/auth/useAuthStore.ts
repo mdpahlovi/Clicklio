@@ -82,18 +82,19 @@ export const useAuthState = create<AuthStateStore>()(
             oAuthSignin: async () => {
                 set({ oAuthSigninLoading: true });
                 try {
-                    const response = (await axios.post("/auth/oauth-signin", {
-                        name: "",
-                        email: "",
-                        photo: "",
-                        provider: "GOOGLE",
-                    })) as ApiResponse;
-                    set({
-                        user: response.data.user,
-                        accessToken: response.data.accessToken,
-                        refreshToken: response.data.refreshToken,
-                    });
-                    toast.success(response.message);
+                    toast.error("Work in progress...");
+                    // const response = (await axios.post("/auth/oauth-signin", {
+                    //     name: "",
+                    //     email: "",
+                    //     photo: "",
+                    //     provider: "GOOGLE",
+                    // })) as ApiResponse;
+                    // set({
+                    //     user: response.data.user,
+                    //     accessToken: response.data.accessToken,
+                    //     refreshToken: response.data.refreshToken,
+                    // });
+                    // toast.success(response.message);
                 } catch (error) {
                     toast.error((error as ErrorResponse)?.message);
                 } finally {

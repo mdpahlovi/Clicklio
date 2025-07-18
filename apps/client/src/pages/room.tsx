@@ -1,75 +1,41 @@
-import RoomCard from "@/components/rooms/room-card";
-import RoomSkeletonGrid from "@/components/rooms/room-skeleton";
+import Canvas from "@/components/canvas";
+import GuideModal from "@/components/canvas/guide-modal";
+import RoomNavbar from "@/components/rooms/room-navbar";
 import ApiError from "@/components/ui/api-error";
-import NotFound from "@/components/ui/not-found";
-import type { RoomUserRole } from "@/stores/room/useUserStore";
+import Loader from "@/components/ui/loader";
+import { useCanvas } from "@/hooks/useCanvas";
+import type { ApiResponse, Room } from "@/types/room";
 import axios from "@/utils/axios";
-import { Box, Button, Stack, Typography } from "@mui/joy";
 import { useQuery } from "@tanstack/react-query";
-import { BiPlus } from "react-icons/bi";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 
-export type Room = {
-    id: string;
-    name: string;
-    photo: string | null;
-    description: string | null;
-    roomUsers: {
-        role: RoomUserRole;
-        userInfo: {
-            id: string;
-            name: string;
-            email: string;
-            photo: string | null;
-        };
-    }[];
-    createdAt: string;
-};
-
-type ApiResponse = {
-    status: number;
-    message: string;
-    data: {
-        rooms: Room[];
-        total: number;
-    };
-};
+type Response = ApiResponse<{ room: Room; events: [] }>;
 
 export default function RoomPage() {
-    const { data, isLoading, error, refetch } = useQuery<ApiResponse>({
-        queryKey: ["rooms"],
-        queryFn: async () => await axios.get("/room"),
+    const { id } = useParams();
+
+    const { data, isLoading, isError } = useQuery<Response>({
+        queryKey: ["room", id],
+        queryFn: async () => await axios.get(`/room/${id}`),
     });
 
-    if (isLoading) return <RoomSkeletonGrid />;
-    if (error) return <ApiError onRetry={() => refetch()} />;
+    if (isLoading) return <Loader />;
+    if (isError) return <ApiError />;
 
-    const { rooms, total } = data?.data || {};
+    if (data?.data) return <Room room={data?.data?.room} />;
+}
+
+function Room({ room }: { room: Room }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
 
     return (
-        <Box sx={{ height: "100%" }}>
-            {rooms?.length ? (
-                <>
-                    <Stack p={2} direction="row" alignItems="center" justifyContent="space-between">
-                        <Typography level="title-sm">Total Room ({total})</Typography>
-                        <Button startDecorator={<BiPlus size={20} />}>Create Room</Button>
-                    </Stack>
-                    <Box
-                        sx={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                            gap: 2,
-                            p: 2,
-                            pt: 0,
-                        }}
-                    >
-                        {rooms?.map((room, index) => (
-                            <RoomCard key={index} room={room} />
-                        ))}
-                    </Box>
-                </>
-            ) : (
-                <NotFound />
-            )}
-        </Box>
+        <>
+            <RoomNavbar room={room} setIsOpen={setIsOpen} />
+            <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
+
+            <GuideModal isOpen={isOpen} setIsOpen={setIsOpen} />
+        </>
     );
 }

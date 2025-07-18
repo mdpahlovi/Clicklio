@@ -11,7 +11,7 @@ baseAxios.interceptors.request.use(function (config) {
     const authState = useAuthState.getState();
 
     if (authState?.accessToken && authState?.refreshToken) {
-        config.headers.Authorization = `Bearer ${authState?.accessToken}`;
+        config.headers.authorization = `Bearer ${authState?.accessToken}`;
         // config.headers["x-refresh-token"] = authState?.refreshToken;
     }
 

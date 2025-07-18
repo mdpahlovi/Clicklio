@@ -1,8 +1,10 @@
-import type { Room } from "@/pages/room";
+import type { Room } from "@/types/room";
 import { Avatar, AvatarGroup, Box, Card, CardContent, Stack, Typography, useTheme } from "@mui/joy";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function RoomCard({ room }: { room: Room }) {
+    const navigate = useNavigate();
     const { palette } = useTheme();
     const [isHovered, setIsHovered] = useState(false);
 
@@ -17,6 +19,7 @@ export default function RoomCard({ room }: { room: Room }) {
     return (
         <Card
             variant="outlined"
+            onClick={() => navigate(`/room/${room.id}`)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             sx={{
