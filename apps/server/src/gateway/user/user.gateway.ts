@@ -11,26 +11,6 @@ import { Server, Socket } from "socket.io";
 import { RedisService } from "src/common/service/redis.service";
 import { Pointer, RoomUser } from "src/types/user";
 
-const GET_ROOM_DATA_SCRIPT = `
-local room = KEYS[1]
-
--- Get all users
-local user_ids = redis.call('SMEMBERS', 'room:' .. room .. ':users')
-local users = {}
-for _, id in ipairs(user_ids) do
-    users[id] = redis.call('HGETALL', 'room:' .. room .. ':user:' .. id)
-end
-
--- Get all events
-local event_ids = redis.call('SMEMBERS', 'room:' .. room .. ':events')
-local events = {}
-for _, id in ipairs(event_ids) do
-    events[id] = redis.call('HGETALL', 'room:' .. room .. ':event:' .. id)
-end
-
-return {users, events}
-`;
-
 type JoinRoom = { room: string; user: RoomUser; events: Record<string, string>[] };
 
 @WebSocketGateway({ cors: { origin: "*" } })
@@ -79,12 +59,28 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.to(room).emit("create:user", { key: client.id, value: user });
 
         // Get initial room data
-        const result = (await this.redisService.client.eval(GET_ROOM_DATA_SCRIPT, 1, room)) as [
-            Record<string, string[]>,
-            Record<string, string[]>,
-        ];
+        const [userIds, eventIds] = await Promise.all([
+            this.redisService.client.smembers(`room:${room}:users`),
+            this.redisService.client.smembers(`room:${room}:events`),
+        ]);
 
-        client.emit("join:room", { users: result[0], events: result[1] });
+        const roomUsers = {};
+        const roomEvents = {};
+
+        // Fetch all user data
+        for (const userId of userIds) {
+            if (userId === client.id) continue;
+            const userData = await this.redisService.client.hgetall(`room:${room}:user:${userId}`);
+            if (Object.keys(userData).length > 0) roomUsers[userId] = userData;
+        }
+
+        // Fetch all event data
+        for (const eventId of eventIds) {
+            const eventData = await this.redisService.client.hgetall(`room:${room}:event:${eventId}`);
+            if (Object.keys(eventData).length > 0) roomEvents[eventId] = eventData;
+        }
+
+        client.emit("join:room", { users: roomUsers, events: roomEvents });
     }
 
     @SubscribeMessage("leave:room")

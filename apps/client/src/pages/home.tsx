@@ -34,7 +34,7 @@ export default function HomePage() {
             if (socket.connected) {
                 let user = currUser;
                 if (!user) user = createCurrUser(room, "USER");
-                socket.emit("join:room", { room: room, user });
+                socket.emit("join:room", { room: room, user, events: [] });
             } else {
                 searchParams.delete("room");
                 setSearchParams(searchParams);

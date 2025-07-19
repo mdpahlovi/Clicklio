@@ -1,10 +1,10 @@
-import { EraserIcon, ShapersIcon, TextIcon, UploadIcon } from "@/components/icons";
+import { EraserIcon, ShapersIcon, TextIcon } from "@/components/icons";
 import type { Tool } from "@/types";
 import { Divider } from "@mui/joy";
 import { CiImageOn } from "react-icons/ci";
 import { IoIosBrush, IoMdBrush } from "react-icons/io";
 import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
-import { PiCircle, PiCursor, PiFilePdfLight, PiMinus, PiSquare, PiTriangle, PiVideoLight } from "react-icons/pi";
+import { PiCircle, PiCursor, PiMinus, PiSquare, PiTriangle } from "react-icons/pi";
 import { TfiPencil } from "react-icons/tfi";
 
 export const navElements: {
@@ -43,17 +43,7 @@ export const navElements: {
         ],
     },
     { icon: <TextIcon />, name: "Text", value: "i-text", type: "tool" },
-    {
-        icon: <UploadIcon />,
-        name: "Files",
-        values: ["image", "video", "document"],
-        type: "dropdown",
-        children: [
-            { icon: <CiImageOn />, name: "Image", value: "image" },
-            { icon: <PiVideoLight />, name: "Video", value: "video" },
-            { icon: <PiFilePdfLight />, name: "Document", value: "document" },
-        ],
-    },
+    { icon: <CiImageOn />, name: "Image", value: "image", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     { icon: <EraserIcon />, name: "Eraser", value: "eraser", type: "tool" },
 ];

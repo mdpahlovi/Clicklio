@@ -34,36 +34,21 @@ export default function RoomCard({ room }: { room: Room }) {
         >
             {/* Room Image/Thumbnail */}
             <Box
-                sx={{
+                style={{
                     aspectRatio: "16/9",
-                    background: room.photo ? `url(${room.photo})` : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    position: "relative",
-                    "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        inset: 0,
-                        background: "linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 100%)",
-                    },
+                    backgroundColor: palette.background.body,
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='8' height='8' fill='none'%3e%3ccircle fill='${
+                        palette.mode === "light" ? "rgb(0 0 0 / 0.25)" : "rgb(255 255 255 / 0.25)"
+                    }' cx='10' cy='10' r='1.6257413380501518'%3e%3c/circle%3e%3c/svg%3e"`,
                 }}
             >
-                {!room.photo && (
-                    <Typography
-                        level="h2"
-                        sx={{
-                            color: "white",
-                            fontWeight: "bold",
-                            textShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                            zIndex: 1,
-                        }}
-                    >
-                        {room.name.charAt(0).toUpperCase()}
-                    </Typography>
-                )}
+                {room?.photo ? (
+                    <img
+                        src={room.photo}
+                        alt={room.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+                    />
+                ) : null}
             </Box>
             <CardContent sx={{ px: 2, py: 1.25 }}>
                 <Stack spacing={0.75}>
