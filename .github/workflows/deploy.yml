@@ -17,5 +17,23 @@ jobs:
                   echo ${{ secrets.ENV_PRODUCTION }} >> .env
             - name: Check Does Env File Exist
               run: test -e .env || exit 1
-            - name: Test
-              run: ls -a
+            - name: Build Image
+              run: docker build -t mdpahlovi/clicklio:latest .
+            - name: Login to Docker Hub
+              uses: docker/login-action@v1
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+            - name: Push to Docker Hub
+              run: docker push mdpahlovi/clicklio:latest
+            - name: Pull and Run Image
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USERNAME }}
+                  password: ${{ secrets.VPS_PASSWORD }}
+                  script: |
+                      cd clicklio
+                      docker pull mdpahlovi/clicklio:latest
+                      docker compose up -d
+                      echo "Deployed Successfully"
