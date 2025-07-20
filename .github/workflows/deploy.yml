@@ -14,9 +14,11 @@ jobs:
             - name: Create Env File
               run: |
                   touch .env
-                  echo ${{ secrets.ENV_PRODUCTION }} >> .env
+                  echo "${{ secrets.ENV_PRODUCTION }}" >> .env
             - name: Check Does Env File Exist
-              run: test -e .env || exit 1
+              run: |
+                  cat .env
+                  test -e .env || exit 1
             - name: Build Image
               run: docker build -t mdpahlovi/clicklio:latest .
             - name: Login to Docker Hub
