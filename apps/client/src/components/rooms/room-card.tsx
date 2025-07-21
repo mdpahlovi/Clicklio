@@ -111,7 +111,7 @@ export default function RoomCard({ room }: { room: Room }) {
                         width: 32,
                         height: 32,
                         border: "1px solid",
-                        borderColor: "background.body",
+                        borderColor: "primary.plainColor",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
@@ -123,7 +123,7 @@ export default function RoomCard({ room }: { room: Room }) {
                         viewBox="0 0 24 24"
                         width="24"
                         height="24"
-                        color={palette.background.body}
+                        color={palette.primary.plainColor}
                         fill="none"
                     >
                         <path

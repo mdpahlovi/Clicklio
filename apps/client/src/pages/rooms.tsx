@@ -52,7 +52,9 @@ export default function RoomsPage() {
             {rooms?.length ? (
                 <>
                     <Stack p={2} direction="row" alignItems="center" justifyContent="space-between">
-                        <Typography level="title-sm">Total Room ({total})</Typography>
+                        <Typography level="title-md" fontWeight="bold">
+                            Total Room ({total})
+                        </Typography>
                         <Button startDecorator={<BiPlus size={20} />} onClick={() => setIsOpen(true)}>
                             Create Room
                         </Button>

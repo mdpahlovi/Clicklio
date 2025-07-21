@@ -9,12 +9,12 @@ export default function FormImage({ name, disabled }: { name: string; disabled?:
         <Controller
             name={name}
             render={({ field: { value } }) => (
-                <>
+                <Box sx={{ position: "relative" }}>
                     <AspectRatio ratio="1" sx={{ width: 140, height: 140, borderRadius: "100%" }}>
                         <Avatar src={value} sx={{ "--Avatar-size": "132px" }} />
                     </AspectRatio>
                     {!disabled ? (
-                        <Box sx={{ position: "absolute", zIndex: 2, left: 96, top: 192 }}>
+                        <Box sx={{ position: "absolute", bottom: 0, right: 0, zIndex: 2 }}>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -33,7 +33,7 @@ export default function FormImage({ name, disabled }: { name: string; disabled?:
                             </IconButton>
                         </Box>
                     ) : null}
-                </>
+                </Box>
             )}
         />
     );
