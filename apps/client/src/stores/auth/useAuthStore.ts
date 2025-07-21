@@ -11,7 +11,6 @@ export type User = {
     photo: string | null;
     otherInfo: Record<string, string> | null;
     createdAt: Date;
-    updatedAt: Date;
 };
 
 export type Credentials = { email: string; password: string };
@@ -104,10 +103,18 @@ export const useAuthState = create<AuthStateStore>()(
 
             signOut: async () => {
                 set({ signoutLoading: true });
-                setTimeout(() => {
+                try {
+                    const response = await axios.post("/auth/signout");
                     set({ user: null, accessToken: null, refreshToken: null });
+
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    toast.success(response.message);
+                } catch (error) {
+                    toast.error((error as ErrorResponse)?.message);
+                } finally {
                     set({ signoutLoading: false });
-                }, 1500);
+                }
             },
 
             updateProfile: async (user) => {

@@ -1,9 +1,10 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, Req } from "@nestjs/common";
 import { CurrentUser } from "src/decorators/current-user.decorator";
 import { User } from "src/models/user.entity";
 import { Public } from "../../decorators/public.decorator";
 import { OAuthUserDto, SigninUserDto, SignupUserDto } from "./auth.dto";
 import { AuthService } from "./auth.service";
+import { Request } from "express";
 
 @Controller("auth")
 export class AuthController {
@@ -30,5 +31,10 @@ export class AuthController {
     @Post("update-profile")
     async updateProfile(@Body() body: Partial<User>, @CurrentUser() user: User) {
         return await this.authService.updateProfile(body, user);
+    }
+
+    @Post("signout")
+    async signOut(@Req() req: Request) {
+        return await this.authService.signOut(req);
     }
 }

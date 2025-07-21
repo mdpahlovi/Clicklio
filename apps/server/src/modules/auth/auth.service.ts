@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
+import { randomUUID } from "crypto";
+import { Request } from "express";
+import { RedisService } from "src/common/service/redis.service";
 import { DeepPartial, Repository } from "typeorm";
 import { HashService } from "../../common/service/hash.service";
 import { Provider, User } from "../../models/user.entity";
 import { OAuthUserDto, SigninUserDto, SignupUserDto } from "./auth.dto";
-import { RedisService } from "src/common/service/redis.service";
 
 @Injectable()
 export class AuthService {
@@ -122,7 +124,6 @@ export class AuthService {
         };
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     async jwtSignin(user: User) {
         const payload = {
             id: user.id,
@@ -132,13 +133,15 @@ export class AuthService {
             photo: user.photo,
             otherInfo: user.otherInfo,
             createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
         };
 
-        return {
-            accessToken: this.jwtService.sign(payload, { expiresIn: "1h" }),
-            refreshToken: this.jwtService.sign(payload, { expiresIn: "7d" }),
-        };
+        const accTokenKey = randomUUID();
+        const refTokenKey = randomUUID();
+
+        await this.redisService.client.set(`auth:acc-token:${accTokenKey}`, this.jwtService.sign(payload, { expiresIn: "1h" }));
+        await this.redisService.client.set(`auth:ref-token:${refTokenKey}`, this.jwtService.sign(payload, { expiresIn: "7d" }));
+
+        return { accessToken: accTokenKey, refreshToken: refTokenKey };
     }
 
     async updateProfile(body: Partial<User>, user: User) {
@@ -167,8 +170,19 @@ export class AuthService {
                 photo: updatedUser.photo,
                 otherInfo: updatedUser.otherInfo,
                 createdAt: updatedUser.createdAt,
-                updatedAt: updatedUser.updatedAt,
             },
+        };
+    }
+
+    async signOut(req: Request) {
+        const accTokenKey = req.headers.authorization?.split(" ")[1];
+        const refTokenKey = req.headers["x-refresh-token"] as string;
+
+        if (accTokenKey) await this.redisService.client.del(`auth:acc-token:${accTokenKey}`);
+        if (refTokenKey) await this.redisService.client.del(`auth:ref-token:${refTokenKey}`);
+
+        return {
+            message: "User signed out successfully",
         };
     }
 }

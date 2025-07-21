@@ -3,14 +3,16 @@ import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import { RedisService } from "../common/service/redis.service";
 import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 import { User } from "../models/user.entity";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
-        private jwtService: JwtService,
-        private reflector: Reflector,
+        private readonly jwtService: JwtService,
+        private readonly reflector: Reflector,
+        private readonly redisService: RedisService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -21,11 +23,11 @@ export class AuthGuard implements CanActivate {
         const request = context.switchToHttp().getRequest<Request>();
         const response = context.switchToHttp().getResponse<Response>();
 
-        const accessToken = this.getAccessToken(request);
-        const refreshToken = this.getRefreshToken(request);
+        const accessToken = await this.getAccessToken(request);
+        const refreshToken = await this.getRefreshToken(request);
 
-        if (!accessToken && !refreshToken) {
-            throw new UnauthorizedException("Please login");
+        if (!accessToken || !refreshToken) {
+            throw new UnauthorizedException("Please login again");
         }
 
         // Try to authenticate with access token first
@@ -43,16 +45,39 @@ export class AuthGuard implements CanActivate {
         }
 
         // Both tokens failed
-        throw new UnauthorizedException("Invalid access and refresh token");
+        throw new UnauthorizedException("Invalid token, Please login again");
     }
 
-    private getAccessToken(request: Request): string | null {
-        const [type, token] = request.headers.authorization?.split(" ") ?? [];
-        return type === "Bearer" ? token : null;
+    private async getAccessToken(request: Request): Promise<string | null> {
+        const [type, tokenKey] = request.headers.authorization?.split(" ") ?? [];
+
+        if (type === "Bearer") {
+            try {
+                const token = await this.redisService.client.get(`auth:acc-token:${tokenKey}`);
+                return typeof token === "string" ? token : null;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (error) {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
-    private getRefreshToken(request: Request): string | null {
-        return (request.headers["x-refresh-token"] as string) || null;
+    private async getRefreshToken(request: Request): Promise<string | null> {
+        const tokenKey = request.headers["x-refresh-token"];
+
+        if (typeof tokenKey === "string") {
+            try {
+                const token = await this.redisService.client.get(`auth:ref-token:${tokenKey}`);
+                return typeof token === "string" ? token : null;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (error) {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     private async verifyToken(token: string): Promise<User> {
@@ -66,13 +91,11 @@ export class AuthGuard implements CanActivate {
             return payload as User;
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-            throw new UnauthorizedException("Invalid token");
+            throw new UnauthorizedException("Invalid token, Please login again");
         }
     }
 
-    private async tryVerifyAccessToken(accessToken: string | null): Promise<User | null> {
-        if (!accessToken) return null;
-
+    private async tryVerifyAccessToken(accessToken: string): Promise<User | null> {
         try {
             return await this.verifyToken(accessToken);
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,9 +104,7 @@ export class AuthGuard implements CanActivate {
         }
     }
 
-    private async tryRefreshTokenFlow(refreshToken: string | null, response: Response): Promise<User | null> {
-        if (!refreshToken) return null;
-
+    private async tryRefreshTokenFlow(refreshToken: string, response: Response): Promise<User | null> {
         try {
             const user = await this.verifyToken(refreshToken);
 
@@ -94,7 +115,7 @@ export class AuthGuard implements CanActivate {
             return user;
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-            throw new UnauthorizedException("Invalid refresh token");
+            return null;
         }
     }
 }

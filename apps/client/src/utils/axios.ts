@@ -12,7 +12,7 @@ baseAxios.interceptors.request.use(function (config) {
 
     if (authState?.accessToken && authState?.refreshToken) {
         config.headers.authorization = `Bearer ${authState?.accessToken}`;
-        // config.headers["x-refresh-token"] = authState?.refreshToken;
+        config.headers["x-refresh-token"] = authState?.refreshToken;
     }
 
     return config;
@@ -20,6 +20,9 @@ baseAxios.interceptors.request.use(function (config) {
 
 baseAxios.interceptors.response.use(
     function (res) {
+        const newAccToken = res.headers["x-access-token"];
+        if (newAccToken) useAuthState.setState({ accessToken: newAccToken });
+
         return res.data;
     },
     function (error) {
