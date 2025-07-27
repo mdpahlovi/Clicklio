@@ -3,10 +3,9 @@ import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ToolbarProps } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";
-import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Tooltip, useColorScheme } from "@mui/joy";
+import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, styled, Tooltip, useColorScheme } from "@mui/joy";
 import * as fabric from "fabric";
 import { Fragment, useEffect, useRef } from "react";
-import toast from "react-hot-toast";
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     const { mode } = useColorScheme();
@@ -93,10 +92,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     }, [tool, mode]);
 
     return (
-        <Sheet
-            sx={{ position: "absolute", zIndex: 10, inset: 0, top: 24, bottom: 73, my: "auto", p: 0.75, width: 36 }}
-            style={{ borderLeft: 0, borderRadius: "0 24px 24px 0", display: "grid", gap: 4, overflowY: "auto", maxHeight: 286 }}
-        >
+        <ToolbarSheet>
             {navElements.map(({ name, value, values, icon, type, children }, idx) => {
                 switch (type) {
                     case "tool":
@@ -127,10 +123,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                                         {icon}
                                     </MenuButton>
                                 </Tooltip>
-                                <Menu
-                                    sx={{ p: 0.75, m: "0 0 0 16px !important" }}
-                                    style={{ borderRadius: 9999, flexDirection: "row", gap: 4 }}
-                                >
+                                <ToolbarMenu>
                                     {children?.length &&
                                         children.map(({ icon, name, value }, idx) => (
                                             <Tooltip key={idx} title={name}>
@@ -148,7 +141,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                                                 </MenuItem>
                                             </Tooltip>
                                         ))}
-                                </Menu>
+                                </ToolbarMenu>
                             </Dropdown>
                         );
 
@@ -171,38 +164,27 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     }
                 }}
             />
-
-            <input
-                hidden
-                type="file"
-                accept="video/*"
-                ref={videoInputRef}
-                onChange={(e) => {
-                    const files = e?.target?.files;
-
-                    if (files && e?.target?.files?.length) {
-                        toast.error("Video upload is not supported yet.");
-
-                        if (videoInputRef.current) videoInputRef.current.value = "";
-                    }
-                }}
-            />
-
-            <input
-                hidden
-                type="file"
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
-                ref={documentInputRef}
-                onChange={(e) => {
-                    const files = e?.target?.files;
-
-                    if (files && e?.target?.files?.length) {
-                        toast.error("Document upload is not supported yet.");
-
-                        if (documentInputRef.current) documentInputRef.current.value = "";
-                    }
-                }}
-            />
-        </Sheet>
+        </ToolbarSheet>
     );
 }
+
+const ToolbarSheet = styled(Sheet)(() => ({
+    position: "absolute",
+    top: "50%",
+    left: 16,
+    zIndex: 10,
+    width: 36,
+    padding: 4,
+    borderRadius: 99,
+    display: "grid",
+    gap: 4,
+    transform: "translateY(-50%)",
+}));
+
+const ToolbarMenu = styled(Menu)(() => ({
+    padding: 6,
+    margin: "0 0 0 16px !important",
+    borderRadius: 99,
+    flexDirection: "row",
+    gap: 4,
+}));

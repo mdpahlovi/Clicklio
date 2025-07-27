@@ -1,10 +1,19 @@
-import { EraserIcon, ShapersIcon, TextIcon } from "@/components/icons";
+import {
+    CircleIcon,
+    CursorIcon,
+    EraserIcon,
+    ImageAddIcon,
+    PenIcon,
+    ShapersIcon,
+    SquareIcon,
+    TextIcon,
+    TriangleIcon,
+} from "@/components/icons";
 import type { Tool } from "@/types";
 import { Divider } from "@mui/joy";
-import { CiImageOn } from "react-icons/ci";
 import { IoIosBrush, IoMdBrush } from "react-icons/io";
 import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
-import { PiCircle, PiCursor, PiMinus, PiSquare, PiTriangle } from "react-icons/pi";
+import { PiMinus } from "react-icons/pi";
 import { TfiPencil } from "react-icons/tfi";
 
 export const navElements: {
@@ -16,7 +25,7 @@ export const navElements: {
     children?: { value: Tool; name: string; icon: React.ReactNode }[];
 }[] = [
     { icon: <LiaHandPaper />, name: "Panning", value: "panning", type: "tool" },
-    { icon: <PiCursor />, name: "Select", value: "select", type: "tool" },
+    { icon: <CursorIcon />, name: "Select", value: "select", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     {
         icon: <ShapersIcon />,
@@ -24,15 +33,15 @@ export const navElements: {
         values: ["rect", "triangle", "circle", "line", "arrow"],
         type: "dropdown",
         children: [
-            { icon: <PiSquare />, name: "Rectangle", value: "rect" },
-            { icon: <PiTriangle />, name: "Triangle", value: "triangle" },
-            { icon: <PiCircle />, name: "Circle", value: "circle" },
+            { icon: <SquareIcon />, name: "Rectangle", value: "rect" },
+            { icon: <TriangleIcon />, name: "Triangle", value: "triangle" },
+            { icon: <CircleIcon />, name: "Circle", value: "circle" },
             { icon: <PiMinus />, name: "Line", value: "line" },
             { icon: <LiaLongArrowAltRightSolid />, name: "Arrow", value: "arrow" },
         ],
     },
     {
-        icon: <TfiPencil />,
+        icon: <PenIcon />,
         name: "Brushes",
         values: ["path-1", "path-5", "path-10"],
         type: "dropdown",
@@ -43,7 +52,7 @@ export const navElements: {
         ],
     },
     { icon: <TextIcon />, name: "Text", value: "i-text", type: "tool" },
-    { icon: <CiImageOn />, name: "Image", value: "image", type: "tool" },
+    { icon: <ImageAddIcon />, name: "Image", value: "image", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     { icon: <EraserIcon />, name: "Eraser", value: "eraser", type: "tool" },
 ];

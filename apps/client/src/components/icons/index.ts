@@ -1,7 +1,16 @@
-import EraserIcon from "@/components/icons/EraserIcon";
-import ShapersIcon from "@/components/icons/ShapersIcon";
-import TextIcon from "@/components/icons/TextIcon";
-import UploadIcon from "@/components/icons/UploadIcon";
-import PreviewIcon from "@/components/icons/PreviewIcon";
-
-export { EraserIcon, ShapersIcon, TextIcon, UploadIcon, PreviewIcon };
+export { default as ArrowLeftIcon } from "@/components/icons/ArrowLeftIcon";
+export { default as CircleIcon } from "@/components/icons/CircleIcon";
+export { default as CursorIcon } from "@/components/icons/CursorIcon";
+export { default as EraserIcon } from "@/components/icons/EraserIcon";
+export { default as ImageAddIcon } from "@/components/icons/ImageAddIcon";
+export { default as MenuIcon } from "@/components/icons/MenuIcon";
+export { default as PenIcon } from "@/components/icons/PenIcon";
+export { default as PreviewIcon } from "@/components/icons/PreviewIcon";
+export { default as ScreenRecordStartIcon } from "@/components/icons/ScreenRecordStartIcon";
+export { default as ScreenRecordStopIcon } from "@/components/icons/ScreenRecordStopIcon";
+export { default as ShapersIcon } from "@/components/icons/ShapersIcon";
+export { default as SquareIcon } from "@/components/icons/SquareIcon";
+export { default as TextIcon } from "@/components/icons/TextIcon";
+export { default as TriangleIcon } from "@/components/icons/TriangleIcon";
+export { default as UploadIcon } from "@/components/icons/UploadIcon";
+export { default as WebcamIcon } from "@/components/icons/WebcamIcon";

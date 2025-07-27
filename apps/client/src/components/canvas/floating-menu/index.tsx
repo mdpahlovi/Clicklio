@@ -6,7 +6,7 @@ import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
 import { modifyShape } from "@/utils/shapes";
-import { Divider, Sheet } from "@mui/joy";
+import { Divider, Sheet, styled } from "@mui/joy";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     const { createEvent } = useEventStore();
@@ -22,11 +22,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
 
     if (fabricRef?.current && currentObject) {
         return (
-            <Sheet
-                onClick={(e) => e.stopPropagation()}
-                sx={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", p: 0.75, gap: 0.5 }}
-                style={{ zIndex: 10, display: "flex", height: 36, borderTopWidth: 0, borderRadius: "0 0 24px 24px" }}
-            >
+            <FloatingMenuSheet onClick={(e) => e.stopPropagation()}>
                 {currentObject?.type === "i-text" ? (
                     <Text
                         open={!!openedFloatingMenu["text"]}
@@ -53,9 +49,22 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
                 />
                 <Divider orientation="vertical" />
                 <Actions {...{ fabricRef, currentObject }} />
-            </Sheet>
+            </FloatingMenuSheet>
         );
     } else {
         return null;
     }
 }
+
+const FloatingMenuSheet = styled(Sheet)(() => ({
+    position: "absolute",
+    top: 16,
+    left: "50%",
+    zIndex: 10,
+    height: 36,
+    padding: 4,
+    borderRadius: 99,
+    display: "flex",
+    gap: 4,
+    transform: "translateX(-50%)",
+}));

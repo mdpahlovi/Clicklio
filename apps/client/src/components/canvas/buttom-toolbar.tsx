@@ -1,54 +1,25 @@
-import { PreviewIcon } from "@/components/icons";
+import { PreviewIcon, ScreenRecordStartIcon, ScreenRecordStopIcon, WebcamIcon } from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import { downloadMedia } from "@/utils/download";
 import { handleNavigatorError } from "@/utils/error-handle";
 import { handleCreateEvent } from "@/utils/event";
-import { Button, Divider, IconButton, Sheet, Tooltip } from "@mui/joy";
+import { Button, Divider, IconButton, Sheet, styled, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { useState } from "react";
-import { BiSolidWebcam } from "react-icons/bi";
-import { FaRegCircleStop } from "react-icons/fa6";
+import { ErrorBoundary } from "react-error-boundary";
 import { GrRedo, GrUndo } from "react-icons/gr";
-import { PiMinus, PiPlus, PiVinylRecord } from "react-icons/pi";
-import { useReactMediaRecorder } from "react-media-recorder";
+import { PiMinus, PiPlus } from "react-icons/pi";
+import { ReactMediaRecorder } from "react-media-recorder";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
     const { createEvent, canUndo, canRedo } = useEventStore();
     const { zoom, setZoom, setUserMedia } = useCanvasState();
-    const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({ audio: true, screen: true });
-
-    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <>
-            <Modal open={isOpen} onClose={() => setIsOpen(false)} title="Recorded Media" sx={{ maxWidth: 768 }}>
-                <video style={{ aspectRatio: "16 / 9", width: "100%", borderRadius: 12 }} controls src={mediaBlobUrl} />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
-                    <Button
-                        color="warning"
-                        onClick={() => {
-                            startRecording();
-                            setIsOpen(false);
-                        }}
-                    >
-                        Rerecord
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            if (mediaBlobUrl) downloadMedia(mediaBlobUrl);
-                        }}
-                        disabled={!mediaBlobUrl}
-                    >
-                        Download
-                    </Button>
-                </div>
-            </Modal>
-            <Sheet
-                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
-                style={{ borderWidth: "1px 1px 0 0", position: "absolute", bottom: 0, borderRadius: "0 24px 0 0" }}
-            >
+            <BottomToolbarSheet position="left">
                 <Tooltip title="Webcam" placement="top">
                     <IconButton
                         onClick={() => {
@@ -82,34 +53,20 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                             }
                         }}
                     >
-                        <BiSolidWebcam />
+                        <WebcamIcon />
                     </IconButton>
                 </Tooltip>
-                {status !== "recording" ? (
-                    <Tooltip title="Record" placement="top">
-                        <IconButton onClick={() => startRecording()}>
-                            <PiVinylRecord />
-                        </IconButton>
-                    </Tooltip>
-                ) : (
-                    <Tooltip title="Stop Recording" placement="top">
-                        <IconButton
-                            onClick={() => {
-                                stopRecording();
-                                setIsOpen(true);
-                            }}
-                        >
-                            <FaRegCircleStop />
-                        </IconButton>
-                    </Tooltip>
-                )}
-                {mediaBlobUrl ? (
-                    <Tooltip title="Preview" placement="top">
-                        <IconButton onClick={() => setIsOpen(true)}>
-                            <PreviewIcon />
-                        </IconButton>
-                    </Tooltip>
-                ) : null}
+                <ErrorBoundary
+                    fallback={
+                        <Tooltip title="Not supported" placement="top">
+                            <IconButton disabled>
+                                <ScreenRecordStartIcon />
+                            </IconButton>
+                        </Tooltip>
+                    }
+                >
+                    <ScreenRecorder />
+                </ErrorBoundary>
                 <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
@@ -127,17 +84,8 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 >
                     <GrRedo />
                 </IconButton>
-            </Sheet>
-            <Sheet
-                sx={{ display: "flex", gap: 0.5, p: 0.75, zIndex: 10 }}
-                style={{
-                    borderWidth: "1px 0 0 1px",
-                    position: "absolute",
-                    bottom: 0,
-                    right: 0,
-                    borderRadius: "24px 0 0 0",
-                }}
-            >
+            </BottomToolbarSheet>
+            <BottomToolbarSheet position="right">
                 <IconButton
                     onClick={() => {
                         if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {
@@ -176,7 +124,87 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 >
                     <PiMinus />
                 </IconButton>
-            </Sheet>
+            </BottomToolbarSheet>
         </>
     );
 }
+
+const ScreenRecorder = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div>
+            <ReactMediaRecorder
+                audio
+                screen
+                render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
+                    <>
+                        {status !== "recording" ? (
+                            <Tooltip title="Record" placement="top">
+                                <IconButton onClick={() => startRecording()}>
+                                    <ScreenRecordStartIcon />
+                                </IconButton>
+                            </Tooltip>
+                        ) : (
+                            <Tooltip title="Stop Recording" placement="top">
+                                <IconButton
+                                    onClick={() => {
+                                        stopRecording();
+                                        setIsOpen(true);
+                                    }}
+                                >
+                                    <ScreenRecordStopIcon />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        {mediaBlobUrl ? (
+                            <Tooltip title="Preview" placement="top">
+                                <IconButton onClick={() => setIsOpen(true)}>
+                                    <PreviewIcon />
+                                </IconButton>
+                            </Tooltip>
+                        ) : null}
+
+                        {/* Preview Modal */}
+                        <Modal open={isOpen} onClose={() => setIsOpen(false)} title="Recorded Media" sx={{ maxWidth: 768 }}>
+                            <video style={{ aspectRatio: "16 / 9", width: "100%", borderRadius: 12 }} controls src={mediaBlobUrl} />
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
+                                <Button
+                                    color="warning"
+                                    onClick={() => {
+                                        startRecording();
+                                        setIsOpen(false);
+                                    }}
+                                >
+                                    Rerecord
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        if (mediaBlobUrl) {
+                                            downloadMedia(mediaBlobUrl);
+                                        }
+                                    }}
+                                    disabled={!mediaBlobUrl}
+                                >
+                                    Download
+                                </Button>
+                            </div>
+                        </Modal>
+                    </>
+                )}
+            />
+        </div>
+    );
+};
+
+const BottomToolbarSheet = styled(Sheet)<{ position: "left" | "right" }>(({ position }) => ({
+    position: "absolute",
+    [position]: 16,
+    bottom: 16,
+    zIndex: 10,
+    height: 36,
+    padding: 4,
+    borderRadius: 99,
+    display: "flex",
+    gap: 4,
+}));
