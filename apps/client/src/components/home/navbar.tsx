@@ -1,44 +1,37 @@
 import RoomUsers from "@/components/home/room-users";
-import { MenuIcon } from "@/components/icons";
+import { ShareIcon, SigninIcon } from "@/components/icons";
 import AuthDropdown from "@/components/ui/auth-dropdown";
-import ThemeToggle from "@/components/ui/theme-toggle";
+import Menubar from "@/components/ui/menubar";
 import { useAuthState } from "@/stores/auth/useAuthStore";
-import { Button, Divider, IconButton, Sheet, styled } from "@mui/joy";
-import { PiQuestion, PiShareFat } from "react-icons/pi";
-import { SlLogin } from "react-icons/sl";
+import { Button, IconButton, Sheet, styled } from "@mui/joy";
 import { Link } from "react-router-dom";
 
 type NavbarProps = {
+    canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Navbar({ setIsGuideModalOpen, setIsShareModalOpen }: NavbarProps) {
+export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModalOpen }: NavbarProps) {
     const { user } = useAuthState();
 
     return (
         <>
             <NavbarSheet position="left">
-                <IconButton>
-                    <MenuIcon />
-                </IconButton>
+                <Menubar {...{ canvasRef, setIsGuideModalOpen }} />
             </NavbarSheet>
             <NavbarSheet position="right">
                 <RoomUsers />
-                <Button color="neutral" variant="plain" startDecorator={<PiShareFat size={20} />} onClick={() => setIsShareModalOpen(true)}>
+                <Button color="neutral" variant="plain" startDecorator={<ShareIcon />} onClick={() => setIsShareModalOpen(true)}>
                     Share
                 </Button>
-                <ThemeToggle />
-                <Divider orientation="vertical" sx={{ mr: { xs: 1, sm: 0 } }} />
-                <IconButton onClick={() => setIsGuideModalOpen(true)} sx={{ display: { xs: "none", md: "inline-flex" } }}>
-                    <PiQuestion />
-                </IconButton>
-
                 {user && user?.id ? (
                     <AuthDropdown />
                 ) : (
-                    <Link to="/signin" style={{ userSelect: "none", display: "flex" }}>
-                        <SlLogin />
+                    <Link to="/signin">
+                        <IconButton>
+                            <SigninIcon />
+                        </IconButton>
                     </Link>
                 )}
             </NavbarSheet>

@@ -12,7 +12,7 @@ export default function AuthDropdown() {
             <MenuButton sx={{ p: 0, border: "none" }}>
                 <Avatar src={user?.photo || undefined} sx={{ "--Avatar-size": "36px" }} />
             </MenuButton>
-            <Menu placement="bottom-end" sx={{ zIndex: 99 }}>
+            <Menu open placement="bottom-end" sx={{ zIndex: 99 }}>
                 <Stack direction="row" sx={{ px: 1.5, py: 1 }}>
                     <Avatar src={user?.photo || undefined} />
                     <Box>

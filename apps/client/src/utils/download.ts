@@ -7,8 +7,7 @@ export const downloadMedia = async (mediaBlobUrl: string) => {
         const link = document.createElement("a");
         link.href = downloadUrl;
 
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        link.download = `screen-recording-${timestamp}.webm`;
+        link.download = `canvas-record.webm`;
 
         document.body.appendChild(link);
         link.click();

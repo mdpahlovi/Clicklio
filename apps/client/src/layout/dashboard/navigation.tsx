@@ -1,17 +1,17 @@
 import { List, ListItem, ListItemButton, ListItemContent, ListItemDecorator, ListSubheader } from "@mui/joy";
-import { RiArtboardFill, RiFolder5Fill, RiSettings3Fill } from "react-icons/ri";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CanvasFillIcon, FolderFillIcon, SettingFillIcon } from "../../components/icons";
 
 const navItems = [
     {
         type: "Browse",
-        children: [{ href: "/rooms", label: "Rooms", icon: <RiFolder5Fill size={20} /> }],
+        children: [{ href: "/rooms", label: "Rooms", icon: <FolderFillIcon /> }],
     },
     {
         type: "Navigation",
         children: [
-            { href: "/setting", label: "Setting", icon: <RiSettings3Fill size={20} /> },
-            { href: "/", label: "Back To Canvas", icon: <RiArtboardFill size={20} /> },
+            { href: "/setting", label: "Setting", icon: <SettingFillIcon /> },
+            { href: "/", label: "Back To Canvas", icon: <CanvasFillIcon /> },
         ],
     },
 ];

@@ -78,7 +78,7 @@ export default function HomePage() {
 
     return (
         <div>
-            <Navbar {...{ setIsGuideModalOpen, setIsShareModalOpen }} />
+            <Navbar {...{ canvasRef, setIsGuideModalOpen, setIsShareModalOpen }} />
             <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
