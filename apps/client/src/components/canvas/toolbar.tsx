@@ -173,7 +173,6 @@ const ToolbarSheet = styled(Sheet)(() => ({
     top: "50%",
     left: 16,
     zIndex: 10,
-    width: 36,
     padding: 4,
     borderRadius: 99,
     display: "grid",

@@ -51,7 +51,6 @@ const NavbarSheet = styled(Sheet)<{ position: "left" | "right" }>(({ position })
     top: 16,
     [position]: 16,
     zIndex: 10,
-    height: 36,
     padding: 4,
     borderRadius: 99,
     display: "flex",

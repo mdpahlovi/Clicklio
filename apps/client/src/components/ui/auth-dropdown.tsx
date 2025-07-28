@@ -1,6 +1,6 @@
+import { FolderIcon, SignoutIcon } from "@/components/icons";
 import { useAuthState } from "@/stores/auth/useAuthStore";
-import { Avatar, Box, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Typography } from "@mui/joy";
-import { RiFolder5Fill, RiLogoutBoxRLine } from "react-icons/ri";
+import { Avatar, Box, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Stack, Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 
 export default function AuthDropdown() {
@@ -12,8 +12,8 @@ export default function AuthDropdown() {
             <MenuButton sx={{ p: 0, border: "none" }}>
                 <Avatar src={user?.photo || undefined} sx={{ "--Avatar-size": "36px" }} />
             </MenuButton>
-            <Menu placement="bottom-end" sx={{ zIndex: 9999 }}>
-                <MenuItem>
+            <Menu placement="bottom-end" sx={{ zIndex: 99 }}>
+                <Stack direction="row" sx={{ px: 1.5, py: 1 }}>
                     <Avatar src={user?.photo || undefined} />
                     <Box>
                         <Typography level="title-sm" textColor="text.primary">
@@ -23,16 +23,16 @@ export default function AuthDropdown() {
                             {user?.email}
                         </Typography>
                     </Box>
-                </MenuItem>
+                </Stack>
                 <ListDivider />
                 <MenuItem component={Link} to="/rooms">
-                    <RiFolder5Fill size={20} />
+                    <FolderIcon />
                     Dashboard
                 </MenuItem>
                 <ListDivider />
                 <MenuItem color="danger" onClick={signOut}>
-                    <RiLogoutBoxRLine size={20} />
-                    Log out
+                    <SignoutIcon />
+                    Signout
                 </MenuItem>
             </Menu>
         </Dropdown>

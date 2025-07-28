@@ -1,4 +1,13 @@
-import { PreviewIcon, ScreenRecordStartIcon, ScreenRecordStopIcon, WebcamIcon } from "@/components/icons";
+import {
+    MinusIcon,
+    PlusIcon,
+    PreviewIcon,
+    RedoIcon,
+    ScreenRecordStartIcon,
+    ScreenRecordStopIcon,
+    UndoIcon,
+    WebcamIcon,
+} from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
@@ -9,8 +18,6 @@ import { Button, Divider, IconButton, Sheet, styled, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { GrRedo, GrUndo } from "react-icons/gr";
-import { PiMinus, PiPlus } from "react-icons/pi";
 import { ReactMediaRecorder } from "react-media-recorder";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
@@ -74,7 +81,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     }}
                     disabled={!canUndo()}
                 >
-                    <GrUndo />
+                    <UndoIcon />
                 </IconButton>
                 <IconButton
                     onClick={() => {
@@ -82,7 +89,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     }}
                     disabled={!canRedo()}
                 >
-                    <GrRedo />
+                    <RedoIcon />
                 </IconButton>
             </BottomToolbarSheet>
             <BottomToolbarSheet position="right">
@@ -95,7 +102,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     }}
                     disabled={Number(zoom.toFixed(1)) >= 10}
                 >
-                    <PiPlus />
+                    <PlusIcon />
                 </IconButton>
 
                 <Divider orientation="vertical" sx={{ display: { xs: "none", sm: "block" } }} />
@@ -122,7 +129,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     }}
                     disabled={Number(zoom.toFixed(1)) <= 1}
                 >
-                    <PiMinus />
+                    <MinusIcon />
                 </IconButton>
             </BottomToolbarSheet>
         </>
@@ -202,7 +209,6 @@ const BottomToolbarSheet = styled(Sheet)<{ position: "left" | "right" }>(({ posi
     [position]: 16,
     bottom: 16,
     zIndex: 10,
-    height: 36,
     padding: 4,
     borderRadius: 99,
     display: "flex",

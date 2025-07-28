@@ -61,7 +61,6 @@ const FloatingMenuSheet = styled(Sheet)(() => ({
     top: 16,
     left: "50%",
     zIndex: 10,
-    height: 36,
     padding: 4,
     borderRadius: 99,
     display: "flex",

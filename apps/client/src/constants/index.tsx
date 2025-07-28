@@ -3,6 +3,7 @@ import {
     CursorIcon,
     EraserIcon,
     ImageAddIcon,
+    MinusIcon,
     PenIcon,
     ShapersIcon,
     SquareIcon,
@@ -13,8 +14,6 @@ import type { Tool } from "@/types";
 import { Divider } from "@mui/joy";
 import { IoIosBrush, IoMdBrush } from "react-icons/io";
 import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
-import { PiMinus } from "react-icons/pi";
-import { TfiPencil } from "react-icons/tfi";
 
 export const navElements: {
     value?: Tool;
@@ -36,7 +35,7 @@ export const navElements: {
             { icon: <SquareIcon />, name: "Rectangle", value: "rect" },
             { icon: <TriangleIcon />, name: "Triangle", value: "triangle" },
             { icon: <CircleIcon />, name: "Circle", value: "circle" },
-            { icon: <PiMinus />, name: "Line", value: "line" },
+            { icon: <MinusIcon />, name: "Line", value: "line" },
             { icon: <LiaLongArrowAltRightSolid />, name: "Arrow", value: "arrow" },
         ],
     },
@@ -46,7 +45,7 @@ export const navElements: {
         values: ["path-1", "path-5", "path-10"],
         type: "dropdown",
         children: [
-            { icon: <TfiPencil />, name: "Brush S:01", value: "path-1" },
+            { icon: <PenIcon />, name: "Brush S:01", value: "path-1" },
             { icon: <IoMdBrush />, name: "Brush S:05", value: "path-5" },
             { icon: <IoIosBrush />, name: "Brush S:10", value: "path-10" },
         ],

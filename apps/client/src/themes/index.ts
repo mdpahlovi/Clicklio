@@ -41,14 +41,14 @@ export default extendTheme({
         JoySheet: { defaultProps: { variant: "outlined" } },
         JoyCard: { styleOverrides: { root: { padding: 0, borderRadius: 16, gap: 0 } } },
         JoyInput: { styleOverrides: { root: { borderRadius: 10, overflow: "hidden" } } },
-        JoyButton: { styleOverrides: { root: { borderRadius: 9999 } } },
-        JoySelect: { styleOverrides: { root: { borderRadius: 9999 } } },
+        JoyButton: { styleOverrides: { root: { borderRadius: 99 } } },
+        JoySelect: { styleOverrides: { root: { borderRadius: 99 } } },
         JoyTextarea: { styleOverrides: { root: { borderRadius: 16 } } },
-        JoyIconButton: { styleOverrides: { root: { borderRadius: 9999 } } },
+        JoyIconButton: { styleOverrides: { root: { borderRadius: 99 } } },
         JoyListItemButton: { styleOverrides: { root: { borderRadius: 16 } } },
         JoyMenu: { defaultProps: { placement: "auto" }, styleOverrides: { root: { borderRadius: 16, paddingBlock: 0 } } },
         JoyMenuItem: { styleOverrides: { root: { paddingBlock: 8 } } },
-        JoyMenuButton: { styleOverrides: { root: { borderRadius: 9999 } } },
+        JoyMenuButton: { styleOverrides: { root: { borderRadius: 99 } } },
         JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },
         JoyModal: { defaultProps: { sx: { display: "flex", justifyContent: "center", alignItems: "center" } } },
         JoySlider: {
@@ -67,7 +67,7 @@ export default extendTheme({
         },
         JoyTooltip: {
             defaultProps: { variant: "soft", size: "sm", placement: "top", enterDelay: 300, enterNextDelay: 300, enterTouchDelay: 300 },
-            styleOverrides: { root: { borderRadius: 9999 } },
+            styleOverrides: { root: { borderRadius: 99 } },
         },
         JoyCardOverflow: {
             defaultProps: {
