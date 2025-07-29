@@ -1,5 +1,6 @@
+import { PlusIcon } from "@/components/icons";
 import { Box, Button, Stack, Typography } from "@mui/joy";
-import { BiPlus, BiSearchAlt } from "react-icons/bi";
+import { BiSearchAlt } from "react-icons/bi";
 
 export default function NotFound({ onClick }: { onClick?: () => void }) {
     return (
@@ -33,7 +34,7 @@ export default function NotFound({ onClick }: { onClick?: () => void }) {
                 <Button
                     variant="solid"
                     color="primary"
-                    startDecorator={<BiPlus size={20} />}
+                    startDecorator={<PlusIcon />}
                     onClick={onClick}
                     sx={{ mt: 1, transition: "transform 0.15s ease-in-out", "&:hover": { transform: "scale(1.02)" } }}
                 >

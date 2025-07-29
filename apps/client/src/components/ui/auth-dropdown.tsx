@@ -12,14 +12,14 @@ export default function AuthDropdown() {
             <MenuButton sx={{ p: 0, border: "none" }}>
                 <Avatar src={user?.photo || undefined} sx={{ "--Avatar-size": "36px" }} />
             </MenuButton>
-            <Menu open placement="bottom-end" sx={{ zIndex: 99 }}>
-                <Stack direction="row" sx={{ px: 1.5, py: 1 }}>
-                    <Avatar src={user?.photo || undefined} />
+            <Menu placement="bottom-end" sx={{ zIndex: 99 }}>
+                <Stack direction="row" alignItems="center" gap={1} sx={{ px: 1.5, py: 1 }}>
+                    <Avatar src={user?.photo || undefined} sx={{ "--Avatar-size": "36px" }} />
                     <Box>
-                        <Typography level="title-sm" textColor="text.primary">
+                        <Typography level="title-sm" lineHeight={1.25}>
                             {user?.name}
                         </Typography>
-                        <Typography level="body-xs" textColor="text.tertiary">
+                        <Typography level="body-xs" lineHeight={1.25}>
                             {user?.email}
                         </Typography>
                     </Box>

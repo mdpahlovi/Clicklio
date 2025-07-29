@@ -9,9 +9,9 @@ import axios from "@/utils/axios";
 import { Box, Button, Stack, Typography } from "@mui/joy";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { BiPlus } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import { PlusIcon } from "../components/icons";
 
 const createRoomSchema = yup.object().shape({
     name: yup
@@ -55,7 +55,7 @@ export default function RoomsPage() {
                         <Typography level="title-md" fontWeight="bold">
                             Total Room ({total})
                         </Typography>
-                        <Button startDecorator={<BiPlus size={20} />} onClick={() => setIsOpen(true)}>
+                        <Button startDecorator={<PlusIcon />} onClick={() => setIsOpen(true)}>
                             Create Room
                         </Button>
                     </Stack>
