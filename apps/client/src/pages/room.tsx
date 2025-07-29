@@ -28,7 +28,7 @@ export default function RoomPage() {
 }
 
 function Room({ room }: { room: Room }) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
     const { resetEvent } = useEventStore();
     const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
 
@@ -41,10 +41,10 @@ function Room({ room }: { room: Room }) {
 
     return (
         <>
-            <RoomNavbar room={room} setIsOpen={setIsOpen} />
+            <RoomNavbar {...{ room, canvasRef, setIsGuideModalOpen }} />
             <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
 
-            <GuideModal isOpen={isOpen} setIsOpen={setIsOpen} />
+            <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
         </>
     );
 }

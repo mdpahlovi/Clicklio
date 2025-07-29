@@ -1,8 +1,9 @@
+import { MenuIcon } from "@/components/icons";
 import AuthDropdown from "@/components/ui/auth-dropdown";
 import Logo from "@/components/ui/logo";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import { Box, IconButton, Input, Typography } from "@mui/joy";
-import { IoIosSearch, IoMdMenu } from "react-icons/io";
+import { IoIosSearch } from "react-icons/io";
 
 export default function Header({ setIsOpen }: { setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
     return (
@@ -10,7 +11,7 @@ export default function Header({ setIsOpen }: { setIsOpen: React.Dispatch<React.
             <Logo sx={{ display: { xs: "none", xl: "flex" } }} />
 
             <IconButton onClick={() => setIsOpen(true)} sx={{ display: { xl: "none" } }}>
-                <IoMdMenu size={24} />
+                <MenuIcon />
             </IconButton>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>

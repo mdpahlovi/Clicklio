@@ -1,9 +1,9 @@
+import { CopyIcon, PlayFillIcon, SquareFillIcon } from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
 import { socket } from "@/utils/socket";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
-import { FaPlay, FaRegCopy, FaStop } from "react-icons/fa6";
 import { useSearchParams } from "react-router-dom";
 import { useDebouncedCallback } from "use-debounce";
 import { v4 as uuid } from "uuid";
@@ -39,7 +39,7 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                     <Stack flexDirection="row" gap={1.5}>
                         <Input value={window.location.href} sx={{ width: "100%", pointerEvents: "none" }} />
                         <Button
-                            startDecorator={<FaRegCopy size={18} />}
+                            startDecorator={<CopyIcon />}
                             onClick={() => navigator.clipboard.writeText(window.location.href)}
                             sx={{ whiteSpace: "nowrap" }}
                         >
@@ -53,7 +53,7 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                     </Typography>
                     <Stack mt={1.75} flexDirection="row" justifyContent="center">
                         <Button
-                            startDecorator={<FaStop size={18} />}
+                            startDecorator={<SquareFillIcon />}
                             color="danger"
                             onClick={() => {
                                 // Leave room
@@ -91,7 +91,7 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                                     socket.emit("join:room", { room, user, events });
                                 }
                             }}
-                            startDecorator={<FaPlay size={18} />}
+                            startDecorator={<PlayFillIcon />}
                         >
                             Start Session
                         </Button>

@@ -1,8 +1,8 @@
+import { ParagraphIcon } from "@/components/icons";
 import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
 import type { FloatingMenuItemProps, FloatingMenuSubItemProps } from "@/types";
 import { Dropdown, IconButton, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
-import { MdFormatTextdirectionLToR } from "react-icons/md";
 
 type Property = "fontFamily" | "fontSize" | "fontWeight";
 type SelectConfig = { property: Property; options: { label: string; value: string }[] };
@@ -19,7 +19,7 @@ export default function Text({ open, onOpenChange, currentObject, handleInputCha
         <Dropdown open={open} onOpenChange={onOpenChange}>
             <Tooltip title="Text">
                 <MenuButton slots={{ root: IconButton }}>
-                    <MdFormatTextdirectionLToR />
+                    <ParagraphIcon />
                 </MenuButton>
             </Tooltip>
             <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ width: 205, display: "grid", gap: 10 }}>

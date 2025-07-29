@@ -1,7 +1,7 @@
 services:
     postgres:
         container_name: clicklio_postgres
-        image: postgres:17-alpine
+        image: postgres:alpine
         ports:
             - 5432:5432
         volumes:
@@ -16,7 +16,7 @@ services:
 
     redis:
         container_name: clicklio_redis
-        image: redis:8.0.3-alpine
+        image: redis:alpine
         ports:
             - 6379:6379
         volumes:

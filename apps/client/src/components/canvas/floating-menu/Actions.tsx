@@ -1,10 +1,9 @@
+import { CopyIcon, DeleteIcon } from "@/components/icons";
 import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ActionsProps } from "@/types";
 import { handleDelete, handleDuplicate } from "@/utils/key-events";
 import { IconButton, Tooltip } from "@mui/joy";
-import { IoDuplicateOutline } from "react-icons/io5";
-import { RiDeleteBin5Line } from "react-icons/ri";
 
 export default function Actions({ fabricRef, currentObject }: ActionsProps) {
     const { createEvent } = useEventStore();
@@ -23,7 +22,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                             }
                         }}
                     >
-                        <IoDuplicateOutline />
+                        <CopyIcon />
                     </IconButton>
                 </Tooltip>
             ) : null}
@@ -42,7 +41,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                         }
                     }}
                 >
-                    <RiDeleteBin5Line />
+                    <DeleteIcon />
                 </IconButton>
             </Tooltip>
         </>

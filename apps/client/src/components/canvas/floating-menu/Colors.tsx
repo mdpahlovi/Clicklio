@@ -1,4 +1,5 @@
 import StrokeWidth from "@/components/canvas/floating-menu/StrokeWidth";
+import { ColorIcon } from "@/components/icons";
 import type { FloatingMenuItemProps } from "@/types";
 import { Box, type BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip, useTheme } from "@mui/joy";
 
@@ -17,13 +18,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
             <Tooltip title={name.charAt(0).toUpperCase() + name.slice(1)}>
                 <MenuButton slots={{ root: IconButton }}>
                     {name === "fill" ? (
-                        <div
-                            style={{
-                                ...iconProps,
-                                borderColor: currentObject ? (currentObject?.fill as string) : undefined,
-                                backgroundColor: currentObject ? (currentObject?.fill as string) : undefined,
-                            }}
-                        />
+                        <ColorIcon color={currentObject?.fill as string} />
                     ) : (
                         <div
                             style={{
