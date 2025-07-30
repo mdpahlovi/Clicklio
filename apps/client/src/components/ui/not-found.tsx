@@ -1,6 +1,5 @@
-import { PlusIcon } from "@/components/icons";
+import { PlusIcon, SearchOffIcon } from "@/components/icons";
 import { Box, Button, Stack, Typography } from "@mui/joy";
-import { BiSearchAlt } from "react-icons/bi";
 
 export default function NotFound({ onClick }: { onClick?: () => void }) {
     return (
@@ -20,7 +19,7 @@ export default function NotFound({ onClick }: { onClick?: () => void }) {
                         borderColor: "neutral.200",
                     }}
                 >
-                    <BiSearchAlt size={48} />
+                    <SearchOffIcon size={48} />
                 </Box>
 
                 <div>

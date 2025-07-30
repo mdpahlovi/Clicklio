@@ -1,6 +1,6 @@
+import { UserEditIcon } from "@/components/icons";
 import { AspectRatio, Avatar, Box, IconButton } from "@mui/joy";
 import { Controller, useFormContext } from "react-hook-form";
-import { LiaUserEditSolid } from "react-icons/lia";
 
 export default function FormImage({ name, disabled }: { name: string; disabled?: boolean }) {
     const { setValue } = useFormContext();
@@ -29,7 +29,7 @@ export default function FormImage({ name, disabled }: { name: string; disabled?:
                                 disabled={disabled}
                             />
                             <IconButton size="sm" sx={{ bgcolor: "background.body", boxShadow: "sm" }}>
-                                <LiaUserEditSolid size={18} style={{ paddingLeft: 2.5 }} />
+                                <UserEditIcon />
                             </IconButton>
                         </Box>
                     ) : null}

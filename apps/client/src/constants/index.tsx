@@ -1,7 +1,9 @@
 import {
+    ArrowToolIcon,
     CircleIcon,
     CursorIcon,
     EraserIcon,
+    HandIcon,
     ImageAddIcon,
     MinusIcon,
     PenIcon,
@@ -12,8 +14,6 @@ import {
 } from "@/components/icons";
 import type { Tool } from "@/types";
 import { Divider } from "@mui/joy";
-import { IoIosBrush, IoMdBrush } from "react-icons/io";
-import { LiaHandPaper, LiaLongArrowAltRightSolid } from "react-icons/lia";
 
 export const navElements: {
     value?: Tool;
@@ -23,7 +23,7 @@ export const navElements: {
     type: "tool" | "divider" | "dropdown";
     children?: { value: Tool; name: string; icon: React.ReactNode }[];
 }[] = [
-    { icon: <LiaHandPaper />, name: "Panning", value: "panning", type: "tool" },
+    { icon: <HandIcon />, name: "Panning", value: "panning", type: "tool" },
     { icon: <CursorIcon />, name: "Select", value: "select", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     {
@@ -36,20 +36,10 @@ export const navElements: {
             { icon: <TriangleIcon />, name: "Triangle", value: "triangle" },
             { icon: <CircleIcon />, name: "Circle", value: "circle" },
             { icon: <MinusIcon />, name: "Line", value: "line" },
-            { icon: <LiaLongArrowAltRightSolid />, name: "Arrow", value: "arrow" },
+            { icon: <ArrowToolIcon />, name: "Arrow", value: "arrow" },
         ],
     },
-    {
-        icon: <PenIcon />,
-        name: "Brushes",
-        values: ["path-1", "path-5", "path-10"],
-        type: "dropdown",
-        children: [
-            { icon: <PenIcon />, name: "Brush S:01", value: "path-1" },
-            { icon: <IoMdBrush />, name: "Brush S:05", value: "path-5" },
-            { icon: <IoIosBrush />, name: "Brush S:10", value: "path-10" },
-        ],
-    },
+    { icon: <PenIcon />, name: "Draw", value: "path", type: "tool" },
     { icon: <TextIcon />, name: "Text", value: "i-text", type: "tool" },
     { icon: <ImageAddIcon />, name: "Image", value: "image", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },

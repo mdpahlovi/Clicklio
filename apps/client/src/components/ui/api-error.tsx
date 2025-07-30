@@ -1,5 +1,5 @@
+import { ErrorIcon, RefreshIcon } from "@/components/icons";
 import { Box, Button, Stack, Typography } from "@mui/joy";
-import { BiErrorCircle, BiRefresh } from "react-icons/bi";
 
 interface RoomErrorProps {
     onRetry?: () => void;
@@ -24,7 +24,7 @@ export default function ApiError({ onRetry }: RoomErrorProps) {
                         borderColor: "danger.200",
                     }}
                 >
-                    <BiErrorCircle size={48} />
+                    <ErrorIcon size={48} />
                 </Box>
 
                 <div>
@@ -41,7 +41,7 @@ export default function ApiError({ onRetry }: RoomErrorProps) {
                     <Button
                         variant="solid"
                         color="danger"
-                        startDecorator={<BiRefresh size={16} />}
+                        startDecorator={<RefreshIcon />}
                         onClick={onRetry}
                         sx={{ mt: 1, transition: "transform 0.15s ease-in-out", "&:hover": { transform: "scale(1.02)" } }}
                     >

@@ -1,7 +1,7 @@
+import { ErrorIcon } from "@/components/icons";
 import { Box, Input, Typography } from "@mui/joy";
 import React, { useId } from "react";
 import { Controller } from "react-hook-form";
-import { MdErrorOutline } from "react-icons/md";
 
 type InputProps = { type?: React.HTMLInputTypeAttribute; name: string; label?: string; disabled?: boolean };
 
@@ -18,7 +18,7 @@ export default function FormInput({ type = "text", name, label, disabled }: Inpu
                     </Typography>
                     <Input id={id} type={type} placeholder={`Enter ${label}`} {...field} error={invalid} disabled={disabled} />
                     {error?.message ? (
-                        <Typography component="p" id={id} startDecorator={<MdErrorOutline />} level="title-sm" color="danger">
+                        <Typography component="p" id={id} startDecorator={<ErrorIcon size={14} />} level="title-sm" color="danger">
                             {error?.message}
                         </Typography>
                     ) : null}

@@ -3,9 +3,9 @@ import { useUserStore } from "@/stores/room/useUserStore";
 import { socket } from "@/utils/socket";
 import { useTheme } from "@mui/joy";
 import { useCallback, useEffect, useRef } from "react";
-import { BsCursor } from "react-icons/bs";
 import { useSearchParams } from "react-router-dom";
 import { useThrottledCallback } from "use-debounce";
+import { CursorIcon } from "../icons";
 
 export default function RemoteCursor() {
     const { palette } = useTheme();
@@ -81,7 +81,7 @@ export default function RemoteCursor() {
                     pointerEvents: "none",
                 }}
             >
-                <BsCursor style={{ transform: "rotate(-90deg)" }} />
+                <CursorIcon />
                 {user?.name && (
                     <div
                         style={{

@@ -42,24 +42,10 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     canvas.selection = true;
                     break;
 
-                case "path-1":
+                case "path":
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                    canvas.freeDrawingBrush.width = 1;
-                    canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
-                    break;
-
-                case "path-5":
-                    canvas.isDrawingMode = true;
-                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                    canvas.freeDrawingBrush.width = 5;
-                    canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
-                    break;
-
-                case "path-10":
-                    canvas.isDrawingMode = true;
-                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                    canvas.freeDrawingBrush.width = 10;
+                    canvas.freeDrawingBrush.width = 3;
                     canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
                     break;
 

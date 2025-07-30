@@ -1,13 +1,11 @@
 import { Form, FormInput } from "@/components/form";
+import { GoogleIcon } from "@/components/icons";
 import AuthLayout from "@/layout/auth";
-import { useAuthState } from "@/stores/auth/useAuthStore";
+import { useAuthState, type Credentials } from "@/stores/auth/useAuthStore";
 import { Button, Checkbox, Divider, Link, Stack, Typography } from "@mui/joy";
 import { useEffect } from "react";
-import { RiGoogleLine } from "react-icons/ri";
 import { Link as RLink, useNavigate } from "react-router-dom";
 import * as yup from "yup";
-
-import { type Credentials } from "@/stores/auth/useAuthStore";
 
 const signinSchema = yup.object().shape({
     email: yup.string().required("Please provide your email.").email("Please provide a valid email."),
@@ -40,7 +38,7 @@ export default function JoySignInSideTemplate() {
                     </Link>
                 </Typography>
             </Stack>
-            <Button variant="soft" color="neutral" startDecorator={<RiGoogleLine />} onClick={oAuthSignin} loading={oAuthSigninLoading}>
+            <Button variant="soft" color="neutral" startDecorator={<GoogleIcon />} onClick={oAuthSignin} loading={oAuthSigninLoading}>
                 Continue with Google
             </Button>
             <Divider sx={{ mt: 2, mb: 1 }}>OR</Divider>
