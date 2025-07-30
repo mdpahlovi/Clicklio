@@ -69,10 +69,6 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
 
         // Emit event to server
         if (socket.connected && room) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            if (event?.data !== null) event.data = JSON.stringify(event.data);
-
             socket.emit("create:event", { room, event });
         }
     }

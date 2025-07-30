@@ -12,17 +12,15 @@ import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-type JoinRoomResponse = { users: Record<string, RoomUser>; events: Record<string, ShapeEvent> };
+type JoinRoomResponse = { users: Record<string, string>; events: Record<string, string> };
 
 export default function HomePage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-    const room = searchParams.get("room");
-
-    const { refresh, setRefresh } = useCanvasState();
-    const { shapes, createEvent } = useEventStore();
+    const { room, refresh, setRefresh } = useCanvasState();
+    const { shapes, createEvent, resetEvent } = useEventStore();
     const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
     const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser } = useUserStore();
 
@@ -30,11 +28,11 @@ export default function HomePage() {
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        if (room) {
+        if (searchParams.get("room")) {
             if (socket.connected) {
                 let user = currUser;
-                if (!user) user = createCurrUser(room, "USER");
-                socket.emit("join:room", { room: room, user, events: [] });
+                if (!user) user = createCurrUser(searchParams.get("room")!, "USER");
+                socket.emit("join:room", { room: searchParams.get("room")!, user, events: [] });
             } else {
                 searchParams.delete("room");
                 setSearchParams(searchParams);
@@ -45,14 +43,8 @@ export default function HomePage() {
 
         // Room user events
         socket.on("join:room", ({ users, events }: JoinRoomResponse) => {
-            Object.entries(users).forEach(([key, value]) => createUser(key, value));
-            Object.values(events).forEach((event) => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                if (event?.data !== null) event.data = JSON.parse(event?.data);
-
-                createEvent(event);
-            });
+            Object.entries(users).forEach(([key, value]) => createUser(key, JSON.parse(value)));
+            Object.values(events).forEach((event) => createEvent(JSON.parse(event)));
 
             setRefresh();
         });
@@ -67,11 +59,13 @@ export default function HomePage() {
         });
 
         return () => {
+            socket.emit("leave:room", { room });
             socket.off("join:room");
             socket.off("create:user");
             socket.off("update:user");
             socket.off("delete:user");
             socket.off("create:event");
+            resetEvent();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

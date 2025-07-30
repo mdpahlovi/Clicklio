@@ -15,8 +15,9 @@ export class CanvasGateway {
         if (!data.room) return;
 
         const { room, event } = data;
-        await this.redisService.client.sadd(`room:${room}:events`, event?.id as string);
-        await this.redisService.client.hset(`room:${room}:event:${event?.id as string}`, event);
+        await this.redisService.client.hset(`room:${room}:events`, event?.id as string, JSON.stringify(event));
+        await this.redisService.client.rpush(`room:${room}:events_sorted`, event?.id as string);
+        await this.redisService.client.sadd(`room:${room}:events_pending`, event?.id as string);
 
         client.to(data.room).emit("create:event", { event });
     }

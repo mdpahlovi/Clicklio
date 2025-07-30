@@ -82,56 +82,34 @@ export class RoomService {
         };
     }
 
-    async getOneRoom(id: string) {
+    async getOneRoom(id: string, user: User) {
         const room = await this.roomRepository.findOne({
             where: { id },
-            relations: ["ownerInfo", "roomUsers", "roomUsers.userInfo"],
-            select: {
-                id: true,
-                name: true,
-                photo: true,
-                description: true,
-                ownerInfo: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    photo: true,
-                },
-                roomUsers: {
-                    role: true,
-                    userInfo: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        photo: true,
-                    },
-                },
-                createdAt: true,
-            },
+            select: { id: true, name: true, photo: true, description: true, createdAt: true },
         });
 
         if (!room) {
             throw new NotFoundException("Room not found");
         }
 
+        const currUser = await this.roomUserRepository.findOne({
+            where: { roomId: id, userId: user.id },
+            relations: { userInfo: true },
+            select: { id: true, userInfo: { name: true }, role: true, roomId: true, joinAt: true },
+        });
+
         const events = await this.shapeEventRepository.find({
             where: { roomId: id },
             order: { firedAt: "DESC" },
-            select: {
-                id: true,
-                type: true,
-                userId: true,
-                shapeId: true,
-                eventId: true,
-                data: true,
-                firedAt: true,
-            },
+            select: { id: true, type: true, userId: true, shapeId: true, eventId: true, data: true, firedAt: true },
         });
+
+        const { userInfo, ...restData } = currUser!;
 
         return {
             status: 200,
             message: "Room fetched successfully",
-            data: { room, events },
+            data: { room, currUser: { name: userInfo.name, ...restData }, events },
         };
     }
 }

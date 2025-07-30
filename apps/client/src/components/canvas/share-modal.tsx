@@ -32,7 +32,7 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                     <Input
                         placeholder="Type Your Name!..."
                         sx={{ mt: 1.75, mb: 1.5 }}
-                        value={currUser?.name}
+                        defaultValue={currUser?.name}
                         onChange={(e) => debounceUpdate({ ...currUser, name: e.target.value })}
                         onKeyDown={(e) => e.stopPropagation()}
                     />

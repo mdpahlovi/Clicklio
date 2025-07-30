@@ -19,7 +19,7 @@ export class RoomController {
     }
 
     @Get(":id")
-    async getOneRoom(@Param("id") id: string) {
-        return await this.roomService.getOneRoom(id);
+    async getOneRoom(@Param("id") id: string, @CurrentUser() user: User) {
+        return await this.roomService.getOneRoom(id, user);
     }
 }

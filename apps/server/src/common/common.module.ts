@@ -2,6 +2,8 @@ import { Global, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { ShapeEvent } from "../models/room.entity";
+import { CronService } from "./service/cron.service";
 import { HashService } from "./service/hash.service";
 import { RedisService } from "./service/redis.service";
 
@@ -22,6 +24,7 @@ import { RedisService } from "./service/redis.service";
             }),
             inject: [ConfigService],
         }),
+        TypeOrmModule.forFeature([ShapeEvent]),
         JwtModule.registerAsync({
             global: true,
             useFactory: (configService: ConfigService) => ({
@@ -30,7 +33,7 @@ import { RedisService } from "./service/redis.service";
             inject: [ConfigService],
         }),
     ],
-    providers: [RedisService, HashService],
+    providers: [RedisService, CronService, HashService],
     exports: [RedisService, HashService],
 })
 export class CommonModule {}

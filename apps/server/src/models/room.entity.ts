@@ -88,7 +88,7 @@ export class RoomUser {
     role: RoomUserRole;
 
     @CreateDateColumn({ name: "joined_at", type: "timestamp" })
-    joinedAt: Date;
+    joinAt: Date;
 }
 
 @Entity("shape_events")
