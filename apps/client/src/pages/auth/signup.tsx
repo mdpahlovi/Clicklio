@@ -1,7 +1,7 @@
 import { Form, FormInput } from "@/components/form";
 import AuthLayout from "@/layout/auth";
 import { useAuthState } from "@/stores/auth/useAuthStore";
-import { Button, Checkbox, Link, Stack, Typography } from "@mui/joy";
+import { Button, Link, Stack, Typography } from "@mui/joy";
 import { useEffect } from "react";
 import { Link as RLink, useNavigate } from "react-router-dom";
 import * as yup from "yup";
