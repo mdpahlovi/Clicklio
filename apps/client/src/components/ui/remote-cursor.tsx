@@ -63,6 +63,7 @@ export default function RemoteCursor() {
     useEffect(() => {
         return () => {
             timersRef.current.forEach((timer) => clearTimeout(timer));
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             timersRef.current.clear();
         };
     }, []);
@@ -80,7 +81,13 @@ export default function RemoteCursor() {
                     pointerEvents: "none",
                 }}
             >
-                <Box style={{ width: "max-content", rotate: "-7.5deg" }}>
+                <Box
+                    style={{
+                        width: "max-content",
+                        color: "white",
+                        rotate: "-7.5deg",
+                    }}
+                >
                     <CursorIcon />
                 </Box>
                 {user?.name && (

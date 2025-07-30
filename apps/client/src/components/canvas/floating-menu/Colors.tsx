@@ -21,7 +21,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                                 width: 14,
                                 height: 14,
                                 borderRadius: 9999,
-                                border: `2px solid ${currentObject?.stroke || "black"}`,
+                                border: `2px solid ${currentObject?.stroke || "white"}`,
                             }}
                         />
                     )}
