@@ -1,14 +1,13 @@
 import { usePointerStore, type Pointer } from "@/stores/room/usePointerStore";
 import { useUserStore } from "@/stores/room/useUserStore";
 import { socket } from "@/utils/socket";
-import { useTheme } from "@mui/joy";
+import { Box, Sheet, Typography } from "@mui/joy";
 import { useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useThrottledCallback } from "use-debounce";
 import { CursorIcon } from "../icons";
 
 export default function RemoteCursor() {
-    const { palette } = useTheme();
     const { roomUser } = useUserStore();
     const { pointers, setPointer, deletePointer } = usePointerStore();
 
@@ -81,29 +80,13 @@ export default function RemoteCursor() {
                     pointerEvents: "none",
                 }}
             >
-                <CursorIcon />
+                <Box style={{ width: "max-content", rotate: "-7.5deg" }}>
+                    <CursorIcon />
+                </Box>
                 {user?.name && (
-                    <div
-                        style={{
-                            borderRadius: 9999,
-                            margin: "-10px 10px",
-                            padding: "1px 8px 0",
-                            background: palette.background.body,
-                            border: `1px solid ${palette.divider}`,
-                        }}
-                    >
-                        <p
-                            style={{
-                                color: palette.text.primary,
-                                fontSize: 14,
-                                fontFamily: "Poppins",
-                                whiteSpace: "nowrap",
-                                margin: 0,
-                            }}
-                        >
-                            {user.name}
-                        </p>
-                    </div>
+                    <Sheet sx={{ borderRadius: 9999, margin: "-10px 10px", padding: "1px 8px 0" }}>
+                        <Typography level="title-sm">{user.name}</Typography>
+                    </Sheet>
                 )}
             </div>
         );

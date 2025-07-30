@@ -16,11 +16,9 @@ import {
 
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Pointer, Tool } from "@/types";
-import { useColorScheme } from "@mui/joy";
 
 export function useCanvas() {
     const { createEvent } = useEventStore();
-    const { mode, setMode } = useColorScheme();
     const { setTool, setZoom, setCurrentObject } = useCanvasState();
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -34,40 +32,11 @@ export function useCanvas() {
     const deleteObjectRef = useRef<fabric.FabricObject[]>([]);
     const copiedObjectRef = useRef<fabric.FabricObject | null>(null);
 
-    const baseColorRef = useRef<string | null>(null);
-
-    useEffect(() => {
-        switch (mode) {
-            case "light":
-                baseColorRef.current = "#000000";
-                break;
-            case "dark":
-                baseColorRef.current = "#FFFFFF";
-                break;
-        }
-
-        if (fabricRef.current)
-            fabricRef.current.forEachObject((object) => {
-                switch (mode) {
-                    case "light":
-                        if (object.fill === "#FFFFFF") object.set({ fill: "#000000" });
-                        if (object.stroke === "#FFFFFF") object.set({ stroke: "#000000" });
-                        break;
-                    case "dark":
-                        if (object.fill === "#000000") object.set({ fill: "#FFFFFF" });
-                        if (object.stroke === "#000000") object.set({ stroke: "#FFFFFF" });
-                        break;
-                }
-            });
-
-        fabricRef.current?.requestRenderAll();
-    }, [mode]);
-
     useEffect(() => {
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
         canvas.on("mouse:down", (options) => {
-            handleCanvasMouseDown({ options, canvas, isPanning, shapeRef, selectedToolRef, baseColorRef });
+            handleCanvasMouseDown({ options, canvas, isPanning, shapeRef, selectedToolRef });
         });
 
         canvas.on("mouse:move", (options) => {
@@ -104,16 +73,14 @@ export function useCanvas() {
 
         window.addEventListener("resize", () => handleResize({ canvas }));
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
-        window.addEventListener("keydown", (e) =>
-            handleKeyDown({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom, setMode }),
-        );
+        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom }));
 
         return () => {
             canvas.dispose();
             window.removeEventListener("resize", () => handleResize({ canvas: null }));
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
-                handleKeyDown({ e, canvas: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom, setMode }),
+                handleKeyDown({ e, canvas: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
             );
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps

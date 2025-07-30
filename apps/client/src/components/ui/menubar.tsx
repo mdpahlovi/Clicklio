@@ -1,8 +1,8 @@
 import { DeleteIcon, DownloadIcon, HelpIcon, ImageDownloadIcon, MenuIcon, UploadIcon } from "@/components/icons";
+import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useEventStore } from "@/stores/canvas/useEventStore";
 import { Dropdown, IconButton, ListDivider, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { Fragment } from "react";
-import { useCanvasState } from "../../hooks/zustand/useCanvasState";
-import { useEventStore } from "../../stores/canvas/useEventStore";
 
 type ManubarProps = {
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -55,10 +55,8 @@ export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps
 
     return (
         <Dropdown>
-            <MenuButton sx={{ p: 0, border: "none" }}>
-                <IconButton>
-                    <MenuIcon />
-                </IconButton>
+            <MenuButton component={IconButton} sx={{ p: 0, border: "none" }}>
+                <MenuIcon />
             </MenuButton>
             <Menu placement="bottom-start" sx={{ zIndex: 99 }}>
                 {manuItems.map((item, idx) => (

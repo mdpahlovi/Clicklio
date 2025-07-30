@@ -1,11 +1,10 @@
 import type { Room } from "@/types/room";
-import { Avatar, AvatarGroup, Box, Card, CardContent, Stack, Typography, useTheme } from "@mui/joy";
+import { Avatar, AvatarGroup, Box, Card, CardContent, Stack, Typography } from "@mui/joy";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function RoomCard({ room }: { room: Room }) {
     const navigate = useNavigate();
-    const { palette } = useTheme();
     const [isHovered, setIsHovered] = useState(false);
 
     const formatDate = (dateString: string) => {
@@ -34,13 +33,13 @@ export default function RoomCard({ room }: { room: Room }) {
         >
             {/* Room Image/Thumbnail */}
             <Box
-                style={{
+                sx={({ palette: { mode, background } }) => ({
                     aspectRatio: "16/9",
-                    backgroundColor: palette.background.body,
+                    backgroundColor: background.body,
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='8' height='8' fill='none'%3e%3ccircle fill='${
-                        palette.mode === "light" ? "rgb(0 0 0 / 0.25)" : "rgb(255 255 255 / 0.25)"
+                        mode === "light" ? "rgb(0 0 0 / 0.25)" : "rgb(255 255 255 / 0.25)"
                     }' cx='10' cy='10' r='1.6257413380501518'%3e%3c/circle%3e%3c/svg%3e"`,
-                }}
+                })}
             >
                 {room?.photo ? (
                     <img
@@ -87,13 +86,13 @@ export default function RoomCard({ room }: { room: Room }) {
 
             {/* Hover Overlay */}
             <Box
-                sx={{
+                sx={({ palette: { mode } }) => ({
                     position: "absolute",
                     inset: 0,
-                    background: palette.mode === "light" ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)",
+                    background: mode === "light" ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)",
                     opacity: isHovered ? 1 : 0,
                     transition: "opacity 0.3s ease-in-out",
-                }}
+                })}
             />
 
             {/* Slide-in Action Button */}
@@ -107,7 +106,7 @@ export default function RoomCard({ room }: { room: Room }) {
                 }}
             >
                 <Box
-                    sx={{
+                    sx={({ palette: { primary } }) => ({
                         width: 32,
                         height: 32,
                         border: "1px solid",
@@ -116,16 +115,10 @@ export default function RoomCard({ room }: { room: Room }) {
                         justifyContent: "center",
                         alignItems: "center",
                         borderRadius: 16,
-                    }}
+                        color: primary.plainColor,
+                    })}
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color={palette.primary.plainColor}
-                        fill="none"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
                         <path
                             d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18"
                             stroke="currentColor"

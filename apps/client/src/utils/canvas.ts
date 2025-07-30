@@ -37,7 +37,7 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 };
 
 // instantiate creation of custom fabric object/shape and add it to canvas
-export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedToolRef, shapeRef, baseColorRef }: CanvasMouseDown) => {
+export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedToolRef, shapeRef }: CanvasMouseDown) => {
     // if canvas is in DrawingMode, return
     if (canvas.isDrawingMode) return;
     // if selectedTool is select or image, return
@@ -50,7 +50,7 @@ export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedTool
     if (selectedToolRef.current === "panning") return (isPanning.current = pointer);
 
     // create custom fabric object/shape and add it to canvas
-    shapeRef.current = createSpecificShape(selectedToolRef.current, pointer, baseColorRef);
+    shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
     if (shapeRef.current) canvas.add(shapeRef.current);
 };
 

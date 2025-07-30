@@ -78,9 +78,7 @@ export const fontWeightOptions = [
     { value: "700", label: "Bold" },
 ];
 
-type Mode = "light" | "dark" | "system";
-
-export const circle = (mode: Mode | undefined) =>
+export const circle = (mode: "light" | "dark") =>
     `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='20' height='20' color='${
         mode === "light" ? "black" : "white"
     }' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='currentColor' stroke-width='1.5' stroke-linejoin='round' /%3E%3C/svg%3E"), auto`;

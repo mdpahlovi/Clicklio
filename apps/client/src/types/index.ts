@@ -14,20 +14,7 @@ export type Attributes = {
     opacity: string;
 };
 
-export type Tool =
-    | "panning"
-    | "select"
-    | "rect"
-    | "triangle"
-    | "circle"
-    | "line"
-    | "arrow"
-    | "path"
-    | "i-text"
-    | "image"
-    | "video"
-    | "document"
-    | "eraser";
+export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "arrow" | "path" | "i-text" | "image" | "eraser";
 
 export type CanvasProps = {
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -94,7 +81,6 @@ export type CanvasMouseDown = {
     selectedToolRef: React.RefObject<Tool | null>;
     isPanning: React.RefObject<Pointer | null>;
     shapeRef: React.RefObject<fabric.FabricObject | null>;
-    baseColorRef: React.RefObject<string | null>;
 };
 
 export type CanvasMouseMove = {
@@ -145,7 +131,6 @@ export type WindowKeyDown = {
     createEvent: (event: ShapeEvent) => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
-    setMode: (mode: "light" | "dark" | null) => void;
 };
 
 export type StoreCreateEvent = {

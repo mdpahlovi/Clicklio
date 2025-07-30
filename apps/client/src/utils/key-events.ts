@@ -134,9 +134,8 @@ export const handleDelete = (canvas: fabric.Canvas, createEvent: (event: ShapeEv
 };
 
 // create a handleKeyDown function that listen to different keydown events
-export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom, setMode }: WindowKeyDown) => {
+export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom }: WindowKeyDown) => {
     const zoom = canvas?.getZoom();
-    const light = localStorage.getItem("joy-mode") === "light";
 
     if (isEditing.current) return;
 
@@ -156,7 +155,7 @@ export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEve
     // Check if key pressed is Shift + L (Arrow Tool)
     if (e.shiftKey && e.keyCode === 76) setTool("arrow");
     // Check if key pressed is P (Pencil Tool)
-    if (e.keyCode === 80) setTool("path-5");
+    if (e.keyCode === 80) setTool("path");
     // Check if key pressed is A (Text Tool)
     if (e.keyCode === 65) setTool("i-text");
     // Check if key pressed is I (Image Tool)
@@ -186,10 +185,6 @@ export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEve
         e.preventDefault();
         setZoom(2);
         canvas.setZoom(2);
-    }
-    // Check if the key pressed is ctrl + alt + D (Toggle Dark Mode)
-    if (canvas && e?.ctrlKey && e?.altKey && e.keyCode === 68) {
-        setMode(light ? "dark" : "light");
     }
 
     // Editor Controls

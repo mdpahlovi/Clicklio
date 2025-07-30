@@ -6,7 +6,7 @@ import themes from "./themes";
 
 export default function App() {
     return (
-        <CssVarsProvider theme={themes}>
+        <CssVarsProvider defaultMode="dark" theme={themes}>
             <ToastProvider />
             <RouterProvider router={router} />
         </CssVarsProvider>

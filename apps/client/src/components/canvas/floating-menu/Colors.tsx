@@ -1,7 +1,7 @@
 import StrokeWidth from "@/components/canvas/floating-menu/StrokeWidth";
 import { ColorIcon } from "@/components/icons";
 import type { FloatingMenuItemProps } from "@/types";
-import { Box, type BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip, useTheme } from "@mui/joy";
+import { Box, type BoxProps, Divider, Dropdown, IconButton, Menu, MenuButton, Tooltip } from "@mui/joy";
 
 type ColorProps = { name: "fill" | "stroke" } & FloatingMenuItemProps;
 
@@ -9,10 +9,6 @@ const backgroundImage =
     "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==')";
 
 export default function Colors({ name, open, onOpenChange, currentObject, handleInputChange }: ColorProps) {
-    const { palette } = useTheme();
-    const iconProps: React.CSSProperties = { width: 14, height: 14, borderRadius: 9999, border: "2px solid" };
-    const baseColor = palette.mode === "light" ? "#000000" : "#FFFFFF";
-
     return (
         <Dropdown open={open} onOpenChange={onOpenChange}>
             <Tooltip title={name.charAt(0).toUpperCase() + name.slice(1)}>
@@ -20,11 +16,12 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                     {name === "fill" ? (
                         <ColorIcon color={currentObject?.fill as string} />
                     ) : (
-                        <div
+                        <Box
                             style={{
-                                ...iconProps,
-                                backgroundColor: palette.background.body,
-                                borderColor: currentObject ? (currentObject?.stroke as string) : undefined,
+                                width: 14,
+                                height: 14,
+                                borderRadius: 9999,
+                                border: `2px solid ${currentObject?.stroke || "black"}`,
                             }}
                         />
                     )}
@@ -39,7 +36,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                         style={{ backgroundColor: "white", backgroundImage }}
                     />
                     <Divider orientation="vertical" />
-                    {[baseColor, "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080", "#00FFFF"].map((color) => (
+                    {["#FFFFFF", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080", "#00FFFF"].map((color) => (
                         <ColorBox
                             key={color}
                             style={{ backgroundColor: color }}
@@ -54,20 +51,17 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
 }
 
 function ColorBox({ active, ...props }: { active: boolean } & BoxProps) {
-    const { palette } = useTheme();
-    const baseColor = palette.mode === "light" ? "#000000" : "#FFFFFF";
-
     return (
         <Box
-            sx={({ palette }) => ({
+            sx={({ palette: { background, divider } }) => ({
                 width: 28,
                 height: 28,
                 cursor: "pointer",
                 borderRadius: 6,
                 outlineOffset: 2.5,
                 outline: 1,
-                outlineColor: active ? baseColor : "transparent",
-                ":hover": { outlineColor: active ? baseColor : palette.divider },
+                outlineColor: active ? background.body : "transparent",
+                ":hover": { outlineColor: active ? background.body : divider },
             })}
             {...props}
         />

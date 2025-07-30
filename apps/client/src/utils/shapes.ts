@@ -4,59 +4,59 @@ import { v4 as uuid } from "uuid";
 import { Arrow } from "./arrow";
 import { handleCreateEvent } from "./event";
 
-export const createRectangle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+export const createRectangle = (pointer: Pointer, baseColor: string) => {
     return new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
         width: 0,
         height: 0,
-        fill: baseColorRef.current,
+        fill: baseColor,
         uid: uuid(),
     });
 };
 
-export const createTriangle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+export const createTriangle = (pointer: Pointer, baseColor: string) => {
     return new fabric.Triangle({
         left: pointer.x,
         top: pointer.y,
         width: 0,
         height: 0,
-        fill: baseColorRef.current,
+        fill: baseColor,
         uid: uuid(),
     });
 };
 
-export const createCircle = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+export const createCircle = (pointer: Pointer, baseColor: string) => {
     return new fabric.Circle({
         left: pointer.x,
         top: pointer.y,
         radius: 0,
-        fill: baseColorRef.current,
+        fill: baseColor,
         uid: uuid(),
     });
 };
 
-export const createLine = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+export const createLine = (pointer: Pointer, baseColor: string) => {
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
-        stroke: baseColorRef.current,
+        stroke: baseColor,
         strokeWidth: 2,
         uid: uuid(),
     });
 };
 
-export const createArrow = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+export const createArrow = (pointer: Pointer, baseColor: string) => {
     return new Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
-        stroke: baseColorRef.current,
+        stroke: baseColor,
         strokeWidth: 2,
         uid: uuid(),
     });
 };
 
-export const createText = (pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+export const createText = (pointer: Pointer, baseColor: string) => {
     return new fabric.IText("Tap To Type", {
         left: pointer.x,
         top: pointer.y,
-        fill: baseColorRef.current,
+        fill: baseColor,
         fontFamily: "Poppins",
         fontSize: 16,
         fontWeight: "400",
@@ -64,25 +64,27 @@ export const createText = (pointer: Pointer, baseColorRef: React.RefObject<strin
     });
 };
 
-export const createSpecificShape = (shape: Tool | null, pointer: Pointer, baseColorRef: React.RefObject<string | null>) => {
+export const createSpecificShape = (shape: Tool | null, pointer: Pointer) => {
+    const baseColor = "#FFFFFF";
+
     switch (shape) {
         case "rect":
-            return createRectangle(pointer, baseColorRef);
+            return createRectangle(pointer, baseColor);
 
         case "triangle":
-            return createTriangle(pointer, baseColorRef);
+            return createTriangle(pointer, baseColor);
 
         case "circle":
-            return createCircle(pointer, baseColorRef);
+            return createCircle(pointer, baseColor);
 
         case "line":
-            return createLine(pointer, baseColorRef);
+            return createLine(pointer, baseColor);
 
         case "arrow":
-            return createArrow(pointer, baseColorRef);
+            return createArrow(pointer, baseColor);
 
         case "i-text":
-            return createText(pointer, baseColorRef);
+            return createText(pointer, baseColor);
 
         default:
             return null;

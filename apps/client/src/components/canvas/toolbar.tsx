@@ -3,17 +3,14 @@ import { useCanvasState } from "@/hooks/zustand/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ToolbarProps } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";
-import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, styled, Tooltip, useColorScheme } from "@mui/joy";
+import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, styled, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { Fragment, useEffect, useRef } from "react";
 
 export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
-    const { mode } = useColorScheme();
     const { createEvent } = useEventStore();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
-    const videoInputRef = useRef<HTMLInputElement | null>(null);
-    const documentInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         const canvas = fabricRef.current;
@@ -46,7 +43,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                     canvas.freeDrawingBrush.width = 3;
-                    canvas.freeDrawingBrush.color = mode === "light" ? "#000000" : "#FFFFFF";
+                    canvas.freeDrawingBrush.color = "#FFFFFF";
                     break;
 
                 case "image":
@@ -54,19 +51,9 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     setTimeout(() => setTool("select"), 500);
                     break;
 
-                case "video":
-                    videoInputRef.current?.click();
-                    setTimeout(() => setTool("select"), 500);
-                    break;
-
-                case "document":
-                    documentInputRef.current?.click();
-                    setTimeout(() => setTool("select"), 500);
-                    break;
-
                 case "eraser":
-                    canvas.defaultCursor = circle(mode);
-                    canvas.hoverCursor = circle(mode);
+                    canvas.defaultCursor = circle("dark");
+                    canvas.hoverCursor = circle("dark");
                     break;
 
                 default:
@@ -75,7 +62,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tool, mode]);
+    }, [tool]);
 
     return (
         <ToolbarSheet>
