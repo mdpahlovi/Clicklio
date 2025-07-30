@@ -2,7 +2,7 @@ import { Form, FormInput } from "@/components/form";
 import { GoogleIcon } from "@/components/icons";
 import AuthLayout from "@/layout/auth";
 import { useAuthState, type Credentials } from "@/stores/auth/useAuthStore";
-import { Button, Checkbox, Divider, Link, Stack, Typography } from "@mui/joy";
+import { Button, Divider, Link, Stack, Typography } from "@mui/joy";
 import { useEffect } from "react";
 import { Link as RLink, useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -51,7 +51,7 @@ export default function JoySignInSideTemplate() {
                 <FormInput type="password" name="password" label="Password" />
                 <Stack gap={3.5} sx={{ mt: 2 }}>
                     <Stack direction="row" justifyContent="space-between">
-                        <Checkbox size="sm" label="Remember me" name="persistent" />
+                        <div />
                         <Link component={RLink} level="title-sm" to="/signin">
                             Forgot your password?
                         </Link>

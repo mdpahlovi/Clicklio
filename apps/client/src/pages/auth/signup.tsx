@@ -54,7 +54,6 @@ export default function SignupPage() {
                 <FormInput type="password" name="password" label="Password" />
                 <FormInput type="password" name="c_password" label="Confirm Password" />
                 <Stack gap={4} sx={{ mt: 2 }}>
-                    <Checkbox size="sm" label="Remember me" name="persistent" />
                     <Button type="submit" loading={signupLoading} fullWidth>
                         Sign up
                     </Button>

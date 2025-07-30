@@ -10,9 +10,9 @@ export default function AuthLayout({ children }: React.PropsWithChildren) {
                     <Link to="/">
                         <Logo sx={{ p: 2 }} />
                     </Link>
-                    <Box sx={{ width: "100%", maxWidth: 400, pt: 2, pb: 5, mx: "auto" }}>
-                        <Box sx={{ px: 2, display: "flex", flexDirection: "column", gap: 2 }}>{children}</Box>
-                    </Box>
+                    <Stack sx={{ flex: 1, width: "100%", maxWidth: 400, mx: "auto", p: 2, justifyContent: "center", gap: 2 }}>
+                        {children}
+                    </Stack>
                     <Box sx={{ py: 3 }}>
                         <Typography level="body-xs" textAlign="center">
                             © {new Date().getFullYear()} Clicklio. All Rights Reserved.
