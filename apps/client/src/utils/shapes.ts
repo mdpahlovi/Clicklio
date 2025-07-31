@@ -38,6 +38,7 @@ export const createCircle = (pointer: Pointer, baseColor: string) => {
 
 export const createLine = (pointer: Pointer, baseColor: string) => {
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
+        fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
         uid: uuid(),
@@ -46,6 +47,7 @@ export const createLine = (pointer: Pointer, baseColor: string) => {
 
 export const createArrow = (pointer: Pointer, baseColor: string) => {
     return new Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
+        fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
         uid: uuid(),

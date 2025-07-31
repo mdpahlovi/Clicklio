@@ -3,7 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Room, RoomUser, RoomUserRole, ShapeEvent } from "src/models/room.entity";
 import { User } from "src/models/user.entity";
 import { DeepPartial, FindOptionsWhere, In, Repository } from "typeorm";
-import { CreateRoomDto } from "./room.dto";
+import { RedisService } from "../../common/service/redis.service";
+import { CreateRoomDto, UpdateRoomDto } from "./room.dto";
 
 @Injectable()
 export class RoomService {
@@ -14,6 +15,7 @@ export class RoomService {
         private readonly roomUserRepository: Repository<RoomUser>,
         @InjectRepository(ShapeEvent)
         private readonly shapeEventRepository: Repository<ShapeEvent>,
+        private readonly redisService: RedisService,
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto, user: User) {
@@ -92,24 +94,71 @@ export class RoomService {
             throw new NotFoundException("Room not found");
         }
 
-        const currUser = await this.roomUserRepository.findOne({
-            where: { roomId: id, userId: user.id },
-            relations: { userInfo: true },
-            select: { id: true, userInfo: { name: true }, role: true, roomId: true, joinAt: true },
-        });
+        // get current user data
+        const currUser = await this.roomUserRepository
+            .findOne({
+                where: { roomId: id, userId: user.id },
+                relations: { userInfo: true },
+                select: { id: true, userInfo: { name: true }, role: true, roomId: true, joinAt: true },
+            })
+            .then((user) => {
+                if (!user) throw new NotFoundException("Room user not found");
 
-        const events = await this.shapeEventRepository.find({
-            where: { roomId: id },
-            order: { firedAt: "DESC" },
-            select: { id: true, type: true, userId: true, shapeId: true, eventId: true, data: true, firedAt: true },
-        });
+                const { userInfo, ...restData } = user;
+                return { name: userInfo.name, ...restData };
+            });
 
-        const { userInfo, ...restData } = currUser!;
+        await this.redisService.client.hset(`room:${id}:users`, user.id, JSON.stringify(user));
+        const roomUser = await this.redisService.client.hgetall(`room:${id}:users`);
+        const eventStr = await this.redisService.client.lrange(`room:${id}:events_pvt`, 0, -1);
 
+        let events: ShapeEvent[] = [];
+        if (eventStr.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return
+            events = eventStr.map((event) => JSON.parse(event));
+        } else {
+            events = await this.shapeEventRepository.find({
+                where: { roomId: id },
+                order: { firedAt: "ASC" },
+                select: { id: true, type: true, userId: true, shapeId: true, eventId: true, data: true, firedAt: true },
+            });
+
+            await this.redisService.client.rpush(`room:${id}:events_pvt`, ...events.map((event) => JSON.stringify(event)));
+        }
+
+        delete roomUser[user.id];
         return {
             status: 200,
             message: "Room fetched successfully",
-            data: { room, currUser: { name: userInfo.name, ...restData }, events },
+            data: { room, currUser, roomUser, events },
+        };
+    }
+
+    async updateRoom(id: string, updateRoomDto: UpdateRoomDto) {
+        const room = await this.roomRepository.findOne({ where: { id } });
+
+        if (!room) {
+            throw new NotFoundException("Room not found");
+        }
+
+        await this.roomRepository.update(id, { photo: updateRoomDto.photo });
+        const events: DeepPartial<ShapeEvent>[] = updateRoomDto.events.map((event) => ({
+            id: event.id,
+            roomId: id,
+            userId: event.userId,
+            type: event.type,
+            shapeId: event.shapeId,
+            eventId: event.eventId,
+            data: event.data,
+            firedAt: event.firedAt,
+        }));
+
+        await this.shapeEventRepository.save(events);
+
+        return {
+            status: 200,
+            message: "Room updated successfully",
+            data: updateRoomDto.events.map((event) => event.id),
         };
     }
 }

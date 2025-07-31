@@ -5,28 +5,32 @@ import { create } from "zustand";
 interface EventStore {
     events: ShapeEvent[];
     shapes: Map<string, Record<string, unknown>>;
+    unPersistEvent: ShapeEvent[];
 
     userUndoStacks: Map<string, string[]>;
     userRedoStacks: Map<string, string[]>;
 
     lastProcessedEventCount: number;
     cachedUndoneEvents: Set<string>;
-    createEvent: (event: ShapeEvent) => void;
+    createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
     canUndo: () => boolean;
     canRedo: () => boolean;
 
     resetEvent: () => void;
+
+    onPersistEvent: (events: string[]) => void;
 }
 
 export const useEventStore = create<EventStore>((set, get) => ({
     events: [],
     shapes: new Map(),
+    unPersistEvent: [],
     userUndoStacks: new Map(),
     userRedoStacks: new Map(),
     lastProcessedEventCount: 0,
     cachedUndoneEvents: new Set(),
 
-    createEvent: (event: ShapeEvent) => {
+    createEvent: (event: ShapeEvent, isPrivate: boolean) => {
         const state = get();
         const newEvents = [...state.events, event];
 
@@ -112,6 +116,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
         set({
             events: newEvents,
             shapes: newShapes,
+            ...(isPrivate ? { unPersistEvent: [...state.unPersistEvent, event] } : {}),
             userUndoStacks: newUserUndoStacks,
             userRedoStacks: newUserRedoStacks,
             lastProcessedEventCount: newEvents.length,
@@ -135,10 +140,19 @@ export const useEventStore = create<EventStore>((set, get) => ({
         set({
             events: [],
             shapes: new Map(),
+            unPersistEvent: [],
             userUndoStacks: new Map(),
             userRedoStacks: new Map(),
             lastProcessedEventCount: 0,
             cachedUndoneEvents: new Set(),
         });
+    },
+
+    onPersistEvent: (events: string[]) => {
+        set((state) => ({
+            unPersistEvent: state.unPersistEvent.filter((event) => {
+                return !events.includes(event.id);
+            }),
+        }));
     },
 }));

@@ -11,7 +11,8 @@ import { Server, Socket } from "socket.io";
 import { RedisService } from "src/common/service/redis.service";
 import { Pointer, RoomUser } from "src/types/user";
 
-type JoinRoom = { room: string; user: RoomUser; events: Record<string, string>[]; isPrivate?: boolean };
+type JoinRoom = { room: string; user: RoomUser; events: Record<string, string>[] };
+type JoinRoomPvt = { room: string; user: RoomUser };
 type LeaveRoom = { room: string };
 type UpdateUser = { room: string; user: RoomUser };
 type Cursor = { room: string; cursor: Pointer };
@@ -46,35 +47,32 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         const pipeline = this.redisService.client.pipeline();
 
-        if (data.isPrivate === true) pipeline.sadd(`room`, room);
         pipeline.hset(`room:${room}:users`, client.id, JSON.stringify(data.user));
 
-        const eventEntries: string[] = [];
-        const eventOnlyIds: string[] = [];
-
-        for (const event of data.events) {
-            eventEntries.push(event.id, JSON.stringify(event));
-            eventOnlyIds.push(event.id);
-        }
-
-        if (eventEntries.length > 0 && eventOnlyIds.length > 0) {
-            pipeline.hset(`room:${room}:events`, ...eventEntries);
-            pipeline.rpush(`room:${room}:events_sorted`, ...eventOnlyIds);
-            pipeline.sadd(`room:${room}:events_pending`, ...eventOnlyIds);
+        if (data.events.length > 0) {
+            pipeline.rpush(`room:${room}:events_pub`, ...data.events.map((event) => JSON.stringify(event)));
         }
 
         await pipeline.exec();
 
         client.to(room).emit("create:user", { key: client.id, value: data.user });
 
-        const [users, events, eventIds] = await Promise.all([
+        const [users, events] = await Promise.all([
             this.redisService.client.hgetall(`room:${room}:users`),
-            this.redisService.client.hgetall(`room:${room}:events`),
-            this.redisService.client.lrange(`room:${room}:events_sorted`, 0, -1),
+            this.redisService.client.lrange(`room:${room}:events_pub`, 0, -1),
         ]);
 
         delete users[client.id];
-        client.emit("join:room", { users, events, eventIds });
+        client.emit("join:room", { users, events });
+    }
+
+    @SubscribeMessage("join:room_pvt")
+    async handleJoinRoomPvt(@ConnectedSocket() client: Socket, @MessageBody() { room, user }: JoinRoomPvt) {
+        if (!room) return;
+
+        await client.join(room);
+
+        client.to(room).emit("create:user", { key: client.id, value: user });
     }
 
     @SubscribeMessage("leave:room")
@@ -102,7 +100,6 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async handleDelete(client: Socket, room: string): Promise<void> {
-        const isPrivate = await this.redisService.client.sismember(`rooms`, room);
         const totalUser = await this.redisService.client.hlen(`room:${room}:users`);
 
         const pipeline = this.redisService.client.pipeline();
@@ -111,10 +108,8 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
         pipeline.hdel(`room:${room}:users`, client.id);
 
         // Remove user if there is only one user
-        if (totalUser === 1 && isPrivate === 0) {
-            pipeline.del(`room:${room}:events`);
-            pipeline.del(`room:${room}:events_sorted`);
-            pipeline.del(`room:${room}:events_pending`);
+        if (totalUser === 1) {
+            pipeline.del(`room:${room}:events_pub`);
         }
 
         await pipeline.exec();

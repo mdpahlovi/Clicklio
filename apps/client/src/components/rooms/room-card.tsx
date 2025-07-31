@@ -36,9 +36,7 @@ export default function RoomCard({ room }: { room: Room }) {
                 sx={({ palette: { mode, background } }) => ({
                     aspectRatio: "16/9",
                     backgroundColor: background.body,
-                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='8' height='8' fill='none'%3e%3ccircle fill='${
-                        mode === "light" ? "rgb(0 0 0 / 0.25)" : "rgb(255 255 255 / 0.25)"
-                    }' cx='10' cy='10' r='1.6257413380501518'%3e%3c/circle%3e%3c/svg%3e"`,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='8' height='8' fill='none'%3E%3Ccircle fill='${mode === "light" ? "rgb(0 0 0 / 0.25)" : "rgb(255 255 255 / 0.25)"}' cx='10' cy='10' r='1.6257413380501518'%3E%3C/circle%3E%3C/svg%3E")`,
                 })}
             >
                 {room?.photo ? (

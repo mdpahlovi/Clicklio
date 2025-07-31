@@ -12,7 +12,7 @@ import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-type JoinRoomResponse = { users: Record<string, string>; events: Record<string, string> };
+type JoinRoomResponse = { users: Record<string, string>; events: string[] };
 
 export default function HomePage() {
     const [searchParams] = useSearchParams();
@@ -39,7 +39,7 @@ export default function HomePage() {
         // Room user events
         socket.on("join:room", ({ users, events }: JoinRoomResponse) => {
             Object.entries(users).forEach(([key, value]) => createUser(key, JSON.parse(value)));
-            Object.values(events).forEach((event) => createEvent(JSON.parse(event)));
+            events.forEach((event) => createEvent(JSON.parse(event), false));
 
             setRefresh();
         });
@@ -49,7 +49,7 @@ export default function HomePage() {
         socket.on("delete:user", ({ key }: { key: string }) => deleteUser(key));
 
         socket.on("create:event", ({ event }: { event: ShapeEvent }) => {
-            createEvent(event);
+            createEvent(event, false);
             setRefresh();
         });
 

@@ -21,8 +21,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import { ReactMediaRecorder } from "react-media-recorder";
 
 export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
-    const { createEvent, canUndo, canRedo } = useEventStore();
     const { zoom, setZoom, setUserMedia } = useCanvasState();
+    const { createEvent, canUndo, canRedo } = useEventStore();
 
     return (
         <>

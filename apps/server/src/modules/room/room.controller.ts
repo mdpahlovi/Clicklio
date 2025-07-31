@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { CurrentUser } from "src/decorators/current-user.decorator";
 import { User } from "src/models/user.entity";
-import { CreateRoomDto } from "./room.dto";
+import { CreateRoomDto, UpdateRoomDto } from "./room.dto";
 import { RoomService } from "./room.service";
 
 @Controller("room")
@@ -21,5 +21,10 @@ export class RoomController {
     @Get(":id")
     async getOneRoom(@Param("id") id: string, @CurrentUser() user: User) {
         return await this.roomService.getOneRoom(id, user);
+    }
+
+    @Patch(":id")
+    async updateRoom(@Param("id") id: string, @Body() updateRoomDto: UpdateRoomDto) {
+        return await this.roomService.updateRoom(id, updateRoomDto);
     }
 }

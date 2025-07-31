@@ -1,3 +1,4 @@
+import { useAuthState } from "@/stores/auth/useAuthStore";
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { StoreCreateEvent } from "@/types";
@@ -6,8 +7,12 @@ import { socket } from "@/utils/socket";
 import { v4 as uuid } from "uuid";
 
 export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEvent) => {
+    const auth = useAuthState.getState().user?.id;
     const user = useCanvasState.getState().user;
     const room = useCanvasState.getState().room;
+
+    const wPathname = window.location.pathname.split("/")[1];
+    const isPrivate = !!auth && wPathname === "room";
 
     let event: ShapeEvent | null = null;
     switch (action) {
@@ -18,7 +23,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: action,
-                    userId: user,
+                    userId: isPrivate ? auth : user,
                     shapeId: object?.uid,
                     eventId: null,
                     data: action !== "DELETE" ? object?.toJSON() : null,
@@ -33,7 +38,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: "UNDO",
-                    userId: user,
+                    userId: isPrivate ? auth : user,
                     eventId: userUndoStack[userUndoStack.length - 1],
                     shapeId: null,
                     data: null,
@@ -48,7 +53,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: "REDO",
-                    userId: user,
+                    userId: isPrivate ? auth : user,
                     eventId: userRedoStack[userRedoStack.length - 1],
                     shapeId: null,
                     data: null,
@@ -60,7 +65,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
     }
 
     if (event) {
-        createEvent(event);
+        createEvent(event, isPrivate);
 
         // Refresh canvas
         if (event.type === "UNDO" || event.type === "REDO") {
@@ -69,7 +74,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
 
         // Emit event to server
         if (socket.connected && room) {
-            socket.emit("create:event", { room, event });
+            socket.emit("create:event", { room, event, isPrivate });
         }
     }
 };

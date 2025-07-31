@@ -13,7 +13,7 @@ export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObje
 export const handlePaste = async (
     canvas: fabric.Canvas,
     copiedObjectRef: React.RefObject<fabric.FabricObject | null>,
-    createEvent: (event: ShapeEvent) => void,
+    createEvent: (event: ShapeEvent, isPrivate: boolean) => void,
 ) => {
     // if no copiedObject, return
     if (!copiedObjectRef.current) return;
@@ -59,7 +59,7 @@ export const handlePaste = async (
     canvas.requestRenderAll();
 };
 
-export const handleDuplicate = async (canvas: fabric.Canvas, createEvent: (event: ShapeEvent) => void) => {
+export const handleDuplicate = async (canvas: fabric.Canvas, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
     // Get the active object from the canvas
     const activeObject = canvas.getActiveObject();
 
@@ -111,7 +111,7 @@ export const handleDuplicate = async (canvas: fabric.Canvas, createEvent: (event
     canvas.requestRenderAll();
 };
 
-export const handleDelete = (canvas: fabric.Canvas, createEvent: (event: ShapeEvent) => void) => {
+export const handleDelete = (canvas: fabric.Canvas, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
     const activeObjects = canvas.getActiveObjects();
     if (!activeObjects || activeObjects.length === 0) return;
 

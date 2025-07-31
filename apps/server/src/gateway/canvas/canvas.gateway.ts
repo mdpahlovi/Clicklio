@@ -2,7 +2,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from "socket.io";
 import { RedisService } from "src/common/service/redis.service";
 
-type CreateMessage = { room: string; event: Record<string, unknown> };
+type CreateMessage = { room: string; event: Record<string, unknown>; isPrivate: boolean };
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class CanvasGateway {
@@ -14,10 +14,12 @@ export class CanvasGateway {
     async handleSetShape(@ConnectedSocket() client: Socket, @MessageBody() data: CreateMessage) {
         if (!data.room) return;
 
-        const { room, event } = data;
-        await this.redisService.client.hset(`room:${room}:events`, event?.id as string, JSON.stringify(event));
-        await this.redisService.client.rpush(`room:${room}:events_sorted`, event?.id as string);
-        await this.redisService.client.sadd(`room:${room}:events_pending`, event?.id as string);
+        const { room, event, isPrivate } = data;
+        if (isPrivate) {
+            await this.redisService.client.rpush(`room:${room}:events_pvt`, JSON.stringify(event));
+        } else {
+            await this.redisService.client.rpush(`room:${room}:events_pub`, JSON.stringify(event));
+        }
 
         client.to(data.room).emit("create:event", { event });
     }

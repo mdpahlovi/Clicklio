@@ -18,6 +18,9 @@ type UserState = {
     createUser: (key: string, value: RoomUser) => void;
     updateUser: (key: string, value: RoomUser) => void;
     deleteUser: (key: string) => void;
+
+    setInitialData: (data: { currUser: RoomUser; roomUser: Record<string, string> }) => void;
+    resetUser: () => void;
 };
 
 export const useUserStore = create<UserState>()(
@@ -62,6 +65,14 @@ export const useUserStore = create<UserState>()(
                     newRoomUser.delete(key);
                     return { roomUser: newRoomUser };
                 }),
+
+            setInitialData: (data: { currUser: RoomUser; roomUser: Record<string, string> }) =>
+                set({
+                    currUser: data.currUser,
+                    roomUser: new Map(Object.entries(data.roomUser).map(([key, value]) => [key, JSON.parse(value)])),
+                }),
+
+            resetUser: () => set({ currUser: null, roomUser: new Map<string, RoomUser>() }),
         }),
         {
             name: "clicklio-room",
