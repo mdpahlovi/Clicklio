@@ -1,4 +1,5 @@
 import RoomUsers from "@/components/home/room-users";
+import AuthDropdown from "@/components/ui/auth-dropdown";
 import Menubar from "@/components/ui/menubar";
 import type { Room } from "@/types/room";
 import { Sheet, styled } from "@mui/joy";
@@ -18,6 +19,7 @@ export default function RoomNavbar({ room, canvasRef, setIsGuideModalOpen }: Roo
             </RoomNavbarSheet>
             <RoomNavbarSheet position="right">
                 <RoomUsers />
+                <AuthDropdown />
             </RoomNavbarSheet>
         </>
     );
