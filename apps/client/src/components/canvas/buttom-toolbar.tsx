@@ -9,11 +9,11 @@ import {
     WebcamIcon,
 } from "@/components/icons";
 import Modal from "@/components/ui/modal";
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import { downloadMedia } from "@/utils/download";
-import { handleNavigatorError } from "@/utils/error-handle";
 import { handleCreateEvent } from "@/utils/event";
+import { handleMediaError } from "@/utils/utils";
 import { Button, Divider, IconButton, Sheet, styled, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
 import { useState } from "react";
@@ -56,7 +56,7 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                                             });
                                         };
                                     })
-                                    .catch((error) => handleNavigatorError(error));
+                                    .catch((error) => handleMediaError(error));
                             }
                         }}
                     >

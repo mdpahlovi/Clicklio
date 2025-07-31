@@ -1,8 +1,8 @@
 import { CopyIcon, DeleteIcon } from "@/components/icons";
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ActionsProps } from "@/types";
-import { handleDelete, handleDuplicate } from "@/utils/key-events";
+import { handleDelete, handleDuplicate } from "@/utils/key-event";
 import { IconButton, Tooltip } from "@mui/joy";
 
 export default function Actions({ fabricRef, currentObject }: ActionsProps) {

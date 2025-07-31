@@ -1,5 +1,5 @@
 import { DeleteIcon, DownloadIcon, HelpIcon, ImageDownloadIcon, MenuIcon, UploadIcon } from "@/components/icons";
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import { Dropdown, IconButton, ListDivider, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { Fragment } from "react";

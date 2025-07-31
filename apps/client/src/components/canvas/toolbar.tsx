@@ -1,5 +1,5 @@
 import { circle, navElements } from "@/constants";
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ToolbarProps } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";

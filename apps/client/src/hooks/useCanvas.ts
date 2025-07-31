@@ -1,5 +1,5 @@
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
-import { handleKeyDown } from "@/utils/key-events";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
+import { handleKeyDown } from "@/utils/key-event";
 import * as fabric from "fabric";
 import { useEffect, useRef } from "react";
 

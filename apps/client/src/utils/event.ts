@@ -1,9 +1,9 @@
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { StoreCreateEvent } from "@/types";
 import type { ShapeEvent } from "@/types/event";
+import { socket } from "@/utils/socket";
 import { v4 as uuid } from "uuid";
-import { socket } from "./socket";
 
 export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEvent) => {
     const user = useCanvasState.getState().user;

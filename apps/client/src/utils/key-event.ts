@@ -1,8 +1,8 @@
 import type { WindowKeyDown } from "@/types";
 import type { ShapeEvent } from "@/types/event";
+import { handleCreateEvent } from "@/utils/event";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
-import { handleCreateEvent } from "./event";
 
 export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObject<fabric.FabricObject | null>) => {
     const activeObjects = canvas.getActiveObject();

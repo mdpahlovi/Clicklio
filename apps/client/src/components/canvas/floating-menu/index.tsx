@@ -2,7 +2,7 @@ import Actions from "@/components/canvas/floating-menu/Actions";
 import Colors from "@/components/canvas/floating-menu/Colors";
 import Opacity from "@/components/canvas/floating-menu/Opacity";
 import Text from "@/components/canvas/floating-menu/Text";
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
 import { modifyShape } from "@/utils/shapes";

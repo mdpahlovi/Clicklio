@@ -1,8 +1,8 @@
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useAuthState } from "@/stores/auth/useAuthStore";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { getRandomName } from "@/utils/utils";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { useAuthState } from "../auth/useAuthStore";
 
 export type RoomUserRole = "ADMIN" | "MODERATOR" | "USER";
 export type RoomUser = { id: string; name: string; role: RoomUserRole; roomId: string; joinAt: string };

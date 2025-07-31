@@ -1,3 +1,4 @@
+import { Arrow } from "@/constants/fabric/arrow";
 import type {
     CanvasMouseDown,
     CanvasMouseMove,
@@ -8,11 +9,10 @@ import type {
     InitializeFabric,
     RenderCanvas,
 } from "@/types";
+import { handleCreateEvent } from "@/utils/event";
 import { createSpecificShape } from "@/utils/shapes";
 import * as fabric from "fabric";
 import { v4 as uuid4 } from "uuid";
-import { Arrow } from "./arrow";
-import { handleCreateEvent } from "./event";
 
 fabric.FabricObject.ownDefaults.cornerColor = "#4882ED";
 fabric.FabricObject.ownDefaults.cornerStyle = "circle";

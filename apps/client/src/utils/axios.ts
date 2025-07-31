@@ -1,5 +1,5 @@
+import { useAuthState } from "@/stores/auth/useAuthStore";
 import axios from "axios";
-import { useAuthState } from "../stores/auth/useAuthStore";
 
 const BASE_URL = import.meta.env.VITE_APP_SERVER;
 const baseAxios = axios.create({ baseURL: `${BASE_URL}/api/v1`, timeout: 60000 });

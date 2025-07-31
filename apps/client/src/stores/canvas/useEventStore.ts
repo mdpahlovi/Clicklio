@@ -1,4 +1,4 @@
-import { useCanvasState } from "@/hooks/zustand/useCanvasState";
+import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import type { ShapeEvent } from "@/types/event";
 import { create } from "zustand";
 

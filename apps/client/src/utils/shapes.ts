@@ -1,8 +1,8 @@
+import { Arrow } from "@/constants/fabric/arrow";
 import type { ImageUpload, ModifyShape, Pointer, Tool } from "@/types";
+import { handleCreateEvent } from "@/utils/event";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
-import { Arrow } from "./arrow";
-import { handleCreateEvent } from "./event";
 
 export const createRectangle = (pointer: Pointer, baseColor: string) => {
     return new fabric.Rect({
