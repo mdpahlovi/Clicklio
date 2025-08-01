@@ -12,8 +12,6 @@ export function usePersist({ canvasRef }: { canvasRef: React.RefObject<HTMLCanva
     const { unPersistEvent, onPersistEvent } = useEventStore();
     const timeoutRef = useRef<number | null>(null);
 
-    console.log({ unPersistEvent });
-
     const { mutate: persistEvents } = useMutation({
         mutationFn: (data: PersistEventPayload) => axios.patch(`/room/${id}`, data),
         onSuccess: (response) => onPersistEvent(response.data),

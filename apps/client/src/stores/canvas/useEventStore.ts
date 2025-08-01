@@ -100,14 +100,6 @@ export const useEventStore = create<EventStore>((set, get) => ({
             }
         }
 
-        console.log({
-            undoneEvents,
-            newEvents,
-            newShapes,
-            newUserUndoStacks,
-            newUserRedoStacks,
-        });
-
         set({
             events: newEvents,
             shapes: newShapes,

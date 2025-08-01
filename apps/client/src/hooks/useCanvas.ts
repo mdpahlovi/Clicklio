@@ -56,11 +56,19 @@ export function useCanvas() {
         });
 
         canvas.on("selection:created", (options) => {
-            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
+            if (options?.selected?.length === 1) {
+                setCurrentObject(options?.selected[0]);
+            } else {
+                canvas.discardActiveObject();
+            }
         });
 
         canvas.on("selection:updated", (options) => {
-            if (options?.selected?.length === 1) setCurrentObject(options?.selected[0]);
+            if (options?.selected?.length === 1) {
+                setCurrentObject(options?.selected[0]);
+            } else {
+                canvas.discardActiveObject();
+            }
         });
 
         canvas.on("selection:cleared", () => setCurrentObject(null));
