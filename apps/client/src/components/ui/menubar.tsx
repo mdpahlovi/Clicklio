@@ -1,19 +1,25 @@
 import { DeleteIcon, DownloadIcon, HelpIcon, ImageDownloadIcon, MenuIcon, UploadIcon } from "@/components/icons";
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
-import { Dropdown, IconButton, ListDivider, Menu, MenuButton, MenuItem } from "@mui/joy";
-import { Fragment } from "react";
+import { Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
 
 type ManubarProps = {
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+type MenuItemProps = {
+    label: string;
+    icon: React.ReactNode;
+    color?: "danger";
+    onClick?: () => void;
+    disabled?: boolean;
 };
 
 export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps) {
     const { resetEvent } = useEventStore();
     const { setRefresh } = useCanvasState();
 
-    const manuItems = [
+    const manuItems: MenuItemProps[] = [
         {
             label: "Open",
             icon: <UploadIcon />,
@@ -60,15 +66,10 @@ export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps
             </MenuButton>
             <Menu placement="bottom-start" sx={{ zIndex: 99 }}>
                 {manuItems.map((item, idx) => (
-                    <Fragment key={idx}>
-                        {idx !== 0 ? <ListDivider /> : null}
-                        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                        {/* @ts-ignore */}
-                        <MenuItem color={item.color} onClick={item.onClick} disabled={item.disabled}>
-                            {item.icon}
-                            {item.label}
-                        </MenuItem>
-                    </Fragment>
+                    <MenuItem key={idx} color={item.color} onClick={item.onClick} disabled={item.disabled}>
+                        {item.icon}
+                        {item.label}
+                    </MenuItem>
                 ))}
             </Menu>
         </Dropdown>

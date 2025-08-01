@@ -1,6 +1,6 @@
 import { type CanvasProps } from "@/types";
 import RemoteCursor from "../ui/remote-cursor";
-import BottomToolbar from "./buttom-toolbar";
+import BottomToolbar from "./bottom-toolbar";
 import CanvasContainer from "./canvas-container";
 import FloatingMenu from "./floating-menu";
 import Toolbar from "./toolbar";

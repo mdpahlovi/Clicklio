@@ -1,5 +1,5 @@
 import { Arrow } from "@/constants/fabric/arrow";
-import type { ImageUpload, ModifyShape, Pointer, Tool } from "@/types";
+import type { ImageUpload, Pointer, Tool } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
@@ -117,52 +117,4 @@ export const handleImageUpload = ({ file, fabricRef, createEvent }: ImageUpload)
     };
 
     reader.readAsDataURL(file);
-};
-
-export const modifyShape = ({ fabricRef, property, value, createEvent }: ModifyShape) => {
-    if (!fabricRef.current) return;
-    const selectedElement = fabricRef.current.getActiveObject();
-    if (!selectedElement || selectedElement?.type === "activeSelection") return;
-
-    // update the value of each property
-    switch (property) {
-        case "fontSize":
-            selectedElement.set({ fontSize: Number(value) });
-            break;
-
-        case "fontFamily":
-            selectedElement.set({ fontFamily: value });
-            break;
-
-        case "fontWeight":
-            selectedElement.set({ fontWeight: value });
-            break;
-
-        case "fill":
-            selectedElement.set({ fill: value ? value : null });
-            break;
-
-        case "stroke":
-            selectedElement.set({ stroke: value ? value : null });
-            break;
-
-        case "strokeWidth":
-            selectedElement.set({ strokeWidth: Number(value) });
-            break;
-
-        case "opacity":
-            selectedElement.set({ opacity: Number(value) });
-            break;
-    }
-
-    fabricRef.current.requestRenderAll();
-
-    // sync in storage
-    if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
-        handleCreateEvent({
-            action: "UPDATE",
-            object: selectedElement,
-            createEvent,
-        });
-    }
 };

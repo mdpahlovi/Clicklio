@@ -20,7 +20,7 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
     const [searchParams, setSearchParams] = useSearchParams();
     const room = searchParams.get("room");
 
-    const debounceUpdate = useDebouncedCallback((user: RoomUser) => {
+    const debouncedUpdate = useDebouncedCallback((user: RoomUser) => {
         updateCurrUser(user);
         socket.emit("update:user", { room, user });
     }, 500);
@@ -33,7 +33,7 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                         placeholder="Type Your Name!..."
                         sx={{ mt: 1.75, mb: 1.5 }}
                         defaultValue={currUser?.name}
-                        onChange={(e) => debounceUpdate({ ...currUser, name: e.target.value })}
+                        onChange={(e) => debouncedUpdate({ ...currUser, name: e.target.value })}
                         onKeyDown={(e) => e.stopPropagation()}
                     />
                     <Stack flexDirection="row" gap={1.5}>

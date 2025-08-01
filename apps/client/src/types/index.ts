@@ -22,18 +22,6 @@ export type CanvasProps = {
     selectedToolRef: React.RefObject<Tool | null>;
 };
 
-export type ModifyShape = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
-    property: keyof Attributes;
-    value: string;
-    createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
-};
-
-export type ElementDirection = {
-    canvas: fabric.Canvas;
-    direction: string;
-};
-
 export type ImageUpload = {
     file: File;
     fabricRef: React.RefObject<fabric.Canvas | null>;

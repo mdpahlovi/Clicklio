@@ -47,7 +47,16 @@ export default extendTheme({
         JoyIconButton: { styleOverrides: { root: { borderRadius: 99 } } },
         JoyListItemButton: { styleOverrides: { root: { borderRadius: 16 } } },
         JoyMenu: { defaultProps: { placement: "auto" }, styleOverrides: { root: { borderRadius: 16, paddingBlock: 0 } } },
-        JoyMenuItem: { styleOverrides: { root: { paddingBlock: 8 } } },
+        JoyMenuItem: {
+            defaultProps: {
+                sx: {
+                    borderBottom: "1px solid",
+                    borderBottomColor: "neutral.outlinedBorder",
+                    "&:last-child": { borderBottom: "none" },
+                },
+            },
+            styleOverrides: { root: { paddingBlock: 8 } },
+        },
         JoyMenuButton: { styleOverrides: { root: { borderRadius: 99 } } },
         JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },
         JoyModal: { defaultProps: { sx: { display: "flex", justifyContent: "center", alignItems: "center" } } },

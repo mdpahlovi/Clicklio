@@ -5,20 +5,60 @@ import Text from "@/components/canvas/floating-menu/Text";
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
-import { modifyShape } from "@/utils/shapes";
+import { handleCreateEvent } from "@/utils/event";
 import { Divider, Sheet, styled } from "@mui/joy";
+import * as fabric from "fabric";
+import { useCallback } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     const { createEvent } = useEventStore();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
 
-    const handleInputChange = (property: keyof Attributes, value: string) =>
-        modifyShape({
-            fabricRef,
-            property,
-            value,
+    const debouncedUpdate = useDebouncedCallback((object: fabric.Object) => {
+        handleCreateEvent({
+            action: "UPDATE",
+            object,
             createEvent,
         });
+    }, 300);
+
+    const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
+        if (!fabricRef.current) return;
+        const selectedElement = fabricRef.current.getActiveObject();
+        if (!selectedElement || selectedElement?.type === "activeSelection") return;
+
+        switch (property) {
+            case "fontSize":
+                selectedElement.set({ fontSize: Number(value) });
+                break;
+            case "fontFamily":
+                selectedElement.set({ fontFamily: value });
+                break;
+            case "fontWeight":
+                selectedElement.set({ fontWeight: value });
+                break;
+            case "fill":
+                selectedElement.set({ fill: value ? value : null });
+                break;
+            case "stroke":
+                selectedElement.set({ stroke: value ? value : null });
+                break;
+            case "strokeWidth":
+                selectedElement.set({ strokeWidth: Number(value) });
+                break;
+            case "opacity":
+                selectedElement.set({ opacity: Number(value) });
+                break;
+        }
+
+        fabricRef.current.requestRenderAll();
+
+        if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
+            debouncedUpdate(selectedElement);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     if (fabricRef?.current && currentObject) {
         return (

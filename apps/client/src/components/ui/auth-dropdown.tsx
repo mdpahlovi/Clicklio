@@ -1,6 +1,6 @@
 import { FolderIcon, SignoutIcon } from "@/components/icons";
 import { useAuthState } from "@/stores/auth/useAuthStore";
-import { Avatar, Box, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Stack, Typography } from "@mui/joy";
+import { Avatar, Box, Dropdown, Menu, MenuButton, MenuItem, Stack, Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 
 export default function AuthDropdown() {
@@ -13,7 +13,17 @@ export default function AuthDropdown() {
                 <Avatar src={user?.photo || undefined} sx={{ "--Avatar-size": "36px" }} />
             </MenuButton>
             <Menu placement="bottom-end" sx={{ zIndex: 99 }}>
-                <Stack direction="row" alignItems="center" gap={1} sx={{ px: 1.5, py: 1 }}>
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    gap={1}
+                    sx={{
+                        px: 1.5,
+                        py: 1,
+                        borderBottom: "1px solid",
+                        borderBottomColor: "neutral.outlinedBorder",
+                    }}
+                >
                     <Avatar src={user?.photo || undefined} sx={{ "--Avatar-size": "36px" }} />
                     <Box>
                         <Typography level="title-sm" lineHeight={1.25}>
@@ -24,12 +34,10 @@ export default function AuthDropdown() {
                         </Typography>
                     </Box>
                 </Stack>
-                <ListDivider />
                 <MenuItem component={Link} to="/rooms">
                     <FolderIcon />
                     Dashboard
                 </MenuItem>
-                <ListDivider />
                 <MenuItem color="danger" onClick={signOut}>
                     <SignoutIcon />
                     Signout
