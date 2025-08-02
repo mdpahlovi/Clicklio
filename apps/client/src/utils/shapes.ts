@@ -1,91 +1,113 @@
-import { Arrow } from "@/constants/fabric/arrow";
 import type { ImageUpload, Tool } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
-import * as fabric from "fabric";
+import Konva from "konva";
+import type { Vector2d } from "konva/lib/types";
 import { v4 as uuid } from "uuid";
+import { transformerConfig } from "../constants";
 
-export const createRectangle = (pointer: fabric.Point, baseColor: string) => {
-    return new fabric.Rect({
-        left: pointer.x,
-        top: pointer.y,
+export const createRectangle = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.Rect({
+        x: pointer.x,
+        y: pointer.y,
         width: 0,
         height: 0,
         fill: baseColor,
-        uid: uuid(),
+        id: uuid(),
+        draggable: true,
     });
 };
 
-export const createDiamond = (pointer: fabric.Point, baseColor: string) => {
-    const points = [
-        { x: 0, y: -1 },
-        { x: 1, y: 0 },
-        { x: 0, y: 1 },
-        { x: -1, y: 0 },
-    ];
-
-    return new fabric.Polygon(points, {
-        left: pointer.x,
-        top: pointer.y,
-        width: 0,
-        height: 0,
+export const createDiamond = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.RegularPolygon({
+        x: pointer.x,
+        y: pointer.y,
+        sides: 4,
+        radius: 0,
         fill: baseColor,
-        uid: uuid(),
+        id: uuid(),
+        draggable: true,
     });
 };
 
-export const createTriangle = (pointer: fabric.Point, baseColor: string) => {
-    return new fabric.Triangle({
-        left: pointer.x,
-        top: pointer.y,
-        width: 0,
-        height: 0,
+export const createTriangle = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.RegularPolygon({
+        x: pointer.x,
+        y: pointer.y,
+        sides: 3,
+        radius: 0,
         fill: baseColor,
-        uid: uuid(),
+        id: uuid(),
+        draggable: true,
     });
 };
 
-export const createCircle = (pointer: fabric.Point, baseColor: string) => {
-    return new fabric.Ellipse({
-        left: pointer.x,
-        top: pointer.y,
-        rx: 0,
-        ry: 0,
+export const createCircle = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.Circle({
+        x: pointer.x,
+        y: pointer.y,
+        radius: 0,
         fill: baseColor,
-        uid: uuid(),
+        id: uuid(),
+        draggable: true,
     });
 };
 
-export const createLine = (pointer: fabric.Point, baseColor: string) => {
-    return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
+export const createLine = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.Line({
+        points: [pointer.x, pointer.y, pointer.x, pointer.y],
+        stroke: baseColor,
+        strokeWidth: 2,
+        id: uuid(),
+        draggable: true,
+        hitStrokeWidth: 15,
+        perfectDrawEnabled: false,
+    });
+};
+
+export const createArrow = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.Arrow({
+        points: [pointer.x, pointer.y, pointer.x, pointer.y],
         fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
-        uid: uuid(),
+        id: uuid(),
+        draggable: true,
+        hitStrokeWidth: 15,
+        pointerLength: 10,
+        pointerWidth: 10,
+        perfectDrawEnabled: false,
     });
 };
 
-export const createArrow = (pointer: fabric.Point, baseColor: string) => {
-    return new Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
-        fill: baseColor,
+export const createPath = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.Line({
+        points: [pointer.x, pointer.y],
         stroke: baseColor,
         strokeWidth: 2,
-        uid: uuid(),
+        id: uuid(),
+        draggable: true,
+        hitStrokeWidth: 15,
+        lineCap: "round",
+        lineJoin: "round",
+        perfectDrawEnabled: false,
     });
 };
 
-export const createText = (pointer: fabric.Point, baseColor: string) => {
-    return new fabric.IText("Tap To Type", {
-        left: pointer.x,
-        top: pointer.y,
+export const createText = (pointer: Vector2d, baseColor: string) => {
+    return new Konva.Text({
+        x: pointer.x,
+        y: pointer.y,
+        text: "Tap To Type",
         fill: baseColor,
         fontFamily: "Poppins",
         fontSize: 16,
         fontWeight: "400",
-        uid: uuid(),
+        id: uuid(),
+        draggable: true,
     });
 };
 
-export const createSpecificShape = (shape: Tool, pointer: fabric.Point) => {
+export const createSpecificShape = (shape: Tool, pointer: Vector2d) => {
     const baseColor = "#FFFFFF";
 
     switch (shape) {
@@ -107,119 +129,81 @@ export const createSpecificShape = (shape: Tool, pointer: fabric.Point) => {
         case "arrow":
             return createArrow(pointer, baseColor);
 
-        case "i-text":
+        case "path":
+            return createPath(pointer, baseColor);
+
+        case "text":
             return createText(pointer, baseColor);
-
-        default:
-            return null;
     }
 };
 
-export const updateSpecificShape = (
-    shape: Tool,
-    pointer: fabric.Point,
-    startPoint: fabric.Point,
-    object: fabric.FabricObject,
-    shiftKey: boolean,
-) => {
-    const left = Math.min(startPoint.x, pointer.x);
-    const top = Math.min(startPoint.y, pointer.y);
-    const width = Math.abs(pointer.x - startPoint.x);
-    const height = Math.abs(pointer.y - startPoint.y);
-
+export const updateSpecificShape = (shape: Tool, pointer: Vector2d, object: Konva.Node) => {
     switch (shape) {
-        case "rect":
-            (object as fabric.Rect).set({
-                left,
-                top,
-                width,
-                height,
-            });
+        case "rect": {
+            const { x, y } = object.attrs;
+            (object as Konva.Rect).width(pointer.x - x);
+            (object as Konva.Rect).height(pointer.y - y);
             break;
-
+        }
         case "diamond": {
-            const halfWidth = width / 2;
-            const halfHeight = height / 2;
-
-            const newPoints = [
-                { x: 0, y: -halfHeight },
-                { x: halfWidth, y: 0 },
-                { x: 0, y: halfHeight },
-                { x: -halfWidth, y: 0 },
-            ];
-
-            (object as fabric.Polygon).set({
-                points: newPoints,
-                left,
-                top,
-                width,
-                height,
-            });
+            const { x, y } = object.attrs;
+            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
+            (object as Konva.RegularPolygon).radius(radius);
             break;
         }
-
-        case "triangle":
-            (object as fabric.Triangle).set({
-                left,
-                top,
-                width,
-                height,
-            });
+        case "triangle": {
+            const { x, y } = object.attrs;
+            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
+            (object as Konva.RegularPolygon).radius(radius);
             break;
-
+        }
         case "circle": {
-            if (!shiftKey) {
-                (object as fabric.Ellipse).set({
-                    left,
-                    top,
-                    rx: width / 2,
-                    ry: height / 2,
-                });
-            } else {
-                (object as fabric.Ellipse).set({
-                    left,
-                    top,
-                    rx: Math.max(width / 2, height / 2),
-                    ry: Math.max(width / 2, height / 2),
-                });
-            }
+            const { x, y } = object.attrs;
+            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
+            (object as Konva.Circle).radius(radius);
             break;
         }
-
         case "line":
-            (object as fabric.Line).set({
-                x2: pointer.x,
-                y2: pointer.y,
-            });
+        case "arrow": {
+            const [...points] = (object as Konva.Line).points();
+            if (points.length === 0) break;
+            (object as Konva.Line).points([points[0], points[1], pointer.x, pointer.y]);
             break;
-
-        case "arrow":
-            (object as Arrow).set({
-                x2: pointer.x,
-                y2: pointer.y,
-            });
+        }
+        case "path": {
+            const [...points] = (object as Konva.Line).points();
+            if (points.length === 0) break;
+            (object as Konva.Line).points([...points, pointer.x, pointer.y]);
             break;
+        }
     }
 };
 
-export const handleImageUpload = ({ file, canvas, createEvent }: ImageUpload) => {
+export const handleImageUpload = ({ file, stage, createEvent }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
-        fabric.FabricImage.fromURL(reader.result as string).then((image) => {
-            image.scaleToWidth(100);
-            image.set({ uid: uuid() });
+        Konva.Image.fromURL(reader.result as string, (image) => {
+            const height = 160 * (image.height() / image.width());
 
-            if (image?.uid) {
-                canvas.add(image);
+            image.setAttrs({
+                id: uuid(),
+                draggable: true,
+                perfectDrawEnabled: false,
+            });
+            image.width(160);
+            image.height(height);
+            const tr = new Konva.Transformer(transformerConfig([image]));
+
+            if (image?.id()) {
+                stage.getLayers()[0].add(image);
+                stage.getLayers()[0].add(tr);
 
                 handleCreateEvent({
                     action: "CREATE",
                     object: image,
                     createEvent,
                 });
-
-                canvas.requestRenderAll();
             }
         });
     };

@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 type NavbarProps = {
-    canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     room: string | null;
@@ -20,13 +19,13 @@ type NavbarProps = {
 
 type CreateRouterResponse = { rtpCapabilities: types.RtpCapabilities };
 
-export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModalOpen, room, device, setDevice }: NavbarProps) {
+export default function Navbar({ setIsGuideModalOpen, setIsShareModalOpen, room, device, setDevice }: NavbarProps) {
     const { user } = useAuthState();
 
     return (
         <>
             <NavbarSheet position="left">
-                <Menubar {...{ canvasRef, setIsGuideModalOpen }} />
+                <Menubar {...{ setIsGuideModalOpen }} />
             </NavbarSheet>
             {room ? (
                 <NavbarSheet position="center">

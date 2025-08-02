@@ -1,244 +1,132 @@
 import type { WindowKeyDown } from "@/types";
 import type { ShapeEvent } from "@/types/event";
 import { handleCreateEvent } from "@/utils/event";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { v4 as uuid } from "uuid";
 
-export const handleCopy = (canvas: fabric.Canvas, copiedObjectRef: React.RefObject<fabric.FabricObject | null>) => {
-    const activeObjects = canvas.getActiveObject();
-
-    if (activeObjects) activeObjects.clone().then((cloned) => (copiedObjectRef.current = cloned));
+export const handleCopy = (stage: Konva.Stage, copiedObjectRef: React.RefObject<Konva.Node | null>) => {
+    const selectedNodes = stage.find(".selected");
+    if (selectedNodes.length > 0) {
+        copiedObjectRef.current = selectedNodes[0];
+    }
 };
 
 export const handlePaste = async (
-    canvas: fabric.Canvas,
-    copiedObjectRef: React.RefObject<fabric.FabricObject | null>,
+    stage: Konva.Stage,
+    copiedObjectRef: React.RefObject<Konva.Node | null>,
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void,
 ) => {
-    // if no copiedObject, return
     if (!copiedObjectRef.current) return;
-    const clonedObj = await copiedObjectRef.current.clone(); // clone again, so you can do multiple copies.
-    canvas.discardActiveObject();
-    clonedObj.set({ left: clonedObj.left + 20, top: clonedObj.top + 20, evented: true });
-    if (clonedObj instanceof fabric.ActiveSelection) {
-        // active selection needs a reference to the canvas.
-        clonedObj.canvas = canvas;
-        clonedObj.forEachObject((object) => {
-            object.set({ uid: uuid() });
 
-            if (object?.uid) {
-                canvas.add(object);
+    const clonedObj = copiedObjectRef.current.clone({
+        x: copiedObjectRef.current.x() + 20,
+        y: copiedObjectRef.current.y() + 20,
+    });
 
-                handleCreateEvent({
-                    action: "CREATE",
-                    object,
-                    createEvent,
-                });
-            }
-        });
-        // this should solve the unselectable behavior
-        clonedObj.setCoords();
-    } else {
-        clonedObj.set({ uid: uuid() });
+    clonedObj.setAttr("id", uuid());
+    stage.getLayers()[0].add(clonedObj);
 
-        if (clonedObj?.uid) {
-            canvas.add(clonedObj);
-
-            handleCreateEvent({
-                action: "CREATE",
-                object: clonedObj,
-                createEvent,
-            });
-        }
-    }
-    copiedObjectRef.current.top += 20;
-    copiedObjectRef.current.left += 20;
-    canvas.setActiveObject(clonedObj);
-    canvas.requestRenderAll();
+    handleCreateEvent({
+        action: "CREATE",
+        object: clonedObj,
+        createEvent,
+    });
 };
 
-export const handleDuplicate = async (canvas: fabric.Canvas, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
-    // Get the active object from the canvas
-    const activeObject = canvas.getActiveObject();
+export const handleDuplicate = async (stage: Konva.Stage, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
+    const selectedNodes = stage.find(".selected");
+    if (selectedNodes.length === 0) return;
 
-    // If no active object, return
-    if (!activeObject) return;
+    const node = selectedNodes[0];
+    const clonedObj = node.clone({
+        x: node.x() + 20,
+        y: node.y() + 20,
+    });
 
-    // Clone the active object
-    const clonedObj = await activeObject.clone();
+    clonedObj.setAttr("id", uuid());
+    stage.getLayers()[0].add(clonedObj);
 
-    // Slightly offset the cloned object to avoid overlap
-    clonedObj.set({ left: clonedObj.left + 20, top: clonedObj.top + 20, evented: true });
-
-    if (clonedObj instanceof fabric.ActiveSelection) {
-        // If it's an active selection (multiple objects selected), handle each object
-        clonedObj.canvas = canvas;
-        clonedObj.forEachObject((object) => {
-            object.set({ uid: uuid() });
-
-            if (object?.uid) {
-                canvas.add(object);
-
-                handleCreateEvent({
-                    action: "CREATE",
-                    object,
-                    createEvent,
-                });
-            }
-        });
-        clonedObj.setCoords();
-    } else {
-        // Handle single object duplication
-        clonedObj.set({ uid: uuid() });
-
-        if (clonedObj?.uid) {
-            canvas.add(clonedObj);
-
-            handleCreateEvent({
-                action: "CREATE",
-                object: clonedObj,
-                createEvent,
-            });
-        }
-    }
-
-    // Set the cloned object as the active one and render
-    canvas.setActiveObject(clonedObj);
-    canvas.requestRenderAll();
+    handleCreateEvent({
+        action: "CREATE",
+        object: clonedObj,
+        createEvent,
+    });
 };
 
-export const handleDelete = (canvas: fabric.Canvas, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
-    const activeObjects = canvas.getActiveObjects();
-    if (!activeObjects || activeObjects.length === 0) return;
+export const handleDelete = (stage: Konva.Stage, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
+    const selectedNodes = stage.find(".selected");
+    if (selectedNodes.length === 0) return;
 
-    if (activeObjects.length > 0) {
-        activeObjects.forEach((object) => {
-            if (object?.uid) {
-                canvas.remove(object);
-
-                handleCreateEvent({
-                    action: "DELETE",
-                    object,
-                    createEvent,
-                });
-            }
+    selectedNodes.forEach((node) => {
+        handleCreateEvent({
+            action: "DELETE",
+            object: node,
+            createEvent,
         });
-    }
-
-    canvas.discardActiveObject();
-    canvas.requestRenderAll();
+        node.destroy();
+    });
 };
 
-export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom }: WindowKeyDown) => {
-    if (!canvas) return;
-
-    const zoom = canvas.getZoom();
+// create a handleKeyDown function that listen to different keydown events
+export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEvent, setTool, setZoom }: WindowKeyDown) => {
+    const zoom = stage?.scaleX();
     if (isEditing.current) return;
 
-    const key = e.key.toLowerCase();
-
-    // Handle Delete key
-    if (key === "delete") {
+    // View Controls
+    // Check if the key pressed is ctrl/cmd + + (Zoom In)
+    if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 107) {
         e.preventDefault();
-        handleDelete(canvas, createEvent);
-        return;
+        if (zoom && Number(zoom.toFixed(1)) <= 10) {
+            setZoom(zoom + 0.1);
+            stage.scale({ x: zoom + 0.1, y: zoom + 0.1 });
+        }
     }
-
-    // Handle Space key for panning
-    if (key === " " && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    // Check if the key pressed is ctrl/cmd + - (Zoom Out)
+    if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 109) {
         e.preventDefault();
-        setTool("panning");
-        return;
-    }
-
-    if (!e.metaKey && !e.ctrlKey && !e.altKey) {
-        // Tool Selection Shortcuts
-        switch (key) {
-            case "h":
-                setTool("panning");
-                break;
-            case "v":
-                setTool("select");
-                break;
-            case "r":
-                setTool("rect");
-                break;
-            case "d":
-                setTool("diamond");
-                break;
-            case "t":
-                setTool("triangle");
-                break;
-            case "c":
-                setTool("circle");
-                break;
-            case "l":
-                if (e.shiftKey) {
-                    setTool("arrow");
-                } else {
-                    setTool("line");
-                }
-                break;
-            case "p":
-                setTool("path");
-                break;
-            case "a":
-                setTool("i-text");
-                break;
-            case "i":
-                setTool("image");
-                break;
-            case "e":
-                setTool("eraser");
-                break;
-        }
-    } else if ((e.metaKey || e.ctrlKey) && !e.altKey) {
-        // View Controls
-        if (key === "+" || key === "=") {
-            e.preventDefault();
-            const newZoom = Math.min(zoom + 0.1, 10);
-            setZoom(newZoom);
-            canvas.setZoom(newZoom);
-        } else if (key === "-") {
-            e.preventDefault();
-            const newZoom = Math.max(zoom - 0.1, 0.1);
-            setZoom(newZoom);
-            canvas.setZoom(newZoom);
-        } else if (key === "0") {
-            e.preventDefault();
-            setZoom(2);
-            canvas.setZoom(2);
-        }
-
-        // Editor Controls
-        else if (key === "c") {
-            e.preventDefault();
-            handleCopy(canvas, copiedObjectRef);
-        } else if (key === "v") {
-            e.preventDefault();
-            handlePaste(canvas, copiedObjectRef, createEvent);
-        } else if (key === "d") {
-            e.preventDefault();
-            handleDuplicate(canvas, createEvent);
-        } else if (key === "x") {
-            e.preventDefault();
-            handleCopy(canvas, copiedObjectRef);
-            handleDelete(canvas, createEvent);
-        } else if (key === "z") {
-            e.preventDefault();
-            if (e.shiftKey) {
-                handleCreateEvent({
-                    action: "REDO",
-                    object: null,
-                    createEvent,
-                });
-            } else {
-                handleCreateEvent({
-                    action: "UNDO",
-                    object: null,
-                    createEvent,
-                });
-            }
+        if (zoom && Number(zoom.toFixed(1)) >= 0.1) {
+            setZoom(zoom - 0.1);
+            stage.scale({ x: zoom - 0.1, y: zoom - 0.1 });
         }
     }
+    // Check if the key pressed is ctrl/cmd + 0 (Reset View)
+    if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 48) {
+        e.preventDefault();
+        setZoom(2);
+        stage.scale({ x: 2, y: 2 });
+    }
+
+    // Editor Controls
+    // Check if the key pressed is ctrl/cmd + c (Copy)
+    if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67 && !e.altKey) {
+        handleCopy(stage, copiedObjectRef);
+    }
+    // Check if the key pressed is ctrl/cmd + v (Paste)
+    if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
+        handlePaste(stage, copiedObjectRef, createEvent);
+    }
+    // Check if the key pressed is ctrl/cmd + d (Duplicate)
+    if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68 && !e.altKey) {
+        e.preventDefault();
+        handleDuplicate(stage, createEvent);
+    }
+    // Check if the key pressed is delete (Delete Selection)
+    if (stage && e.keyCode === 46) {
+        handleDelete(stage, createEvent);
+    }
+    // Check if the key pressed is ctrl/cmd + x (Cut)
+    if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
+        handleCopy(stage, copiedObjectRef);
+        handleDelete(stage, createEvent);
+    }
+    // Check if the key pressed is ctrl/cmd + z (Undo)
+    if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90 && !e.shiftKey) {
+        handleCreateEvent({ action: "UNDO", object: null, createEvent });
+    }
+    // Check if the key pressed is ctrl/cmd + shift + z (Redo)
+    if ((e?.ctrlKey || e?.metaKey) && e.shiftKey && e.keyCode === 90) {
+        handleCreateEvent({ action: "REDO", object: null, createEvent });
+    }
+    // Check if the key pressed is space (Temporary Pan)
+    if (e.keyCode === 32) setTool("panning");
 };

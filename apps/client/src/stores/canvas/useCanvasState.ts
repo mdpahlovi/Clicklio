@@ -1,5 +1,5 @@
 import type { Tool } from "@/types";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { v4 as uuid } from "uuid";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -9,13 +9,13 @@ type CanvasStateStore = {
     tool: Tool;
     zoom: number;
     refresh: number | null;
-    currentObject: fabric.FabricObject | null;
+    currentObject: Konva.Node | null;
     openedFloatingMenu: { [key: string]: boolean };
     userMedia: MediaStream | null;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setRefresh: () => void;
-    setCurrentObject: (object: fabric.FabricObject | null) => void;
+    setCurrentObject: (object: Konva.Node | null) => void;
     setOpenedFloatingMenu: (key: string) => void;
     setUserMedia: (media: MediaStream | null) => void;
 };

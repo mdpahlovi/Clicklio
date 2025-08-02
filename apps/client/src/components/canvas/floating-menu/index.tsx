@@ -7,16 +7,16 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import { Divider, Sheet, styled } from "@mui/joy";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { useCallback, useMemo, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function FloatingMenu({ canvas }: FloatingMenuProps) {
+export default function FloatingMenu({ stage }: FloatingMenuProps) {
     const { createEvent } = useEventStore();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
     const floatingMenuRef = useRef<HTMLDivElement | null>(null);
 
-    const debouncedUpdate = useDebouncedCallback((object: fabric.Object) => {
+    const debouncedUpdate = useDebouncedCallback((object: Konva.Node) => {
         handleCreateEvent({
             action: "UPDATE",
             object,
@@ -25,36 +25,34 @@ export default function FloatingMenu({ canvas }: FloatingMenuProps) {
     }, 150);
 
     const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
-        const selectedElement = canvas.getActiveObject();
-        if (!selectedElement || selectedElement?.type === "activeSelection") return;
+        const selectedElement = stage.findOne("." + currentObject?.id());
+        if (!selectedElement) return;
 
         switch (property) {
             case "fontSize":
-                selectedElement.set({ fontSize: Number(value) });
+                selectedElement.setAttr("fontSize", Number(value));
                 break;
             case "fontFamily":
-                selectedElement.set({ fontFamily: value });
+                selectedElement.setAttr("fontFamily", value);
                 break;
             case "fontWeight":
-                selectedElement.set({ fontWeight: value });
+                selectedElement.setAttr("fontWeight", value);
                 break;
             case "fill":
-                selectedElement.set({ fill: value ? value : null });
+                selectedElement.setAttr("fill", value ? value : null);
                 break;
             case "stroke":
-                selectedElement.set({ stroke: value ? value : null });
+                selectedElement.setAttr("stroke", value ? value : null);
                 break;
             case "strokeWidth":
-                selectedElement.set({ strokeWidth: Number(value) });
+                selectedElement.setAttr("strokeWidth", Number(value));
                 break;
             case "opacity":
-                selectedElement.set({ opacity: Number(value) });
+                selectedElement.setAttr("opacity", Number(value));
                 break;
         }
 
-        canvas.requestRenderAll();
-
-        if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
+        if (selectedElement?.id() && selectedElement?.id() !== "webcam") {
             debouncedUpdate(selectedElement);
         }
     }, []);
@@ -63,8 +61,8 @@ export default function FloatingMenu({ canvas }: FloatingMenuProps) {
         const floatingMenu = floatingMenuRef?.current;
         if (!currentObject || !floatingMenu) return;
 
-        const zoom = canvas.getZoom();
-        const viewTransform = canvas.viewportTransform;
+        const zoom = stage.getZoom();
+        const viewTransform = stage.viewportTransform;
 
         const objectX = currentObject.left * zoom + viewTransform[4];
         const objectY = currentObject.top * zoom + viewTransform[5];
@@ -110,7 +108,7 @@ export default function FloatingMenu({ canvas }: FloatingMenuProps) {
                         {...{ currentObject, handleInputChange }}
                     />
                     <Divider orientation="vertical" sx={{ mx: 0.5 }} />
-                    <Actions {...{ canvas, currentObject }} />
+                    <Actions {...{ stage, currentObject }} />
                 </>
             ) : null}
         </FloatingMenuSheet>

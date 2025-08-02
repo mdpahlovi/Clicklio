@@ -1,4 +1,3 @@
-import Canvas from "@/components/canvas";
 import GuideModal from "@/components/canvas/guide-modal";
 import ShareModal from "@/components/canvas/share-modal";
 import Navbar from "@/components/home/navbar";
@@ -12,6 +11,7 @@ import { socket, type SocketResponse } from "@/utils/socket";
 import type { Device } from "mediasoup-client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import Canvas from "@/components/canvas";
 
 type JoinRoomResponse = { users: Record<string, string>; events: string[] };
 
@@ -22,14 +22,14 @@ export default function HomePage() {
 
     const { refresh, setRefresh } = useCanvasState();
     const { shapes, createEvent, resetEvent } = useEventStore();
-    const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
+    const { stageRef, selectedToolRef } = useCanvas();
     const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser, resetUser } = useUserStore();
 
     const [searchParam, setSearchParam] = useSearchParams();
     const room = searchParam.get("room");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
+    useEffect(() => renderCanvas({ shapes, stageRef }), [refresh]);
 
     useEffect(() => {
         if (room) {
@@ -71,8 +71,8 @@ export default function HomePage() {
 
     return (
         <div>
-            <Navbar {...{ canvasRef, setIsGuideModalOpen, setIsShareModalOpen, room, device, setDevice }} />
-            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room, device }} />
+            <Navbar {...{ stageRef, setIsGuideModalOpen, setIsShareModalOpen, room, device, setDevice }} />
+            <Canvas {...{ stageRef, selectedToolRef, room, device }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
             <ShareModal isOpen={isShareModalOpen} setIsOpen={setIsShareModalOpen} />

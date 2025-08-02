@@ -13,14 +13,14 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
             <Tooltip title={name.charAt(0).toUpperCase() + name.slice(1)}>
                 <MenuButton slots={{ root: IconButton }}>
                     {name === "fill" ? (
-                        <ColorIcon color={currentObject?.fill as string} />
+                        <ColorIcon color={currentObject?.attrs.fill as string} />
                     ) : (
                         <Box
                             style={{
                                 width: 14,
                                 height: 14,
                                 borderRadius: 9999,
-                                border: `2px solid ${currentObject?.stroke || "white"}`,
+                                border: `2px solid ${currentObject?.attrs.stroke || "white"}`,
                             }}
                         />
                     )}

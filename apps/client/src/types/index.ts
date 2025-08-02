@@ -1,4 +1,4 @@
-import * as fabric from "fabric";
+import Konva from "konva";
 import type { Device } from "mediasoup-client";
 import type { ShapeEvent } from "./event";
 
@@ -24,13 +24,12 @@ export type Tool =
     | "line"
     | "arrow"
     | "path"
-    | "i-text"
+    | "text"
     | "image"
     | "eraser";
 
 export type CanvasProps = {
-    canvasRef: React.RefObject<HTMLCanvasElement | null>;
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    stageRef: React.RefObject<Konva.Stage | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     room: string | null;
     device: Device | null;
@@ -38,110 +37,93 @@ export type CanvasProps = {
 
 export type ImageUpload = {
     file: File;
-    canvas: fabric.Canvas;
+    stage: Konva.Stage;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
 export type SidebarProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    stage: Konva.Stage;
 };
 
 export type FloatingMenuProps = {
-    canvas: fabric.Canvas;
-};
-
-export type FloatingSubMenuItemProps = {
-    currentObject: fabric.FabricObject;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
+    stage: Konva.Stage;
 };
 
 export type FloatingMenuItemProps = {
     open: boolean;
     onOpenChange: () => void;
-    currentObject: fabric.FabricObject;
+    currentObject: Konva.Node | null;
+    handleInputChange: (property: keyof Attributes, value: string) => void;
+};
+
+export type FloatingMenuSubItemProps = {
+    currentObject: Konva.Node | null;
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
 export type ActionsProps = {
-    canvas: fabric.Canvas;
-    currentObject: fabric.FabricObject;
+    stage: Konva.Stage;
+    currentObject: Konva.Node;
 };
 
 export type ToolbarProps = {
-    canvas: fabric.Canvas;
+    stage: Konva.Stage;
     selectedToolRef: React.RefObject<Tool | null>;
 };
 
-export type InitializeFabric = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
-    canvasRef: React.RefObject<HTMLCanvasElement | null>;
-    zoom: number;
+export type InitializeKonva = {
+    stageRef: React.RefObject<Konva.Stage | null>;
 };
 
 export type CanvasMouseDown = {
-    option: fabric.TPointerEventInfo<fabric.TPointerEvent>;
-    canvas: fabric.Canvas;
-    startPoint: React.RefObject<fabric.Point | null>;
-    isPanning: React.RefObject<fabric.Point | null>;
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>;
+    stage: Konva.Stage;
     selectedToolRef: React.RefObject<Tool | null>;
-    shapeRef: React.RefObject<fabric.FabricObject | null>;
-    deleteObjectRef: React.RefObject<fabric.FabricObject[] | null>;
+    shapeRef: React.RefObject<Konva.Shape | null>;
+    deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
 };
 
 export type CanvasMouseMove = {
-    option: fabric.TPointerEventInfo<fabric.TPointerEvent>;
-    canvas: fabric.Canvas;
-    startPoint: React.RefObject<fabric.Point | null>;
-    isPanning: React.RefObject<fabric.Point | null>;
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>;
+    stage: Konva.Stage;
     selectedToolRef: React.RefObject<Tool | null>;
-    shapeRef: React.RefObject<fabric.FabricObject | null>;
-    deleteObjectRef: React.RefObject<fabric.FabricObject[] | null>;
+    shapeRef: React.RefObject<Konva.Shape | null>;
+    deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
 };
 
 export type CanvasMouseUp = {
-    canvas: fabric.Canvas;
-    startPoint: React.RefObject<fabric.Point | null>;
-    isPanning: React.RefObject<fabric.Point | null>;
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>;
+    stage: Konva.Stage;
     selectedToolRef: React.RefObject<Tool | null>;
-    shapeRef: React.RefObject<fabric.FabricObject | null>;
-    deleteObjectRef: React.RefObject<fabric.FabricObject[] | null>;
+    shapeRef: React.RefObject<Konva.Shape | null>;
+    deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
     setTool: (tool: Tool) => void;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
-export type CanvasObjectScaling = {
-    option: fabric.BasicTransformEvent<fabric.TPointerEvent> & {
-        target: fabric.FabricObject;
-    };
-    canvas: fabric.Canvas;
-};
-
-export type CanvasObjectModified = {
-    option: fabric.ModifiedEvent<fabric.TPointerEvent>;
+export type CanvasDoubleClick = {
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>;
+    stage: Konva.Stage;
+    isEditing: React.RefObject<boolean>;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
-};
-
-export type CanvasPathCreated = {
-    createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
-    option: { path: fabric.FabricObject };
 };
 
 export type RenderCanvas = {
     shapes: Map<string, Record<string, unknown>>;
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    stageRef: React.RefObject<Konva.Stage | null>;
 };
 
 export type CanvasZoom = {
-    option: fabric.TPointerEventInfo<WheelEvent>;
-    canvas: fabric.Canvas;
+    options: Konva.KonvaEventObject<WheelEvent>;
+    stage: Konva.Stage;
     setZoom: (zoom: number) => void;
 };
 
 export type WindowKeyDown = {
     e: KeyboardEvent;
-    canvas: fabric.Canvas | null;
+    stage: Konva.Stage | null;
     isEditing: React.RefObject<boolean>;
-    copiedObjectRef: React.RefObject<fabric.FabricObject | null>;
+    copiedObjectRef: React.RefObject<Konva.Node | null>;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
@@ -149,6 +131,6 @@ export type WindowKeyDown = {
 
 export type StoreCreateEvent = {
     action: Action;
-    object: fabric.FabricObject | null;
+    object: Konva.Node | null;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };

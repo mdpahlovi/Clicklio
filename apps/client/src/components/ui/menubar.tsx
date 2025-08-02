@@ -2,9 +2,9 @@ import { DeleteIcon, DownloadIcon, HelpIcon, ImageDownloadIcon, MenuIcon, Upload
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
+import React from "react";
 
 type ManubarProps = {
-    canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 type MenuItemProps = {
@@ -15,11 +15,11 @@ type MenuItemProps = {
     disabled?: boolean;
 };
 
-export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps) {
+export default function Menubar({ setIsGuideModalOpen }: ManubarProps) {
     const { resetEvent } = useEventStore();
     const { setRefresh } = useCanvasState();
 
-    const manuItems: MenuItemProps[] = [
+    const menuItems: MenuItemProps[] = [
         {
             label: "Open",
             icon: <UploadIcon />,
@@ -34,13 +34,7 @@ export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps
             label: "Export image",
             icon: <ImageDownloadIcon />,
             onClick: () => {
-                if (canvasRef.current) {
-                    const dataUrl = canvasRef.current.toDataURL("image/png");
-                    const link = document.createElement("a");
-                    link.download = "canvas-image.png";
-                    link.href = dataUrl;
-                    link.click();
-                }
+                // Implement export image logic for Konva
             },
         },
         {
@@ -65,7 +59,7 @@ export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps
                 <MenuIcon />
             </MenuButton>
             <Menu placement="bottom-start" sx={{ zIndex: 99 }}>
-                {manuItems.map((item, idx) => (
+                {menuItems.map((item, idx) => (
                     <MenuItem key={idx} color={item.color} onClick={item.onClick} disabled={item.disabled}>
                         {item.icon}
                         {item.label}

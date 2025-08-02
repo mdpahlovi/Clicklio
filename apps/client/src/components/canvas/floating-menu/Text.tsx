@@ -2,12 +2,12 @@ import { ParagraphIcon } from "@/components/icons";
 import { fontFamilyOptions } from "@/constants";
 import type { FloatingMenuItemProps } from "@/types";
 import { Dropdown, IconButton, Input, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function Text({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
-    const fontFamily = currentObject ? (currentObject as fabric.IText).fontFamily : "";
-    const fontSize = currentObject ? (currentObject as fabric.IText).fontSize : "";
+    const fontFamily = currentObject ? (currentObject as Konva.Text).fontFamily() : "";
+    const fontSize = currentObject ? (currentObject as Konva.Text).fontSize() : "";
 
     const debouncedUpdate = useDebouncedCallback((property: "fontSize", value: string) => {
         handleInputChange(property, value);

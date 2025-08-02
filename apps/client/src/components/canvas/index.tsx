@@ -6,16 +6,16 @@ import Conference from "./conference/index";
 import FloatingMenu from "./floating-menu";
 import Toolbar from "./toolbar";
 
-export default function Canvas({ canvasRef, fabricRef, selectedToolRef, room, device }: CanvasProps) {
+export default function Canvas({ stageRef, selectedToolRef, room, device }: CanvasProps) {
     return (
         <CanvasContainer>
-            <canvas ref={canvasRef} />
+            <div id="canvas" />
 
-            {fabricRef.current ? (
+            {stageRef.current ? (
                 <>
-                    <FloatingMenu canvas={fabricRef.current} />
-                    <Toolbar canvas={fabricRef.current} selectedToolRef={selectedToolRef} />
-                    <BottomToolbar canvas={fabricRef.current} />
+                    <FloatingMenu stage={stageRef.current} />
+                    <Toolbar stage={stageRef.current} selectedToolRef={selectedToolRef} />
+                    <BottomToolbar stage={stageRef.current} />
                     {room ? (
                         <>
                             <RemoteCursor room={room} />

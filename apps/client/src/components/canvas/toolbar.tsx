@@ -4,59 +4,55 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ToolbarProps } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, styled, Tooltip } from "@mui/joy";
-import * as fabric from "fabric";
 import { Fragment, useEffect, useRef } from "react";
 
-export default function Toolbar({ canvas, selectedToolRef }: ToolbarProps) {
+export default function Toolbar({ stage, selectedToolRef }: ToolbarProps) {
     const { createEvent } = useEventStore();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-        canvas.selection = false;
-        canvas.isDrawingMode = false;
-        canvas.defaultCursor = "default";
-        canvas.hoverCursor = "all-scroll";
-
         switch (tool) {
             case "panning":
-                canvas.defaultCursor = "grab";
-                canvas.hoverCursor = "grab";
-                canvas.forEachObject((object) => {
-                    object.evented = false;
-                    object.selectable = false;
-                });
+                stage.container().style.cursor = "grabbing";
+                break;
+            case "select":
+                stage.container().style.cursor = "default";
+                break;
+            case "rect":
+                stage.container().style.cursor = "crosshair";
                 selectedToolRef.current = tool;
                 break;
-
-            case "select":
-                canvas.selection = true;
-                canvas.forEachObject((object) => {
-                    object.evented = true;
-                    object.selectable = true;
-                });
+            case "triangle":
+                stage.container().style.cursor = "crosshair";
+                selectedToolRef.current = tool;
                 break;
-
+            case "circle":
+                stage.container().style.cursor = "crosshair";
+                selectedToolRef.current = tool;
+                break;
+            case "line":
+                stage.container().style.cursor = "crosshair";
+                selectedToolRef.current = tool;
+                break;
+            case "arrow":
+                stage.container().style.cursor = "crosshair";
+                selectedToolRef.current = tool;
+                break;
             case "path":
-                canvas.isDrawingMode = true;
-                canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                canvas.freeDrawingBrush.width = 3;
-                canvas.freeDrawingBrush.color = "#FFFFFF";
+                stage.container().style.cursor = "crosshair";
+                selectedToolRef.current = tool;
                 break;
-
+            case "i-text":
+                stage.container().style.cursor = "crosshair";
+                selectedToolRef.current = tool;
+                break;
             case "image":
                 imageInputRef.current?.click();
                 setTimeout(() => setTool("select"), 500);
                 break;
-
             case "eraser":
-                canvas.defaultCursor = circle("dark");
-                canvas.hoverCursor = circle("dark");
-                selectedToolRef.current = tool;
-                break;
-
-            default:
-                canvas.defaultCursor = "crosshair";
+                stage.container().style.cursor = circle("dark");
                 selectedToolRef.current = tool;
                 break;
         }
@@ -130,7 +126,7 @@ export default function Toolbar({ canvas, selectedToolRef }: ToolbarProps) {
                     const files = e?.target?.files;
 
                     if (files && e?.target?.files?.length) {
-                        handleImageUpload({ file: files[0], canvas, createEvent });
+                        handleImageUpload({ file: files[0], stage, createEvent });
                         if (imageInputRef.current) imageInputRef.current.value = "";
                     }
                 }}
