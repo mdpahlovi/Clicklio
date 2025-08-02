@@ -3,7 +3,7 @@ import type { FloatingMenuItemProps } from "@/types";
 import { Dropdown, IconButton, Menu, MenuButton, Slider, Tooltip } from "@mui/joy";
 
 export default function Opacity({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
-    const value = currentObject?.opacity;
+    const value = currentObject?.attrs.opacity;
 
     const thumbStyle = (): React.CSSProperties => {
         switch (value) {

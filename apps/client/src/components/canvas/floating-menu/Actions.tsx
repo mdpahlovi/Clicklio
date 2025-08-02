@@ -5,20 +5,20 @@ import type { ActionsProps } from "@/types";
 import { handleDelete, handleDuplicate } from "@/utils/key-event";
 import { IconButton, Tooltip } from "@mui/joy";
 
-export default function Actions({ fabricRef, currentObject }: ActionsProps) {
+export default function Actions({ stageRef, currentObject }: ActionsProps) {
     const { createEvent } = useEventStore();
     const { userMedia, setUserMedia } = useCanvasState();
 
     return (
         <>
-            {currentObject?.uid !== "webcam" ? (
+            {currentObject?.id() !== "webcam" ? (
                 <Tooltip title="Duplicate">
                     <IconButton
                         color="primary"
                         variant="soft"
                         onClick={() => {
-                            if (fabricRef.current) {
-                                handleDuplicate(fabricRef.current, createEvent);
+                            if (stageRef.current) {
+                                handleDuplicate(stageRef.current, createEvent);
                             }
                         }}
                     >
@@ -31,9 +31,9 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     color="danger"
                     variant="soft"
                     onClick={() => {
-                        if (fabricRef.current) {
-                            handleDelete(fabricRef.current, createEvent);
-                            if (currentObject?.uid === "webcam" && userMedia) {
+                        if (stageRef.current) {
+                            handleDelete(stageRef.current, createEvent);
+                            if (currentObject?.id() === "webcam" && userMedia) {
                                 userMedia.getTracks().forEach((track) => track.stop());
 
                                 setUserMedia(null);

@@ -4,60 +4,58 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { ToolbarProps } from "@/types";
 import { handleImageUpload } from "@/utils/shapes";
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, styled, Tooltip } from "@mui/joy";
-import * as fabric from "fabric";
 import { Fragment, useEffect, useRef } from "react";
 
-export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
+export default function Toolbar({ stageRef, selectedToolRef }: ToolbarProps) {
     const { createEvent } = useEventStore();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-        const canvas = fabricRef.current;
-        if (canvas) {
-            selectedToolRef.current = tool;
-
-            canvas.selection = false;
-            canvas.isDrawingMode = false;
-            canvas.defaultCursor = "default";
-            canvas.hoverCursor = "all-scroll";
-            canvas.forEachObject((object) => {
-                object.evented = true;
-                object.selectable = true;
-            });
-
+        const stage = stageRef.current;
+        if (stage) {
             switch (tool) {
                 case "panning":
-                    canvas.defaultCursor = "grab";
-                    canvas.forEachObject((object) => {
-                        object.evented = false;
-                        object.selectable = false;
-                    });
+                    stage.container().style.cursor = "grabbing";
                     break;
-
                 case "select":
-                    canvas.selection = true;
+                    stage.container().style.cursor = "default";
                     break;
-
+                case "rect":
+                    stage.container().style.cursor = "crosshair";
+                    selectedToolRef.current = tool;
+                    break;
+                case "triangle":
+                    stage.container().style.cursor = "crosshair";
+                    selectedToolRef.current = tool;
+                    break;
+                case "circle":
+                    stage.container().style.cursor = "crosshair";
+                    selectedToolRef.current = tool;
+                    break;
+                case "line":
+                    stage.container().style.cursor = "crosshair";
+                    selectedToolRef.current = tool;
+                    break;
+                case "arrow":
+                    stage.container().style.cursor = "crosshair";
+                    selectedToolRef.current = tool;
+                    break;
                 case "path":
-                    canvas.isDrawingMode = true;
-                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                    canvas.freeDrawingBrush.width = 3;
-                    canvas.freeDrawingBrush.color = "#FFFFFF";
+                    stage.container().style.cursor = "crosshair";
+                    selectedToolRef.current = tool;
                     break;
-
+                case "i-text":
+                    stage.container().style.cursor = "crosshair";
+                    selectedToolRef.current = tool;
+                    break;
                 case "image":
                     imageInputRef.current?.click();
                     setTimeout(() => setTool("select"), 500);
                     break;
-
                 case "eraser":
-                    canvas.defaultCursor = circle("dark");
-                    canvas.hoverCursor = circle("dark");
-                    break;
-
-                default:
-                    canvas.defaultCursor = "crosshair";
+                    stage.container().style.cursor = circle("dark");
+                    selectedToolRef.current = tool;
                     break;
             }
         }
@@ -132,7 +130,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     const files = e?.target?.files;
 
                     if (files && e?.target?.files?.length) {
-                        handleImageUpload({ file: files[0], fabricRef, createEvent });
+                        handleImageUpload({ file: files[0], stageRef, createEvent });
                         if (imageInputRef.current) imageInputRef.current.value = "";
                     }
                 }}

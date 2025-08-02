@@ -1,98 +1,69 @@
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { handleKeyDown } from "@/utils/key-event";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { useEffect, useRef } from "react";
 
 import {
+    handleCanvasDoubleClick,
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
-    handleCanvasObjectModified,
     handleCanvasZoom,
-    handlePathCreated,
     handleResize,
-    initializeFabric,
+    initializeKonva,
 } from "@/utils/canvas";
 
 import { useEventStore } from "@/stores/canvas/useEventStore";
-import type { Pointer, Tool } from "@/types";
+import type { Tool } from "@/types";
 
 export function useCanvas() {
     const { createEvent } = useEventStore();
     const { setTool, setZoom, setCurrentObject } = useCanvasState();
 
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const fabricRef = useRef<fabric.Canvas | null>(null);
+    const stageRef = useRef<Konva.Stage | null>(null);
 
-    const isPanning = useRef<Pointer | null>(null);
     const isEditing = useRef<boolean>(false); // Means Talking Input From Keyboard
-    const shapeRef = useRef<fabric.FabricObject | null>(null);
+    const shapeRef = useRef<Konva.Shape | null>(null);
 
     const selectedToolRef = useRef<Tool | null>(null);
-    const deleteObjectRef = useRef<fabric.FabricObject[]>([]);
-    const copiedObjectRef = useRef<fabric.FabricObject | null>(null);
+    const copiedObjectRef = useRef<Konva.Node | null>(null);
+    const deleteObjectRef = useRef<Map<string, Konva.Node> | null>(null);
 
     useEffect(() => {
-        const canvas = initializeFabric({ canvasRef, fabricRef });
+        const stage = initializeKonva({ stageRef });
 
-        canvas.on("mouse:down", (options) => {
-            handleCanvasMouseDown({ options, canvas, isPanning, shapeRef, selectedToolRef });
+        stage.on("mousedown touchstart", (e) => {
+            handleCanvasMouseDown({ e, stage, shapeRef, selectedToolRef, deleteObjectRef });
         });
 
-        canvas.on("mouse:move", (options) => {
-            handleCanvasMouseMove({ options, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
+        stage.on("mousemove touchmove", (e) => {
+            handleCanvasMouseMove({ e, stage, shapeRef, selectedToolRef, deleteObjectRef });
         });
 
-        canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({ canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef, setTool, createEvent });
+        stage.on("mouseup touchend", (e) => {
+            handleCanvasMouseUp({ e, stage, shapeRef, selectedToolRef, deleteObjectRef, setTool, createEvent });
         });
 
-        canvas.on("path:created", (options) => {
-            handlePathCreated({ options, createEvent });
+        stage.on("dblclick dbltap", (e) => {
+            handleCanvasDoubleClick({ e, stage, isEditing, createEvent });
         });
 
-        canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, createEvent });
-        });
+        stage.on("wheel", (options) => handleCanvasZoom({ options, stage, setZoom }));
 
-        canvas.on("selection:created", (options) => {
-            if (options?.selected?.length === 1) {
-                setCurrentObject(options?.selected[0]);
-            } else {
-                canvas.discardActiveObject();
-            }
-        });
-
-        canvas.on("selection:updated", (options) => {
-            if (options?.selected?.length === 1) {
-                setCurrentObject(options?.selected[0]);
-            } else {
-                canvas.discardActiveObject();
-            }
-        });
-
-        canvas.on("selection:cleared", () => setCurrentObject(null));
-
-        canvas.on("text:editing:entered", () => (isEditing.current = true));
-
-        canvas.on("text:editing:exited", () => (isEditing.current = false));
-
-        canvas.on("mouse:wheel", (options) => handleCanvasZoom({ options, canvas, setZoom }));
-
-        window.addEventListener("resize", () => handleResize({ canvas }));
+        window.addEventListener("resize", () => handleResize({ stage }));
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
-        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom }));
+        window.addEventListener("keydown", (e) => handleKeyDown({ e, stage, isEditing, copiedObjectRef, createEvent, setTool, setZoom }));
 
         return () => {
-            canvas.dispose();
-            window.removeEventListener("resize", () => handleResize({ canvas: null }));
+            stage.destroy();
+            window.removeEventListener("resize", () => handleResize({ stage: null }));
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
-                handleKeyDown({ e, canvas: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
+                handleKeyDown({ e, stage: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
             );
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return { canvasRef, fabricRef, selectedToolRef };
+    return { stageRef, selectedToolRef };
 }

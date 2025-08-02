@@ -19,14 +19,14 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
         case "CREATE":
         case "UPDATE":
         case "DELETE": {
-            if (object?.uid) {
+            if (object?.id) {
                 event = {
                     id: uuid(),
                     type: action,
                     userId: isPrivate ? auth : user,
-                    shapeId: object?.uid,
+                    shapeId: object.id(),
                     eventId: null,
-                    data: action !== "DELETE" ? object?.toJSON() : null,
+                    data: action !== "DELETE" ? object.toObject() : null,
                     firedAt: new Date().toISOString(),
                 };
             }

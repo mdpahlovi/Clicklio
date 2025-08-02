@@ -1,163 +1,126 @@
-import { Arrow } from "@/constants/fabric/arrow";
+import { transformerConfig } from "@/constants";
 import type {
+    CanvasDoubleClick,
     CanvasMouseDown,
     CanvasMouseMove,
     CanvasMouseUp,
-    CanvasObjectModified,
-    CanvasPathCreated,
     CanvasZoom,
-    InitializeFabric,
+    InitializeKonva,
     RenderCanvas,
 } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import { createSpecificShape } from "@/utils/shapes";
-import * as fabric from "fabric";
-import { v4 as uuid4 } from "uuid";
+import Konva from "konva";
 
-fabric.FabricObject.ownDefaults.cornerColor = "#4882ED";
-fabric.FabricObject.ownDefaults.cornerStyle = "circle";
-fabric.FabricObject.ownDefaults.transparentCorners = false;
-
-// initialize fabric canvas
-export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => {
-    // get canvas element
-    const canvasElement = document.getElementById("canvas");
-
-    // create fabric canvas
-    const canvas = new fabric.Canvas(canvasRef.current!, {
-        width: canvasElement?.clientWidth,
-        height: canvasElement?.clientHeight,
+/**
+ * initialize Konva stage
+ * initialize Konva layer
+ * add Konva layer to Konva stage
+ * return Konva stage
+ */
+export const initializeKonva = ({ stageRef }: InitializeKonva) => {
+    const stage = new Konva.Stage({
+        container: "canvas",
+        width: window.innerWidth,
+        height: window.innerHeight,
     });
 
-    canvas.setZoom(2);
-    // set canvas reference to fabricRef so we can use it later anywhere outside canvas listener
-    fabricRef.current = canvas;
+    stageRef.current = stage;
+    const layer = new Konva.Layer();
 
-    return canvas;
+    stage.add(layer);
+
+    return stage;
 };
 
-// instantiate creation of custom fabric object/shape and add it to canvas
-export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedToolRef, shapeRef }: CanvasMouseDown) => {
-    // if canvas is in DrawingMode, return
-    if (canvas.isDrawingMode) return;
-    // if selectedTool is select or image, return
-    if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
+/**
+ * handle mouse down event on canvas to start drawing shapes
+ * create shape and add it to Konva layer
+ */
+export const handleCanvasMouseDown = ({ stage, selectedToolRef, deleteObjectRef, shapeRef }: CanvasMouseDown) => {
+    if (!selectedToolRef.current) return;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
 
-    // get pointer coordinates
-    const pointer = canvas.getScenePoint(options.e);
+    stage.find("Transformer").forEach((tr) => tr.destroy());
 
-    // if selected shape is panning, set panning points
-    if (selectedToolRef.current === "panning") return (isPanning.current = pointer);
-
-    // create custom fabric object/shape and add it to canvas
-    shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
-    if (shapeRef.current) canvas.add(shapeRef.current);
-};
-
-// handle mouse move event on canvas to draw shapes with different dimensions
-export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedToolRef, deleteObjectRef, shapeRef }: CanvasMouseMove) => {
-    // if canvas is in DrawingMode, return
-    if (canvas.isDrawingMode) return;
-    // if selectedTool is select or image, return
-    if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
-
-    // get pointer coordinates
-    const pointer = canvas.getScenePoint(options.e);
-
-    // calculate deltaX and deltaY points for panning
-    if (selectedToolRef.current === "panning" && isPanning.current) {
-        const deltaX = pointer.x - isPanning.current.x;
-        const deltaY = pointer.y - isPanning.current.y;
-
-        canvas.relativePan(new fabric.Point({ x: deltaX, y: deltaY }));
-        isPanning.current = pointer;
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current === null) {
+        deleteObjectRef.current = new Map<string, Konva.Node>();
         return;
     }
 
-    // set target object to deleteObjectRef for eraser
-    if (selectedToolRef.current === "eraser") {
-        if (!options.target?.uid) return;
-        if (!deleteObjectRef.current.find(({ uid }) => uid === options.target?.uid)) {
-            options.target.set({ opacity: 0.25 });
-            deleteObjectRef.current.push(options.target);
-
-            canvas.requestRenderAll();
-            return;
-        }
-    }
-
-    // if no shape.current, then return
-    if (shapeRef.current === null) return;
-    const { left, top } = shapeRef.current;
-
-    // depending on the selected shape, set the dimensions of the shape stored in shapeRef in previous step of handelCanvasMouseDown
-    // calculate shape dimensions based on pointer coordinates
-    switch (selectedToolRef?.current) {
-        case "rect":
-            (shapeRef.current as fabric.Rect).set({
-                width: pointer.x - left,
-                height: pointer.y - top,
-            });
-            break;
-
-        case "triangle":
-            (shapeRef.current as fabric.Triangle).set({
-                width: pointer.x - left,
-                height: pointer.y - top,
-            });
-            break;
-
-        case "circle":
-            (shapeRef.current as fabric.Circle).set({
-                radius: Math.abs(pointer.x - left) / 2,
-            });
-            break;
-
-        case "line":
-            (shapeRef.current as fabric.Line).set({
-                x2: pointer.x,
-                y2: pointer.y,
-            });
-            break;
-
-        case "arrow":
-            (shapeRef.current as Arrow).set({
-                x2: pointer.x,
-                y2: pointer.y,
-            });
-            break;
-    }
-
-    // render objects on canvas
-    // renderAll: http://fabricjs.com/docs/fabric.Canvas.html#renderAll
-    canvas.requestRenderAll();
+    shapeRef.current = createSpecificShape(selectedToolRef.current, pointer) || null;
+    if (shapeRef.current) stage.getLayers()[0].add(shapeRef.current);
 };
 
-// handle mouse up event on canvas to stop drawing shapes
-export const handleCanvasMouseUp = ({
-    canvas,
-    isPanning,
-    shapeRef,
-    selectedToolRef,
-    deleteObjectRef,
-    setTool,
-    createEvent,
-}: CanvasMouseUp) => {
-    // if canvas is in DrawingMode, return
-    if (canvas.isDrawingMode) return;
-    // if selectedTool is select or image, return
-    if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
+/**
+ * handle mouse move event on canvas to draw shapes
+ * update shape position
+ * update Konva layer
+ */
+export const handleCanvasMouseMove = ({ e, stage, selectedToolRef, deleteObjectRef, shapeRef }: CanvasMouseMove) => {
+    if (!selectedToolRef.current) return;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
 
-    // set panning to null
-    if (selectedToolRef.current === "panning") return (isPanning.current = null);
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current !== null) {
+        if (e.target instanceof Konva.Shape) {
+            deleteObjectRef.current.set(e.target.id(), e.target);
+            e.target.opacity(0.5);
+        }
+        stage.batchDraw();
+    }
 
-    // eraser all shape from deleteObjectRef
-    if (selectedToolRef.current === "eraser" && deleteObjectRef.current.length) {
+    if (!shapeRef.current) return;
+    switch (selectedToolRef.current) {
+        case "rect": {
+            const { x, y } = shapeRef.current.attrs;
+            (shapeRef.current as Konva.Rect).width(pointer.x - x);
+            (shapeRef.current as Konva.Rect).height(pointer.y - y);
+            break;
+        }
+        case "triangle": {
+            const { x, y } = shapeRef.current.attrs;
+            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
+            (shapeRef.current as Konva.RegularPolygon).radius(radius);
+            break;
+        }
+        case "circle": {
+            const { x, y } = shapeRef.current.attrs;
+            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
+            (shapeRef.current as Konva.Circle).radius(radius);
+            break;
+        }
+        case "line":
+        case "arrow": {
+            const [...points] = (shapeRef.current as Konva.Line).points();
+            if (points.length === 0) break;
+            (shapeRef.current as Konva.Line).points([points[0], points[1], pointer.x, pointer.y]);
+            break;
+        }
+        case "path": {
+            const [...points] = (shapeRef.current as Konva.Line).points();
+            if (points.length === 0) break;
+            (shapeRef.current as Konva.Line).points([...points, pointer.x, pointer.y]);
+            break;
+        }
+    }
+};
+
+/**
+ * handle mouse up event on canvas to stop drawing shapes
+ * if tool is eraser, delete shapes form deleteObjectRef
+ * set shapeRef to actual Konva shape
+ * set shapeRef and selectedToolRef to null
+ */
+export const handleCanvasMouseUp = ({ stage, shapeRef, selectedToolRef, deleteObjectRef, setTool, createEvent }: CanvasMouseUp) => {
+    if (!selectedToolRef.current) return;
+
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current !== null) {
         deleteObjectRef.current.forEach((object) => {
-            if (object?.uid) {
-                canvas.remove(object);
+            if (object?.id()) {
+                object.destroy();
 
-                // sync in storage
                 handleCreateEvent({
                     action: "DELETE",
                     object,
@@ -165,18 +128,13 @@ export const handleCanvasMouseUp = ({
                 });
             }
         });
-
-        canvas.requestRenderAll();
-        return;
     }
 
     // sync shape in storage
-    if (shapeRef.current?.uid) {
-        // set active object to current shape
-        canvas.setActiveObject(shapeRef.current);
-        shapeRef.current.setCoords();
+    if (shapeRef.current?.id()) {
+        const tr = new Konva.Transformer(transformerConfig([shapeRef.current]));
+        stage.getLayers()[0].add(tr);
 
-        // sync in storage
         handleCreateEvent({
             action: "CREATE",
             object: shapeRef.current,
@@ -184,99 +142,177 @@ export const handleCanvasMouseUp = ({
         });
     }
 
-    // set everything to null
     shapeRef.current = null;
     selectedToolRef.current = null;
+    deleteObjectRef.current = null;
 
-    // if canvas is not in drawing mode, set active element to select
-    if (!canvas.isDrawingMode) setTool("select");
+    setTool("select");
 };
 
-// update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, createEvent }: CanvasObjectModified) => {
-    const target = options.target;
-    if (!target) return;
+export const handleCanvasDoubleClick = ({ e, stage, isEditing, createEvent }: CanvasDoubleClick) => {
+    if (isEditing.current) return;
+    if (!(e.target instanceof Konva.Text)) return;
 
-    if (target instanceof fabric.ActiveSelection) {
-        // console.log("activeselection", { target });
-    } else {
-        // sync shape in storage
-        if (target?.uid) {
+    isEditing.current = true;
+
+    const tNode = e.target;
+    const layer = stage.getLayers()[0];
+
+    // Hide the text node and its transformer
+    tNode.hide();
+    const tr = layer.findOne("Transformer");
+    if (tr) tr.hide();
+    layer.draw();
+
+    // Get position relative to the stage container
+    const textPosition = tNode.absolutePosition();
+    const stageBox = stage.container().getBoundingClientRect();
+
+    const areaPosition = {
+        x: stageBox.left + textPosition.x,
+        y: stageBox.top + textPosition.y,
+    };
+
+    // Create textarea for editing
+    const textarea = document.createElement("textarea");
+    document.body.appendChild(textarea);
+
+    textarea.value = tNode.text();
+    textarea.style.position = "absolute";
+    textarea.style.top = areaPosition.y + "px";
+    textarea.style.left = areaPosition.x + "px";
+    textarea.style.width = tNode.width() - tNode.padding() * 2 + "px";
+    textarea.style.height = tNode.height() - tNode.padding() * 2 + 5 + "px";
+    textarea.style.fontSize = tNode.fontSize() + "px";
+    textarea.style.border = "none";
+    textarea.style.padding = "0px";
+    textarea.style.margin = "0px";
+    textarea.style.overflow = "hidden";
+    textarea.style.background = "none";
+    textarea.style.outline = "none";
+    textarea.style.resize = "none";
+    textarea.style.lineHeight = tNode.lineHeight()?.toString() || "1";
+    textarea.style.fontFamily = tNode.fontFamily();
+    textarea.style.transformOrigin = "left top";
+    textarea.style.textAlign = tNode.align();
+    textarea.style.color = tNode.fill()?.toString() || "#000";
+
+    const rotation = tNode.rotation();
+    let transform = "";
+    if (rotation) {
+        transform += "rotateZ(" + rotation + "deg)";
+    }
+    transform += "translateY(-2px)";
+    textarea.style.transform = transform;
+
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + 3 + "px";
+
+    textarea.focus();
+
+    function removeTextarea() {
+        textarea.parentNode?.removeChild(textarea);
+        window.removeEventListener("click", handleOutsideClick);
+        window.removeEventListener("touchstart", handleOutsideClick);
+        tNode.show();
+        if (tr) tr.show();
+        layer.draw();
+        isEditing.current = false;
+    }
+
+    function setTextareaWidth(newWidth = 0) {
+        if (!newWidth) {
+            newWidth = tNode.text().length * tNode.fontSize();
+        }
+        textarea.style.width = newWidth + "px";
+    }
+
+    textarea.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            tNode.text(textarea.value);
             handleCreateEvent({
                 action: "UPDATE",
-                object: target,
+                object: tNode,
                 createEvent,
             });
+            removeTextarea();
+        }
+        if (e.key === "Escape") {
+            removeTextarea();
+        }
+    });
+
+    textarea.addEventListener("input", function () {
+        const scale = tNode.getAbsoluteScale().x;
+        setTextareaWidth(tNode.width() * scale);
+        textarea.style.height = "auto";
+        textarea.style.height = textarea.scrollHeight + tNode.fontSize() + "px";
+    });
+
+    function handleOutsideClick(e: MouseEvent | TouchEvent) {
+        if (e.target !== textarea) {
+            tNode.text(textarea.value);
+            handleCreateEvent({
+                action: "UPDATE",
+                object: tNode,
+                createEvent,
+            });
+            removeTextarea();
         }
     }
-};
 
-// update shape in storage when path is created when in path mode
-export const handlePathCreated = ({ options, createEvent }: CanvasPathCreated) => {
-    // get path object
-    const path = options.path;
-    if (!path) return;
-
-    // set unique id to path object
-    path.set({ uid: uuid4() });
-
-    // sync shape in storage
-    if (path?.uid) {
-        handleCreateEvent({
-            action: "CREATE",
-            object: path,
-            createEvent,
-        });
-    }
+    setTimeout(() => {
+        window.addEventListener("click", handleOutsideClick);
+        window.addEventListener("touchstart", handleOutsideClick);
+    }, 0);
 };
 
 // render canvas objects coming from storage on canvas
-export const renderCanvas = ({ fabricRef, shapes }: RenderCanvas) => {
+export const renderCanvas = ({ stageRef, shapes }: RenderCanvas) => {
+    if (!stageRef.current) return;
+
     // clear canvas
-    fabricRef.current?.clear();
+    stageRef.current.getLayers()[0].destroyChildren();
 
     // render all objects on canvas
     shapes.forEach((object, key) => {
-        fabric.util.enlivenObjects([object]).then((enlivenedObjects) => {
-            enlivenedObjects.forEach((enlivenedObj) => {
-                const object = enlivenedObj as fabric.FabricObject;
-                object.set({ uid: key });
-
-                // add object to canvas
-                if (object?.uid) fabricRef.current?.add(object);
-            });
-        });
+        const shape = Konva.Node.create(object, undefined);
+        shape.setAttr("id", key);
+        stageRef.current?.getLayers()[0].add(shape);
     });
-
-    fabricRef.current?.requestRenderAll();
 };
 
 // resize canvas dimensions on window resize
-export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
+export const handleResize = ({ stage }: { stage: Konva.Stage | null }) => {
     const canvasElement = document.getElementById("canvas");
-    if (!canvas || !canvasElement) return;
+    if (!stage || !canvasElement) return;
 
-    canvas.setDimensions({ width: canvasElement.clientWidth, height: canvasElement.clientHeight });
+    stage.width(canvasElement.clientWidth);
+    stage.height(canvasElement.clientHeight);
 };
 
 // zoom canvas on mouse scroll
-export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
-    const delta = options.e?.deltaY;
-    let zoom = canvas.getZoom();
+export const handleCanvasZoom = ({ options, stage, setZoom }: CanvasZoom) => {
+    const scaleBy = 1.1;
+    const oldScale = stage.scaleX();
 
-    // allow zooming to min 100% and max 1000%
-    const minZoom = 1;
-    const maxZoom = 10;
-    const zoomStep = 0.001;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
 
-    // calculate zoom based on mouse scroll wheel with min and max zoom
-    zoom = Math.min(Math.max(minZoom, zoom + delta * zoomStep), maxZoom);
+    const mousePointTo = {
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale,
+    };
 
-    // set zoom to canvas
-    // zoomToPoint: http://fabricjs.com/docs/fabric.Canvas.html#zoomToPoint
-    setZoom(zoom);
-    canvas.zoomToPoint(new fabric.Point({ x: options.e.offsetX, y: options.e.offsetY }), zoom);
+    const newScale = options.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-    options.e.preventDefault();
-    options.e.stopPropagation();
+    setZoom(newScale);
+    stage.scale({ x: newScale, y: newScale });
+
+    const newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+    };
+    stage.position(newPos);
 };

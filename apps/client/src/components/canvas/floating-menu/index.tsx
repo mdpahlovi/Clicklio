@@ -7,15 +7,15 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import { Divider, Sheet, styled } from "@mui/joy";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { useCallback } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
+export default function FloatingMenu({ stageRef }: FloatingMenuProps) {
     const { createEvent } = useEventStore();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
 
-    const debouncedUpdate = useDebouncedCallback((object: fabric.Object) => {
+    const debouncedUpdate = useDebouncedCallback((object: Konva.Node) => {
         handleCreateEvent({
             action: "UPDATE",
             object,
@@ -24,46 +24,44 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     }, 300);
 
     const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
-        if (!fabricRef.current) return;
-        const selectedElement = fabricRef.current.getActiveObject();
-        if (!selectedElement || selectedElement?.type === "activeSelection") return;
+        if (!stageRef.current) return;
+        const selectedElement = stageRef.current.findOne("." + currentObject?.id());
+        if (!selectedElement) return;
 
         switch (property) {
             case "fontSize":
-                selectedElement.set({ fontSize: Number(value) });
+                selectedElement.setAttr("fontSize", Number(value));
                 break;
             case "fontFamily":
-                selectedElement.set({ fontFamily: value });
+                selectedElement.setAttr("fontFamily", value);
                 break;
             case "fontWeight":
-                selectedElement.set({ fontWeight: value });
+                selectedElement.setAttr("fontWeight", value);
                 break;
             case "fill":
-                selectedElement.set({ fill: value ? value : null });
+                selectedElement.setAttr("fill", value ? value : null);
                 break;
             case "stroke":
-                selectedElement.set({ stroke: value ? value : null });
+                selectedElement.setAttr("stroke", value ? value : null);
                 break;
             case "strokeWidth":
-                selectedElement.set({ strokeWidth: Number(value) });
+                selectedElement.setAttr("strokeWidth", Number(value));
                 break;
             case "opacity":
-                selectedElement.set({ opacity: Number(value) });
+                selectedElement.setAttr("opacity", Number(value));
                 break;
         }
 
-        fabricRef.current.requestRenderAll();
-
-        if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
+        if (selectedElement?.id() && selectedElement?.id() !== "webcam") {
             debouncedUpdate(selectedElement);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    if (fabricRef?.current && currentObject) {
+    if (stageRef?.current && currentObject) {
         return (
             <FloatingMenuSheet onClick={(e) => e.stopPropagation()}>
-                {currentObject?.type === "i-text" ? (
+                {currentObject?.getClassName() === "Text" ? (
                     <Text
                         open={!!openedFloatingMenu["text"]}
                         onOpenChange={() => setOpenedFloatingMenu("text")}
@@ -88,7 +86,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
                     {...{ currentObject, handleInputChange }}
                 />
                 <Divider orientation="vertical" />
-                <Actions {...{ fabricRef, currentObject }} />
+                <Actions {...{ stageRef, currentObject }} />
             </FloatingMenuSheet>
         );
     } else {

@@ -14,6 +14,7 @@ import {
 } from "@/components/icons";
 import type { Tool } from "@/types";
 import { Divider } from "@mui/joy";
+import type Konva from "konva";
 
 export const navElements: {
     value?: Tool;
@@ -116,3 +117,11 @@ export const editors = [
     { name: "Decrease font size", key: "Ctrl + Shift + <" },
     { name: "Increase font size", key: "Ctrl + Shift + >" },
 ];
+
+export const transformerConfig = (nodes: Konva.Node[]) => ({
+    nodes,
+    anchorFill: "#4882ed",
+    anchorStroke: "#4882ed",
+    anchorSize: 12,
+    anchorCornerRadius: 6,
+});

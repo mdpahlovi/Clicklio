@@ -14,14 +14,14 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
             <Tooltip title={name.charAt(0).toUpperCase() + name.slice(1)}>
                 <MenuButton slots={{ root: IconButton }}>
                     {name === "fill" ? (
-                        <ColorIcon color={currentObject?.fill as string} />
+                        <ColorIcon color={currentObject?.attrs.fill as string} />
                     ) : (
                         <Box
                             style={{
                                 width: 14,
                                 height: 14,
                                 borderRadius: 9999,
-                                border: `2px solid ${currentObject?.stroke || "white"}`,
+                                border: `2px solid ${currentObject?.attrs.stroke || "white"}`,
                             }}
                         />
                     )}
@@ -31,7 +31,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                 {name === "stroke" ? <StrokeWidth {...{ currentObject, handleInputChange }} /> : null}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     <ColorBox
-                        active={currentObject?.fill === null}
+                        active={currentObject?.attrs.fill === null}
                         onClick={() => handleInputChange(name, "")}
                         style={{ backgroundColor: "white", backgroundImage }}
                     />
@@ -41,7 +41,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
                             key={color}
                             style={{ backgroundColor: color }}
                             onClick={() => handleInputChange(name, color)}
-                            active={name === "fill" ? color === currentObject?.fill : color === currentObject?.stroke}
+                            active={name === "fill" ? color === currentObject?.attrs.fill : color === currentObject?.attrs.stroke}
                         />
                     ))}
                 </div>

@@ -3,7 +3,6 @@ import { Box, type BoxProps } from "@mui/joy";
 export default function CanvasContainer({ children }: BoxProps) {
     return (
         <Box
-            id="canvas"
             sx={({ palette: { mode, background } }) => ({
                 position: "relative",
                 width: "100%",

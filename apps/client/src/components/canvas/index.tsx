@@ -5,15 +5,15 @@ import CanvasContainer from "./canvas-container";
 import FloatingMenu from "./floating-menu";
 import Toolbar from "./toolbar";
 
-export default function Canvas({ canvasRef, fabricRef, selectedToolRef }: CanvasProps) {
+export default function Canvas({ stageRef, selectedToolRef }: CanvasProps) {
     return (
         <CanvasContainer>
             <RemoteCursor />
-            <FloatingMenu {...{ fabricRef }} />
-            <Toolbar {...{ fabricRef, selectedToolRef }} />
-            <BottomToolbar {...{ fabricRef }} />
+            <FloatingMenu {...{ stageRef }} />
+            <Toolbar {...{ stageRef, selectedToolRef }} />
+            <BottomToolbar {...{ stageRef }} />
 
-            <canvas ref={canvasRef} />
+            <div id="canvas" />
         </CanvasContainer>
     );
 }

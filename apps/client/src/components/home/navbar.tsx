@@ -7,18 +7,17 @@ import { Button, IconButton, Sheet, styled } from "@mui/joy";
 import { Link } from "react-router-dom";
 
 type NavbarProps = {
-    canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModalOpen }: NavbarProps) {
+export default function Navbar({ setIsGuideModalOpen, setIsShareModalOpen }: NavbarProps) {
     const { user } = useAuthState();
 
     return (
         <>
             <NavbarSheet position="left">
-                <Menubar {...{ canvasRef, setIsGuideModalOpen }} />
+                <Menubar {...{ setIsGuideModalOpen }} />
             </NavbarSheet>
             <NavbarSheet position="right">
                 <RoomUsers />

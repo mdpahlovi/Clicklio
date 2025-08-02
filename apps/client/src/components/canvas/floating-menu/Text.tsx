@@ -2,7 +2,7 @@ import { ParagraphIcon } from "@/components/icons";
 import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
 import type { FloatingMenuItemProps, FloatingMenuSubItemProps } from "@/types";
 import { Dropdown, IconButton, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
-import * as fabric from "fabric";
+import Konva from "konva";
 
 type Property = "fontFamily" | "fontSize" | "fontWeight";
 type SelectConfig = { property: Property; options: { label: string; value: string }[] };
@@ -33,7 +33,7 @@ export default function Text({ open, onOpenChange, currentObject, handleInputCha
 }
 
 function RenderSelect({ currentObject, config: { property, options }, handleInputChange }: RenderSelectProps) {
-    const defaultValue = currentObject ? (currentObject as fabric.IText)[property] : "";
+    const defaultValue = currentObject ? (currentObject as Konva.Text)[property]() : "";
 
     return (
         <Select key={property} value={String(defaultValue)} onChange={(e) => handleInputChange(property, String(e.target.value))}>

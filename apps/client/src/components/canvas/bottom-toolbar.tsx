@@ -1,13 +1,4 @@
-import {
-    MinusIcon,
-    PlusIcon,
-    PreviewIcon,
-    RedoIcon,
-    ScreenRecordStartIcon,
-    ScreenRecordStopIcon,
-    UndoIcon,
-    WebcamIcon,
-} from "@/components/icons";
+import { MinusIcon, PlusIcon, PreviewIcon, RedoIcon, ScreenRecordStartIcon, ScreenRecordStopIcon, UndoIcon, WebcamIcon } from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
@@ -15,12 +6,12 @@ import { downloadMedia } from "@/utils/download";
 import { handleCreateEvent } from "@/utils/event";
 import { handleMediaError } from "@/utils/utils";
 import { Button, Divider, IconButton, Sheet, styled, Tooltip } from "@mui/joy";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { ReactMediaRecorder } from "react-media-recorder";
 
-export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
+export default function BottomToolbar({ stageRef }: { stageRef: React.RefObject<Konva.Stage | null> }) {
     const { zoom, setZoom, setUserMedia } = useCanvasState();
     const { createEvent, canUndo, canRedo } = useEventStore();
 
@@ -30,34 +21,30 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Tooltip title="Webcam" placement="top">
                     <IconButton
                         onClick={() => {
-                            const canvas = fabricRef.current;
+                            const stage = stageRef.current;
+                            if (!stage) return;
 
-                            if (canvas) {
-                                navigator.mediaDevices
-                                    .getUserMedia({ video: { width: 320, height: 320 } })
-                                    .then((stream) => {
-                                        setUserMedia(stream);
+                            navigator.mediaDevices
+                                .getUserMedia({ video: { width: 320, height: 320 } })
+                                .then((stream) => {
+                                    setUserMedia(stream);
 
-                                        const webcam = document.getElementById("webcam") as HTMLVideoElement;
-                                        webcam.srcObject = stream;
+                                    const webcam = document.getElementById("webcam") as HTMLVideoElement;
+                                    webcam.srcObject = stream;
 
-                                        webcam.onloadedmetadata = () => {
-                                            const object = new fabric.FabricImage(webcam, {
-                                                uid: "webcam",
-                                                objectCaching: false,
-                                            });
+                                    webcam.onloadedmetadata = () => {
+                                        const image = new Konva.Image({
+                                            image: webcam,
+                                            draggable: true,
+                                            width: 100,
+                                            height: 100,
+                                        });
 
-                                            object.scaleToWidth(100);
-                                            canvas.add(object);
-
-                                            fabric.util.requestAnimFrame(function render() {
-                                                canvas.requestRenderAll();
-                                                fabric.util.requestAnimFrame(render);
-                                            });
-                                        };
-                                    })
-                                    .catch((error) => handleMediaError(error));
-                            }
+                                        const layer = stage.getLayers()[0];
+                                        layer.add(image);
+                                    };
+                                })
+                                .catch((error) => handleMediaError(error));
                         }}
                     >
                         <WebcamIcon />
@@ -95,9 +82,9 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
             <BottomToolbarSheet position="right">
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {
+                        if (stageRef.current && Number(zoom.toFixed(1)) <= 10) {
                             setZoom(zoom + 0.1);
-                            fabricRef.current.setZoom(zoom + 0.1);
+                            stageRef.current.scale({ x: zoom + 0.1, y: zoom + 0.1 });
                         }
                     }}
                     disabled={Number(zoom.toFixed(1)) >= 10}
@@ -111,9 +98,9 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     variant="plain"
                     sx={{ display: { xs: "none", sm: "block" }, width: 96 }}
                     onClick={() => {
-                        if (fabricRef.current) {
+                        if (stageRef.current) {
                             setZoom(2);
-                            fabricRef.current.setZoom(2);
+                            stageRef.current.scale({ x: 2, y: 2 });
                         }
                     }}
                 >
@@ -122,9 +109,9 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && Number(zoom.toFixed(1)) >= 1) {
+                        if (stageRef.current && Number(zoom.toFixed(1)) >= 1) {
                             setZoom(zoom - 0.1);
-                            fabricRef.current.setZoom(zoom - 0.1);
+                            stageRef.current.scale({ x: zoom - 0.1, y: zoom - 0.1 });
                         }
                     }}
                     disabled={Number(zoom.toFixed(1)) <= 1}

@@ -4,7 +4,6 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
 
 type ManubarProps = {
-    canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 type MenuItemProps = {
@@ -15,7 +14,7 @@ type MenuItemProps = {
     disabled?: boolean;
 };
 
-export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps) {
+export default function Menubar({ setIsGuideModalOpen }: ManubarProps) {
     const { resetEvent } = useEventStore();
     const { setRefresh } = useCanvasState();
 
@@ -34,13 +33,7 @@ export default function Menubar({ canvasRef, setIsGuideModalOpen }: ManubarProps
             label: "Export image",
             icon: <ImageDownloadIcon />,
             onClick: () => {
-                if (canvasRef.current) {
-                    const dataUrl = canvasRef.current.toDataURL("image/png");
-                    const link = document.createElement("a");
-                    link.download = "canvas-image.png";
-                    link.href = dataUrl;
-                    link.click();
-                }
+                // Implement export image logic for Konva
             },
         },
         {
