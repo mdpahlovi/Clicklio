@@ -3,7 +3,6 @@ import { handleCreateEvent } from "@/utils/event";
 import Konva from "konva";
 import type { Vector2d } from "konva/lib/types";
 import { v4 as uuid } from "uuid";
-import { transformerConfig } from "../constants";
 
 export const createRectangle = (pointer: Vector2d, baseColor: string) => {
     return new Konva.Rect({
@@ -13,7 +12,6 @@ export const createRectangle = (pointer: Vector2d, baseColor: string) => {
         height: 0,
         fill: baseColor,
         id: uuid(),
-        draggable: true,
     });
 };
 
@@ -25,7 +23,6 @@ export const createTriangle = (pointer: Vector2d, baseColor: string) => {
         radius: 0,
         fill: baseColor,
         id: uuid(),
-        draggable: true,
     });
 };
 
@@ -36,7 +33,6 @@ export const createCircle = (pointer: Vector2d, baseColor: string) => {
         radius: 0,
         fill: baseColor,
         id: uuid(),
-        draggable: true,
     });
 };
 
@@ -46,7 +42,7 @@ export const createLine = (pointer: Vector2d, baseColor: string) => {
         stroke: baseColor,
         strokeWidth: 2,
         id: uuid(),
-        draggable: true,
+
         hitStrokeWidth: 15,
         perfectDrawEnabled: false,
     });
@@ -59,7 +55,7 @@ export const createArrow = (pointer: Vector2d, baseColor: string) => {
         stroke: baseColor,
         strokeWidth: 2,
         id: uuid(),
-        draggable: true,
+
         hitStrokeWidth: 15,
         pointerLength: 10,
         pointerWidth: 10,
@@ -73,7 +69,7 @@ export const createPath = (pointer: Vector2d, baseColor: string) => {
         stroke: baseColor,
         strokeWidth: 2,
         id: uuid(),
-        draggable: true,
+
         hitStrokeWidth: 15,
         lineCap: "round",
         lineJoin: "round",
@@ -89,9 +85,8 @@ export const createText = (pointer: Vector2d, baseColor: string) => {
         fill: baseColor,
         fontFamily: "Poppins",
         fontSize: 16,
-        fontWeight: "400",
+        fontStyle: "normal",
         id: uuid(),
-        draggable: true,
     });
 };
 
@@ -117,7 +112,7 @@ export const createSpecificShape = (shape: Tool, pointer: Vector2d) => {
         case "path":
             return createPath(pointer, baseColor);
 
-        case "i-text":
+        case "text":
             return createText(pointer, baseColor);
     }
 };
@@ -129,18 +124,12 @@ export const handleImageUpload = ({ file, stageRef, createEvent }: ImageUpload) 
         Konva.Image.fromURL(reader.result as string, (image) => {
             const height = 160 * (image.height() / image.width());
 
-            image.setAttrs({
-                id: uuid(),
-                draggable: true,
-                perfectDrawEnabled: false,
-            });
+            image.id(uuid());
             image.width(160);
             image.height(height);
-            const tr = new Konva.Transformer(transformerConfig([image]));
 
             if (stageRef?.current && image?.id()) {
                 stageRef.current.getLayers()[0].add(image);
-                stageRef.current.getLayers()[0].add(tr);
 
                 handleCreateEvent({
                     action: "CREATE",

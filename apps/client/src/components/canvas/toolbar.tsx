@@ -16,37 +16,11 @@ export default function Toolbar({ stageRef, selectedToolRef }: ToolbarProps) {
         if (stage) {
             switch (tool) {
                 case "panning":
-                    stage.container().style.cursor = "grabbing";
+                    stage.container().style.cursor = "grab";
+                    selectedToolRef.current = tool;
                     break;
                 case "select":
                     stage.container().style.cursor = "default";
-                    break;
-                case "rect":
-                    stage.container().style.cursor = "crosshair";
-                    selectedToolRef.current = tool;
-                    break;
-                case "triangle":
-                    stage.container().style.cursor = "crosshair";
-                    selectedToolRef.current = tool;
-                    break;
-                case "circle":
-                    stage.container().style.cursor = "crosshair";
-                    selectedToolRef.current = tool;
-                    break;
-                case "line":
-                    stage.container().style.cursor = "crosshair";
-                    selectedToolRef.current = tool;
-                    break;
-                case "arrow":
-                    stage.container().style.cursor = "crosshair";
-                    selectedToolRef.current = tool;
-                    break;
-                case "path":
-                    stage.container().style.cursor = "crosshair";
-                    selectedToolRef.current = tool;
-                    break;
-                case "i-text":
-                    stage.container().style.cursor = "crosshair";
                     selectedToolRef.current = tool;
                     break;
                 case "image":
@@ -55,6 +29,10 @@ export default function Toolbar({ stageRef, selectedToolRef }: ToolbarProps) {
                     break;
                 case "eraser":
                     stage.container().style.cursor = circle("dark");
+                    selectedToolRef.current = tool;
+                    break;
+                default:
+                    stage.container().style.cursor = "crosshair";
                     selectedToolRef.current = tool;
                     break;
             }

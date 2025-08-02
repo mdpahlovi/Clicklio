@@ -1,17 +1,17 @@
 import { ParagraphIcon } from "@/components/icons";
-import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
+import { fontFamilyOptions, fontSizeOptions, fontStyleOptions } from "@/constants";
 import type { FloatingMenuItemProps, FloatingMenuSubItemProps } from "@/types";
 import { Dropdown, IconButton, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
 import Konva from "konva";
 
-type Property = "fontFamily" | "fontSize" | "fontWeight";
+type Property = "fontFamily" | "fontSize" | "fontStyle";
 type SelectConfig = { property: Property; options: { label: string; value: string }[] };
 type RenderSelectProps = { config: SelectConfig } & FloatingMenuSubItemProps;
 
 const selectConfigs: SelectConfig[] = [
     { property: "fontFamily", options: fontFamilyOptions },
     { property: "fontSize", options: fontSizeOptions },
-    { property: "fontWeight", options: fontWeightOptions },
+    { property: "fontStyle", options: fontStyleOptions },
 ];
 
 export default function Text({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {

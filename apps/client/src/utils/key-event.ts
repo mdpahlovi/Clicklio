@@ -91,7 +91,7 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
     // Check if key pressed is P (Pencil Tool)
     if (e.keyCode === 80) setTool("path");
     // Check if key pressed is A (Text Tool)
-    if (e.keyCode === 65) setTool("i-text");
+    if (e.keyCode === 65) setTool("text");
     // Check if key pressed is I (Image Tool)
     if (e.keyCode === 73) setTool("image");
     // Check if key pressed is E (Eraser Tool)

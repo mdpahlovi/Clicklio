@@ -1,4 +1,13 @@
-import { MinusIcon, PlusIcon, PreviewIcon, RedoIcon, ScreenRecordStartIcon, ScreenRecordStopIcon, UndoIcon, WebcamIcon } from "@/components/icons";
+import {
+    MinusIcon,
+    PlusIcon,
+    PreviewIcon,
+    RedoIcon,
+    ScreenRecordStartIcon,
+    ScreenRecordStopIcon,
+    UndoIcon,
+    WebcamIcon,
+} from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
@@ -34,10 +43,10 @@ export default function BottomToolbar({ stageRef }: { stageRef: React.RefObject<
 
                                     webcam.onloadedmetadata = () => {
                                         const image = new Konva.Image({
+                                            id: "webcam",
                                             image: webcam,
-                                            draggable: true,
-                                            width: 100,
-                                            height: 100,
+                                            width: 160,
+                                            height: 160,
                                         });
 
                                         const layer = stage.getLayers()[0];

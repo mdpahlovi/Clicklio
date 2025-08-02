@@ -6,14 +6,14 @@ type Action = "CREATE" | "UPDATE" | "DELETE" | "UNDO" | "REDO";
 export type Attributes = {
     fontSize: string;
     fontFamily: string;
-    fontWeight: string;
+    fontStyle: string;
     fill: string;
     stroke: string;
     strokeWidth: string;
     opacity: string;
 };
 
-export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "arrow" | "path" | "i-text" | "image" | "eraser";
+export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "arrow" | "path" | "text" | "image" | "eraser";
 
 export type CanvasProps = {
     stageRef: React.RefObject<Konva.Stage | null>;
@@ -66,6 +66,8 @@ export type CanvasMouseDown = {
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<Konva.Shape | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
+    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
+    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
 };
 
 export type CanvasMouseMove = {
@@ -74,6 +76,8 @@ export type CanvasMouseMove = {
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<Konva.Shape | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
+    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
+    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
 };
 
 export type CanvasMouseUp = {
@@ -82,8 +86,19 @@ export type CanvasMouseUp = {
     shapeRef: React.RefObject<Konva.Shape | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
+    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
+    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
+
     setTool: (tool: Tool) => void;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
+    setCurrentObject: (object: Konva.Node | null) => void;
+};
+
+export type CanvasClick = {
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>;
+    stage: Konva.Stage;
+
+    setCurrentObject: (object: Konva.Node | null) => void;
 };
 
 export type CanvasDoubleClick = {

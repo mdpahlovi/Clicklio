@@ -20,11 +20,9 @@ export default function HomePage() {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const { room, refresh, setRefresh } = useCanvasState();
-    const { events, shapes, createEvent, resetEvent } = useEventStore();
+    const { shapes, createEvent, resetEvent } = useEventStore();
     const { stageRef, selectedToolRef } = useCanvas();
     const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser } = useUserStore();
-
-    console.log({ events });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => renderCanvas({ shapes, stageRef }), [refresh]);

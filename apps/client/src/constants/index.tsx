@@ -41,7 +41,7 @@ export const navElements: {
         ],
     },
     { icon: <PenIcon />, name: "Draw", value: "path", type: "tool" },
-    { icon: <TextIcon />, name: "Text", value: "i-text", type: "tool" },
+    { icon: <TextIcon />, name: "Text", value: "text", type: "tool" },
     { icon: <ImageAddIcon />, name: "Image", value: "image", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     { icon: <EraserIcon />, name: "Eraser", value: "eraser", type: "tool" },
@@ -72,7 +72,7 @@ export const fontSizeOptions = [
     { value: "36", label: "36" },
 ];
 
-export const fontWeightOptions = [
+export const fontStyleOptions = [
     { value: "400", label: "Normal" },
     { value: "500", label: "Medium" },
     { value: "600", label: "Semibold" },

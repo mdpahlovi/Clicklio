@@ -4,6 +4,7 @@ import Konva from "konva";
 import { useEffect, useRef } from "react";
 
 import {
+    handleCanvasClick,
     handleCanvasDoubleClick,
     handleCanvasMouseDown,
     handleCanvasMouseMove,
@@ -28,20 +29,53 @@ export function useCanvas() {
     const selectedToolRef = useRef<Tool | null>(null);
     const copiedObjectRef = useRef<Konva.Node | null>(null);
     const deleteObjectRef = useRef<Map<string, Konva.Node> | null>(null);
+    const lastPanPointRef = useRef<{ x: number; y: number } | null>(null);
+    const selectRPointRef = useRef<{ x: number; y: number } | null>(null);
 
     useEffect(() => {
         const stage = initializeKonva({ stageRef });
 
         stage.on("mousedown touchstart", (e) => {
-            handleCanvasMouseDown({ e, stage, shapeRef, selectedToolRef, deleteObjectRef });
+            handleCanvasMouseDown({
+                e,
+                stage,
+                shapeRef,
+                selectedToolRef,
+                deleteObjectRef,
+                lastPanPointRef,
+                selectRPointRef,
+            });
         });
 
         stage.on("mousemove touchmove", (e) => {
-            handleCanvasMouseMove({ e, stage, shapeRef, selectedToolRef, deleteObjectRef });
+            handleCanvasMouseMove({
+                e,
+                stage,
+                shapeRef,
+                selectedToolRef,
+                deleteObjectRef,
+                lastPanPointRef,
+                selectRPointRef,
+            });
         });
 
         stage.on("mouseup touchend", (e) => {
-            handleCanvasMouseUp({ e, stage, shapeRef, selectedToolRef, deleteObjectRef, setTool, createEvent });
+            handleCanvasMouseUp({
+                e,
+                stage,
+                shapeRef,
+                selectedToolRef,
+                deleteObjectRef,
+                lastPanPointRef,
+                selectRPointRef,
+                setTool,
+                createEvent,
+                setCurrentObject,
+            });
+        });
+
+        stage.on("click tap", (e) => {
+            handleCanvasClick({ e, stage, setCurrentObject });
         });
 
         stage.on("dblclick dbltap", (e) => {

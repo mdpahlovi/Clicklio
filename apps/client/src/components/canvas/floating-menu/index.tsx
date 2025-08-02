@@ -25,34 +25,36 @@ export default function FloatingMenu({ stageRef }: FloatingMenuProps) {
 
     const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
         if (!stageRef.current) return;
-        const selectedElement = stageRef.current.findOne("." + currentObject?.id());
+        const selectedElement = stageRef.current.findOne("#" + currentObject?.id());
         if (!selectedElement) return;
+
+        console.log(selectedElement);
 
         switch (property) {
             case "fontSize":
-                selectedElement.setAttr("fontSize", Number(value));
+                (selectedElement as Konva.Text).fontSize(Number(value));
                 break;
             case "fontFamily":
-                selectedElement.setAttr("fontFamily", value);
+                (selectedElement as Konva.Text).fontFamily(value);
                 break;
-            case "fontWeight":
-                selectedElement.setAttr("fontWeight", value);
+            case "fontStyle":
+                (selectedElement as Konva.Text).fontStyle(value);
                 break;
             case "fill":
-                selectedElement.setAttr("fill", value ? value : null);
+                (selectedElement as Konva.Rect).fill(value ? value : null);
                 break;
             case "stroke":
-                selectedElement.setAttr("stroke", value ? value : null);
+                (selectedElement as Konva.Rect).stroke(value ? value : null);
                 break;
             case "strokeWidth":
-                selectedElement.setAttr("strokeWidth", Number(value));
+                (selectedElement as Konva.Rect).strokeWidth(Number(value));
                 break;
             case "opacity":
-                selectedElement.setAttr("opacity", Number(value));
+                (selectedElement as Konva.Rect).opacity(Number(value));
                 break;
         }
 
-        if (selectedElement?.id() && selectedElement?.id() !== "webcam") {
+        if (selectedElement.id() && selectedElement.id() !== "webcam") {
             debouncedUpdate(selectedElement);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
