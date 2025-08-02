@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import {
     handleCanvasClick,
     handleCanvasDoubleClick,
+    handleCanvasDragEnd,
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
@@ -80,6 +81,10 @@ export function useCanvas() {
 
         stage.on("dblclick dbltap", (e) => {
             handleCanvasDoubleClick({ e, stage, isEditing, createEvent });
+        });
+
+        stage.on("dragend", (e) => {
+            handleCanvasDragEnd({ e, createEvent });
         });
 
         stage.on("wheel", (options) => handleCanvasZoom({ options, stage, setZoom }));

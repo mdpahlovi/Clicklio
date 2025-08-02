@@ -12,6 +12,7 @@ export const createRectangle = (pointer: Vector2d, baseColor: string) => {
         height: 0,
         fill: baseColor,
         id: uuid(),
+        draggable: true,
     });
 };
 
@@ -23,6 +24,7 @@ export const createTriangle = (pointer: Vector2d, baseColor: string) => {
         radius: 0,
         fill: baseColor,
         id: uuid(),
+        draggable: true,
     });
 };
 
@@ -33,6 +35,7 @@ export const createCircle = (pointer: Vector2d, baseColor: string) => {
         radius: 0,
         fill: baseColor,
         id: uuid(),
+        draggable: true,
     });
 };
 
@@ -42,7 +45,7 @@ export const createLine = (pointer: Vector2d, baseColor: string) => {
         stroke: baseColor,
         strokeWidth: 2,
         id: uuid(),
-
+        draggable: true,
         hitStrokeWidth: 15,
         perfectDrawEnabled: false,
     });
@@ -55,7 +58,7 @@ export const createArrow = (pointer: Vector2d, baseColor: string) => {
         stroke: baseColor,
         strokeWidth: 2,
         id: uuid(),
-
+        draggable: true,
         hitStrokeWidth: 15,
         pointerLength: 10,
         pointerWidth: 10,
@@ -69,7 +72,7 @@ export const createPath = (pointer: Vector2d, baseColor: string) => {
         stroke: baseColor,
         strokeWidth: 2,
         id: uuid(),
-
+        draggable: true,
         hitStrokeWidth: 15,
         lineCap: "round",
         lineJoin: "round",
@@ -87,6 +90,7 @@ export const createText = (pointer: Vector2d, baseColor: string) => {
         fontSize: 16,
         fontStyle: "normal",
         id: uuid(),
+        draggable: true,
     });
 };
 
@@ -127,6 +131,7 @@ export const handleImageUpload = ({ file, stageRef, createEvent }: ImageUpload) 
             image.id(uuid());
             image.width(160);
             image.height(height);
+            image.draggable(true);
 
             if (stageRef?.current && image?.id()) {
                 stageRef.current.getLayers()[0].add(image);

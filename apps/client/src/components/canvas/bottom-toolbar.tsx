@@ -47,6 +47,7 @@ export default function BottomToolbar({ stageRef }: { stageRef: React.RefObject<
                                             image: webcam,
                                             width: 160,
                                             height: 160,
+                                            draggable: true,
                                         });
 
                                         const layer = stage.getLayers()[0];
