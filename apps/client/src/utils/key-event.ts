@@ -72,6 +72,30 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
     const zoom = stage?.scaleX();
     if (isEditing.current) return;
 
+    // Tool Selection Shortcuts
+    // Check if key pressed is H (Hand Tool)
+    if (e.keyCode === 72) setTool("panning");
+    // Check if key pressed is V (Select Tool)
+    if (e.keyCode === 86) setTool("select");
+    // Check if key pressed is R (Rectangle Tool)
+    if (e.keyCode === 82) setTool("rect");
+    // Check if key pressed is T (Triangle Tool)
+    if (e.keyCode === 84) setTool("triangle");
+    // Check if key pressed is C (Circle Tool)
+    if (e.keyCode === 67) setTool("circle");
+    // Check if key pressed is L (Line Tool)
+    if (e.keyCode === 76) setTool("line");
+    // Check if key pressed is Shift + L (Arrow Tool)
+    if (e.shiftKey && e.keyCode === 76) setTool("arrow");
+    // Check if key pressed is P (Pencil Tool)
+    if (e.keyCode === 80) setTool("path");
+    // Check if key pressed is A (Text Tool)
+    if (e.keyCode === 65) setTool("text");
+    // Check if key pressed is I (Image Tool)
+    if (e.keyCode === 73) setTool("image");
+    // Check if key pressed is E (Eraser Tool)
+    if (e.keyCode === 69) setTool("eraser");
+
     // View Controls
     // Check if the key pressed is ctrl/cmd + + (Zoom In)
     if (stage && (e?.ctrlKey || e?.metaKey) && e.keyCode === 107) {

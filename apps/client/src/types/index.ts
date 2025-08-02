@@ -7,7 +7,7 @@ type Action = "CREATE" | "UPDATE" | "DELETE" | "UNDO" | "REDO";
 export type Attributes = {
     fontSize: string;
     fontFamily: string;
-    fontWeight: string;
+    fontStyle: string;
     fill: string;
     stroke: string;
     strokeWidth: string;
@@ -81,6 +81,8 @@ export type CanvasMouseDown = {
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<Konva.Shape | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
+    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
+    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
 };
 
 export type CanvasMouseMove = {
@@ -89,6 +91,8 @@ export type CanvasMouseMove = {
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<Konva.Shape | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
+    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
+    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
 };
 
 export type CanvasMouseUp = {
@@ -97,8 +101,19 @@ export type CanvasMouseUp = {
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<Konva.Shape | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
+    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
+    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
+
     setTool: (tool: Tool) => void;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
+    setCurrentObject: (object: Konva.Node | null) => void;
+};
+
+export type CanvasClick = {
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>;
+    stage: Konva.Stage;
+
+    setCurrentObject: (object: Konva.Node | null) => void;
 };
 
 export type CanvasDoubleClick = {
