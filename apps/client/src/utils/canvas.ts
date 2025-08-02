@@ -2,6 +2,7 @@ import { transformerConfig } from "@/constants";
 import type {
     CanvasClick,
     CanvasDoubleClick,
+    CanvasDragEnd,
     CanvasMouseDown,
     CanvasMouseMove,
     CanvasMouseUp,
@@ -176,29 +177,33 @@ export const handleCanvasMouseUp = ({
     }
 
     if (selectedToolRef.current === "select" && selectRPointRef.current !== null) {
-        const selectionRectangle = stage.findOne(".selection-rectangle");
+        const selectionRectangle = stage.findOne(".selection-rectangle") as Konva.Rect;
         if (!selectionRectangle || !selectionRectangle.visible()) return;
 
-        // Handle selection logic
         if (selectionRectangle.width() > 5 || selectionRectangle.height() > 5) {
-            const tr = (stage.findOne("Transformer") || new Konva.Transformer(transformerConfig([]))) as Konva.Transformer;
-            if (!stage.findOne("Transformer")) {
-                stage.getLayers()[0].add(tr);
-            }
+            const tr = stage.findOne("Transformer") as Konva.Transformer;
 
             const box = selectionRectangle.getClientRect();
-            const allShapes = stage
-                .find("Shape")
-                .filter((node) => node !== selectionRectangle && node.getParent() !== selectionRectangle.getParent());
 
-            const selectedShapes = allShapes.filter((shape) => Konva.Util.haveIntersection(box, shape.getClientRect()));
+            // Find all selectable shapes (exclude selection rectangle, transformer, and utility shapes)
+            const selectableShapes = stage.find("Shape").filter((shape) => {
+                if (shape.name() === "selection-rectangle") return false;
+                if (shape.getParent() && shape.getParent()?.className === "Transformer") return false;
+                if (shape.name() && shape.name().includes("utility")) return false;
+                return true;
+            });
 
+            // Find shapes that intersect with selection rectangle
+            const selectedShapes = selectableShapes.filter((shape) => {
+                const shapeBox = shape.getClientRect();
+                return Konva.Util.haveIntersection(box, shapeBox);
+            });
+
+            // Apply transformer to selected shapes
             tr.nodes(selectedShapes);
         }
-        // Hide selection rectangle
-        selectionRectangle.visible(false);
 
-        // Reset selection state
+        selectionRectangle.visible(false);
         selectRPointRef.current = null;
         return;
     }
@@ -219,6 +224,25 @@ export const handleCanvasMouseUp = ({
 
     // sync shape in storage
     if (shapeRef.current?.id()) {
+        // Get or create transformer
+        let tr = (stage.findOne("Transformer") as Konva.Transformer) || undefined;
+        if (!tr) {
+            tr = new Konva.Transformer(transformerConfig([]));
+
+            tr.on("transformend", (e) => {
+                if (e.target instanceof Konva.Shape) {
+                    handleCreateEvent({
+                        action: "UPDATE",
+                        object: e.target,
+                        createEvent,
+                    });
+                }
+            });
+
+            stage.getLayers()[0].add(tr);
+        }
+
+        tr.nodes([shapeRef.current]);
         handleCreateEvent({
             action: "CREATE",
             object: shapeRef.current,
@@ -234,44 +258,36 @@ export const handleCanvasMouseUp = ({
 };
 
 export const handleCanvasClick = ({ e, stage, setCurrentObject }: CanvasClick) => {
-    const tr = (stage.findOne("Transformer") || new Konva.Transformer(transformerConfig([]))) as Konva.Transformer;
-    if (!stage.findOne("Transformer")) {
-        stage.getLayers()[0].add(tr);
-    }
+    const tr = stage.findOne("Transformer") as Konva.Transformer;
 
     // If clicking on empty area
-    if (e.target === stage) {
+    if (e.target instanceof Konva.Stage) {
         tr.nodes([]);
         setCurrentObject(null);
         return;
     }
 
     // If clicking on a shape
-    if (e.target !== stage) {
+    if (e.target instanceof Konva.Shape) {
         const isMPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
         const isSelected = tr.nodes().includes(e.target);
 
+        let nodes = [];
         if (!isMPressed) {
-            // Single selection
-            tr.nodes([e.target]);
-            setCurrentObject(e.target);
+            nodes = [e.target];
         } else {
-            // Multiple selection
-            const nodes = [...tr.nodes()];
+            nodes = [...tr.nodes()];
             if (isSelected) {
-                // Remove from selection
                 const index = nodes.indexOf(e.target);
                 if (index > -1) nodes.splice(index, 1);
             } else {
-                // Add to selection
                 nodes.push(e.target);
             }
-            tr.nodes(nodes);
-
-            // Set current object
-            if (nodes.length === 1) setCurrentObject(nodes[0]);
-            else setCurrentObject(null);
         }
+
+        tr.nodes(nodes);
+        if (nodes.length === 1) setCurrentObject(nodes[0]);
+        else setCurrentObject(null);
     }
 };
 
@@ -395,6 +411,16 @@ export const handleCanvasDoubleClick = ({ e, stage, isEditing, createEvent }: Ca
         window.addEventListener("click", handleOutsideClick);
         window.addEventListener("touchstart", handleOutsideClick);
     }, 0);
+};
+
+export const handleCanvasDragEnd = ({ e, createEvent }: CanvasDragEnd) => {
+    if (e.target instanceof Konva.Shape) {
+        handleCreateEvent({
+            action: "UPDATE",
+            object: e.target,
+            createEvent,
+        });
+    }
 };
 
 // render canvas objects coming from storage on canvas

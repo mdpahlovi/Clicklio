@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef } from "react";
 import {
     handleCanvasClick,
     handleCanvasDoubleClick,
+    handleCanvasDragEnd,
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
@@ -119,6 +120,10 @@ export function useCanvas() {
             } else {
                 setCurrentObject(clickedNode);
             }
+        });
+
+        stage.on("dragend", (e) => {
+            handleCanvasDragEnd({ e, createEvent });
         });
 
         stage.on("wheel", throttledZoom);

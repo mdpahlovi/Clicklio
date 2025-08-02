@@ -44,6 +44,7 @@ export default function BottomToolbar({ stage }: { stage: Konva.Stage }) {
                                             image: webcam,
                                             width: 160,
                                             height: 160,
+                                            draggable: true,
                                         });
 
                                         const layer = stage.getLayers()[0];

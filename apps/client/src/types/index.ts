@@ -123,6 +123,11 @@ export type CanvasDoubleClick = {
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
+export type CanvasDragEnd = {
+    e: Konva.KonvaEventObject<DragEvent>;
+    createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
+};
+
 export type RenderCanvas = {
     shapes: Map<string, Record<string, unknown>>;
     stageRef: React.RefObject<Konva.Stage | null>;
