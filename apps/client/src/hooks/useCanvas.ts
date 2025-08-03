@@ -28,8 +28,8 @@ export function useCanvas() {
     const isEditing = useRef<boolean>(false);
     const shapeRef = useRef<Konva.Shape | null>(null);
 
-    const selectedToolRef = useRef<Tool | null>(null);
-    const copiedObjectRef = useRef<Konva.Node | null>(null);
+    const selectedToolRef = useRef<Tool>("select");
+    const copiedObjectRef = useRef<Konva.Node[] | null>(null);
     const deleteObjectRef = useRef<Map<string, Konva.Node> | null>(null);
     const lastPanPointRef = useRef<{ x: number; y: number } | null>(null);
     const selectRPointRef = useRef<{ x: number; y: number } | null>(null);
@@ -74,12 +74,12 @@ export function useCanvas() {
     );
 
     useEffect(() => {
-        const stage = initializeKonva({ stageRef });
+        const konva = initializeKonva({ stageRef });
 
-        stage.on("mousedown touchstart", (e) => {
+        konva.stage.on("mousedown touchstart", (e) => {
             handleCanvasMouseDown({
                 e,
-                stage,
+                ...konva,
                 shapeRef,
                 selectedToolRef,
                 deleteObjectRef,
@@ -88,12 +88,22 @@ export function useCanvas() {
             });
         });
 
-        stage.on("mousemove touchmove", throttledMouseMove);
+        konva.stage.on("mousemove touchmove", (e) => {
+            handleCanvasMouseMove({
+                e,
+                ...konva,
+                shapeRef,
+                selectedToolRef,
+                deleteObjectRef,
+                lastPanPointRef,
+                selectRPointRef,
+            });
+        });
 
-        stage.on("mouseup touchend", (e) => {
+        konva.stage.on("mouseup touchend", (e) => {
             handleCanvasMouseUp({
                 e,
-                stage,
+                ...konva,
                 shapeRef,
                 selectedToolRef,
                 deleteObjectRef,
@@ -105,43 +115,37 @@ export function useCanvas() {
             });
         });
 
-        stage.on("click tap", (e) => {
-            handleCanvasClick({ e, stage, setCurrentObject });
+        konva.stage.on("click tap", (e) => {
+            handleCanvasClick({ e, ...konva, setCurrentObject });
         });
 
-        stage.on("dblclick dbltap", (e) => {
-            handleCanvasDoubleClick({ e, stage, isEditing, createEvent });
+        konva.stage.on("dblclick dbltap", (e) => {
+            handleCanvasDoubleClick({ e, ...konva, isEditing, createEvent });
         });
 
-        stage.on("click tap", (e) => {
-            const clickedNode = e.target;
-            if (clickedNode === stage) {
-                setCurrentObject(null);
-            } else {
-                setCurrentObject(clickedNode);
-            }
-        });
-
-        stage.on("dragend", (e) => {
+        konva.stage.on("dragend", (e) => {
             handleCanvasDragEnd({ e, createEvent });
         });
 
-        stage.on("wheel", throttledZoom);
+        konva.tr.on("transformend", (e) => {
+            handleCanvasDragEnd({ e, createEvent });
+        });
 
-        window.addEventListener("resize", throttledResize);
-        window.addEventListener("keyup", handleKeyUp);
-        window.addEventListener("keydown", handleKeyDownEvent);
+        konva.stage.on("wheel", (options) => handleCanvasZoom({ options, ...konva, setZoom }));
+
+        window.addEventListener("resize", () => handleResize({ ...konva }));
+        window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
+        window.addEventListener("keydown", (e) =>
+            handleKeyDown({ e, stage: konva.stage, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
+        );
 
         return () => {
-            stage.destroy();
-
-            throttledMouseMove.cancel();
-            throttledZoom.cancel();
-            throttledResize.cancel();
-
-            window.removeEventListener("resize", throttledResize);
-            window.removeEventListener("keyup", handleKeyUp);
-            window.removeEventListener("keydown", handleKeyDownEvent);
+            konva.stage.destroy();
+            window.removeEventListener("resize", () => handleResize({ stage: null }));
+            window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
+            window.removeEventListener("keydown", (e) =>
+                handleKeyDown({ e, stage: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
+            );
         };
     }, [throttledMouseMove, throttledZoom, throttledResize, handleKeyUp, handleKeyDownEvent]);
 

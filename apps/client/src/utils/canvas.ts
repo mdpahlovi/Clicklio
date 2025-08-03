@@ -1,4 +1,4 @@
-import { transformerConfig } from "@/constants";
+import { selectRectConfig, transformerConfig } from "@/constants";
 import type {
     CanvasClick,
     CanvasDoubleClick,
@@ -15,12 +15,12 @@ import { createSpecificShape } from "@/utils/shapes";
 import Konva from "konva";
 
 /**
- * initialize Konva stage
- * initialize Konva layer
- * add Konva layer to Konva stage
- * return Konva stage
+ * Initialize Konva stage with all essential components
+ * Creates stage, layer, transformer, and selection rectangle
+ * Returns stage with all utilities ready
  */
 export const initializeKonva = ({ stageRef }: InitializeKonva) => {
+    // Create stage
     const stage = new Konva.Stage({
         container: "canvas",
         width: window.innerWidth,
@@ -28,11 +28,19 @@ export const initializeKonva = ({ stageRef }: InitializeKonva) => {
     });
 
     stageRef.current = stage;
+
+    // Create layer
     const layer = new Konva.Layer();
 
+    // Create select rect and transformer
+    const sr = new Konva.Rect(selectRectConfig);
+    const tr = new Konva.Transformer(transformerConfig);
+
+    layer.add(sr);
+    layer.add(tr);
     stage.add(layer);
 
-    return stage;
+    return { stage, layer, sr, tr };
 };
 
 /**
@@ -40,14 +48,16 @@ export const initializeKonva = ({ stageRef }: InitializeKonva) => {
  * create shape and add it to Konva layer
  */
 export const handleCanvasMouseDown = ({
+    e,
     stage,
+    layer,
+    sr,
     selectedToolRef,
     deleteObjectRef,
     shapeRef,
     lastPanPointRef,
     selectRPointRef,
 }: CanvasMouseDown) => {
-    if (!selectedToolRef.current) return;
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
@@ -58,31 +68,18 @@ export const handleCanvasMouseDown = ({
     }
 
     if (selectedToolRef.current === "select" && selectRPointRef.current === null) {
-        // Initialize selection
+        if (e.target instanceof Konva.Shape) return;
         selectRPointRef.current = { x: pointer.x, y: pointer.y };
 
-        // Get or create selection rectangle
-        let selectionRectangle = stage.findOne(".selection-rectangle") as Konva.Rect | undefined;
-        if (!selectionRectangle) {
-            selectionRectangle = new Konva.Rect({
-                fill: "rgba(72, 130, 237, 0.3)",
-                stroke: "rgba(72, 130, 237, 1)",
-                strokeWidth: 1,
-                visible: false,
-                name: "selection-rectangle",
-                listening: false,
-            });
-            stage.getLayers()[0].add(selectionRectangle);
-        }
-
-        // Make selection rectangle visible
-        selectionRectangle.setAttrs({
+        sr.setAttrs({
             x: pointer.x,
             y: pointer.y,
             width: 0,
             height: 0,
             visible: true,
         });
+
+        sr.moveToTop();
         return;
     }
 
@@ -92,7 +89,7 @@ export const handleCanvasMouseDown = ({
     }
 
     shapeRef.current = createSpecificShape(selectedToolRef.current, pointer) || null;
-    if (shapeRef.current) stage.getLayers()[0].add(shapeRef.current);
+    if (shapeRef?.current?.id()) layer.add(shapeRef.current);
 };
 
 /**
@@ -103,13 +100,13 @@ export const handleCanvasMouseDown = ({
 export const handleCanvasMouseMove = ({
     e,
     stage,
+    sr,
     selectedToolRef,
     deleteObjectRef,
     shapeRef,
     lastPanPointRef,
     selectRPointRef,
 }: CanvasMouseMove) => {
-    if (!selectedToolRef.current) return;
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
@@ -129,15 +126,15 @@ export const handleCanvasMouseMove = ({
     }
 
     if (selectedToolRef.current === "select" && selectRPointRef.current !== null) {
-        const selectionRectangle = stage.findOne(".selection-rectangle") as Konva.Rect;
-        if (!selectionRectangle || !selectionRectangle.visible()) return;
+        if (!sr.visible()) return;
 
-        selectionRectangle.setAttrs({
+        sr.setAttrs({
             x: Math.min(selectRPointRef.current.x, pointer.x),
             y: Math.min(selectRPointRef.current.y, pointer.y),
             width: Math.abs(pointer.x - selectRPointRef.current.x),
             height: Math.abs(pointer.y - selectRPointRef.current.y),
         });
+
         return;
     }
 
@@ -160,6 +157,8 @@ export const handleCanvasMouseMove = ({
  */
 export const handleCanvasMouseUp = ({
     stage,
+    sr,
+    tr,
     shapeRef,
     selectedToolRef,
     deleteObjectRef,
@@ -168,8 +167,6 @@ export const handleCanvasMouseUp = ({
     setTool,
     createEvent,
 }: CanvasMouseUp) => {
-    if (!selectedToolRef.current) return;
-
     if (selectedToolRef.current === "panning" && lastPanPointRef.current !== null) {
         lastPanPointRef.current = null;
         stage.container().style.cursor = "grab";
@@ -177,38 +174,36 @@ export const handleCanvasMouseUp = ({
     }
 
     if (selectedToolRef.current === "select" && selectRPointRef.current !== null) {
-        const selectionRectangle = stage.findOne(".selection-rectangle") as Konva.Rect;
-        if (!selectionRectangle || !selectionRectangle.visible()) return;
+        if (!sr.visible()) return;
 
-        if (selectionRectangle.width() > 5 || selectionRectangle.height() > 5) {
-            const tr = stage.findOne("Transformer") as Konva.Transformer;
+        if (sr.width() > 5 || sr.height() > 5) {
+            const cr = sr.getClientRect();
 
-            const box = selectionRectangle.getClientRect();
-
-            // Find all selectable shapes (exclude selection rectangle, transformer, and utility shapes)
-            const selectableShapes = stage.find("Shape").filter((shape) => {
-                if (shape.name() === "selection-rectangle") return false;
+            const allShapes = stage.find("Shape").filter((shape) => {
+                if (shape.name() === "select-rect") return false;
                 if (shape.getParent() && shape.getParent()?.className === "Transformer") return false;
                 if (shape.name() && shape.name().includes("utility")) return false;
                 return true;
             });
 
-            // Find shapes that intersect with selection rectangle
-            const selectedShapes = selectableShapes.filter((shape) => {
+            const fltShapes = allShapes.filter((shape) => {
                 const shapeBox = shape.getClientRect();
-                return Konva.Util.haveIntersection(box, shapeBox);
+                return Konva.Util.haveIntersection(cr, shapeBox);
             });
 
-            // Apply transformer to selected shapes
-            tr.nodes(selectedShapes);
+            tr.moveToTop();
+            tr.nodes(fltShapes);
         }
 
-        selectionRectangle.visible(false);
+        sr.visible(false);
         selectRPointRef.current = null;
         return;
     }
 
     if (selectedToolRef.current === "eraser" && deleteObjectRef.current !== null) {
+        if (deleteObjectRef.current.size === 0) return;
+
+        tr.nodes(tr.nodes().filter((node) => !deleteObjectRef.current!.has(node.id())));
         deleteObjectRef.current.forEach((object) => {
             if (object?.id()) {
                 object.destroy();
@@ -220,46 +215,27 @@ export const handleCanvasMouseUp = ({
                 });
             }
         });
+
+        deleteObjectRef.current = null;
     }
 
     // sync shape in storage
     if (shapeRef.current?.id()) {
-        // Get or create transformer
-        let tr = (stage.findOne("Transformer") as Konva.Transformer) || undefined;
-        if (!tr) {
-            tr = new Konva.Transformer(transformerConfig([]));
-
-            tr.on("transformend", (e) => {
-                if (e.target instanceof Konva.Shape) {
-                    handleCreateEvent({
-                        action: "UPDATE",
-                        object: e.target,
-                        createEvent,
-                    });
-                }
-            });
-
-            stage.getLayers()[0].add(tr);
-        }
-
+        tr.moveToTop();
         tr.nodes([shapeRef.current]);
         handleCreateEvent({
             action: "CREATE",
             object: shapeRef.current,
             createEvent,
         });
-    }
 
-    shapeRef.current = null;
-    selectedToolRef.current = null;
-    deleteObjectRef.current = null;
+        shapeRef.current = null;
+    }
 
     setTool("select");
 };
 
-export const handleCanvasClick = ({ e, stage, setCurrentObject }: CanvasClick) => {
-    const tr = stage.findOne("Transformer") as Konva.Transformer;
-
+export const handleCanvasClick = ({ e, tr, setCurrentObject }: CanvasClick) => {
     // If clicking on empty area
     if (e.target instanceof Konva.Stage) {
         tr.nodes([]);
@@ -285,6 +261,7 @@ export const handleCanvasClick = ({ e, stage, setCurrentObject }: CanvasClick) =
             }
         }
 
+        tr.moveToTop();
         tr.nodes(nodes);
         if (nodes.length === 1) setCurrentObject(nodes[0]);
         else setCurrentObject(null);
@@ -294,19 +271,17 @@ export const handleCanvasClick = ({ e, stage, setCurrentObject }: CanvasClick) =
 /**
  * handle double click event on canvas to edit text
  */
-export const handleCanvasDoubleClick = ({ e, stage, isEditing, createEvent }: CanvasDoubleClick) => {
+export const handleCanvasDoubleClick = ({ e, stage, layer, tr, isEditing, createEvent }: CanvasDoubleClick) => {
     if (isEditing.current) return;
     if (!(e.target instanceof Konva.Text)) return;
 
     isEditing.current = true;
 
     const tNode = e.target;
-    const layer = stage.getLayers()[0];
 
     // Hide the text node and its transformer
     tNode.hide();
-    const tr = layer.findOne("Transformer");
-    if (tr) tr.hide();
+    tr.hide();
     layer.draw();
 
     // Get position relative to the stage container
@@ -361,7 +336,7 @@ export const handleCanvasDoubleClick = ({ e, stage, isEditing, createEvent }: Ca
         window.removeEventListener("touchstart", handleOutsideClick);
         tNode.show();
         if (tr) tr.show();
-        layer.draw();
+
         isEditing.current = false;
     }
 
@@ -428,7 +403,7 @@ export const renderCanvas = ({ stageRef, shapes }: RenderCanvas) => {
     if (!stageRef.current) return;
 
     // clear canvas
-    stageRef.current.getLayers()[0].destroyChildren();
+    // stageRef.current.getLayers()[0].destroyChildren();
 
     shapes.forEach((object, key) => {
         const shape = Konva.Node.create(object, undefined);
@@ -448,7 +423,7 @@ export const handleResize = ({ stage }: { stage: Konva.Stage | null }) => {
 
 // zoom canvas on mouse scroll
 export const handleCanvasZoom = ({ options, stage, setZoom }: CanvasZoom) => {
-    const scaleBy = 1;
+    const scaleBy = 1.1;
     const oldScale = stage.scaleX();
 
     const pointer = stage.getPointerPosition();

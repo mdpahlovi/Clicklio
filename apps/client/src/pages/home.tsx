@@ -1,3 +1,4 @@
+import Canvas from "@/components/canvas";
 import GuideModal from "@/components/canvas/guide-modal";
 import ShareModal from "@/components/canvas/share-modal";
 import Navbar from "@/components/home/navbar";
@@ -11,7 +12,6 @@ import { socket, type SocketResponse } from "@/utils/socket";
 import type { Device } from "mediasoup-client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Canvas from "@/components/canvas";
 
 type JoinRoomResponse = { users: Record<string, string>; events: string[] };
 

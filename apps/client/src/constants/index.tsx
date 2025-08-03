@@ -152,10 +152,23 @@ export const presetColors = {
     ],
 };
 
-export const transformerConfig = (nodes: Konva.Node[]) => ({
-    nodes,
-    anchorFill: "#4882ed",
-    anchorStroke: "#4882ed",
+export const transformerConfig: Konva.TransformerConfig = {
+    nodes: [],
+    anchorFill: "rgba(72, 130, 237, 1)",
+    anchorStroke: "rgba(72, 130, 237, 1)",
     anchorSize: 12,
     anchorCornerRadius: 6,
-});
+};
+
+export const selectRectConfig: Konva.RectConfig = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    fill: "rgba(72, 130, 237, 0.3)",
+    stroke: "rgba(72, 130, 237, 1)",
+    strokeWidth: 1,
+    name: "select-rect",
+    visible: false,
+    listening: false,
+};
