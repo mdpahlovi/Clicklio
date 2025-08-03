@@ -28,7 +28,7 @@ export const useCanvasState = create<CanvasStateStore>()(
             room: null,
             user: uuid(),
             tool: "select",
-            zoom: 2,
+            zoom: 1,
             refresh: null,
             currentObject: null,
             openedFloatingMenu: {},

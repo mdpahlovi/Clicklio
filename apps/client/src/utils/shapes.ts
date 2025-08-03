@@ -25,6 +25,7 @@ export const createTriangle = (pointer: Vector2d, baseColor: string) => {
         fill: baseColor,
         id: uuid(),
         draggable: true,
+        perfectDrawEnabled: false,
     });
 };
 
@@ -36,6 +37,7 @@ export const createCircle = (pointer: Vector2d, baseColor: string) => {
         fill: baseColor,
         id: uuid(),
         draggable: true,
+        perfectDrawEnabled: false,
     });
 };
 
@@ -44,9 +46,10 @@ export const createLine = (pointer: Vector2d, baseColor: string) => {
         points: [pointer.x, pointer.y, pointer.x, pointer.y],
         stroke: baseColor,
         strokeWidth: 2,
+        lineCap: "round",
         id: uuid(),
         draggable: true,
-        hitStrokeWidth: 15,
+        hitStrokeWidth: 20,
         perfectDrawEnabled: false,
     });
 };
@@ -57,11 +60,10 @@ export const createArrow = (pointer: Vector2d, baseColor: string) => {
         fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
+        lineCap: "round",
         id: uuid(),
         draggable: true,
-        hitStrokeWidth: 15,
-        pointerLength: 10,
-        pointerWidth: 10,
+        hitStrokeWidth: 20,
         perfectDrawEnabled: false,
     });
 };
@@ -71,11 +73,11 @@ export const createPath = (pointer: Vector2d, baseColor: string) => {
         points: [pointer.x, pointer.y],
         stroke: baseColor,
         strokeWidth: 2,
-        id: uuid(),
-        draggable: true,
-        hitStrokeWidth: 15,
         lineCap: "round",
         lineJoin: "round",
+        id: uuid(),
+        draggable: true,
+        hitStrokeWidth: 20,
         perfectDrawEnabled: false,
     });
 };
@@ -91,6 +93,7 @@ export const createText = (pointer: Vector2d, baseColor: string) => {
         fontStyle: "normal",
         id: uuid(),
         draggable: true,
+        perfectDrawEnabled: false,
     });
 };
 

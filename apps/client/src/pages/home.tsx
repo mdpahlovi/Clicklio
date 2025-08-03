@@ -1,3 +1,4 @@
+import Canvas from "@/components/canvas";
 import GuideModal from "@/components/canvas/guide-modal";
 import ShareModal from "@/components/canvas/share-modal";
 import Navbar from "@/components/home/navbar";
@@ -10,7 +11,6 @@ import { renderCanvas } from "@/utils/canvas";
 import { socket } from "@/utils/socket";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Canvas from "@/components/canvas";
 
 type JoinRoomResponse = { users: Record<string, string>; events: string[] };
 
