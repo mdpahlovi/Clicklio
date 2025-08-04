@@ -1,7 +1,7 @@
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { handleKeyDown } from "@/utils/key-event";
 import * as fabric from "fabric";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import {
     handleCanvasMouseDown,
@@ -16,6 +16,7 @@ import {
 
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Pointer, Tool } from "@/types";
+import { useThrottledCallback } from "use-debounce";
 
 export function useCanvas() {
     const { createEvent } = useEventStore();
@@ -25,12 +26,58 @@ export function useCanvas() {
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const isPanning = useRef<Pointer | null>(null);
-    const isEditing = useRef<boolean>(false); // Means Talking Input From Keyboard
+    const isEditing = useRef<boolean>(false);
     const shapeRef = useRef<fabric.FabricObject | null>(null);
 
     const selectedToolRef = useRef<Tool | null>(null);
     const deleteObjectRef = useRef<fabric.FabricObject[]>([]);
     const copiedObjectRef = useRef<fabric.FabricObject | null>(null);
+
+    const throttledMouseMove = useThrottledCallback((options: fabric.TPointerEventInfo<fabric.TPointerEvent>) => {
+        if (!fabricRef.current) return;
+        handleCanvasMouseMove({
+            options,
+            canvas: fabricRef.current,
+            isPanning,
+            shapeRef,
+            selectedToolRef,
+            deleteObjectRef,
+        });
+    }, 16);
+
+    const throttledZoom = useThrottledCallback((options: fabric.TPointerEventInfo<WheelEvent>) => {
+        if (!fabricRef.current) return;
+        handleCanvasZoom({ options, canvas: fabricRef.current, setZoom });
+    }, 16);
+
+    const throttledResize = useThrottledCallback(() => {
+        if (!fabricRef.current) return;
+        handleResize({ canvas: fabricRef.current });
+    }, 100);
+
+    const handleKeyUp = useCallback(
+        (e: KeyboardEvent) => {
+            if (isEditing.current) return;
+            if (e.key === " ") setTool("select");
+        },
+        [setTool],
+    );
+
+    const handleKeyDownEvent = useCallback(
+        (e: KeyboardEvent) => {
+            if (!fabricRef.current) return;
+            handleKeyDown({
+                e,
+                canvas: fabricRef.current,
+                isEditing,
+                copiedObjectRef,
+                createEvent,
+                setTool,
+                setZoom,
+            });
+        },
+        [createEvent, setTool, setZoom],
+    );
 
     useEffect(() => {
         const canvas = initializeFabric({ canvasRef, fabricRef });
@@ -39,12 +86,18 @@ export function useCanvas() {
             handleCanvasMouseDown({ options, canvas, isPanning, shapeRef, selectedToolRef });
         });
 
-        canvas.on("mouse:move", (options) => {
-            handleCanvasMouseMove({ options, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef });
-        });
+        canvas.on("mouse:move", throttledMouseMove);
 
         canvas.on("mouse:up", () => {
-            handleCanvasMouseUp({ canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef, setTool, createEvent });
+            handleCanvasMouseUp({
+                canvas,
+                isPanning,
+                shapeRef,
+                selectedToolRef,
+                deleteObjectRef,
+                setTool,
+                createEvent,
+            });
         });
 
         canvas.on("path:created", (options) => {
@@ -77,22 +130,25 @@ export function useCanvas() {
 
         canvas.on("text:editing:exited", () => (isEditing.current = false));
 
-        canvas.on("mouse:wheel", (options) => handleCanvasZoom({ options, canvas, setZoom }));
+        canvas.on("mouse:wheel", throttledZoom);
 
-        window.addEventListener("resize", () => handleResize({ canvas }));
-        window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
-        window.addEventListener("keydown", (e) => handleKeyDown({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom }));
+        window.addEventListener("resize", throttledResize);
+        window.addEventListener("keyup", handleKeyUp);
+        window.addEventListener("keydown", handleKeyDownEvent);
 
         return () => {
             canvas.dispose();
-            window.removeEventListener("resize", () => handleResize({ canvas: null }));
-            window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
-            window.removeEventListener("keydown", (e) =>
-                handleKeyDown({ e, canvas: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
-            );
+
+            throttledMouseMove.cancel();
+            throttledZoom.cancel();
+            throttledResize.cancel();
+
+            window.removeEventListener("resize", throttledResize);
+            window.removeEventListener("keyup", handleKeyUp);
+            window.removeEventListener("keydown", handleKeyDownEvent);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [throttledMouseMove, throttledZoom, throttledResize, handleKeyUp, handleKeyDownEvent]);
 
     return { canvasRef, fabricRef, selectedToolRef };
 }
