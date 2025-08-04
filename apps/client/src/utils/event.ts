@@ -8,11 +8,12 @@ import { v4 as uuid } from "uuid";
 
 export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEvent) => {
     const auth = useAuthState.getState().user?.id;
-    const user = useCanvasState.getState().user;
-    const room = useCanvasState.getState().room;
 
-    const wPathname = window.location.pathname.split("/")[1];
-    const isPrivate = !!auth && wPathname === "room";
+    const wPathname = window.location.pathname.split("/");
+    const isPrivate = !!auth && wPathname.some((path) => path === "room");
+
+    const user = isPrivate ? auth : useCanvasState.getState().user;
+    const room = isPrivate ? wPathname.at(-1) : useCanvasState.getState().room;
 
     let event: ShapeEvent | null = null;
     switch (action) {
@@ -23,7 +24,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: action,
-                    userId: isPrivate ? auth : user,
+                    userId: user,
                     shapeId: object?.uid,
                     eventId: null,
                     data: action !== "DELETE" ? object?.toJSON() : null,
@@ -38,7 +39,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: "UNDO",
-                    userId: isPrivate ? auth : user,
+                    userId: user,
                     eventId: userUndoStack[userUndoStack.length - 1],
                     shapeId: null,
                     data: null,
@@ -53,7 +54,7 @@ export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEv
                 event = {
                     id: uuid(),
                     type: "REDO",
-                    userId: isPrivate ? auth : user,
+                    userId: user,
                     eventId: userRedoStack[userRedoStack.length - 1],
                     shapeId: null,
                     data: null,

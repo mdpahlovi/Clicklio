@@ -108,7 +108,7 @@ export class RoomService {
                 return { name: userInfo.name, ...restData };
             });
 
-        await this.redisService.client.hset(`room:${id}:users`, user.id, JSON.stringify(user));
+        await this.redisService.client.hset(`room:${id}:users`, currUser.id, JSON.stringify(currUser));
         const roomUser = await this.redisService.client.hgetall(`room:${id}:users`);
         const eventStr = await this.redisService.client.lrange(`room:${id}:events_pvt`, 0, -1);
 

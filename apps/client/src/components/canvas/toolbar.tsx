@@ -15,28 +15,28 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
     useEffect(() => {
         const canvas = fabricRef.current;
         if (canvas) {
-            selectedToolRef.current = tool;
-
             canvas.selection = false;
             canvas.isDrawingMode = false;
             canvas.defaultCursor = "default";
             canvas.hoverCursor = "all-scroll";
-            canvas.forEachObject((object) => {
-                object.evented = true;
-                object.selectable = true;
-            });
 
             switch (tool) {
                 case "panning":
                     canvas.defaultCursor = "grab";
+                    canvas.hoverCursor = "grab";
                     canvas.forEachObject((object) => {
                         object.evented = false;
                         object.selectable = false;
                     });
+                    selectedToolRef.current = tool;
                     break;
 
                 case "select":
                     canvas.selection = true;
+                    canvas.forEachObject((object) => {
+                        object.evented = true;
+                        object.selectable = true;
+                    });
                     break;
 
                 case "path":
@@ -54,10 +54,12 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 case "eraser":
                     canvas.defaultCursor = circle("dark");
                     canvas.hoverCursor = circle("dark");
+                    selectedToolRef.current = tool;
                     break;
 
                 default:
                     canvas.defaultCursor = "crosshair";
+                    selectedToolRef.current = tool;
                     break;
             }
         }

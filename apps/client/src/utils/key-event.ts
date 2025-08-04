@@ -133,91 +133,105 @@ export const handleDelete = (canvas: fabric.Canvas, createEvent: (event: ShapeEv
     canvas.requestRenderAll();
 };
 
-// create a handleKeyDown function that listen to different keydown events
 export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEvent, setTool, setZoom }: WindowKeyDown) => {
-    const zoom = canvas?.getZoom();
+    if (!canvas) return;
 
+    const zoom = canvas.getZoom();
     if (isEditing.current) return;
 
-    // Tool Selection Shortcuts
-    // Check if key pressed is H (Hand Tool)
-    if (e.keyCode === 72) setTool("panning");
-    // Check if key pressed is V (Select Tool)
-    if (e.keyCode === 86) setTool("select");
-    // Check if key pressed is R (Rectangle Tool)
-    if (e.keyCode === 82) setTool("rect");
-    // Check if key pressed is T (Triangle Tool)
-    if (e.keyCode === 84) setTool("triangle");
-    // Check if key pressed is C (Circle Tool)
-    if (e.keyCode === 67) setTool("circle");
-    // Check if key pressed is L (Line Tool)
-    if (e.keyCode === 76) setTool("line");
-    // Check if key pressed is Shift + L (Arrow Tool)
-    if (e.shiftKey && e.keyCode === 76) setTool("arrow");
-    // Check if key pressed is P (Pencil Tool)
-    if (e.keyCode === 80) setTool("path");
-    // Check if key pressed is A (Text Tool)
-    if (e.keyCode === 65) setTool("i-text");
-    // Check if key pressed is I (Image Tool)
-    if (e.keyCode === 73) setTool("image");
-    // Check if key pressed is E (Eraser Tool)
-    if (e.keyCode === 69) setTool("eraser");
+    const key = e.key.toLowerCase();
 
-    // View Controls
-    // Check if the key pressed is ctrl/cmd + + (Zoom In)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 107) {
+    // Handle Delete key
+    if (key === "delete") {
         e.preventDefault();
-        if (zoom && Number(zoom.toFixed(1)) <= 10) {
-            setZoom(zoom + 0.1);
-            canvas.setZoom(zoom + 0.1);
-        }
-    }
-    // Check if the key pressed is ctrl/cmd + - (Zoom Out)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 109) {
-        e.preventDefault();
-        if (zoom && Number(zoom.toFixed(1)) >= 0.1) {
-            setZoom(zoom - 0.1);
-            canvas.setZoom(zoom - 0.1);
-        }
-    }
-    // Check if the key pressed is ctrl/cmd + 0 (Reset View)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 48) {
-        e.preventDefault();
-        setZoom(2);
-        canvas.setZoom(2);
+        handleDelete(canvas, createEvent);
+        return;
     }
 
-    // Editor Controls
-    // Check if the key pressed is ctrl/cmd + c (Copy)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 67 && !e.altKey) {
-        handleCopy(canvas, copiedObjectRef);
-    }
-    // Check if the key pressed is ctrl/cmd + v (Paste)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 86) {
-        handlePaste(canvas, copiedObjectRef, createEvent);
-    }
-    // Check if the key pressed is ctrl/cmd + d (Duplicate)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 68 && !e.altKey) {
+    // Handle Space key for panning
+    if (key === " " && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
-        handleDuplicate(canvas, createEvent);
+        setTool("panning");
+        return;
     }
-    // Check if the key pressed is delete (Delete Selection)
-    if (canvas && e.keyCode === 46) {
-        handleDelete(canvas, createEvent);
+
+    if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+        // Tool Selection Shortcuts
+        switch (key) {
+            case "h":
+                setTool("panning");
+                break;
+            case "v":
+                setTool("select");
+                break;
+            case "r":
+                setTool("rect");
+                break;
+            case "t":
+                setTool("triangle");
+                break;
+            case "c":
+                setTool("circle");
+                break;
+            case "l":
+                if (e.shiftKey) {
+                    setTool("arrow");
+                } else {
+                    setTool("line");
+                }
+                break;
+            case "p":
+                setTool("path");
+                break;
+            case "a":
+                setTool("i-text");
+                break;
+            case "i":
+                setTool("image");
+                break;
+            case "e":
+                setTool("eraser");
+                break;
+        }
+    } else if ((e.metaKey || e.ctrlKey) && !e.altKey) {
+        // View Controls
+        if (key === "+" || key === "=") {
+            e.preventDefault();
+            const newZoom = Math.min(zoom + 0.1, 10);
+            setZoom(newZoom);
+            canvas.setZoom(newZoom);
+        } else if (key === "-") {
+            e.preventDefault();
+            const newZoom = Math.max(zoom - 0.1, 0.1);
+            setZoom(newZoom);
+            canvas.setZoom(newZoom);
+        } else if (key === "0") {
+            e.preventDefault();
+            setZoom(2);
+            canvas.setZoom(2);
+        }
+
+        // Editor Controls
+        else if (key === "c") {
+            e.preventDefault();
+            handleCopy(canvas, copiedObjectRef);
+        } else if (key === "v") {
+            e.preventDefault();
+            handlePaste(canvas, copiedObjectRef, createEvent);
+        } else if (key === "d") {
+            e.preventDefault();
+            handleDuplicate(canvas, createEvent);
+        } else if (key === "x") {
+            e.preventDefault();
+            handleCopy(canvas, copiedObjectRef);
+            handleDelete(canvas, createEvent);
+        } else if (key === "z") {
+            e.preventDefault();
+            if (e.shiftKey) {
+                handleCreateEvent({ action: "REDO", object: null, createEvent });
+            } else {
+                handleCreateEvent({ action: "UNDO", object: null, createEvent });
+            }
+        }
     }
-    // Check if the key pressed is ctrl/cmd + x (Cut)
-    if (canvas && (e?.ctrlKey || e?.metaKey) && e.keyCode === 88) {
-        handleCopy(canvas, copiedObjectRef);
-        handleDelete(canvas, createEvent);
-    }
-    // Check if the key pressed is ctrl/cmd + z (Undo)
-    if ((e?.ctrlKey || e?.metaKey) && e.keyCode === 90 && !e.shiftKey) {
-        handleCreateEvent({ action: "UNDO", object: null, createEvent });
-    }
-    // Check if the key pressed is ctrl/cmd + shift + z (Redo)
-    if ((e?.ctrlKey || e?.metaKey) && e.shiftKey && e.keyCode === 90) {
-        handleCreateEvent({ action: "REDO", object: null, createEvent });
-    }
-    // Check if the key pressed is space (Temporary Pan)
-    if (e.keyCode === 32) setTool("panning");
 };
