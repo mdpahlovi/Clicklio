@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY apps/server/package*.json ./
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY apps/server/src ./src
 COPY apps/server/eslint.config.mjs ./
