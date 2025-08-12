@@ -1,10 +1,10 @@
 import { Arrow } from "@/constants/fabric/arrow";
-import type { ImageUpload, Pointer, Tool } from "@/types";
+import type { ImageUpload, Tool } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
 
-export const createRectangle = (pointer: Pointer, baseColor: string) => {
+export const createRectangle = (pointer: fabric.Point, baseColor: string) => {
     return new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
@@ -15,7 +15,7 @@ export const createRectangle = (pointer: Pointer, baseColor: string) => {
     });
 };
 
-export const createTriangle = (pointer: Pointer, baseColor: string) => {
+export const createTriangle = (pointer: fabric.Point, baseColor: string) => {
     return new fabric.Triangle({
         left: pointer.x,
         top: pointer.y,
@@ -26,7 +26,7 @@ export const createTriangle = (pointer: Pointer, baseColor: string) => {
     });
 };
 
-export const createCircle = (pointer: Pointer, baseColor: string) => {
+export const createCircle = (pointer: fabric.Point, baseColor: string) => {
     return new fabric.Circle({
         left: pointer.x,
         top: pointer.y,
@@ -36,7 +36,7 @@ export const createCircle = (pointer: Pointer, baseColor: string) => {
     });
 };
 
-export const createLine = (pointer: Pointer, baseColor: string) => {
+export const createLine = (pointer: fabric.Point, baseColor: string) => {
     return new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
         fill: baseColor,
         stroke: baseColor,
@@ -45,7 +45,7 @@ export const createLine = (pointer: Pointer, baseColor: string) => {
     });
 };
 
-export const createArrow = (pointer: Pointer, baseColor: string) => {
+export const createArrow = (pointer: fabric.Point, baseColor: string) => {
     return new Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
         fill: baseColor,
         stroke: baseColor,
@@ -54,7 +54,7 @@ export const createArrow = (pointer: Pointer, baseColor: string) => {
     });
 };
 
-export const createText = (pointer: Pointer, baseColor: string) => {
+export const createText = (pointer: fabric.Point, baseColor: string) => {
     return new fabric.IText("Tap To Type", {
         left: pointer.x,
         top: pointer.y,
@@ -66,7 +66,7 @@ export const createText = (pointer: Pointer, baseColor: string) => {
     });
 };
 
-export const createSpecificShape = (shape: Tool | null, pointer: Pointer) => {
+export const createSpecificShape = (shape: Tool | null, pointer: fabric.Point) => {
     const baseColor = "#FFFFFF";
 
     switch (shape) {
