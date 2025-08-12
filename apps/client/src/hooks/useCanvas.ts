@@ -8,6 +8,7 @@ import {
     handleCanvasMouseMove,
     handleCanvasMouseUp,
     handleCanvasObjectModified,
+    handleCanvasObjectScaling,
     handleCanvasZoom,
     handlePathCreated,
     handleResize,
@@ -15,7 +16,7 @@ import {
 } from "@/utils/canvas";
 
 import { useEventStore } from "@/stores/canvas/useEventStore";
-import type { Pointer, Tool } from "@/types";
+import type { Tool } from "@/types";
 import { useThrottledCallback } from "use-debounce";
 
 export function useCanvas() {
@@ -25,18 +26,18 @@ export function useCanvas() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
-    const isPanning = useRef<Pointer | null>(null);
+    const isPanning = useRef<fabric.Point | null>(null);
     const isEditing = useRef<boolean>(false);
     const shapeRef = useRef<fabric.FabricObject | null>(null);
 
     const selectedToolRef = useRef<Tool | null>(null);
-    const deleteObjectRef = useRef<fabric.FabricObject[]>([]);
     const copiedObjectRef = useRef<fabric.FabricObject | null>(null);
+    const deleteObjectRef = useRef<fabric.FabricObject[] | null>(null);
 
-    const throttledMouseMove = useThrottledCallback((options: fabric.TPointerEventInfo<fabric.TPointerEvent>) => {
+    const throttledMouseMove = useThrottledCallback((option: fabric.TPointerEventInfo<fabric.TPointerEvent>) => {
         if (!fabricRef.current) return;
         handleCanvasMouseMove({
-            options,
+            option,
             canvas: fabricRef.current,
             isPanning,
             shapeRef,
@@ -45,9 +46,17 @@ export function useCanvas() {
         });
     }, 16);
 
-    const throttledZoom = useThrottledCallback((options: fabric.TPointerEventInfo<WheelEvent>) => {
+    const throttledScaling = useThrottledCallback(
+        (option: fabric.BasicTransformEvent<fabric.TPointerEvent> & { target: fabric.FabricObject }) => {
+            if (!fabricRef.current) return;
+            handleCanvasObjectScaling({ option, canvas: fabricRef.current });
+        },
+        16,
+    );
+
+    const throttledZoom = useThrottledCallback((option: fabric.TPointerEventInfo<WheelEvent>) => {
         if (!fabricRef.current) return;
-        handleCanvasZoom({ options, canvas: fabricRef.current, setZoom });
+        handleCanvasZoom({ option, canvas: fabricRef.current, setZoom });
     }, 16);
 
     const throttledResize = useThrottledCallback(() => {
@@ -82,8 +91,15 @@ export function useCanvas() {
     useEffect(() => {
         const canvas = initializeFabric({ canvasRef, fabricRef });
 
-        canvas.on("mouse:down", (options) => {
-            handleCanvasMouseDown({ options, canvas, isPanning, shapeRef, selectedToolRef });
+        canvas.on("mouse:down", (option) => {
+            handleCanvasMouseDown({
+                option,
+                canvas,
+                isPanning,
+                shapeRef,
+                selectedToolRef,
+                deleteObjectRef,
+            });
         });
 
         canvas.on("mouse:move", throttledMouseMove);
@@ -100,25 +116,27 @@ export function useCanvas() {
             });
         });
 
-        canvas.on("path:created", (options) => {
-            handlePathCreated({ options, createEvent });
+        canvas.on("path:created", (option) => {
+            handlePathCreated({ option, createEvent });
         });
 
-        canvas.on("object:modified", (options) => {
-            handleCanvasObjectModified({ options, createEvent });
+        canvas.on("object:scaling", throttledScaling);
+
+        canvas.on("object:modified", (option) => {
+            handleCanvasObjectModified({ option, createEvent });
         });
 
-        canvas.on("selection:created", (options) => {
-            if (options?.selected?.length === 1) {
-                setCurrentObject(options?.selected[0]);
+        canvas.on("selection:created", (option) => {
+            if (option?.selected?.length === 1) {
+                setCurrentObject(option?.selected[0]);
             } else {
                 canvas.discardActiveObject();
             }
         });
 
-        canvas.on("selection:updated", (options) => {
-            if (options?.selected?.length === 1) {
-                setCurrentObject(options?.selected[0]);
+        canvas.on("selection:updated", (option) => {
+            if (option?.selected?.length === 1) {
+                setCurrentObject(option?.selected[0]);
             } else {
                 canvas.discardActiveObject();
             }

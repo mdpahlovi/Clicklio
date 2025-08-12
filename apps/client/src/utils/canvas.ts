@@ -4,6 +4,7 @@ import type {
     CanvasMouseMove,
     CanvasMouseUp,
     CanvasObjectModified,
+    CanvasObjectScaling,
     CanvasPathCreated,
     CanvasZoom,
     InitializeFabric,
@@ -37,17 +38,22 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
 };
 
 // instantiate creation of custom fabric object/shape and add it to canvas
-export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedToolRef, shapeRef }: CanvasMouseDown) => {
+export const handleCanvasMouseDown = ({ option, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef }: CanvasMouseDown) => {
     // if canvas is in DrawingMode, return
     if (canvas.isDrawingMode) return;
     // if selectedTool is select or image, return
     if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
     // get pointer coordinates
-    const pointer = canvas.getScenePoint(options.e);
+    const pointer = canvas.getScenePoint(option.e);
 
     // if selected shape is panning, set panning points
-    if (selectedToolRef.current === "panning") return (isPanning.current = pointer);
+    if (selectedToolRef.current === "panning" && isPanning.current === null) {
+        return (isPanning.current = pointer);
+    }
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current === null) {
+        return (deleteObjectRef.current = []);
+    }
 
     // create custom fabric object/shape and add it to canvas
     shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
@@ -55,14 +61,14 @@ export const handleCanvasMouseDown = ({ options, canvas, isPanning, selectedTool
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
-export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedToolRef, deleteObjectRef, shapeRef }: CanvasMouseMove) => {
+export const handleCanvasMouseMove = ({ option, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef }: CanvasMouseMove) => {
     // if canvas is in DrawingMode, return
     if (canvas.isDrawingMode) return;
     // if selectedTool is select or image, return
     if (selectedToolRef.current === "select" || selectedToolRef.current === "image") return;
 
     // get pointer coordinates
-    const pointer = canvas.getScenePoint(options.e);
+    const pointer = canvas.getScenePoint(option.e);
 
     // calculate deltaX and deltaY points for panning
     if (selectedToolRef.current === "panning" && isPanning.current) {
@@ -75,11 +81,11 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
     }
 
     // set target object to deleteObjectRef for eraser
-    if (selectedToolRef.current === "eraser") {
-        if (!options.target?.uid) return;
-        if (!deleteObjectRef.current.find(({ uid }) => uid === options.target?.uid)) {
-            options.target.set({ opacity: 0.25 });
-            deleteObjectRef.current.push(options.target);
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current !== null) {
+        if (!option.target?.uid) return;
+        if (!deleteObjectRef.current.find(({ uid }) => uid === option.target?.uid)) {
+            option.target.set({ opacity: 0.25 });
+            deleteObjectRef.current.push(option.target);
 
             canvas.requestRenderAll();
             return;
@@ -109,7 +115,7 @@ export const handleCanvasMouseMove = ({ options, canvas, isPanning, selectedTool
 
         case "circle":
             (shapeRef.current as fabric.Circle).set({
-                radius: Math.abs(pointer.x - left) / 2,
+                radius: Math.sqrt((pointer.x - left) ** 2 + (pointer.y - top) ** 2),
             });
             break;
 
@@ -152,7 +158,7 @@ export const handleCanvasMouseUp = ({
     if (selectedToolRef.current === "panning") return (isPanning.current = null);
 
     // eraser all shape from deleteObjectRef
-    if (selectedToolRef.current === "eraser" && deleteObjectRef.current.length) {
+    if (selectedToolRef.current === "eraser" && deleteObjectRef.current?.length) {
         deleteObjectRef.current.forEach((object) => {
             if (object?.uid) {
                 canvas.remove(object);
@@ -192,10 +198,71 @@ export const handleCanvasMouseUp = ({
     if (!canvas.isDrawingMode) setTool("select");
 };
 
+export const handleCanvasObjectScaling = ({ option, canvas }: CanvasObjectScaling) => {
+    const target = option.target;
+
+    switch (target.type) {
+        case "rect":
+        case "triangle":
+        case "ellipse":
+        case "circle": {
+            const newWidth = target.width * target.scaleX;
+            const newHeight = target.height * target.scaleY;
+
+            target.set({
+                width: newWidth,
+                height: newHeight,
+                scaleX: 1,
+                scaleY: 1,
+            });
+
+            if (target.type === "circle") {
+                target.set({
+                    radius: (target as fabric.Circle).radius * Math.max(target.scaleX, target.scaleY),
+                    scaleX: 1,
+                    scaleY: 1,
+                });
+            } else if (target.type === "ellipse") {
+                target.set({
+                    rx: (target as fabric.Ellipse).rx * target.scaleX,
+                    ry: (target as fabric.Ellipse).ry * target.scaleY,
+                    scaleX: 1,
+                    scaleY: 1,
+                });
+            }
+            break;
+        }
+        case "textbox":
+        case "i-text": {
+            const newFontSize = (target as fabric.IText).fontSize * Math.max(target.scaleX, target.scaleY);
+            target.set({
+                fontSize: newFontSize,
+                scaleX: 1,
+                scaleY: 1,
+            });
+            break;
+        }
+        case "image":
+            target.set({
+                width: target.width * target.scaleX,
+                height: target.height * target.scaleY,
+                scaleX: 1,
+                scaleY: 1,
+            });
+            break;
+        default:
+            console.log(`Scaling not handled for type: ${target.type}`);
+    }
+
+    target.setCoords();
+    canvas.requestRenderAll();
+};
+
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({ options, createEvent }: CanvasObjectModified) => {
-    const target = options.target;
-    if (!target) return;
+export const handleCanvasObjectModified = ({ option, createEvent }: CanvasObjectModified) => {
+    const target = option.target;
+
+    console.log({ target });
 
     if (target instanceof fabric.ActiveSelection) {
         // console.log("activeselection", { target });
@@ -212,9 +279,9 @@ export const handleCanvasObjectModified = ({ options, createEvent }: CanvasObjec
 };
 
 // update shape in storage when path is created when in path mode
-export const handlePathCreated = ({ options, createEvent }: CanvasPathCreated) => {
+export const handlePathCreated = ({ option, createEvent }: CanvasPathCreated) => {
     // get path object
-    const path = options.path;
+    const path = option.path;
     if (!path) return;
 
     // set unique id to path object
@@ -260,8 +327,8 @@ export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
 };
 
 // zoom canvas on mouse scroll
-export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
-    const delta = options.e?.deltaY;
+export const handleCanvasZoom = ({ option, canvas, setZoom }: CanvasZoom) => {
+    const delta = option.e?.deltaY;
     let zoom = canvas.getZoom();
 
     // allow zooming to min 100% and max 1000%
@@ -275,8 +342,8 @@ export const handleCanvasZoom = ({ options, canvas, setZoom }: CanvasZoom) => {
     // set zoom to canvas
     // zoomToPoint: http://fabricjs.com/docs/fabric.Canvas.html#zoomToPoint
     setZoom(zoom);
-    canvas.zoomToPoint(new fabric.Point({ x: options.e.offsetX, y: options.e.offsetY }), zoom);
+    canvas.zoomToPoint(new fabric.Point({ x: option.e.offsetX, y: option.e.offsetY }), zoom);
 
-    options.e.preventDefault();
-    options.e.stopPropagation();
+    option.e.preventDefault();
+    option.e.stopPropagation();
 };

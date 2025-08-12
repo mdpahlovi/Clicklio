@@ -1,7 +1,6 @@
 import * as fabric from "fabric";
 import type { ShapeEvent } from "./event";
 
-export type Pointer = { x: number; y: number };
 type Action = "CREATE" | "UPDATE" | "DELETE" | "UNDO" | "REDO";
 
 export type Attributes = {
@@ -64,40 +63,48 @@ export type InitializeFabric = {
 };
 
 export type CanvasMouseDown = {
-    options: fabric.TPointerEventInfo<fabric.TPointerEvent>;
+    option: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
+    isPanning: React.RefObject<fabric.Point | null>;
     selectedToolRef: React.RefObject<Tool | null>;
-    isPanning: React.RefObject<Pointer | null>;
     shapeRef: React.RefObject<fabric.FabricObject | null>;
+    deleteObjectRef: React.RefObject<fabric.FabricObject[] | null>;
 };
 
 export type CanvasMouseMove = {
-    options: fabric.TPointerEventInfo<fabric.TPointerEvent>;
+    option: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
-    isPanning: React.RefObject<Pointer | null>;
+    isPanning: React.RefObject<fabric.Point | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<fabric.FabricObject | null>;
-    deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
+    deleteObjectRef: React.RefObject<fabric.FabricObject[] | null>;
 };
 
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
-    isPanning: React.RefObject<Pointer | null>;
-    shapeRef: React.RefObject<fabric.FabricObject | null>;
+    isPanning: React.RefObject<fabric.Point | null>;
     selectedToolRef: React.RefObject<Tool | null>;
-    deleteObjectRef: React.RefObject<fabric.FabricObject[]>;
+    shapeRef: React.RefObject<fabric.FabricObject | null>;
+    deleteObjectRef: React.RefObject<fabric.FabricObject[] | null>;
     setTool: (tool: Tool) => void;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
+export type CanvasObjectScaling = {
+    option: fabric.BasicTransformEvent<fabric.TPointerEvent> & {
+        target: fabric.FabricObject;
+    };
+    canvas: fabric.Canvas;
+};
+
 export type CanvasObjectModified = {
-    options: fabric.ModifiedEvent<fabric.TPointerEvent>;
+    option: fabric.ModifiedEvent<fabric.TPointerEvent>;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
 export type CanvasPathCreated = {
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
-    options: { path: fabric.FabricObject };
+    option: { path: fabric.FabricObject };
 };
 
 export type RenderCanvas = {
@@ -106,7 +113,7 @@ export type RenderCanvas = {
 };
 
 export type CanvasZoom = {
-    options: fabric.TPointerEventInfo<WheelEvent>;
+    option: fabric.TPointerEventInfo<WheelEvent>;
     canvas: fabric.Canvas;
     setZoom: (zoom: number) => void;
 };
