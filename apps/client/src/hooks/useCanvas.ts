@@ -26,6 +26,7 @@ export function useCanvas() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
 
+    const startPoint = useRef<fabric.Point | null>(null);
     const isPanning = useRef<fabric.Point | null>(null);
     const isEditing = useRef<boolean>(false);
     const shapeRef = useRef<fabric.FabricObject | null>(null);
@@ -39,6 +40,7 @@ export function useCanvas() {
         handleCanvasMouseMove({
             option,
             canvas: fabricRef.current,
+            startPoint,
             isPanning,
             shapeRef,
             selectedToolRef,
@@ -95,6 +97,7 @@ export function useCanvas() {
             handleCanvasMouseDown({
                 option,
                 canvas,
+                startPoint,
                 isPanning,
                 shapeRef,
                 selectedToolRef,
@@ -107,6 +110,7 @@ export function useCanvas() {
         canvas.on("mouse:up", () => {
             handleCanvasMouseUp({
                 canvas,
+                startPoint,
                 isPanning,
                 shapeRef,
                 selectedToolRef,

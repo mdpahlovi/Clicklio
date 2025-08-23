@@ -33,23 +33,42 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
     return canvas;
 };
 
-export const handleCanvasMouseDown = ({ option, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef }: CanvasMouseDown) => {
+export const handleCanvasMouseDown = ({
+    option,
+    canvas,
+    startPoint,
+    isPanning,
+    shapeRef,
+    selectedToolRef,
+    deleteObjectRef,
+}: CanvasMouseDown) => {
     if (!selectedToolRef.current) return;
 
     const pointer = canvas.getScenePoint(option.e);
 
     if (selectedToolRef.current === "panning" && isPanning.current === null) {
-        return (isPanning.current = pointer);
+        isPanning.current = pointer;
+        return;
     }
     if (selectedToolRef.current === "eraser" && deleteObjectRef.current === null) {
-        return (deleteObjectRef.current = []);
+        deleteObjectRef.current = [];
+        return;
     }
 
+    startPoint.current = pointer;
     shapeRef.current = createSpecificShape(selectedToolRef.current, pointer);
     if (shapeRef.current) canvas.add(shapeRef.current);
 };
 
-export const handleCanvasMouseMove = ({ option, canvas, isPanning, shapeRef, selectedToolRef, deleteObjectRef }: CanvasMouseMove) => {
+export const handleCanvasMouseMove = ({
+    option,
+    canvas,
+    startPoint,
+    isPanning,
+    shapeRef,
+    selectedToolRef,
+    deleteObjectRef,
+}: CanvasMouseMove) => {
     if (!selectedToolRef.current) return;
 
     const pointer = canvas.getScenePoint(option.e);
@@ -74,14 +93,15 @@ export const handleCanvasMouseMove = ({ option, canvas, isPanning, shapeRef, sel
         }
     }
 
-    if (shapeRef.current === null) return;
-    updateSpecificShape(selectedToolRef.current, pointer, shapeRef.current);
-
-    canvas.requestRenderAll();
+    if (startPoint.current && shapeRef.current) {
+        updateSpecificShape(selectedToolRef.current, pointer, startPoint.current, shapeRef.current, option.e.shiftKey);
+        canvas.requestRenderAll();
+    }
 };
 
 export const handleCanvasMouseUp = ({
     canvas,
+    startPoint,
     isPanning,
     shapeRef,
     selectedToolRef,
@@ -91,7 +111,10 @@ export const handleCanvasMouseUp = ({
 }: CanvasMouseUp) => {
     if (!selectedToolRef.current) return;
 
-    if (selectedToolRef.current === "panning") return (isPanning.current = null);
+    if (selectedToolRef.current === "panning") {
+        isPanning.current = null;
+        return;
+    }
 
     if (selectedToolRef.current === "eraser" && deleteObjectRef.current?.length) {
         deleteObjectRef.current.forEach((object) => {
@@ -107,11 +130,11 @@ export const handleCanvasMouseUp = ({
         });
 
         canvas.requestRenderAll();
+        deleteObjectRef.current = null;
         return;
     }
 
     if (shapeRef.current?.uid) {
-        canvas.setActiveObject(shapeRef.current);
         shapeRef.current.setCoords();
 
         handleCreateEvent({
@@ -121,6 +144,7 @@ export const handleCanvasMouseUp = ({
         });
     }
 
+    startPoint.current = null;
     shapeRef.current = null;
     selectedToolRef.current = null;
 

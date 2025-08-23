@@ -77,6 +77,7 @@ export type InitializeFabric = {
 export type CanvasMouseDown = {
     option: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
+    startPoint: React.RefObject<fabric.Point | null>;
     isPanning: React.RefObject<fabric.Point | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<fabric.FabricObject | null>;
@@ -86,6 +87,7 @@ export type CanvasMouseDown = {
 export type CanvasMouseMove = {
     option: fabric.TPointerEventInfo<fabric.TPointerEvent>;
     canvas: fabric.Canvas;
+    startPoint: React.RefObject<fabric.Point | null>;
     isPanning: React.RefObject<fabric.Point | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<fabric.FabricObject | null>;
@@ -94,6 +96,7 @@ export type CanvasMouseMove = {
 
 export type CanvasMouseUp = {
     canvas: fabric.Canvas;
+    startPoint: React.RefObject<fabric.Point | null>;
     isPanning: React.RefObject<fabric.Point | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     shapeRef: React.RefObject<fabric.FabricObject | null>;

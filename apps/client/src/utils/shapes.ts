@@ -11,6 +11,7 @@ export const createRectangle = (pointer: fabric.Point, baseColor: string) => {
         width: 0,
         height: 0,
         fill: baseColor,
+        strokeUniform: true,
         uid: uuid(),
     });
 };
@@ -26,10 +27,11 @@ export const createDiamond = (pointer: fabric.Point, baseColor: string) => {
     return new fabric.Polygon(points, {
         left: pointer.x,
         top: pointer.y,
-        fill: baseColor,
-        uid: uuid(),
         scaleX: 0,
         scaleY: 0,
+        fill: baseColor,
+        strokeUniform: true,
+        uid: uuid(),
     });
 };
 
@@ -40,16 +42,19 @@ export const createTriangle = (pointer: fabric.Point, baseColor: string) => {
         width: 0,
         height: 0,
         fill: baseColor,
+        strokeUniform: true,
         uid: uuid(),
     });
 };
 
 export const createCircle = (pointer: fabric.Point, baseColor: string) => {
-    return new fabric.Circle({
+    return new fabric.Ellipse({
         left: pointer.x,
         top: pointer.y,
-        radius: 0,
+        rx: 0,
+        ry: 0,
         fill: baseColor,
+        strokeUniform: true,
         uid: uuid(),
     });
 };
@@ -114,43 +119,65 @@ export const createSpecificShape = (shape: Tool, pointer: fabric.Point) => {
     }
 };
 
-export const updateSpecificShape = (shape: Tool, pointer: fabric.Point, object: fabric.FabricObject) => {
-    const { left, top } = object;
+export const updateSpecificShape = (
+    shape: Tool,
+    pointer: fabric.Point,
+    startPoint: fabric.Point,
+    object: fabric.FabricObject,
+    shiftKey: boolean,
+) => {
+    const left = Math.min(startPoint.x, pointer.x);
+    const top = Math.min(startPoint.y, pointer.y);
+    const width = Math.abs(pointer.x - startPoint.x);
+    const height = Math.abs(pointer.y - startPoint.y);
 
     switch (shape) {
         case "rect":
             (object as fabric.Rect).set({
-                width: pointer.x - left,
-                height: pointer.y - top,
+                left,
+                top,
+                width,
+                height,
             });
             break;
 
         case "diamond": {
-            const deltaX = pointer.x - left;
-            const deltaY = pointer.y - top;
-
-            const scaleX = Math.abs(deltaX) / 50;
-            const scaleY = Math.abs(deltaY) / 50;
-
             (object as fabric.Polygon).set({
-                scaleX: scaleX,
-                scaleY: scaleY,
+                left,
+                top,
+                scaleX: width / 50,
+                scaleY: height / 50,
             });
             break;
         }
 
         case "triangle":
             (object as fabric.Triangle).set({
-                width: pointer.x - left,
-                height: pointer.y - top,
+                left,
+                top,
+                width,
+                height,
             });
             break;
 
-        case "circle":
-            (object as fabric.Circle).set({
-                radius: Math.sqrt(Math.pow(pointer.x - left, 2) + Math.pow(pointer.y - top, 2)) / 2,
-            });
+        case "circle": {
+            if (!shiftKey) {
+                (object as fabric.Ellipse).set({
+                    left,
+                    top,
+                    rx: width / 2,
+                    ry: height / 2,
+                });
+            } else {
+                (object as fabric.Ellipse).set({
+                    left,
+                    top,
+                    rx: Math.max(width / 2, height / 2),
+                    ry: Math.max(width / 2, height / 2),
+                });
+            }
             break;
+        }
 
         case "line":
             (object as fabric.Line).set({
