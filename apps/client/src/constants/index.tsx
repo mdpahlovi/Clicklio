@@ -2,6 +2,7 @@ import {
     ArrowToolIcon,
     CircleIcon,
     CursorIcon,
+    DiamondIcon,
     EraserIcon,
     HandIcon,
     ImageAddIcon,
@@ -23,27 +24,28 @@ export const navElements: {
     type: "tool" | "divider" | "dropdown";
     children?: { value: Tool; name: string; icon: React.ReactNode }[];
 }[] = [
-    { icon: <HandIcon />, name: "Panning", value: "panning", type: "tool" },
-    { icon: <CursorIcon />, name: "Select", value: "select", type: "tool" },
+    { icon: <HandIcon />, name: "Panning - V", value: "panning", type: "tool" },
+    { icon: <CursorIcon />, name: "Select - V", value: "select", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     {
         icon: <ShapersIcon />,
         name: "Shapes",
-        values: ["rect", "triangle", "circle", "line", "arrow"],
+        values: ["rect", "diamond", "triangle", "circle", "line", "arrow"],
         type: "dropdown",
         children: [
-            { icon: <SquareIcon />, name: "Rectangle", value: "rect" },
-            { icon: <TriangleIcon />, name: "Triangle", value: "triangle" },
-            { icon: <CircleIcon />, name: "Circle", value: "circle" },
-            { icon: <MinusIcon />, name: "Line", value: "line" },
-            { icon: <ArrowToolIcon />, name: "Arrow", value: "arrow" },
+            { icon: <SquareIcon />, name: "Rectangle - R", value: "rect" },
+            { icon: <DiamondIcon />, name: "Diamond - D", value: "diamond" },
+            { icon: <TriangleIcon />, name: "Triangle - T", value: "triangle" },
+            { icon: <CircleIcon />, name: "Circle - C", value: "circle" },
+            { icon: <MinusIcon />, name: "Line - L", value: "line" },
+            { icon: <ArrowToolIcon />, name: "Arrow - Shift + L", value: "arrow" },
         ],
     },
-    { icon: <PenIcon />, name: "Draw", value: "path", type: "tool" },
-    { icon: <TextIcon />, name: "Text", value: "i-text", type: "tool" },
-    { icon: <ImageAddIcon />, name: "Image", value: "image", type: "tool" },
+    { icon: <PenIcon />, name: "Draw - P", value: "path", type: "tool" },
+    { icon: <TextIcon />, name: "Text - A", value: "i-text", type: "tool" },
+    { icon: <ImageAddIcon />, name: "Image - I", value: "image", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
-    { icon: <EraserIcon />, name: "Eraser", value: "eraser", type: "tool" },
+    { icon: <EraserIcon />, name: "Eraser - E", value: "eraser", type: "tool" },
 ];
 
 export const fontFamilyOptions = [
@@ -87,6 +89,7 @@ export const tools = [
     { name: "Hand Tool", key: "H" },
     { name: "Selection", key: "V" },
     { name: "Rectangle", key: "R" },
+    { name: "Diamond", key: "D" },
     { name: "Triangle", key: "T" },
     { name: "Circle", key: "C" },
     { name: "Line", key: "L" },
@@ -116,3 +119,34 @@ export const editors = [
     { name: "Decrease font size", key: "Ctrl + Shift + <" },
     { name: "Increase font size", key: "Ctrl + Shift + >" },
 ];
+
+export const presetColors = {
+    fill: [
+        "#60A5FA",
+        "#34D399",
+        "#FBBF24",
+        "#F87171",
+        "#A78BFA",
+        "#22D3EE",
+        "#FB923C",
+        "#A3E635",
+        "#F472B6",
+        "#818CF8",
+        "#2DD4BF",
+        "#FB7185",
+    ],
+    stroke: [
+        "#3B82F6",
+        "#10B981",
+        "#F59E0B",
+        "#EF4444",
+        "#8B5CF6",
+        "#06B6D4",
+        "#F97316",
+        "#84CC16",
+        "#EC4899",
+        "#6366F1",
+        "#14B8A6",
+        "#F43F5E",
+    ],
+};

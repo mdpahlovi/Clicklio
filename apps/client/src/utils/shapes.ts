@@ -15,6 +15,24 @@ export const createRectangle = (pointer: fabric.Point, baseColor: string) => {
     });
 };
 
+export const createDiamond = (pointer: fabric.Point, baseColor: string) => {
+    const points = [
+        { x: 0, y: -25 },
+        { x: 25, y: 0 },
+        { x: 0, y: 25 },
+        { x: -25, y: 0 },
+    ];
+
+    return new fabric.Polygon(points, {
+        left: pointer.x,
+        top: pointer.y,
+        fill: baseColor,
+        uid: uuid(),
+        scaleX: 0,
+        scaleY: 0,
+    });
+};
+
 export const createTriangle = (pointer: fabric.Point, baseColor: string) => {
     return new fabric.Triangle({
         left: pointer.x,
@@ -73,6 +91,9 @@ export const createSpecificShape = (shape: Tool, pointer: fabric.Point) => {
         case "rect":
             return createRectangle(pointer, baseColor);
 
+        case "diamond":
+            return createDiamond(pointer, baseColor);
+
         case "triangle":
             return createTriangle(pointer, baseColor);
 
@@ -104,6 +125,20 @@ export const updateSpecificShape = (shape: Tool, pointer: fabric.Point, object: 
             });
             break;
 
+        case "diamond": {
+            const deltaX = pointer.x - left;
+            const deltaY = pointer.y - top;
+
+            const scaleX = Math.abs(deltaX) / 50;
+            const scaleY = Math.abs(deltaY) / 50;
+
+            (object as fabric.Polygon).set({
+                scaleX: scaleX,
+                scaleY: scaleY,
+            });
+            break;
+        }
+
         case "triangle":
             (object as fabric.Triangle).set({
                 width: pointer.x - left,
@@ -113,7 +148,7 @@ export const updateSpecificShape = (shape: Tool, pointer: fabric.Point, object: 
 
         case "circle":
             (object as fabric.Circle).set({
-                radius: Math.sqrt((pointer.x - left) ** 2 + (pointer.y - top) ** 2),
+                radius: Math.sqrt(Math.pow(pointer.x - left, 2) + Math.pow(pointer.y - top, 2)) / 2,
             });
             break;
 

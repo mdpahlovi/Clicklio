@@ -42,7 +42,7 @@ export default extendTheme({
         JoyCard: { styleOverrides: { root: { padding: 0, borderRadius: 16, gap: 0 } } },
         JoyInput: { styleOverrides: { root: { borderRadius: 10, overflow: "hidden" } } },
         JoyButton: { styleOverrides: { root: { borderRadius: 99 } } },
-        JoySelect: { styleOverrides: { root: { borderRadius: 99 } } },
+        JoySelect: { styleOverrides: { root: { borderRadius: 10 } } },
         JoyTextarea: { styleOverrides: { root: { borderRadius: 16 } } },
         JoyIconButton: { styleOverrides: { root: { borderRadius: 99 } } },
         JoyListItemButton: { styleOverrides: { root: { borderRadius: 16 } } },
@@ -76,7 +76,7 @@ export default extendTheme({
         },
         JoyTooltip: {
             defaultProps: { variant: "soft", size: "sm", placement: "top", enterDelay: 300, enterNextDelay: 300, enterTouchDelay: 300 },
-            styleOverrides: { root: { borderRadius: 99 } },
+            styleOverrides: { root: { paddingInline: 10, borderRadius: 99 } },
         },
         JoyCardOverflow: {
             defaultProps: {

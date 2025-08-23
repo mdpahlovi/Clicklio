@@ -13,7 +13,19 @@ export type Attributes = {
     opacity: string;
 };
 
-export type Tool = "panning" | "select" | "rect" | "triangle" | "circle" | "line" | "arrow" | "path" | "i-text" | "image" | "eraser";
+export type Tool =
+    | "panning"
+    | "select"
+    | "rect"
+    | "diamond"
+    | "triangle"
+    | "circle"
+    | "line"
+    | "arrow"
+    | "path"
+    | "i-text"
+    | "image"
+    | "eraser";
 
 export type CanvasProps = {
     canvasRef: React.RefObject<HTMLCanvasElement | null>;

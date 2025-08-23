@@ -6,6 +6,7 @@ export { default as ColorIcon } from "@/components/icons/ColorIcon";
 export { default as CopyIcon } from "@/components/icons/CopyIcon";
 export { default as CursorIcon } from "@/components/icons/CursorIcon";
 export { default as DeleteIcon } from "@/components/icons/DeleteIcon";
+export { default as DiamondIcon } from "@/components/icons/DiamondIcon";
 export { default as DownloadIcon } from "@/components/icons/DownloadIcon";
 export { default as EraserIcon } from "@/components/icons/EraserIcon";
 export { default as ErrorIcon } from "@/components/icons/ErrorIcon";
