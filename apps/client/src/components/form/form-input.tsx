@@ -13,7 +13,7 @@ export default function FormInput({ type = "text", name, label, disabled }: Inpu
             name={name}
             render={({ field, fieldState: { invalid, error } }) => (
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
-                    <Typography component="label" htmlFor={id} level="title-sm" sx={{ mb: 0.5 }}>
+                    <Typography component="label" htmlFor={id} level="title-sm">
                         {label}
                     </Typography>
                     <Input id={id} type={type} placeholder={`Enter ${label}`} {...field} error={invalid} disabled={disabled} />

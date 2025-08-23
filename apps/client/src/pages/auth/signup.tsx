@@ -33,7 +33,7 @@ export default function SignupPage() {
 
     return (
         <AuthLayout>
-            <Stack sx={{ mb: 0.5, gap: 1 }}>
+            <Stack sx={{ mb: 1.75, gap: 0.5 }}>
                 <Typography component="h1" level="h3">
                     Sign up
                 </Typography>
@@ -53,7 +53,7 @@ export default function SignupPage() {
                 <FormInput type="email" name="email" label="Email" />
                 <FormInput type="password" name="password" label="Password" />
                 <FormInput type="password" name="c_password" label="Confirm Password" />
-                <Stack gap={4} sx={{ mt: 2 }}>
+                <Stack sx={{ mt: 1 }}>
                     <Button type="submit" loading={signupLoading} fullWidth>
                         Sign up
                     </Button>

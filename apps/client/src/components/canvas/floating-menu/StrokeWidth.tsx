@@ -23,7 +23,7 @@ export default function StrokeWidth({ currentObject, handleInputChange }: Floati
             value={value}
             style={{ padding: 10, marginBottom: 36 }}
             onChange={(_, value) => handleInputChange("strokeWidth", String(value))}
-            slotProps={{ track: { style: value === 20 ? { borderRadius: 10 } : undefined }, thumb: { style: thumbStyle() } }}
+            slotProps={{ track: { style: value === 20 ? { borderRadius: 8 } : undefined }, thumb: { style: thumbStyle() } }}
             marks={[
                 { value: 0, label: "0px" },
                 { value: 20, label: "20px" },

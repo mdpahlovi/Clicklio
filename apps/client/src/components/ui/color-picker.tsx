@@ -6,7 +6,7 @@ const SIZE = {
     sliderHeight: 16,
     previewSize: 36,
     presetSize: 36,
-    borderRadius: 10,
+    borderRadius: 8,
 } as const;
 
 const TRANSPARENCY_PATTERN =
@@ -662,7 +662,7 @@ const Select = styled("select")(({ theme: { palette, fontFamily, fontSize, lineH
     height: 36,
     border: "1px solid",
     paddingInline: 8,
-    borderRadius: 10,
+    borderRadius: 8,
     backgroundColor: palette.background.surface,
     borderColor: palette.neutral.outlinedBorder,
     fontFamily: fontFamily.body,

@@ -40,9 +40,9 @@ export default extendTheme({
     components: {
         JoySheet: { defaultProps: { variant: "outlined" } },
         JoyCard: { styleOverrides: { root: { padding: 0, borderRadius: 16, gap: 0 } } },
-        JoyInput: { styleOverrides: { root: { borderRadius: 10, overflow: "hidden" } } },
+        JoyInput: { styleOverrides: { root: { borderRadius: 8, overflow: "hidden" } } },
         JoyButton: { styleOverrides: { root: { borderRadius: 99 } } },
-        JoySelect: { styleOverrides: { root: { borderRadius: 10 } } },
+        JoySelect: { styleOverrides: { root: { borderRadius: 8 } } },
         JoyTextarea: { styleOverrides: { root: { borderRadius: 16 } } },
         JoyIconButton: { styleOverrides: { root: { borderRadius: 99 } } },
         JoyListItemButton: { styleOverrides: { root: { borderRadius: 16 } } },

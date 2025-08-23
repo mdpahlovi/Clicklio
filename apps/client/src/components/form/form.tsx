@@ -12,7 +12,7 @@ export default function Form({ onSubmit, children, defaultValues, validationSche
 
     return (
         <FormProvider {...methods}>
-            <form style={{ display: "flex", flexDirection: "column", gap: 16 }} onSubmit={methods.handleSubmit(submit)}>
+            <form style={{ display: "flex", flexDirection: "column", gap: 12 }} onSubmit={methods.handleSubmit(submit)}>
                 {children}
             </form>
         </FormProvider>

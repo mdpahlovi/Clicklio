@@ -27,7 +27,7 @@ export default function JoySignInSideTemplate() {
 
     return (
         <AuthLayout>
-            <Stack sx={{ mb: 1.5, gap: 1 }}>
+            <Stack sx={{ mb: 2.5, gap: 0.5 }}>
                 <Typography component="h1" level="h3">
                     Sign in
                 </Typography>
@@ -49,7 +49,7 @@ export default function JoySignInSideTemplate() {
             >
                 <FormInput type="email" name="email" label="Email" />
                 <FormInput type="password" name="password" label="Password" />
-                <Stack gap={3.5} sx={{ mt: 2 }}>
+                <Stack gap={2} sx={{ mt: 0.5 }}>
                     <Stack direction="row" justifyContent="space-between">
                         <div />
                         <Link component={RLink} level="title-sm" to="/signin">
