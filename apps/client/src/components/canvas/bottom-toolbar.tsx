@@ -76,17 +76,25 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 </ErrorBoundary>
                 <Divider orientation="vertical" />
                 <IconButton
-                    onClick={() => {
-                        handleCreateEvent({ action: "UNDO", object: null, createEvent });
-                    }}
+                    onClick={() =>
+                        handleCreateEvent({
+                            action: "UNDO",
+                            object: null,
+                            createEvent,
+                        })
+                    }
                     disabled={!canUndo()}
                 >
                     <UndoIcon />
                 </IconButton>
                 <IconButton
-                    onClick={() => {
-                        handleCreateEvent({ action: "REDO", object: null, createEvent });
-                    }}
+                    onClick={() =>
+                        handleCreateEvent({
+                            action: "REDO",
+                            object: null,
+                            createEvent,
+                        })
+                    }
                     disabled={!canRedo()}
                 >
                     <RedoIcon />

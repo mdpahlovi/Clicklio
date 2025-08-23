@@ -29,7 +29,6 @@ export const handlePaste = async (
             if (object?.uid) {
                 canvas.add(object);
 
-                // sync in storage
                 handleCreateEvent({
                     action: "CREATE",
                     object,
@@ -45,7 +44,6 @@ export const handlePaste = async (
         if (clonedObj?.uid) {
             canvas.add(clonedObj);
 
-            // sync in storage
             handleCreateEvent({
                 action: "CREATE",
                 object: clonedObj,
@@ -81,7 +79,6 @@ export const handleDuplicate = async (canvas: fabric.Canvas, createEvent: (event
             if (object?.uid) {
                 canvas.add(object);
 
-                // sync in storage
                 handleCreateEvent({
                     action: "CREATE",
                     object,
@@ -97,7 +94,6 @@ export const handleDuplicate = async (canvas: fabric.Canvas, createEvent: (event
         if (clonedObj?.uid) {
             canvas.add(clonedObj);
 
-            // sync in storage
             handleCreateEvent({
                 action: "CREATE",
                 object: clonedObj,
@@ -228,9 +224,17 @@ export const handleKeyDown = ({ e, canvas, isEditing, copiedObjectRef, createEve
         } else if (key === "z") {
             e.preventDefault();
             if (e.shiftKey) {
-                handleCreateEvent({ action: "REDO", object: null, createEvent });
+                handleCreateEvent({
+                    action: "REDO",
+                    object: null,
+                    createEvent,
+                });
             } else {
-                handleCreateEvent({ action: "UNDO", object: null, createEvent });
+                handleCreateEvent({
+                    action: "UNDO",
+                    object: null,
+                    createEvent,
+                });
             }
         }
     }

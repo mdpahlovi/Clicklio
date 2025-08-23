@@ -66,7 +66,7 @@ export const createText = (pointer: fabric.Point, baseColor: string) => {
     });
 };
 
-export const createSpecificShape = (shape: Tool | null, pointer: fabric.Point) => {
+export const createSpecificShape = (shape: Tool, pointer: fabric.Point) => {
     const baseColor = "#FFFFFF";
 
     switch (shape) {
@@ -93,6 +93,46 @@ export const createSpecificShape = (shape: Tool | null, pointer: fabric.Point) =
     }
 };
 
+export const updateSpecificShape = (shape: Tool, pointer: fabric.Point, object: fabric.FabricObject) => {
+    const { left, top } = object;
+
+    switch (shape) {
+        case "rect":
+            (object as fabric.Rect).set({
+                width: pointer.x - left,
+                height: pointer.y - top,
+            });
+            break;
+
+        case "triangle":
+            (object as fabric.Triangle).set({
+                width: pointer.x - left,
+                height: pointer.y - top,
+            });
+            break;
+
+        case "circle":
+            (object as fabric.Circle).set({
+                radius: Math.sqrt((pointer.x - left) ** 2 + (pointer.y - top) ** 2),
+            });
+            break;
+
+        case "line":
+            (object as fabric.Line).set({
+                x2: pointer.x,
+                y2: pointer.y,
+            });
+            break;
+
+        case "arrow":
+            (object as Arrow).set({
+                x2: pointer.x,
+                y2: pointer.y,
+            });
+            break;
+    }
+};
+
 export const handleImageUpload = ({ file, fabricRef, createEvent }: ImageUpload) => {
     const reader = new FileReader();
 
@@ -104,7 +144,6 @@ export const handleImageUpload = ({ file, fabricRef, createEvent }: ImageUpload)
             if (fabricRef?.current && image?.uid) {
                 fabricRef.current.add(image);
 
-                // sync in storage
                 handleCreateEvent({
                     action: "CREATE",
                     object: image,
