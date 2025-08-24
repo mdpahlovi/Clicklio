@@ -1,9 +1,9 @@
-import type { FloatingMenuSubItemProps } from "@/types";
+import type { FloatingMenuItemProps } from "@/types";
 import { Slider } from "@mui/joy";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function StrokeWidth({ currentObject, handleInputChange }: FloatingMenuSubItemProps) {
+export default function StrokeWidth({ currentObject, handleInputChange }: FloatingMenuItemProps) {
     const [value, setValue] = useState<number>(currentObject?.strokeWidth || 0);
 
     const debouncedUpdate = useDebouncedCallback((value: number) => {

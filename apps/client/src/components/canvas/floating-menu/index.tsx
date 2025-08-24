@@ -86,32 +86,36 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
 
     return (
         <FloatingMenuSheet ref={floatingMenuRef} sx={menuPosition || { display: "none" }} onClick={(e) => e.stopPropagation()}>
-            {currentObject?.type === "i-text" ? (
-                <Text
-                    open={!!openedFloatingMenu["text"]}
-                    onOpenChange={() => setOpenedFloatingMenu("text")}
-                    {...{ currentObject, handleInputChange }}
-                />
+            {currentObject ? (
+                <>
+                    {currentObject?.type === "i-text" ? (
+                        <Text
+                            open={!!openedFloatingMenu["text"]}
+                            onOpenChange={() => setOpenedFloatingMenu("text")}
+                            {...{ currentObject, handleInputChange }}
+                        />
+                    ) : null}
+                    <Colors
+                        name="fill"
+                        open={!!openedFloatingMenu["fill"]}
+                        onOpenChange={() => setOpenedFloatingMenu("fill")}
+                        {...{ currentObject, handleInputChange }}
+                    />
+                    <Colors
+                        name="stroke"
+                        open={!!openedFloatingMenu["stroke"]}
+                        onOpenChange={() => setOpenedFloatingMenu("stroke")}
+                        {...{ currentObject, handleInputChange }}
+                    />
+                    <Opacity
+                        open={!!openedFloatingMenu["opacity"]}
+                        onOpenChange={() => setOpenedFloatingMenu("opacity")}
+                        {...{ currentObject, handleInputChange }}
+                    />
+                    <Divider orientation="vertical" sx={{ mx: 0.5 }} />
+                    <Actions {...{ fabricRef, currentObject }} />
+                </>
             ) : null}
-            <Colors
-                name="fill"
-                open={!!openedFloatingMenu["fill"]}
-                onOpenChange={() => setOpenedFloatingMenu("fill")}
-                {...{ currentObject, handleInputChange }}
-            />
-            <Colors
-                name="stroke"
-                open={!!openedFloatingMenu["stroke"]}
-                onOpenChange={() => setOpenedFloatingMenu("stroke")}
-                {...{ currentObject, handleInputChange }}
-            />
-            <Opacity
-                open={!!openedFloatingMenu["opacity"]}
-                onOpenChange={() => setOpenedFloatingMenu("opacity")}
-                {...{ currentObject, handleInputChange }}
-            />
-            <Divider orientation="vertical" sx={{ mx: 0.5 }} />
-            <Actions {...{ fabricRef, currentObject }} />
         </FloatingMenuSheet>
     );
 }
