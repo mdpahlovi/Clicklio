@@ -47,16 +47,21 @@ export type FloatingMenuProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
 };
 
+export type FloatingSubMenuItemProps = {
+    currentObject: fabric.FabricObject;
+    handleInputChange: (property: keyof Attributes, value: string) => void;
+};
+
 export type FloatingMenuItemProps = {
     open: boolean;
     onOpenChange: () => void;
-    currentObject: fabric.FabricObject | null;
+    currentObject: fabric.FabricObject;
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
 export type ActionsProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    currentObject: fabric.FabricObject | null;
+    currentObject: fabric.FabricObject;
 };
 
 export type ToolbarProps = {
