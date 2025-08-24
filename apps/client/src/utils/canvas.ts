@@ -14,6 +14,8 @@ import { createSpecificShape, updateSpecificShape } from "@/utils/shapes";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
 
+fabric.FabricObject.ownDefaults.strokeUniform = true;
+fabric.FabricObject.ownDefaults.objectCaching = false;
 fabric.FabricObject.ownDefaults.cornerColor = "#4882ED";
 fabric.FabricObject.ownDefaults.cornerStyle = "circle";
 fabric.FabricObject.ownDefaults.transparentCorners = false;

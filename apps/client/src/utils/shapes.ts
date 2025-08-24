@@ -11,8 +11,6 @@ export const createRectangle = (pointer: fabric.Point, baseColor: string) => {
         width: 0,
         height: 0,
         fill: baseColor,
-        strokeUniform: true,
-        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -31,8 +29,6 @@ export const createDiamond = (pointer: fabric.Point, baseColor: string) => {
         width: 0,
         height: 0,
         fill: baseColor,
-        strokeUniform: true,
-        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -44,8 +40,6 @@ export const createTriangle = (pointer: fabric.Point, baseColor: string) => {
         width: 0,
         height: 0,
         fill: baseColor,
-        strokeUniform: true,
-        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -57,8 +51,6 @@ export const createCircle = (pointer: fabric.Point, baseColor: string) => {
         rx: 0,
         ry: 0,
         fill: baseColor,
-        strokeUniform: true,
-        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -68,7 +60,6 @@ export const createLine = (pointer: fabric.Point, baseColor: string) => {
         fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
-        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -78,7 +69,6 @@ export const createArrow = (pointer: fabric.Point, baseColor: string) => {
         fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
-        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -91,7 +81,6 @@ export const createText = (pointer: fabric.Point, baseColor: string) => {
         fontFamily: "Poppins",
         fontSize: 16,
         fontWeight: "400",
-        objectCaching: false,
         uid: uuid(),
     });
 };

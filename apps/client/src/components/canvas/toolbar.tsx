@@ -25,6 +25,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     canvas.defaultCursor = "grab";
                     canvas.hoverCursor = "grab";
                     canvas.forEachObject((object) => {
+                        object.evented = false;
                         object.selectable = false;
                     });
                     selectedToolRef.current = tool;
@@ -33,6 +34,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                 case "select":
                     canvas.selection = true;
                     canvas.forEachObject((object) => {
+                        object.evented = true;
                         object.selectable = true;
                     });
                     break;
