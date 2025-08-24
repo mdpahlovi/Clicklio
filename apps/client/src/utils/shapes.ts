@@ -149,8 +149,6 @@ export const updateSpecificShape = (
             break;
 
         case "diamond": {
-            const centerX = left + width / 2;
-            const centerY = top + height / 2;
             const halfWidth = width / 2;
             const halfHeight = height / 2;
 
@@ -162,9 +160,11 @@ export const updateSpecificShape = (
             ];
 
             (object as fabric.Polygon).set({
-                left: centerX,
-                top: centerY,
                 points: newPoints,
+                left,
+                top,
+                width,
+                height,
             });
             break;
         }

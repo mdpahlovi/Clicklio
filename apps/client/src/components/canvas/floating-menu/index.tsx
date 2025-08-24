@@ -21,7 +21,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
             object,
             createEvent,
         });
-    }, 300);
+    }, 150);
 
     const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
         if (!fabricRef.current) return;

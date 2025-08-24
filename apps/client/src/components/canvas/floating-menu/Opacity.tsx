@@ -1,20 +1,15 @@
 import { OpacityIcon } from "@/components/icons";
 import type { FloatingMenuItemProps } from "@/types";
 import { Dropdown, IconButton, Menu, MenuButton, Slider, Tooltip } from "@mui/joy";
+import { useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Opacity({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
-    const value = currentObject?.opacity;
+    const [value, setValue] = useState<number>(currentObject?.opacity || 0);
 
-    const thumbStyle = (): React.CSSProperties => {
-        switch (value) {
-            case 0:
-                return { left: 9 };
-            case 1:
-                return { left: `calc(100% - 9px)` };
-            default:
-                return { left: `${(value ? value : 0) * 100}%` };
-        }
-    };
+    const debouncedUpdate = useDebouncedCallback((value: number) => {
+        handleInputChange("opacity", String(value));
+    }, 150);
 
     return (
         <Dropdown open={open} onOpenChange={onOpenChange}>
@@ -29,8 +24,14 @@ export default function Opacity({ open, onOpenChange, currentObject, handleInput
                     max={1}
                     step={0.1}
                     value={value}
-                    onChange={(_, value) => handleInputChange("opacity", String(value))}
-                    slotProps={{ track: { style: value === 1 ? { borderRadius: 8 } : undefined }, thumb: { style: thumbStyle() } }}
+                    valueLabelDisplay="on"
+                    style={{ marginTop: 18, marginBottom: 28 }}
+                    onChange={(_, value) => {
+                        if (typeof value === "number") {
+                            setValue(value);
+                            debouncedUpdate(value);
+                        }
+                    }}
                     marks={[
                         { value: 0, label: "0%" },
                         { value: 1, label: "100%" },

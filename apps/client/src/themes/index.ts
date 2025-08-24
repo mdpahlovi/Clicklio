@@ -61,9 +61,17 @@ export default extendTheme({
         JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },
         JoyModal: { defaultProps: { sx: { display: "flex", justifyContent: "center", alignItems: "center" } } },
         JoySlider: {
+            styleOverrides: {
+                thumb: {
+                    [`&::before`]: { border: "none !important" },
+                },
+            },
             defaultProps: {
                 sx: {
                     "--Slider-trackSize": "20px",
+                    "--Slider-thumbSize": "20px",
+                    "--Slider-thumbWidth": "4px",
+                    "--Slider-thumbRadius": "2px",
                     [`& [style*="left:0%"], & [style*="left: 0%"]`]: {
                         [`&.${sliderClasses.markLabel}`]: { transform: "none" },
                     },
@@ -71,7 +79,6 @@ export default extendTheme({
                         [`&.${sliderClasses.markLabel}`]: { transform: "translateX(-100%)" },
                     },
                 },
-                style: { padding: 10, marginBottom: 24 },
             },
         },
         JoyTooltip: {

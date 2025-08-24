@@ -1,29 +1,29 @@
 import type { FloatingMenuSubItemProps } from "@/types";
 import { Slider } from "@mui/joy";
+import { useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function StrokeWidth({ currentObject, handleInputChange }: FloatingMenuSubItemProps) {
-    const value = currentObject?.strokeWidth;
+    const [value, setValue] = useState<number>(currentObject?.strokeWidth || 0);
 
-    const thumbStyle = (): React.CSSProperties => {
-        switch (value) {
-            case 0:
-                return { left: 9 };
-            case 20:
-                return { left: `calc(100% - 9px)` };
-            default:
-                return { left: `${(value ? value : 0) * 5}%` };
-        }
-    };
+    const debouncedUpdate = useDebouncedCallback((value: number) => {
+        handleInputChange("strokeWidth", String(value));
+    }, 150);
 
     return (
         <Slider
             min={0}
             max={20}
             step={1}
+            valueLabelDisplay="on"
+            style={{ marginTop: 18, marginBottom: 28 }}
             value={value}
-            style={{ padding: 10, marginBottom: 36 }}
-            onChange={(_, value) => handleInputChange("strokeWidth", String(value))}
-            slotProps={{ track: { style: value === 20 ? { borderRadius: 8 } : undefined }, thumb: { style: thumbStyle() } }}
+            onChange={(_, value) => {
+                if (typeof value === "number") {
+                    setValue(value);
+                    debouncedUpdate(value);
+                }
+            }}
             marks={[
                 { value: 0, label: "0px" },
                 { value: 20, label: "20px" },
