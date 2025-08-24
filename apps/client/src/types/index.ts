@@ -54,14 +54,9 @@ export type FloatingMenuItemProps = {
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
-export type FloatingMenuSubItemProps = {
-    currentObject: fabric.FabricObject | null;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
-};
-
 export type ActionsProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
-    currentObject: fabric.FabricObject;
+    currentObject: fabric.FabricObject | null;
 };
 
 export type ToolbarProps = {

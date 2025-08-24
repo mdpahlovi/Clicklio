@@ -1,3 +1,4 @@
+import { defaultControls } from "@/constants/fabric/controller";
 import type {
     CanvasMouseDown,
     CanvasMouseMove,
@@ -14,11 +15,14 @@ import { createSpecificShape, updateSpecificShape } from "@/utils/shapes";
 import * as fabric from "fabric";
 import { v4 as uuid } from "uuid";
 
-fabric.FabricObject.ownDefaults.strokeUniform = true;
-fabric.FabricObject.ownDefaults.objectCaching = false;
-fabric.FabricObject.ownDefaults.cornerColor = "#4882ED";
-fabric.FabricObject.ownDefaults.cornerStyle = "circle";
-fabric.FabricObject.ownDefaults.transparentCorners = false;
+fabric.InteractiveFabricObject.ownDefaults.strokeUniform = true;
+fabric.InteractiveFabricObject.ownDefaults.objectCaching = false;
+fabric.InteractiveFabricObject.ownDefaults.controls = defaultControls;
+fabric.InteractiveFabricObject.ownDefaults.cornerSize = 12;
+fabric.InteractiveFabricObject.ownDefaults.cornerStyle = "circle";
+fabric.InteractiveFabricObject.ownDefaults.cornerColor = "#4882ED";
+fabric.InteractiveFabricObject.ownDefaults.borderColor = "#4882ED";
+fabric.InteractiveFabricObject.ownDefaults.transparentCorners = false;
 
 export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => {
     const canvasElement = document.getElementById("canvas");
@@ -159,7 +163,7 @@ export const handleCanvasObjectScaling = ({ option, canvas }: CanvasObjectScalin
     switch (target.type) {
         case "textbox":
         case "i-text": {
-            const newFontSize = (target as fabric.IText).fontSize * ((target.scaleX + target.scaleY) / 2);
+            const newFontSize = Math.round((target as fabric.IText).fontSize * ((target.scaleX + target.scaleY) / 2));
             target.set({
                 fontSize: newFontSize,
                 scaleX: 1,

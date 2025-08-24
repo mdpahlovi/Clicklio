@@ -8,12 +8,13 @@ import type { Attributes, FloatingMenuProps } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import { Divider, Sheet, styled } from "@mui/joy";
 import * as fabric from "fabric";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     const { createEvent } = useEventStore();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
+    const floatingMenuRef = useRef<HTMLDivElement | null>(null);
 
     const debouncedUpdate = useDebouncedCallback((object: fabric.Object) => {
         handleCreateEvent({
@@ -61,65 +62,58 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     }, []);
 
     const menuPosition = useMemo(() => {
-        if (!fabricRef?.current || !currentObject) return {};
+        const canvas = fabricRef?.current;
+        const floatingMenu = floatingMenuRef?.current;
+        if (!canvas || !currentObject || !floatingMenu) return;
 
-        const canvas = fabricRef.current;
-        const canvasElement = canvas.getElement();
         const zoom = canvas.getZoom();
-        const vpt = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
+        const viewTransform = canvas.viewportTransform;
 
-        const boundingRect = currentObject.getBoundingRect();
+        const objectX = currentObject.left * zoom + viewTransform[4];
+        const objectY = currentObject.top * zoom + viewTransform[5];
+        const objectWidth = currentObject.width * zoom;
 
-        const viewportLeft = boundingRect.left * zoom + vpt[4];
-        const viewportTop = boundingRect.top * zoom + vpt[5];
-        const viewportWidth = boundingRect.width * zoom;
+        const absoluteX = objectX + objectWidth / 2;
+        const absoluteY = objectY - 48 - 37.6;
 
-        const canvasRect = canvasElement.getBoundingClientRect();
-        const canvasOffsetLeft = canvasRect.left + window.scrollX;
-        const canvasOffsetTop = canvasRect.top + window.scrollY;
-        const absoluteLeft = canvasOffsetLeft + viewportLeft + viewportWidth / 2;
-        const absoluteTop = canvasOffsetTop + viewportTop - 80;
+        const menuHalfWidth = floatingMenu.clientWidth / 2 + 16;
 
-        const adjustedLeft = Math.max(100, Math.min(absoluteLeft, window.innerWidth - 100));
-        const adjustedTop = Math.max(20, absoluteTop);
+        const adjustedX = Math.max(menuHalfWidth, Math.min(absoluteX, window.innerWidth - menuHalfWidth));
+        const adjustedY = Math.max(16, absoluteY);
 
-        return { left: adjustedLeft, top: adjustedTop };
+        return { left: adjustedX, top: adjustedY };
     }, [currentObject?.top, currentObject?.left]);
 
-    if (fabricRef?.current && currentObject) {
-        return (
-            <FloatingMenuSheet sx={menuPosition} onClick={(e) => e.stopPropagation()}>
-                {currentObject?.type === "i-text" ? (
-                    <Text
-                        open={!!openedFloatingMenu["text"]}
-                        onOpenChange={() => setOpenedFloatingMenu("text")}
-                        {...{ currentObject, handleInputChange }}
-                    />
-                ) : null}
-                <Colors
-                    name="fill"
-                    open={!!openedFloatingMenu["fill"]}
-                    onOpenChange={() => setOpenedFloatingMenu("fill")}
+    return (
+        <FloatingMenuSheet ref={floatingMenuRef} sx={menuPosition || { display: "none" }} onClick={(e) => e.stopPropagation()}>
+            {currentObject?.type === "i-text" ? (
+                <Text
+                    open={!!openedFloatingMenu["text"]}
+                    onOpenChange={() => setOpenedFloatingMenu("text")}
                     {...{ currentObject, handleInputChange }}
                 />
-                <Colors
-                    name="stroke"
-                    open={!!openedFloatingMenu["stroke"]}
-                    onOpenChange={() => setOpenedFloatingMenu("stroke")}
-                    {...{ currentObject, handleInputChange }}
-                />
-                <Opacity
-                    open={!!openedFloatingMenu["opacity"]}
-                    onOpenChange={() => setOpenedFloatingMenu("opacity")}
-                    {...{ currentObject, handleInputChange }}
-                />
-                <Divider orientation="vertical" sx={{ mx: 0.5 }} />
-                <Actions {...{ fabricRef, currentObject }} />
-            </FloatingMenuSheet>
-        );
-    } else {
-        return null;
-    }
+            ) : null}
+            <Colors
+                name="fill"
+                open={!!openedFloatingMenu["fill"]}
+                onOpenChange={() => setOpenedFloatingMenu("fill")}
+                {...{ currentObject, handleInputChange }}
+            />
+            <Colors
+                name="stroke"
+                open={!!openedFloatingMenu["stroke"]}
+                onOpenChange={() => setOpenedFloatingMenu("stroke")}
+                {...{ currentObject, handleInputChange }}
+            />
+            <Opacity
+                open={!!openedFloatingMenu["opacity"]}
+                onOpenChange={() => setOpenedFloatingMenu("opacity")}
+                {...{ currentObject, handleInputChange }}
+            />
+            <Divider orientation="vertical" sx={{ mx: 0.5 }} />
+            <Actions {...{ fabricRef, currentObject }} />
+        </FloatingMenuSheet>
+    );
 }
 
 const FloatingMenuSheet = styled(Sheet)(() => ({
@@ -128,6 +122,6 @@ const FloatingMenuSheet = styled(Sheet)(() => ({
     zIndex: 10,
     borderRadius: 99,
     display: "flex",
-    transform: "translateX(-50%) translateY(-100%)",
+    transform: "translateX(-50%)",
     "& > button": { borderRadius: 0 },
 }));

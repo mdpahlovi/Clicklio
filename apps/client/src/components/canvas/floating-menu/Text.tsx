@@ -1,20 +1,18 @@
 import { ParagraphIcon } from "@/components/icons";
-import { fontFamilyOptions, fontSizeOptions, fontWeightOptions } from "@/constants";
-import type { FloatingMenuItemProps, FloatingMenuSubItemProps } from "@/types";
-import { Dropdown, IconButton, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
+import { fontFamilyOptions } from "@/constants";
+import type { FloatingMenuItemProps } from "@/types";
+import { Dropdown, IconButton, Input, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
 import * as fabric from "fabric";
-
-type Property = "fontFamily" | "fontSize" | "fontWeight";
-type SelectConfig = { property: Property; options: { label: string; value: string }[] };
-type RenderSelectProps = { config: SelectConfig } & FloatingMenuSubItemProps;
-
-const selectConfigs: SelectConfig[] = [
-    { property: "fontFamily", options: fontFamilyOptions },
-    { property: "fontSize", options: fontSizeOptions },
-    { property: "fontWeight", options: fontWeightOptions },
-];
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Text({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
+    const fontFamily = currentObject ? (currentObject as fabric.IText).fontFamily : "";
+    const fontSize = currentObject ? (currentObject as fabric.IText).fontSize : "";
+
+    const debouncedUpdate = useDebouncedCallback((property: "fontSize", value: string) => {
+        handleInputChange(property, value);
+    }, 150);
+
     return (
         <Dropdown open={open} onOpenChange={onOpenChange}>
             <Tooltip title="Text">
@@ -23,26 +21,16 @@ export default function Text({ open, onOpenChange, currentObject, handleInputCha
                 </MenuButton>
             </Tooltip>
             <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ width: 205, display: "grid", gap: 10 }}>
-                {RenderSelect({ config: selectConfigs[0], handleInputChange, currentObject })}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {selectConfigs.slice(1).map((config) => RenderSelect({ config, handleInputChange, currentObject }))}
-                </div>
+                <Select defaultValue={fontFamily} onChange={(e) => handleInputChange("fontFamily", e.target.value)}>
+                    {fontFamilyOptions.map((option) => (
+                        <Option key={option.value} value={option.value} style={{ fontFamily: "Poppins" }}>
+                            {option.label}
+                        </Option>
+                    ))}
+                </Select>
+                <Input defaultValue={fontSize} onChange={(e) => debouncedUpdate("fontSize", e.target.value)} />
             </Menu>
         </Dropdown>
-    );
-}
-
-function RenderSelect({ currentObject, config: { property, options }, handleInputChange }: RenderSelectProps) {
-    const defaultValue = currentObject ? (currentObject as fabric.IText)[property] : "";
-
-    return (
-        <Select key={property} value={String(defaultValue)} onChange={(e) => handleInputChange(property, String(e.target.value))}>
-            {options.map((option) => (
-                <Option key={option.value} value={option.value} style={{ fontFamily: "Poppins" }}>
-                    {option.label}
-                </Option>
-            ))}
-        </Select>
     );
 }
 
