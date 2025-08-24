@@ -12,25 +12,27 @@ export const createRectangle = (pointer: fabric.Point, baseColor: string) => {
         height: 0,
         fill: baseColor,
         strokeUniform: true,
+        objectCaching: false,
         uid: uuid(),
     });
 };
 
 export const createDiamond = (pointer: fabric.Point, baseColor: string) => {
     const points = [
-        { x: 0, y: -25 },
-        { x: 25, y: 0 },
-        { x: 0, y: 25 },
-        { x: -25, y: 0 },
+        { x: 0, y: -1 },
+        { x: 1, y: 0 },
+        { x: 0, y: 1 },
+        { x: -1, y: 0 },
     ];
 
     return new fabric.Polygon(points, {
         left: pointer.x,
         top: pointer.y,
-        scaleX: 0,
-        scaleY: 0,
+        width: 0,
+        height: 0,
         fill: baseColor,
         strokeUniform: true,
+        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -43,6 +45,7 @@ export const createTriangle = (pointer: fabric.Point, baseColor: string) => {
         height: 0,
         fill: baseColor,
         strokeUniform: true,
+        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -55,6 +58,7 @@ export const createCircle = (pointer: fabric.Point, baseColor: string) => {
         ry: 0,
         fill: baseColor,
         strokeUniform: true,
+        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -64,6 +68,7 @@ export const createLine = (pointer: fabric.Point, baseColor: string) => {
         fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
+        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -73,6 +78,7 @@ export const createArrow = (pointer: fabric.Point, baseColor: string) => {
         fill: baseColor,
         stroke: baseColor,
         strokeWidth: 2,
+        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -85,6 +91,7 @@ export const createText = (pointer: fabric.Point, baseColor: string) => {
         fontFamily: "Poppins",
         fontSize: 16,
         fontWeight: "400",
+        objectCaching: false,
         uid: uuid(),
     });
 };
@@ -142,11 +149,22 @@ export const updateSpecificShape = (
             break;
 
         case "diamond": {
+            const centerX = left + width / 2;
+            const centerY = top + height / 2;
+            const halfWidth = width / 2;
+            const halfHeight = height / 2;
+
+            const newPoints = [
+                { x: 0, y: -halfHeight },
+                { x: halfWidth, y: 0 },
+                { x: 0, y: halfHeight },
+                { x: -halfWidth, y: 0 },
+            ];
+
             (object as fabric.Polygon).set({
-                left,
-                top,
-                scaleX: width / 50,
-                scaleY: height / 50,
+                left: centerX,
+                top: centerY,
+                points: newPoints,
             });
             break;
         }

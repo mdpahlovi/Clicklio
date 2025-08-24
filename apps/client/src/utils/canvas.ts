@@ -157,7 +157,7 @@ export const handleCanvasObjectScaling = ({ option, canvas }: CanvasObjectScalin
     switch (target.type) {
         case "textbox":
         case "i-text": {
-            const newFontSize = (target as fabric.IText).fontSize * Math.max(target.scaleX, target.scaleY);
+            const newFontSize = (target as fabric.IText).fontSize * ((target.scaleX + target.scaleY) / 2);
             target.set({
                 fontSize: newFontSize,
                 scaleX: 1,

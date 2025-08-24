@@ -7,6 +7,7 @@ import { AppService } from "./app.service";
 import { CommonModule } from "./common/common.module";
 import { config } from "./config/env.config";
 import { CanvasModule } from "./gateway/canvas/canvas.module";
+import { ConferenceModule } from "./gateway/conference/conference.module";
 import { UserModule } from "./gateway/user/user.module";
 import { AuthGuard } from "./guards/auth.guard";
 import { AuthModule } from "./modules/auth/auth.module";
@@ -23,6 +24,7 @@ import { RoomModule } from "./modules/room/room.module";
         CommonModule,
         UserModule,
         CanvasModule,
+        ConferenceModule,
         AuthModule,
         RoomModule,
     ],
