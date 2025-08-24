@@ -25,17 +25,14 @@ export default function Opacity({ open, onOpenChange, currentObject, handleInput
                     step={0.1}
                     value={value}
                     valueLabelDisplay="on"
-                    style={{ marginTop: 18, marginBottom: 28 }}
+                    valueLabelFormat={(value) => `${value * 100}%`}
+                    style={{ marginTop: 18, marginBottom: -10 }}
                     onChange={(_, value) => {
                         if (typeof value === "number") {
                             setValue(value);
                             debouncedUpdate(value);
                         }
                     }}
-                    marks={[
-                        { value: 0, label: "0%" },
-                        { value: 1, label: "100%" },
-                    ]}
                 />
             </Menu>
         </Dropdown>

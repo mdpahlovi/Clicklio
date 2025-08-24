@@ -16,7 +16,8 @@ export default function StrokeWidth({ currentObject, handleInputChange }: Floati
             max={20}
             step={1}
             valueLabelDisplay="on"
-            style={{ marginTop: 18, marginBottom: 28 }}
+            valueLabelFormat={(value) => `${value}px`}
+            style={{ marginTop: 18, marginBottom: 4 }}
             value={value}
             onChange={(_, value) => {
                 if (typeof value === "number") {
@@ -24,10 +25,6 @@ export default function StrokeWidth({ currentObject, handleInputChange }: Floati
                     debouncedUpdate(value);
                 }
             }}
-            marks={[
-                { value: 0, label: "0px" },
-                { value: 20, label: "20px" },
-            ]}
         />
     );
 }
