@@ -1,17 +1,24 @@
 import { ConsoleLogger, ValidationPipe, VersioningType } from "@nestjs/common";
+import { HttpsOptions } from "@nestjs/common/interfaces/external/https-options.interface";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import * as fs from "fs";
 import helmet from "helmet";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
     const logger = new ConsoleLogger({
-        logLevels: ["warn", "error", "log", "debug", "verbose"],
+        logLevels: ["warn", "error", "log", "debug", "verbose", "fatal"],
         prefix: "Clicklio",
         timestamp: true,
     });
 
-    const app = await NestFactory.create(AppModule, { logger });
+    const httpsOptions: HttpsOptions = {
+        key: fs.readFileSync("ssl/localhost+2-key.pem"),
+        cert: fs.readFileSync("ssl/localhost+2.pem"),
+    };
+
+    const app = await NestFactory.create(AppModule, { logger, httpsOptions });
     const configService = app.get(ConfigService);
 
     // Security

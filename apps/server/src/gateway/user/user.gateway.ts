@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import {
     ConnectedSocket,
     MessageBody,
@@ -19,12 +20,14 @@ type Cursor = { room: string; cursor: Pointer };
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
+    private readonly logger = new Logger(UserGateway.name);
+
     @WebSocketServer() server: Server;
 
     constructor(private readonly redisService: RedisService) {}
 
     handleConnection(client: Socket) {
-        console.log(`Client connected: ${client.id}`);
+        this.logger.debug(`Client connected: ${client.id}`);
 
         client.on("disconnecting", async () => {
             const rooms = Array.from(client.rooms).filter((room) => room !== client.id);
@@ -36,7 +39,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     handleDisconnect(client: Socket) {
-        console.log(`Client disconnected: ${client.id}`);
+        this.logger.debug(`Client disconnected: ${client.id}`);
     }
 
     @SubscribeMessage("join:room")
