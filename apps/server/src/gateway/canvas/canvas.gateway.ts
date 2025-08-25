@@ -1,26 +1,19 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { RedisService } from "src/common/service/redis.service";
+import { RoomService } from "src/common/service/room.service";
 
-type CreateMessage = { room: string; event: Record<string, unknown>; isPrivate: boolean };
+type CreateMessage = { room: string; event: Record<string, unknown> };
 
 @WebSocketGateway({ cors: { origin: "*" } })
 export class CanvasGateway {
     @WebSocketServer() server: Server;
 
-    constructor(private readonly redisService: RedisService) {}
+    constructor(private readonly roomService: RoomService) {}
 
     @SubscribeMessage("create:event")
-    async handleSetShape(@ConnectedSocket() client: Socket, @MessageBody() data: CreateMessage) {
-        if (!data.room) return;
+    async handleSetShape(@ConnectedSocket() client: Socket, @MessageBody() { room, event }: CreateMessage) {
+        if (!room) return { success: false, message: "Room is required" };
 
-        const { room, event, isPrivate } = data;
-        if (isPrivate) {
-            await this.redisService.client.rpush(`room:${room}:events_pvt`, JSON.stringify(event));
-        } else {
-            await this.redisService.client.rpush(`room:${room}:events_pub`, JSON.stringify(event));
-        }
-
-        client.to(data.room).emit("create:event", { event });
+        await this.roomService.createEvent(client, room, event);
     }
 }

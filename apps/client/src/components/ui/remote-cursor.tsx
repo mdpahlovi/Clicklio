@@ -1,23 +1,20 @@
+import { CursorIcon } from "@/components/icons";
 import { usePointerStore, type Pointer } from "@/stores/room/usePointerStore";
 import { useUserStore } from "@/stores/room/useUserStore";
 import { socket } from "@/utils/socket";
 import { Box, Sheet, Typography } from "@mui/joy";
 import { useCallback, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
 import { useThrottledCallback } from "use-debounce";
-import { CursorIcon } from "../icons";
 
-export default function RemoteCursor() {
+export default function RemoteCursor({ room }: { room: string }) {
     const { roomUser } = useUserStore();
     const { pointers, setPointer, deletePointer } = usePointerStore();
-
-    const room = useSearchParams()[0].get("room");
 
     const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
     const throttledEmitCursor = useThrottledCallback(
         (e: MouseEvent) => {
-            if (!room || typeof e?.clientX !== "number" || typeof e?.clientY !== "number") return;
+            if (typeof e?.clientX !== "number" || typeof e?.clientY !== "number") return;
 
             socket.emit("cursor", { room, cursor: { x: e.clientX, y: e.clientY } });
         },

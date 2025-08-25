@@ -10,9 +10,10 @@ type NavbarProps = {
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    room: string | null;
 };
 
-export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModalOpen }: NavbarProps) {
+export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModalOpen, room }: NavbarProps) {
     const { user } = useAuthState();
 
     return (
@@ -21,7 +22,7 @@ export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModal
                 <Menubar {...{ canvasRef, setIsGuideModalOpen }} />
             </NavbarSheet>
             <NavbarSheet position="right">
-                <RoomUsers />
+                {room ? <RoomUsers /> : null}
                 <Button color="neutral" variant="plain" startDecorator={<ShareIcon />} onClick={() => setIsShareModalOpen(true)}>
                     Share
                 </Button>

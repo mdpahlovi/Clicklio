@@ -2,7 +2,6 @@ import { socket } from "@/utils/socket";
 import { Button, Divider, Sheet, Stack, styled } from "@mui/joy";
 import { Device, types } from "mediasoup-client";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 
 type JoinConferenceResponse = {
     id: string;
@@ -23,9 +22,7 @@ type ConsumerInfo = {
     producerPaused: boolean;
 };
 
-export default function Conference() {
-    const room = useSearchParams()[0].get("room");
-
+export default function Conference({ room }: { room: string }) {
     const deviceRef = useRef<Device | null>(null);
     const sendTransportRef = useRef<types.Transport | null>(null);
     const recvTransportRef = useRef<types.Transport | null>(null);
@@ -36,8 +33,6 @@ export default function Conference() {
     const [consumers, setConsumers] = useState(new Map<string, types.Consumer>());
 
     useEffect(() => {
-        if (!room) return;
-
         // Handle new producer from other clients
         socket.on("new:producer", ({ producerId, kind }) => {
             console.log("New producer:", producerId, kind);
@@ -71,7 +66,7 @@ export default function Conference() {
             socket.off("new:producer");
             socket.off("producer:closed");
         };
-    }, [room]);
+    }, []);
 
     const createReceiveTransport = async (device: Device) => {
         if (recvTransportRef.current) return recvTransportRef.current;

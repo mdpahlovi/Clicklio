@@ -31,6 +31,7 @@ export type CanvasProps = {
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
     fabricRef: React.RefObject<fabric.Canvas | null>;
     selectedToolRef: React.RefObject<Tool | null>;
+    room: string | null;
 };
 
 export type ImageUpload = {
@@ -72,6 +73,7 @@ export type ToolbarProps = {
 export type InitializeFabric = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
+    zoom: number;
 };
 
 export type CanvasMouseDown = {

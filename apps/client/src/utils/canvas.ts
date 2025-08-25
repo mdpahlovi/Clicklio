@@ -24,7 +24,7 @@ fabric.InteractiveFabricObject.ownDefaults.cornerColor = "#4882ED";
 fabric.InteractiveFabricObject.ownDefaults.borderColor = "#4882ED";
 fabric.InteractiveFabricObject.ownDefaults.transparentCorners = false;
 
-export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => {
+export const initializeFabric = ({ fabricRef, canvasRef, zoom }: InitializeFabric) => {
     const canvasElement = document.getElementById("canvas");
 
     const canvas = new fabric.Canvas(canvasRef.current!, {
@@ -32,7 +32,7 @@ export const initializeFabric = ({ fabricRef, canvasRef }: InitializeFabric) => 
         height: canvasElement?.clientHeight,
     });
 
-    canvas.setZoom(2);
+    canvas.setZoom(zoom);
 
     fabricRef.current = canvas;
 

@@ -2,8 +2,9 @@ import { CopyIcon, PlayFillIcon, SquareFillIcon } from "@/components/icons";
 import Modal from "@/components/ui/modal";
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
-import { socket } from "@/utils/socket";
+import { socket, type SocketResponse } from "@/utils/socket";
 import { Button, Divider, Input, Stack, Typography } from "@mui/joy";
+import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import { useDebouncedCallback } from "use-debounce";
 import { v4 as uuid } from "uuid";
@@ -17,8 +18,8 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
     const { events } = useEventStore();
     const { currUser, createCurrUser, updateCurrUser, deleteCurrUser } = useUserStore();
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const room = searchParams.get("room");
+    const [searchParam, setSearchParam] = useSearchParams();
+    const room = searchParam.get("room");
 
     const debouncedUpdate = useDebouncedCallback((user: RoomUser) => {
         updateCurrUser(user);
@@ -56,14 +57,15 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                             startDecorator={<SquareFillIcon />}
                             color="danger"
                             onClick={() => {
-                                // Leave room
                                 setIsOpen(false);
-                                deleteCurrUser();
-                                socket.emit("leave:room", { room });
-
-                                // Leave room in url
-                                searchParams.delete("room");
-                                setSearchParams(searchParams);
+                                socket.emit("leave:room", {}, (response: SocketResponse) => {
+                                    if (response.success) {
+                                        deleteCurrUser();
+                                        setSearchParam({});
+                                    } else {
+                                        toast.error("Failed to leave room");
+                                    }
+                                });
                             }}
                         >
                             Stop Session
@@ -79,16 +81,19 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                     <Stack mt={1.75} flexDirection="row" justifyContent="center">
                         <Button
                             onClick={() => {
-                                // Create and join room
                                 const room = uuid();
 
                                 if (socket.connected) {
-                                    // Set room in url
-                                    setSearchParams({ room });
-
-                                    // Set current user
                                     const user = createCurrUser(room, "ADMIN");
-                                    socket.emit("join:room", { room, user, events });
+
+                                    socket.emit("create:room", { room, user, events }, (response: SocketResponse) => {
+                                        if (response.success) {
+                                            setSearchParam({ room });
+                                        } else {
+                                            deleteCurrUser();
+                                            toast.error("Failed to create room");
+                                        }
+                                    });
                                 }
                             }}
                             startDecorator={<PlayFillIcon />}

@@ -5,7 +5,6 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 type CanvasStateStore = {
-    room: string | null;
     user: string;
     tool: Tool;
     zoom: number;
@@ -13,7 +12,6 @@ type CanvasStateStore = {
     currentObject: fabric.FabricObject | null;
     openedFloatingMenu: { [key: string]: boolean };
     userMedia: MediaStream | null;
-    setUser: (user: string) => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setRefresh: () => void;
@@ -25,15 +23,13 @@ type CanvasStateStore = {
 export const useCanvasState = create<CanvasStateStore>()(
     persist(
         (set) => ({
-            room: null,
             user: uuid(),
             tool: "select",
-            zoom: 2,
+            zoom: 1,
             refresh: null,
             currentObject: null,
             openedFloatingMenu: {},
             userMedia: null,
-            setUser: (user) => set({ user }),
             setTool: (tool) => set({ tool }),
             setZoom: (zoom) => set({ zoom }),
             setRefresh: () => set({ refresh: Math.random() * 100 }),
@@ -49,7 +45,7 @@ export const useCanvasState = create<CanvasStateStore>()(
         {
             name: "clicklio-canvas",
             storage: createJSONStorage(() => sessionStorage),
-            partialize: (state) => ({ room: state.room, user: state.user }),
+            partialize: (state) => ({ user: state.user }),
         },
     ),
 );

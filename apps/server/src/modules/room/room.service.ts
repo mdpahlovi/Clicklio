@@ -110,7 +110,7 @@ export class RoomService {
 
         await this.redisService.client.hset(`room:${id}:users`, currUser.id, JSON.stringify(currUser));
         const roomUser = await this.redisService.client.hgetall(`room:${id}:users`);
-        const eventStr = await this.redisService.client.lrange(`room:${id}:events_pvt`, 0, -1);
+        const eventStr = await this.redisService.client.lrange(`room:${id}:events`, 0, -1);
 
         let events: ShapeEvent[] = [];
         if (eventStr.length > 0) {
@@ -123,7 +123,7 @@ export class RoomService {
                 select: { id: true, type: true, userId: true, shapeId: true, eventId: true, data: true, firedAt: true },
             });
 
-            await this.redisService.client.rpush(`room:${id}:events_pvt`, ...events.map((event) => JSON.stringify(event)));
+            await this.redisService.client.rpush(`room:${id}:events`, ...events.map((event) => JSON.stringify(event)));
         }
 
         delete roomUser[user.id];

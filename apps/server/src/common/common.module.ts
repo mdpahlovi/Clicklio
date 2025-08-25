@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { HashService } from "./service/hash.service";
 import { MediasoupService } from "./service/mediasoup.service";
 import { RedisService } from "./service/redis.service";
+import { RoomService } from "./service/room.service";
 
 @Global()
 @Module({
@@ -31,7 +32,7 @@ import { RedisService } from "./service/redis.service";
             inject: [ConfigService],
         }),
     ],
-    providers: [RedisService, HashService, MediasoupService],
-    exports: [RedisService, HashService, MediasoupService],
+    providers: [RedisService, HashService, MediasoupService, RoomService],
+    exports: [RedisService, HashService, MediasoupService, RoomService],
 })
 export class CommonModule {}
