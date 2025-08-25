@@ -5,7 +5,6 @@ export default function CanvasContainer({ children }: BoxProps) {
         <Box
             id="canvas"
             sx={({ palette: { mode, background } }) => ({
-                position: "relative",
                 width: "100%",
                 height: "100dvh",
                 backgroundColor: background.body,

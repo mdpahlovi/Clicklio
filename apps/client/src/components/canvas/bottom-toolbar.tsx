@@ -20,7 +20,7 @@ import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { ReactMediaRecorder } from "react-media-recorder";
 
-export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObject<fabric.Canvas | null> }) {
+export default function BottomToolbar({ canvas }: { canvas: fabric.Canvas }) {
     const { zoom, setZoom, setUserMedia } = useCanvasState();
     const { createEvent, canUndo, canRedo } = useEventStore();
 
@@ -30,34 +30,30 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Tooltip title="Webcam" placement="top">
                     <IconButton
                         onClick={() => {
-                            const canvas = fabricRef.current;
+                            navigator.mediaDevices
+                                .getUserMedia({ video: { width: 320, height: 320 } })
+                                .then((stream) => {
+                                    setUserMedia(stream);
 
-                            if (canvas) {
-                                navigator.mediaDevices
-                                    .getUserMedia({ video: { width: 320, height: 320 } })
-                                    .then((stream) => {
-                                        setUserMedia(stream);
+                                    const webcam = document.getElementById("webcam") as HTMLVideoElement;
+                                    webcam.srcObject = stream;
 
-                                        const webcam = document.getElementById("webcam") as HTMLVideoElement;
-                                        webcam.srcObject = stream;
+                                    webcam.onloadedmetadata = () => {
+                                        const object = new fabric.FabricImage(webcam, {
+                                            uid: "webcam",
+                                            objectCaching: false,
+                                        });
 
-                                        webcam.onloadedmetadata = () => {
-                                            const object = new fabric.FabricImage(webcam, {
-                                                uid: "webcam",
-                                                objectCaching: false,
-                                            });
+                                        object.scaleToWidth(100);
+                                        canvas.add(object);
 
-                                            object.scaleToWidth(100);
-                                            canvas.add(object);
-
-                                            fabric.util.requestAnimFrame(function render() {
-                                                canvas.requestRenderAll();
-                                                fabric.util.requestAnimFrame(render);
-                                            });
-                                        };
-                                    })
-                                    .catch((error) => handleMediaError(error));
-                            }
+                                        fabric.util.requestAnimFrame(function render() {
+                                            canvas.requestRenderAll();
+                                            fabric.util.requestAnimFrame(render);
+                                        });
+                                    };
+                                })
+                                .catch((error) => handleMediaError(error));
                         }}
                     >
                         <WebcamIcon />
@@ -103,9 +99,9 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
             <BottomToolbarSheet position="right">
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && Number(zoom.toFixed(1)) <= 10) {
+                        if (Number(zoom.toFixed(1)) <= 10) {
                             setZoom(zoom + 0.1);
-                            fabricRef.current.setZoom(zoom + 0.1);
+                            canvas.setZoom(zoom + 0.1);
                         }
                     }}
                     disabled={Number(zoom.toFixed(1)) >= 10}
@@ -119,10 +115,8 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                     variant="plain"
                     sx={{ display: { xs: "none", sm: "block" }, width: 96 }}
                     onClick={() => {
-                        if (fabricRef.current) {
-                            setZoom(2);
-                            fabricRef.current.setZoom(2);
-                        }
+                        setZoom(2);
+                        canvas.setZoom(2);
                     }}
                 >
                     {Math.round(zoom * 100)}%
@@ -130,9 +124,9 @@ export default function BottomToolbar({ fabricRef }: { fabricRef: React.RefObjec
                 <Divider orientation="vertical" />
                 <IconButton
                     onClick={() => {
-                        if (fabricRef.current && Number(zoom.toFixed(1)) >= 1) {
+                        if (Number(zoom.toFixed(1)) >= 1) {
                             setZoom(zoom - 0.1);
-                            fabricRef.current.setZoom(zoom - 0.1);
+                            canvas.setZoom(zoom - 0.1);
                         }
                     }}
                     disabled={Number(zoom.toFixed(1)) <= 1}
@@ -213,7 +207,7 @@ const ScreenRecorder = () => {
 };
 
 const BottomToolbarSheet = styled(Sheet)<{ position: "left" | "right" }>(({ position }) => ({
-    position: "absolute",
+    position: "fixed",
     [position]: 16,
     bottom: 16,
     zIndex: 10,

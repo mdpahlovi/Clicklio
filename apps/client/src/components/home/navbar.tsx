@@ -40,7 +40,7 @@ export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModal
 }
 
 const NavbarSheet = styled(Sheet)<{ position: "left" | "right" }>(({ position }) => ({
-    position: "absolute",
+    position: "fixed",
     top: 16,
     [position]: 16,
     zIndex: 10,

@@ -26,7 +26,7 @@ export default function RoomNavbar({ room, canvasRef, setIsGuideModalOpen }: Roo
 }
 
 const RoomNavbarSheet = styled(Sheet)<{ position: "left" | "right" }>(({ position }) => ({
-    position: "absolute",
+    position: "fixed",
     top: 16,
     [position]: 16,
     zIndex: 10,

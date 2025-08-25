@@ -7,63 +7,59 @@ import { Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, styled, Toolti
 import * as fabric from "fabric";
 import { Fragment, useEffect, useRef } from "react";
 
-export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
+export default function Toolbar({ canvas, selectedToolRef }: ToolbarProps) {
     const { createEvent } = useEventStore();
     const { tool, setTool } = useCanvasState();
     const imageInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-        const canvas = fabricRef.current;
-        if (canvas) {
-            canvas.selection = false;
-            canvas.isDrawingMode = false;
-            canvas.defaultCursor = "default";
-            canvas.hoverCursor = "all-scroll";
+        canvas.selection = false;
+        canvas.isDrawingMode = false;
+        canvas.defaultCursor = "default";
+        canvas.hoverCursor = "all-scroll";
 
-            switch (tool) {
-                case "panning":
-                    canvas.defaultCursor = "grab";
-                    canvas.hoverCursor = "grab";
-                    canvas.forEachObject((object) => {
-                        object.evented = false;
-                        object.selectable = false;
-                    });
-                    selectedToolRef.current = tool;
-                    break;
+        switch (tool) {
+            case "panning":
+                canvas.defaultCursor = "grab";
+                canvas.hoverCursor = "grab";
+                canvas.forEachObject((object) => {
+                    object.evented = false;
+                    object.selectable = false;
+                });
+                selectedToolRef.current = tool;
+                break;
 
-                case "select":
-                    canvas.selection = true;
-                    canvas.forEachObject((object) => {
-                        object.evented = true;
-                        object.selectable = true;
-                    });
-                    break;
+            case "select":
+                canvas.selection = true;
+                canvas.forEachObject((object) => {
+                    object.evented = true;
+                    object.selectable = true;
+                });
+                break;
 
-                case "path":
-                    canvas.isDrawingMode = true;
-                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                    canvas.freeDrawingBrush.width = 3;
-                    canvas.freeDrawingBrush.color = "#FFFFFF";
-                    break;
+            case "path":
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+                canvas.freeDrawingBrush.width = 3;
+                canvas.freeDrawingBrush.color = "#FFFFFF";
+                break;
 
-                case "image":
-                    imageInputRef.current?.click();
-                    setTimeout(() => setTool("select"), 500);
-                    break;
+            case "image":
+                imageInputRef.current?.click();
+                setTimeout(() => setTool("select"), 500);
+                break;
 
-                case "eraser":
-                    canvas.defaultCursor = circle("dark");
-                    canvas.hoverCursor = circle("dark");
-                    selectedToolRef.current = tool;
-                    break;
+            case "eraser":
+                canvas.defaultCursor = circle("dark");
+                canvas.hoverCursor = circle("dark");
+                selectedToolRef.current = tool;
+                break;
 
-                default:
-                    canvas.defaultCursor = "crosshair";
-                    selectedToolRef.current = tool;
-                    break;
-            }
+            default:
+                canvas.defaultCursor = "crosshair";
+                selectedToolRef.current = tool;
+                break;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tool]);
 
     return (
@@ -134,7 +130,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
                     const files = e?.target?.files;
 
                     if (files && e?.target?.files?.length) {
-                        handleImageUpload({ file: files[0], fabricRef, createEvent });
+                        handleImageUpload({ file: files[0], canvas, createEvent });
                         if (imageInputRef.current) imageInputRef.current.value = "";
                     }
                 }}
@@ -144,7 +140,7 @@ export default function Toolbar({ fabricRef, selectedToolRef }: ToolbarProps) {
 }
 
 const ToolbarSheet = styled(Sheet)(() => ({
-    position: "absolute",
+    position: "fixed",
     top: "50%",
     left: 16,
     zIndex: 10,

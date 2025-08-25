@@ -169,11 +169,6 @@ export class ConferenceGateway implements OnGatewayConnection, OnGatewayDisconne
             }
         }
 
-        // Emit existing producers to the new client
-        if (existingProducers.length > 0) {
-            client.emit("existing:producers", existingProducers);
-        }
-
         return {
             id: transport.id,
             iceParameters: transport.iceParameters,
@@ -181,6 +176,7 @@ export class ConferenceGateway implements OnGatewayConnection, OnGatewayDisconne
             dtlsParameters: transport.dtlsParameters,
             sctpParameters: transport.sctpParameters,
             routerRtpCapabilities: router.rtpCapabilities,
+            existingProducers,
         };
     }
 

@@ -202,7 +202,7 @@ export const updateSpecificShape = (
     }
 };
 
-export const handleImageUpload = ({ file, fabricRef, createEvent }: ImageUpload) => {
+export const handleImageUpload = ({ file, canvas, createEvent }: ImageUpload) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -210,8 +210,8 @@ export const handleImageUpload = ({ file, fabricRef, createEvent }: ImageUpload)
             image.scaleToWidth(100);
             image.set({ uid: uuid() });
 
-            if (fabricRef?.current && image?.uid) {
-                fabricRef.current.add(image);
+            if (image?.uid) {
+                canvas.add(image);
 
                 handleCreateEvent({
                     action: "CREATE",
@@ -219,7 +219,7 @@ export const handleImageUpload = ({ file, fabricRef, createEvent }: ImageUpload)
                     createEvent,
                 });
 
-                fabricRef.current.requestRenderAll();
+                canvas.requestRenderAll();
             }
         });
     };

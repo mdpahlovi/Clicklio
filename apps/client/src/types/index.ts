@@ -35,7 +35,7 @@ export type CanvasProps = {
 
 export type ImageUpload = {
     file: File;
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
@@ -44,7 +44,7 @@ export type SidebarProps = {
 };
 
 export type FloatingMenuProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
 };
 
 export type FloatingSubMenuItemProps = {
@@ -60,12 +60,12 @@ export type FloatingMenuItemProps = {
 };
 
 export type ActionsProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
     currentObject: fabric.FabricObject;
 };
 
 export type ToolbarProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
     selectedToolRef: React.RefObject<Tool | null>;
 };
 

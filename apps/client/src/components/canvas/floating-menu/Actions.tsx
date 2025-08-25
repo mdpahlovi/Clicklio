@@ -5,7 +5,7 @@ import type { ActionsProps } from "@/types";
 import { handleDelete, handleDuplicate } from "@/utils/key-event";
 import { IconButton, Tooltip } from "@mui/joy";
 
-export default function Actions({ fabricRef, currentObject }: ActionsProps) {
+export default function Actions({ canvas, currentObject }: ActionsProps) {
     const { createEvent } = useEventStore();
     const { userMedia, setUserMedia } = useCanvasState();
 
@@ -17,9 +17,7 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                         color="primary"
                         variant="soft"
                         onClick={() => {
-                            if (fabricRef.current) {
-                                handleDuplicate(fabricRef.current, createEvent);
-                            }
+                            handleDuplicate(canvas, createEvent);
                         }}
                     >
                         <CopyIcon />
@@ -31,13 +29,11 @@ export default function Actions({ fabricRef, currentObject }: ActionsProps) {
                     color="danger"
                     variant="soft"
                     onClick={() => {
-                        if (fabricRef.current) {
-                            handleDelete(fabricRef.current, createEvent);
-                            if (currentObject?.uid === "webcam" && userMedia) {
-                                userMedia.getTracks().forEach((track) => track.stop());
+                        handleDelete(canvas, createEvent);
+                        if (currentObject?.uid === "webcam" && userMedia) {
+                            userMedia.getTracks().forEach((track) => track.stop());
 
-                                setUserMedia(null);
-                            }
+                            setUserMedia(null);
                         }
                     }}
                 >

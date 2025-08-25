@@ -11,6 +11,7 @@ type JoinConferenceResponse = {
     dtlsParameters: types.DtlsParameters;
     sctpParameters: types.SctpParameters;
     routerRtpCapabilities: types.RtpCapabilities;
+    existingProducers: { producerId: string; clientId: unknown; kind: types.MediaKind }[];
 };
 
 type ConsumerInfo = {
@@ -38,17 +39,9 @@ export default function Conference() {
         if (!room) return;
 
         // Handle new producer from other clients
-        socket.on("new:producer", ({ producerId, clientId, kind }) => {
+        socket.on("new:producer", ({ producerId, kind }) => {
             console.log("New producer:", producerId, kind);
-            createConsumer(producerId, kind);
-        });
-
-        // Handle existing producers when joining
-        socket.on("existing:producers", (producers) => {
-            console.log("Existing producers:", producers);
-            producers.forEach(({ producerId, kind }: { producerId: string; kind: types.MediaKind }) => {
-                createConsumer(producerId, kind);
-            });
+            createConsumer(deviceRef.current!, producerId, kind);
         });
 
         // Handle producer closed
@@ -76,14 +69,12 @@ export default function Conference() {
 
         return () => {
             socket.off("new:producer");
-            socket.off("existing:producers");
             socket.off("producer:closed");
         };
     }, [room]);
 
-    const createReceiveTransport = async () => {
-        const device = deviceRef.current;
-        if (!device || recvTransportRef.current) return recvTransportRef.current;
+    const createReceiveTransport = async (device: Device) => {
+        if (recvTransportRef.current) return recvTransportRef.current;
 
         return new Promise<types.Transport>((resolve, reject) => {
             socket.emit("create:receive:transport", { room }, (response) => {
@@ -114,11 +105,10 @@ export default function Conference() {
         });
     };
 
-    const createConsumer = async (producerId: string, kind: types.MediaKind) => {
+    const createConsumer = async (device: Device, producerId: string, kind: types.MediaKind) => {
         try {
-            const device = deviceRef.current;
-            const recvTransport = await createReceiveTransport();
-            if (!device || !recvTransport) return;
+            const recvTransport = await createReceiveTransport(device);
+            if (!recvTransport) return;
 
             return new Promise<void>((resolve, reject) => {
                 socket.emit(
@@ -194,6 +184,12 @@ export default function Conference() {
                 if (response.id) {
                     const device = new Device();
                     await device.load({ routerRtpCapabilities: response.routerRtpCapabilities });
+
+                    if (response.existingProducers.length > 0) {
+                        response.existingProducers.forEach((producer) => {
+                            createConsumer(device, producer.producerId, producer.kind);
+                        });
+                    }
 
                     const sendTransport = device.createSendTransport({
                         id: response.id,
@@ -304,7 +300,7 @@ export default function Conference() {
 }
 
 const ConferenceSheet = styled(Sheet)(() => ({
-    position: "absolute",
+    position: "fixed",
     overflow: "auto",
     top: 78,
     bottom: 78,

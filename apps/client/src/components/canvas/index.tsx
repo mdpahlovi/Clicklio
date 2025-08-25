@@ -9,13 +9,17 @@ import Toolbar from "./toolbar";
 export default function Canvas({ canvasRef, fabricRef, selectedToolRef }: CanvasProps) {
     return (
         <CanvasContainer>
-            <RemoteCursor />
-            <FloatingMenu {...{ fabricRef }} />
-            <Toolbar {...{ fabricRef, selectedToolRef }} />
-            <BottomToolbar {...{ fabricRef }} />
-            <Conference />
-
             <canvas ref={canvasRef} />
+
+            {fabricRef.current ? (
+                <>
+                    <RemoteCursor />
+                    <FloatingMenu canvas={fabricRef.current} />
+                    <Toolbar canvas={fabricRef.current} selectedToolRef={selectedToolRef} />
+                    <BottomToolbar canvas={fabricRef.current} />
+                    <Conference />
+                </>
+            ) : null}
         </CanvasContainer>
     );
 }
