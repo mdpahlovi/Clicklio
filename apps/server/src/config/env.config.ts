@@ -4,6 +4,7 @@ export const config = () => ({
     apiPrefix: process.env.API_PREFIX,
     appVersion: process.env.APP_VERSION,
     origin: process.env.ORIGIN,
+    serverIp: process.env.SERVER_IP,
 
     // Postgres
     postgres: {

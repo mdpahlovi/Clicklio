@@ -90,4 +90,11 @@ export class ConferenceGateway {
 
         return await this.mediasoupService.createConsumer(client, room, transportId, producerId, rtpCapabilities);
     }
+
+    @SubscribeMessage("delete:producer")
+    handleDeleteProducer(@ConnectedSocket() client: Socket, @MessageBody() { room }: { room: string }) {
+        if (!room) return { success: false, message: "Room is required" };
+
+        return this.mediasoupService.removeClient(room, client);
+    }
 }

@@ -52,12 +52,8 @@ export default function Conference({ room, device }: { room: string; device: Dev
             <ConferenceSheet>
                 <Tabs value={tab} onChange={(_, value) => setTab(value as number)} sx={{ width: 320 }}>
                     <TabList sx={{ position: "relative" }}>
-                        <Tab variant="plain" color="neutral" sx={{ flexGrow: 1 }}>
-                            Video Chat
-                        </Tab>
-                        <Tab variant="plain" color="neutral" sx={{ flexGrow: 1 }}>
-                            Text Chat
-                        </Tab>
+                        <StyledTab sx={{ flexGrow: 1 }}>Video Chat</StyledTab>
+                        <StyledTab sx={{ flexGrow: 1 }}>Text Chat</StyledTab>
                     </TabList>
                     {tab === 0 ? <VideoChatUI room={room} device={device} /> : null}
                     {tab === 1 ? <TextChatUI room={room} messages={[]} /> : null}
@@ -83,6 +79,7 @@ const ButtonSheet = styled(Sheet)(() => ({
     top: 38,
     borderTopLeftRadius: 99,
     borderBottomLeftRadius: 99,
+    borderRightWidth: 0,
 }));
 
 const ConferenceSheet = styled(Sheet)(() => ({
@@ -91,4 +88,11 @@ const ConferenceSheet = styled(Sheet)(() => ({
     display: "grid",
     gap: 4,
     height: "100%",
+}));
+
+const StyledTab = styled(Tab)(() => ({
+    backgroundColor: "transparent !important",
+    "&:hover": {
+        backgroundColor: "var(--joy-palette-neutral-softBg) !important",
+    },
 }));

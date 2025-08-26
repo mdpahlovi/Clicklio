@@ -1,10 +1,10 @@
 import { socket, socketResponse } from "@/utils/socket";
-import { handleMediaError } from "@/utils/utils";
 import { Box, Divider, Stack, TabPanel, Typography } from "@mui/joy";
 import { Device, type types } from "mediasoup-client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import StartVideoChat from "./start-video-chat";
+import VideoController from "./video-controller";
 
 type CreateTransportResponse = {
     id: string;
@@ -30,24 +30,91 @@ type CreateConsumerResponse = {
     rtpParameters: types.RtpParameters;
 };
 
+type RemoteStream = {
+    id: string;
+    stream: MediaStream;
+    kind: types.MediaKind;
+    consumer: types.Consumer;
+};
+
+type DeleteProducerPayload = {
+    transports: string[];
+    producers: string[];
+    consumers: string[];
+};
+
 export default function VideoChatUI({ room, device }: { room: string; device: Device }) {
     const sendTransportRef = useRef<types.Transport | null>(null);
     const recvTransportRef = useRef<types.Transport | null>(null);
+    const pendingConsumersRef = useRef<Set<string>>(new Set());
 
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-    const remoteVideosRef = useRef<HTMLDivElement>(null);
-
+    const [remoteStreams, setRemoteStreams] = useState<Map<string, RemoteStream>>(new Map());
     const [isStarted, setIsStarted] = useState(false);
 
-    useEffect(() => {
-        socket.on("create:producer", ({ id, kind }) => {
-            createConsumer(device, id, kind);
+    const cleanUp = () => {
+        if (localStream) {
+            localStream.getTracks().forEach((track) => {
+                track.stop();
+            });
+        }
+
+        remoteStreams.forEach(({ stream, consumer }) => {
+            stream.getTracks().forEach((track) => track.stop());
+            consumer.close();
         });
 
-        return () => {
-            socket.off("create:producer");
+        if (sendTransportRef.current) {
+            sendTransportRef.current.close();
+            sendTransportRef.current = null;
+        }
+
+        if (recvTransportRef.current) {
+            recvTransportRef.current.close();
+            recvTransportRef.current = null;
+        }
+
+        pendingConsumersRef.current.clear();
+    };
+
+    useEffect(() => {
+        const handleCreateProducer = ({ id, kind }: { id: string; kind: types.MediaKind }) => {
+            createConsumer(device, id, kind);
         };
-    }, []);
+
+        const handleDeleteProducer = ({ producers }: DeleteProducerPayload) => {
+            setRemoteStreams((prev) => {
+                const newMap = new Map(prev);
+
+                producers.forEach((producerId) => {
+                    const remoteStream = newMap.get(producerId);
+                    if (remoteStream) {
+                        remoteStream.stream.getTracks().forEach((track) => track.stop());
+                        remoteStream.consumer.close();
+                        newMap.delete(producerId);
+                    }
+                });
+
+                return newMap;
+            });
+
+            producers.forEach((producerId) => {
+                const audioElement = document.getElementById(`audio-${producerId}`);
+                if (audioElement) {
+                    audioElement.remove();
+                }
+            });
+        };
+
+        socket.on("create:producer", handleCreateProducer);
+        socket.on("delete:producer", handleDeleteProducer);
+
+        return () => {
+            socket.off("create:producer", handleCreateProducer);
+            socket.off("delete:producer", handleDeleteProducer);
+            cleanUp();
+        };
+    }, [device]);
 
     const createReceiveTransport = async (device: Device): Promise<types.Transport> => {
         if (recvTransportRef.current) return recvTransportRef.current;
@@ -84,6 +151,10 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
     };
 
     const createConsumer = async (device: Device, producerId: string, kind: types.MediaKind) => {
+        if (pendingConsumersRef.current.has(producerId)) return;
+
+        pendingConsumersRef.current.add(producerId);
+
         try {
             const recvTransport = await createReceiveTransport(device);
             if (!recvTransport) return;
@@ -104,51 +175,40 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
 
             const stream = new MediaStream([consumer.track]);
 
-            if (kind === "video") {
-                const videoElement = document.createElement("video");
-                videoElement.id = producerId;
-                videoElement.srcObject = stream;
-                videoElement.autoplay = true;
-                videoElement.playsInline = true;
-                videoElement.muted = false;
-                videoElement.style.width = "100%";
-                videoElement.style.aspectRatio = "16 / 9";
-                videoElement.style.borderRadius = "16px";
-                videoElement.style.border = "2px solid var(--joy-palette-neutral-outlinedBorder)";
+            setRemoteStreams((prev) => {
+                const newMap = new Map(prev);
 
-                if (remoteVideosRef.current) {
-                    remoteVideosRef.current.appendChild(videoElement);
+                const existing = newMap.get(producerId);
+                if (existing) {
+                    existing.stream.getTracks().forEach((track) => track.stop());
+                    existing.consumer.close();
                 }
-            } else if (kind === "audio") {
-                const audioElement = document.createElement("audio");
-                audioElement.srcObject = stream;
-                audioElement.autoplay = true;
-                document.body.appendChild(audioElement);
-            }
+
+                newMap.set(producerId, {
+                    id: producerId,
+                    stream,
+                    kind,
+                    consumer,
+                });
+
+                return newMap;
+            });
         } catch (error) {
             toast.error((error as Error)?.message || "Failed to create consumer");
+        } finally {
+            pendingConsumersRef.current.delete(producerId);
         }
     };
 
     const handleStartVideoChat = async () => {
-        let audioTrack: MediaStreamTrack | null = null;
-        let videoTrack: MediaStreamTrack | null = null;
-
-        navigator.mediaDevices
-            .getUserMedia({
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
                 video: true,
                 audio: true,
-            })
-            .then((stream) => {
-                audioTrack = stream.getAudioTracks()[0];
-                videoTrack = stream.getVideoTracks()[0];
-                setLocalStream(stream);
-            })
-            .catch((error) => handleMediaError(error));
+            });
 
-        if (!audioTrack || !videoTrack) return;
+            setLocalStream(stream);
 
-        try {
             const transportResponse = await socketResponse<CreateTransportResponse>("create:send:transport", { room });
 
             const sendTransport = device.createSendTransport({
@@ -192,8 +252,8 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                 }
             });
 
-            await sendTransport.produce({ track: audioTrack, encodings: [{ maxBitrate: 500000 }] });
-            await sendTransport.produce({ track: videoTrack });
+            await sendTransport.produce({ track: stream.getVideoTracks()[0], encodings: [{ maxBitrate: 500000 }] });
+            await sendTransport.produce({ track: stream.getAudioTracks()[0] });
 
             sendTransportRef.current = sendTransport;
             setIsStarted(true);
@@ -201,6 +261,58 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             toast.error((error as Error)?.message || "Failed to join conference");
         }
     };
+
+    const handleStopVideoChat = () => {
+        cleanUp();
+        socket.emit("delete:producer", { room });
+        setIsStarted(false);
+    };
+
+    const remoteVideoComponents = useMemo(() => {
+        const videoStreams = Array.from(remoteStreams.values()).filter((remote) => remote.kind === "video");
+
+        return videoStreams.map(({ id, stream }) => (
+            <video
+                key={id}
+                ref={(ref) => {
+                    if (ref && stream) {
+                        ref.srcObject = stream;
+                    }
+                }}
+                autoPlay
+                playsInline
+                muted={false}
+                style={{
+                    width: "100%",
+                    aspectRatio: "16 / 9",
+                    borderRadius: "16px",
+                    border: "2px solid var(--joy-palette-neutral-outlinedBorder)",
+                }}
+            />
+        ));
+    }, [remoteStreams]);
+
+    useEffect(() => {
+        const audioStreams = Array.from(remoteStreams.values()).filter((remote) => remote.kind === "audio");
+        const audioElements: HTMLAudioElement[] = [];
+
+        audioStreams.forEach(({ id, stream }) => {
+            const audioElement = document.createElement("audio");
+            audioElement.id = `audio-${id}`;
+            audioElement.srcObject = stream;
+            audioElement.autoplay = true;
+            audioElement.style.display = "none";
+
+            document.body.appendChild(audioElement);
+            audioElements.push(audioElement);
+        });
+
+        return () => {
+            audioElements.forEach((element) => {
+                element.remove();
+            });
+        };
+    }, [remoteStreams]);
 
     return (
         <>
@@ -210,7 +322,7 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                         <Stack position="sticky" top={0} bgcolor="background.surface" gap={2}>
                             <video
                                 ref={(ref) => {
-                                    if (ref) {
+                                    if (ref && localStream) {
                                         ref.srcObject = localStream;
                                     }
                                 }}
@@ -227,7 +339,15 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                             <Divider />
                         </Stack>
                         {/* Remote Videos */}
-                        <Stack ref={remoteVideosRef} gap={2}></Stack>
+                        <Stack flex={1} gap={2}>
+                            {remoteVideoComponents.length === 0 ? (
+                                <Typography my="auto" level="body-sm" textAlign="center">
+                                    Waiting for other participants to join...
+                                </Typography>
+                            ) : (
+                                remoteVideoComponents
+                            )}
+                        </Stack>
                     </Stack>
                 ) : (
                     <Stack width="100%" alignItems="center" justifyContent="center" gap={2}>
@@ -252,7 +372,13 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                 )}
             </TabPanel>
             <Divider />
-            <Box sx={{ p: 1 }}>{isStarted ? null : <StartVideoChat handleStartVideoChat={handleStartVideoChat} />}</Box>
+            <Box sx={{ p: 1 }}>
+                {isStarted ? (
+                    <VideoController handleStopVideoChat={handleStopVideoChat} />
+                ) : (
+                    <StartVideoChat handleStartVideoChat={handleStartVideoChat} />
+                )}
+            </Box>
         </>
     );
 }

@@ -1,13 +1,17 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Socket } from "socket.io";
 import { RoomUser } from "../../types/user";
+import { MediasoupService } from "./mediasoup.service";
 import { RedisService } from "./redis.service";
 
 @Injectable()
 export class RoomService {
     private readonly logger = new Logger(RoomService.name);
 
-    constructor(private readonly redisService: RedisService) {}
+    constructor(
+        private readonly redisService: RedisService,
+        private readonly mediasoupService: MediasoupService,
+    ) {}
 
     private getRoomUsersKey(room: string): string {
         return `room:${room}:users`;
@@ -93,6 +97,8 @@ export class RoomService {
             if (!room) return { success: false, message: "Client not in any room" };
 
             await client.leave(room);
+
+            this.mediasoupService.removeClient(room, client);
 
             const pipeline = this.redisService.client.pipeline();
 

@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnApplicationShutdown, OnModuleInit } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import * as mediasoup from "mediasoup";
 import { Socket } from "socket.io";
 
@@ -36,6 +37,8 @@ type ConsumerInfo = {
 export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
     private readonly logger = new Logger(MediasoupService.name);
 
+    constructor(private configService: ConfigService) {}
+
     private worker?: mediasoup.types.Worker;
     private routers: Map<string, RouterInfo> = new Map();
 
@@ -53,10 +56,9 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
     async initialize(): Promise<void> {
         try {
             this.worker = await mediasoup.createWorker({
-                rtcMinPort: 40000,
-                rtcMaxPort: 49999,
                 logLevel: "warn",
-                logTags: ["info", "ice", "dtls", "rtp", "srtp", "rtcp"],
+                logTags: ["info", "ice", "dtls", "rtp", "srtp", "rtcp", "rtx", "bwe", "score", "simulcast", "svc", "sctp"],
+                disableLiburing: false,
             });
 
             this.worker.on("died", () => {
@@ -116,43 +118,50 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
             if (!router) {
                 router = await this.worker.createRouter({
                     mediaCodecs: [
-                        // Audio - Opus
                         {
                             kind: "audio",
                             mimeType: "audio/opus",
                             clockRate: 48000,
                             channels: 2,
-                            preferredPayloadType: 111,
                         },
-                        // Video - VP8 (best compatibility)
                         {
                             kind: "video",
                             mimeType: "video/VP8",
                             clockRate: 90000,
-                            preferredPayloadType: 96,
-                            rtcpFeedback: [
-                                { type: "nack" },
-                                { type: "nack", parameter: "pli" },
-                                { type: "ccm", parameter: "fir" },
-                                { type: "goog-remb" },
-                            ],
+                            parameters: {
+                                "x-google-start-bitrate": 1000,
+                            },
                         },
-                        // Video - H.264 (Safari compatibility)
                         {
                             kind: "video",
-                            mimeType: "video/H264",
+                            mimeType: "video/VP9",
                             clockRate: 90000,
-                            preferredPayloadType: 125,
+                            parameters: {
+                                "profile-id": 2,
+                                "x-google-start-bitrate": 1000,
+                            },
+                        },
+                        {
+                            kind: "video",
+                            mimeType: "video/h264",
+                            clockRate: 90000,
+                            parameters: {
+                                "packetization-mode": 1,
+                                "profile-level-id": "4d0032",
+                                "level-asymmetry-allowed": 1,
+                                "x-google-start-bitrate": 1000,
+                            },
+                        },
+                        {
+                            kind: "video",
+                            mimeType: "video/h264",
+                            clockRate: 90000,
                             parameters: {
                                 "packetization-mode": 1,
                                 "profile-level-id": "42e01f",
+                                "level-asymmetry-allowed": 1,
+                                "x-google-start-bitrate": 1000,
                             },
-                            rtcpFeedback: [
-                                { type: "nack" },
-                                { type: "nack", parameter: "pli" },
-                                { type: "ccm", parameter: "fir" },
-                                { type: "goog-remb" },
-                            ],
                         },
                     ],
                 });
@@ -187,10 +196,18 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
 
         try {
             const transport: Transport = await router.createWebRtcTransport({
-                listenIps: [{ ip: "0.0.0.0", announcedIp: "127.0.0.1" }],
-                enableUdp: true,
-                enableTcp: true,
-                preferUdp: true,
+                listenInfos: [
+                    {
+                        protocol: "udp",
+                        ip: this.configService.get("serverIp")!,
+                        portRange: { min: 40000, max: 49999 },
+                    },
+                    {
+                        protocol: "tcp",
+                        ip: this.configService.get("serverIp")!,
+                        portRange: { min: 40000, max: 49999 },
+                    },
+                ],
             });
 
             transport.on("dtlsstatechange", (dtlsState) => {
@@ -289,10 +306,18 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
 
         try {
             const transport: Transport = await router.createWebRtcTransport({
-                listenIps: [{ ip: "0.0.0.0", announcedIp: "127.0.0.1" }],
-                enableUdp: true,
-                enableTcp: true,
-                preferUdp: true,
+                listenInfos: [
+                    {
+                        protocol: "udp",
+                        ip: this.configService.get("serverIp")!,
+                        portRange: { min: 40000, max: 49999 },
+                    },
+                    {
+                        protocol: "tcp",
+                        ip: this.configService.get("serverIp")!,
+                        portRange: { min: 40000, max: 49999 },
+                    },
+                ],
             });
 
             transport.on("dtlsstatechange", (dtlsState) => {
@@ -386,5 +411,52 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
         } catch (error) {
             return { success: false, message: "Failed to create consumer" };
         }
+    }
+
+    removeClient(room: string, client: Socket) {
+        const routerInfo = this.routers.get(room);
+        if (!routerInfo) return;
+
+        const { transports, producers, consumers } = routerInfo;
+
+        const removedTransports: string[] = [];
+        const removedProducers: string[] = [];
+        const removedConsumers: string[] = [];
+
+        for (const [transportId, transportInfo] of transports) {
+            if (transportInfo.transport.appData.clientId === client.id) {
+                transportInfo.transport.close();
+                transports.delete(transportId);
+                removedTransports.push(transportId);
+            }
+        }
+
+        for (const [producerId, producerInfo] of producers) {
+            if (producerInfo.producer.appData.clientId === client.id) {
+                producerInfo.producer.close();
+                producers.delete(producerId);
+                removedProducers.push(producerId);
+            }
+        }
+
+        for (const [consumerId, consumerInfo] of consumers) {
+            if (consumerInfo.consumer.appData.clientId === client.id) {
+                consumerInfo.consumer.close();
+                consumers.delete(consumerId);
+                removedConsumers.push(consumerId);
+            }
+        }
+
+        if (removedTransports.length > 0 || removedProducers.length > 0 || removedConsumers.length > 0) {
+            client.to(room).emit("delete:producer", {
+                transports: removedTransports,
+                producers: removedProducers,
+                consumers: removedConsumers,
+            });
+        }
+
+        routerInfo.participantCount = Math.max(0, routerInfo.participantCount - 1);
+
+        if (routerInfo.participantCount === 0) this.cleanupRouter(room);
     }
 }
