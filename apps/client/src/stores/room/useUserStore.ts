@@ -30,7 +30,6 @@ export const useUserStore = create<UserState>()(
             roomUser: new Map<string, RoomUser>(),
 
             createCurrUser: (room: string, role: RoomUserRole) => {
-                useCanvasState.setState({ room });
                 const currUser: RoomUser = {
                     id: useCanvasState.getState().user,
                     name: useAuthState.getState().user?.name || getRandomName(),
@@ -44,10 +43,7 @@ export const useUserStore = create<UserState>()(
             },
 
             updateCurrUser: (currUser: RoomUser) => set({ currUser }),
-            deleteCurrUser: () => {
-                useCanvasState.setState({ room: null });
-                set({ currUser: null });
-            },
+            deleteCurrUser: () => set({ currUser: null }),
 
             createUser: (key: string, value: RoomUser) =>
                 set((state) => ({

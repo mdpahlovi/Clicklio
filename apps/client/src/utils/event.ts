@@ -9,11 +9,12 @@ import { v4 as uuid } from "uuid";
 export const handleCreateEvent = ({ action, object, createEvent }: StoreCreateEvent) => {
     const auth = useAuthState.getState().user?.id;
 
-    const wPathname = window.location.pathname.split("/");
+    const wPathname = document.location.pathname.split("/");
     const isPrivate = !!auth && wPathname.some((path) => path === "room");
+    const searchParams = new URLSearchParams(document.location.search);
 
     const user = isPrivate ? auth : useCanvasState.getState().user;
-    const room = isPrivate ? wPathname.at(-1) : useCanvasState.getState().room;
+    const room = isPrivate ? wPathname.at(-1) : searchParams.get("room");
 
     let event: ShapeEvent | null = null;
     switch (action) {

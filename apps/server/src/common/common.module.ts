@@ -3,7 +3,9 @@ import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { HashService } from "./service/hash.service";
+import { MediasoupService } from "./service/mediasoup.service";
 import { RedisService } from "./service/redis.service";
+import { RoomService } from "./service/room.service";
 
 @Global()
 @Module({
@@ -30,7 +32,7 @@ import { RedisService } from "./service/redis.service";
             inject: [ConfigService],
         }),
     ],
-    providers: [RedisService, HashService],
-    exports: [RedisService, HashService],
+    providers: [RedisService, HashService, MediasoupService, RoomService],
+    exports: [RedisService, HashService, MediasoupService, RoomService],
 })
 export class CommonModule {}

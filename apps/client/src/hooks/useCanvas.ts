@@ -21,7 +21,7 @@ import { useThrottledCallback } from "use-debounce";
 
 export function useCanvas() {
     const { createEvent } = useEventStore();
-    const { setTool, setZoom, setCurrentObject } = useCanvasState();
+    const { zoom, setTool, setZoom, setCurrentObject } = useCanvasState();
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -91,7 +91,7 @@ export function useCanvas() {
     );
 
     useEffect(() => {
-        const canvas = initializeFabric({ canvasRef, fabricRef });
+        const canvas = initializeFabric({ canvasRef, fabricRef, zoom });
 
         canvas.on("mouse:down", (option) => {
             handleCanvasMouseDown({

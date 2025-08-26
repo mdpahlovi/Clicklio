@@ -11,7 +11,7 @@ import * as fabric from "fabric";
 import { useCallback, useMemo, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
+export default function FloatingMenu({ canvas }: FloatingMenuProps) {
     const { createEvent } = useEventStore();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
     const floatingMenuRef = useRef<HTMLDivElement | null>(null);
@@ -25,8 +25,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
     }, 150);
 
     const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
-        if (!fabricRef.current) return;
-        const selectedElement = fabricRef.current.getActiveObject();
+        const selectedElement = canvas.getActiveObject();
         if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
         switch (property) {
@@ -53,18 +52,16 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
                 break;
         }
 
-        fabricRef.current.requestRenderAll();
+        canvas.requestRenderAll();
 
         if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
             debouncedUpdate(selectedElement);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const menuPosition = useMemo(() => {
-        const canvas = fabricRef?.current;
         const floatingMenu = floatingMenuRef?.current;
-        if (!canvas || !currentObject || !floatingMenu) return;
+        if (!currentObject || !floatingMenu) return;
 
         const zoom = canvas.getZoom();
         const viewTransform = canvas.viewportTransform;
@@ -113,7 +110,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
                         {...{ currentObject, handleInputChange }}
                     />
                     <Divider orientation="vertical" sx={{ mx: 0.5 }} />
-                    <Actions {...{ fabricRef, currentObject }} />
+                    <Actions {...{ canvas, currentObject }} />
                 </>
             ) : null}
         </FloatingMenuSheet>
@@ -121,7 +118,7 @@ export default function FloatingMenu({ fabricRef }: FloatingMenuProps) {
 }
 
 const FloatingMenuSheet = styled(Sheet)(() => ({
-    position: "absolute",
+    position: "fixed",
     overflow: "hidden",
     zIndex: 10,
     borderRadius: 99,

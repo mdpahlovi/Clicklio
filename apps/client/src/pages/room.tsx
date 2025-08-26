@@ -61,7 +61,7 @@ function Room({ room, currUser, roomUser, events }: RoomProps) {
             setRefresh();
         }
 
-        socket.emit("join:room_pvt", { room: room.id, user: currUser });
+        socket.emit("join:room_private", { room: room.id, user: currUser });
 
         socket.on("create:user", ({ key, value }: { key: string; value: RoomUser }) => createUser(key, value));
         socket.on("delete:user", ({ key }: { key: string }) => deleteUser(key));
@@ -72,7 +72,7 @@ function Room({ room, currUser, roomUser, events }: RoomProps) {
         });
 
         return () => {
-            socket.emit("leave:room", { room: room.id });
+            socket.emit("leave:room");
             socket.off("create:user");
             socket.off("delete:user");
             socket.off("create:event");
@@ -85,7 +85,7 @@ function Room({ room, currUser, roomUser, events }: RoomProps) {
     return (
         <>
             <RoomNavbar {...{ room, canvasRef, setIsGuideModalOpen }} />
-            <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
+            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room: room.id, device: null }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
         </>

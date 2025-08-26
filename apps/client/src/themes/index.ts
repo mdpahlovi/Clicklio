@@ -38,6 +38,8 @@ export default extendTheme({
     breakpoints: { values: { xs: 0, sm: 448, md: 640, lg: 768, xl: 1024 } },
     fontFamily: { body: "Poppins", code: "Poppins", display: "Poppins", fallback: "Poppins" },
     components: {
+        JoyAvatar: { defaultProps: { sx: { width: 36, height: 36 } } },
+        JoyAvatarGroup: { defaultProps: { sx: { "--AvatarGroup-gap": "-20px", alignItems: "center" } } },
         JoySheet: { defaultProps: { variant: "outlined" } },
         JoyCard: { styleOverrides: { root: { padding: 0, borderRadius: 16, gap: 0 } } },
         JoyInput: { styleOverrides: { root: { borderRadius: 8, overflow: "hidden" } } },
@@ -119,5 +121,6 @@ export default extendTheme({
             },
         },
         JoyListDivider: { styleOverrides: { root: { marginBlock: 0 } } },
+        JoyTab: { styleOverrides: { root: { fontSize: 14 } } },
     },
 });

@@ -1,4 +1,5 @@
 import * as fabric from "fabric";
+import type { Device } from "mediasoup-client";
 import type { ShapeEvent } from "./event";
 
 type Action = "CREATE" | "UPDATE" | "DELETE" | "UNDO" | "REDO";
@@ -31,11 +32,13 @@ export type CanvasProps = {
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
     fabricRef: React.RefObject<fabric.Canvas | null>;
     selectedToolRef: React.RefObject<Tool | null>;
+    room: string | null;
+    device: Device | null;
 };
 
 export type ImageUpload = {
     file: File;
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
@@ -44,7 +47,7 @@ export type SidebarProps = {
 };
 
 export type FloatingMenuProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
 };
 
 export type FloatingSubMenuItemProps = {
@@ -60,18 +63,19 @@ export type FloatingMenuItemProps = {
 };
 
 export type ActionsProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
     currentObject: fabric.FabricObject;
 };
 
 export type ToolbarProps = {
-    fabricRef: React.RefObject<fabric.Canvas | null>;
+    canvas: fabric.Canvas;
     selectedToolRef: React.RefObject<Tool | null>;
 };
 
 export type InitializeFabric = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
     canvasRef: React.RefObject<HTMLCanvasElement | null>;
+    zoom: number;
 };
 
 export type CanvasMouseDown = {

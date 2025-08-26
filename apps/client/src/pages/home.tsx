@@ -8,41 +8,46 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
 import type { ShapeEvent } from "@/types/event";
 import { renderCanvas } from "@/utils/canvas";
-import { socket } from "@/utils/socket";
+import { socket, type SocketResponse } from "@/utils/socket";
+import type { Device } from "mediasoup-client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 type JoinRoomResponse = { users: Record<string, string>; events: string[] };
 
 export default function HomePage() {
-    const [searchParams] = useSearchParams();
     const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [device, setDevice] = useState<Device | null>(null);
 
-    const { room, refresh, setRefresh } = useCanvasState();
+    const { refresh, setRefresh } = useCanvasState();
     const { shapes, createEvent, resetEvent } = useEventStore();
     const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
-    const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser } = useUserStore();
+    const { currUser, createCurrUser, deleteCurrUser, createUser, updateUser, deleteUser, resetUser } = useUserStore();
+
+    const [searchParam, setSearchParam] = useSearchParams();
+    const room = searchParam.get("room");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
 
     useEffect(() => {
-        if (searchParams.get("room")) {
+        if (room) {
             let user = currUser;
-            if (!user) user = createCurrUser(searchParams.get("room")!, "USER");
-            socket.emit("join:room", { room: searchParams.get("room")!, user, events: [] });
+            if (!user) user = createCurrUser(room, "USER");
+            socket.emit("join:room", { room, user }, (response: SocketResponse<JoinRoomResponse>) => {
+                if (response.success) {
+                    Object.entries(response.data.users).forEach(([key, value]) => createUser(key, JSON.parse(value)));
+                    response.data.events.forEach((event) => createEvent(JSON.parse(event), false));
+                    setRefresh();
+                } else {
+                    deleteCurrUser();
+                    setSearchParam({});
+                }
+            });
         } else {
             deleteCurrUser();
         }
-
-        // Room user events
-        socket.on("join:room", ({ users, events }: JoinRoomResponse) => {
-            Object.entries(users).forEach(([key, value]) => createUser(key, JSON.parse(value)));
-            events.forEach((event) => createEvent(JSON.parse(event), false));
-
-            setRefresh();
-        });
 
         socket.on("create:user", ({ key, value }: { key: string; value: RoomUser }) => createUser(key, value));
         socket.on("update:user", ({ key, value }: { key: string; value: RoomUser }) => updateUser(key, value));
@@ -54,21 +59,20 @@ export default function HomePage() {
         });
 
         return () => {
-            socket.emit("leave:room", { room });
-            socket.off("join:room");
+            socket.emit("leave:room");
             socket.off("create:user");
             socket.off("update:user");
             socket.off("delete:user");
             socket.off("create:event");
+            resetUser();
             resetEvent();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
         <div>
-            <Navbar {...{ canvasRef, setIsGuideModalOpen, setIsShareModalOpen }} />
-            <Canvas {...{ canvasRef, fabricRef, selectedToolRef }} />
+            <Navbar {...{ canvasRef, setIsGuideModalOpen, setIsShareModalOpen, room, device, setDevice }} />
+            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room, device }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
             <ShareModal isOpen={isShareModalOpen} setIsOpen={setIsShareModalOpen} />
