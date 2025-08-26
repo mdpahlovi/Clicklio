@@ -1,7 +1,11 @@
-import { BadRequestException, Injectable, Logger, OnApplicationShutdown, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger, OnApplicationShutdown, OnModuleInit } from "@nestjs/common";
 import * as mediasoup from "mediasoup";
+import { Socket } from "socket.io";
 
 type AppData = { clientId: string; room: string };
+type Transport = mediasoup.types.WebRtcTransport<AppData>;
+type Producer = mediasoup.types.Producer<AppData>;
+type Consumer = mediasoup.types.Consumer<AppData>;
 
 type RouterInfo = {
     router: mediasoup.types.Router;
@@ -12,18 +16,18 @@ type RouterInfo = {
 };
 
 type TransportInfo = {
-    transport: mediasoup.types.WebRtcTransport<AppData>;
+    transport: Transport;
     type: "send" | "receive";
     connected: boolean;
 };
 
 type ProducerInfo = {
-    producer: mediasoup.types.Producer<AppData>;
+    producer: Producer;
     kind: mediasoup.types.MediaKind;
 };
 
 type ConsumerInfo = {
-    consumer: mediasoup.types.Consumer<AppData>;
+    consumer: Consumer;
     producerId: string;
     kind: mediasoup.types.MediaKind;
 };
@@ -104,65 +108,283 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
         this.logger.debug(`Cleaned up router for room: ${room}`);
     }
 
-    async createRouter(room: string): Promise<mediasoup.types.Router> {
-        if (!this.worker) throw new BadRequestException("Worker not initialized");
+    async createRouter(room: string) {
+        if (!this.worker) return { success: false, message: "Worker not initialized" };
 
-        let router = this.routers.get(room)?.router;
-        if (!router) {
-            router = await this.worker.createRouter({
-                mediaCodecs: [
-                    // Audio - Opus
-                    {
-                        kind: "audio",
-                        mimeType: "audio/opus",
-                        clockRate: 48000,
-                        channels: 2,
-                        preferredPayloadType: 111,
-                    },
-                    // Video - VP8 (best compatibility)
-                    {
-                        kind: "video",
-                        mimeType: "video/VP8",
-                        clockRate: 90000,
-                        preferredPayloadType: 96,
-                        rtcpFeedback: [
-                            { type: "nack" },
-                            { type: "nack", parameter: "pli" },
-                            { type: "ccm", parameter: "fir" },
-                            { type: "goog-remb" },
-                        ],
-                    },
-                    // Video - H.264 (Safari compatibility)
-                    {
-                        kind: "video",
-                        mimeType: "video/H264",
-                        clockRate: 90000,
-                        preferredPayloadType: 125,
-                        parameters: {
-                            "packetization-mode": 1,
-                            "profile-level-id": "42e01f",
+        try {
+            let router = this.routers.get(room)?.router;
+            if (!router) {
+                router = await this.worker.createRouter({
+                    mediaCodecs: [
+                        // Audio - Opus
+                        {
+                            kind: "audio",
+                            mimeType: "audio/opus",
+                            clockRate: 48000,
+                            channels: 2,
+                            preferredPayloadType: 111,
                         },
-                        rtcpFeedback: [
-                            { type: "nack" },
-                            { type: "nack", parameter: "pli" },
-                            { type: "ccm", parameter: "fir" },
-                            { type: "goog-remb" },
-                        ],
-                    },
-                ],
+                        // Video - VP8 (best compatibility)
+                        {
+                            kind: "video",
+                            mimeType: "video/VP8",
+                            clockRate: 90000,
+                            preferredPayloadType: 96,
+                            rtcpFeedback: [
+                                { type: "nack" },
+                                { type: "nack", parameter: "pli" },
+                                { type: "ccm", parameter: "fir" },
+                                { type: "goog-remb" },
+                            ],
+                        },
+                        // Video - H.264 (Safari compatibility)
+                        {
+                            kind: "video",
+                            mimeType: "video/H264",
+                            clockRate: 90000,
+                            preferredPayloadType: 125,
+                            parameters: {
+                                "packetization-mode": 1,
+                                "profile-level-id": "42e01f",
+                            },
+                            rtcpFeedback: [
+                                { type: "nack" },
+                                { type: "nack", parameter: "pli" },
+                                { type: "ccm", parameter: "fir" },
+                                { type: "goog-remb" },
+                            ],
+                        },
+                    ],
+                });
+
+                this.routers.set(room, {
+                    router,
+                    transports: new Map(),
+                    producers: new Map(),
+                    consumers: new Map(),
+                    participantCount: 0,
+                });
+
+                this.logger.debug(`Created new router for room: ${room}`);
+            }
+
+            return {
+                success: true,
+                message: "Router created successfully",
+                data: {
+                    rtpCapabilities: router.rtpCapabilities,
+                },
+            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return { success: false, message: "Failed to create router" };
+        }
+    }
+
+    async createSendTransport(client: Socket, room: string) {
+        const router = this.routers.get(room)?.router;
+        if (!router) return { success: false, message: "Router not found" };
+
+        try {
+            const transport: Transport = await router.createWebRtcTransport({
+                listenIps: [{ ip: "0.0.0.0", announcedIp: "127.0.0.1" }],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
             });
 
-            this.routers.set(room, {
-                router,
-                transports: new Map(),
-                producers: new Map(),
-                consumers: new Map(),
-                participantCount: 0,
+            transport.on("dtlsstatechange", (dtlsState) => {
+                if (dtlsState === "closed") {
+                    transport.close();
+                }
             });
 
-            this.logger.debug(`Created new router for room: ${room}`);
+            transport.on("@close", () => {
+                this.logger.debug("Transport closed");
+            });
+
+            transport.appData = { clientId: client.id, room };
+            this.routers.get(room)?.transports.set(transport.id, {
+                transport,
+                type: "send",
+                connected: false,
+            });
+
+            return {
+                success: true,
+                message: "Transport created successfully",
+                data: {
+                    id: transport.id,
+                    iceParameters: transport.iceParameters,
+                    iceCandidates: transport.iceCandidates,
+                    dtlsParameters: transport.dtlsParameters,
+                    sctpParameters: transport.sctpParameters,
+                },
+            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return { success: false, message: "Failed to create transport" };
+        }
+    }
+
+    async connectSendTransport(room: string, transportId: string, dtlsParameters: mediasoup.types.DtlsParameters) {
+        const routerData = this.routers.get(room);
+        if (!routerData) return { success: false, message: "Router not found" };
+
+        const transport = routerData.transports.get(transportId)?.transport;
+        if (!transport) return { success: false, message: "Transport not found" };
+
+        try {
+            await transport.connect({ dtlsParameters });
+            this.routers.get(room)!.transports.get(transportId)!.connected = true;
+
+            // Send existing producers to the new client
+            const producers: { id: string; kind: mediasoup.types.MediaKind }[] = [];
+            this.routers.get(room)!.producers.forEach(({ kind }, id) => {
+                producers.push({ id, kind });
+            });
+
+            return { success: true, message: "Transport connected successfully", data: { producers } };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return { success: false, message: "Failed to connect transport" };
+        }
+    }
+
+    async createProducer(
+        client: Socket,
+        room: string,
+        transportId: string,
+        kind: mediasoup.types.MediaKind,
+        rtpParameters: mediasoup.types.RtpParameters,
+    ) {
+        const routerData = this.routers.get(room);
+        if (!routerData) return { success: false, message: "Router not found" };
+
+        const transport = routerData.transports.get(transportId)?.transport;
+        if (!transport) return { success: false, message: "Transport not found" };
+
+        try {
+            const producer: Producer = await transport.produce({
+                kind,
+                rtpParameters,
+                appData: { clientId: client.id, room },
+            });
+            this.routers.get(room)!.participantCount++;
+            this.routers.get(room)!.producers.set(producer.id, { producer, kind });
+
+            // Notify existing clients about the new producer
+            client.to(room).emit("create:producer", { id: producer.id, kind });
+
+            return { success: true, message: "Producer created successfully", data: { id: producer.id } };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return { success: false, message: "Failed to create producer" };
+        }
+    }
+
+    async createReceiveTransport(client: Socket, room: string) {
+        const router = this.routers.get(room)?.router;
+        if (!router) return { success: false, message: "Router not found" };
+
+        try {
+            const transport: Transport = await router.createWebRtcTransport({
+                listenIps: [{ ip: "0.0.0.0", announcedIp: "127.0.0.1" }],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+            });
+
+            transport.on("dtlsstatechange", (dtlsState) => {
+                if (dtlsState === "closed") {
+                    transport.close();
+                }
+            });
+
+            transport.appData = { clientId: client.id, room };
+            this.routers.get(room)?.transports.set(transport.id, {
+                transport,
+                type: "receive",
+                connected: false,
+            });
+
+            return {
+                success: true,
+                message: "Transport created successfully",
+                data: {
+                    id: transport.id,
+                    iceParameters: transport.iceParameters,
+                    iceCandidates: transport.iceCandidates,
+                    dtlsParameters: transport.dtlsParameters,
+                    sctpParameters: transport.sctpParameters,
+                },
+            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return { success: false, message: "Failed to create transport" };
+        }
+    }
+
+    async connectReceiveTransport(room: string, transportId: string, dtlsParameters: mediasoup.types.DtlsParameters) {
+        const routerData = this.routers.get(room);
+        if (!routerData) return { success: false, message: "Router not found" };
+
+        const transport = routerData.transports.get(transportId)?.transport;
+        if (!transport) return { success: false, message: "Transport not found" };
+
+        try {
+            await transport.connect({ dtlsParameters });
+            this.routers.get(room)!.transports.get(transportId)!.connected = true;
+
+            return { success: true, message: "Transport connected successfully" };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return { success: false, message: "Failed to connect transport" };
+        }
+    }
+
+    async createConsumer(
+        client: Socket,
+        room: string,
+        transportId: string,
+        producerId: string,
+        rtpCapabilities: mediasoup.types.RtpCapabilities,
+    ) {
+        const routerData = this.routers.get(room);
+        if (!routerData) return { success: false, message: "Router not found" };
+
+        const transport = routerData.transports.get(transportId)?.transport;
+        if (!transport) return { success: false, message: "Transport not found" };
+
+        if (!routerData.router.canConsume({ producerId, rtpCapabilities })) {
+            return { success: false, message: "Cannot consume this producer" };
         }
 
-        return router;
+        try {
+            const consumer: Consumer = await transport.consume({
+                producerId,
+                rtpCapabilities,
+                appData: { clientId: client.id, room },
+            });
+            this.routers.get(room)!.consumers.set(consumer.id, {
+                consumer,
+                producerId,
+                kind: consumer.kind,
+            });
+
+            return {
+                success: true,
+                message: "Consumer created successfully",
+                data: {
+                    id: consumer.id,
+                    producerId,
+                    kind: consumer.kind,
+                    rtpParameters: consumer.rtpParameters,
+                },
+            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            return { success: false, message: "Failed to create consumer" };
+        }
     }
 }

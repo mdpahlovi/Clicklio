@@ -1,4 +1,5 @@
 import * as fabric from "fabric";
+import type { Device } from "mediasoup-client";
 import type { ShapeEvent } from "./event";
 
 type Action = "CREATE" | "UPDATE" | "DELETE" | "UNDO" | "REDO";
@@ -32,6 +33,7 @@ export type CanvasProps = {
     fabricRef: React.RefObject<fabric.Canvas | null>;
     selectedToolRef: React.RefObject<Tool | null>;
     room: string | null;
+    device: Device | null;
 };
 
 export type ImageUpload = {

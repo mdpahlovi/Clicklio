@@ -1,6 +1,9 @@
+export { default as ArrowDownIcon } from "@/components/icons/ArrowDownIcon";
 export { default as ArrowLeftIcon } from "@/components/icons/ArrowLeftIcon";
+export { default as ArrowRightIcon } from "@/components/icons/ArrowRightIcon";
 export { default as ArrowToolIcon } from "@/components/icons/ArrowToolIcon";
 export { default as CanvasFillIcon } from "@/components/icons/CanvasFillIcon";
+export { default as ChattingIcon } from "@/components/icons/ChattingIcon";
 export { default as CircleIcon } from "@/components/icons/CircleIcon";
 export { default as ColorIcon } from "@/components/icons/ColorIcon";
 export { default as CopyIcon } from "@/components/icons/CopyIcon";

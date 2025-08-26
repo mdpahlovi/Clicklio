@@ -9,6 +9,7 @@ import { useUserStore, type RoomUser } from "@/stores/room/useUserStore";
 import type { ShapeEvent } from "@/types/event";
 import { renderCanvas } from "@/utils/canvas";
 import { socket, type SocketResponse } from "@/utils/socket";
+import type { Device } from "mediasoup-client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -17,6 +18,7 @@ type JoinRoomResponse = { users: Record<string, string>; events: string[] };
 export default function HomePage() {
     const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [device, setDevice] = useState<Device | null>(null);
 
     const { refresh, setRefresh } = useCanvasState();
     const { shapes, createEvent, resetEvent } = useEventStore();
@@ -69,8 +71,8 @@ export default function HomePage() {
 
     return (
         <div>
-            <Navbar {...{ canvasRef, setIsGuideModalOpen, setIsShareModalOpen, room }} />
-            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room }} />
+            <Navbar {...{ canvasRef, setIsGuideModalOpen, setIsShareModalOpen, room, device, setDevice }} />
+            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room, device }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
             <ShareModal isOpen={isShareModalOpen} setIsOpen={setIsShareModalOpen} />

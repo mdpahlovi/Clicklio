@@ -2,11 +2,11 @@ import { type CanvasProps } from "@/types";
 import RemoteCursor from "../ui/remote-cursor";
 import BottomToolbar from "./bottom-toolbar";
 import CanvasContainer from "./canvas-container";
-import Conference from "./conference";
+import Conference from "./conference/index";
 import FloatingMenu from "./floating-menu";
 import Toolbar from "./toolbar";
 
-export default function Canvas({ canvasRef, fabricRef, selectedToolRef, room }: CanvasProps) {
+export default function Canvas({ canvasRef, fabricRef, selectedToolRef, room, device }: CanvasProps) {
     return (
         <CanvasContainer>
             <canvas ref={canvasRef} />
@@ -19,7 +19,7 @@ export default function Canvas({ canvasRef, fabricRef, selectedToolRef, room }: 
                     {room ? (
                         <>
                             <RemoteCursor room={room} />
-                            <Conference room={room} />
+                            {device ? <Conference room={room} device={device} /> : null}
                         </>
                     ) : null}
                 </>
