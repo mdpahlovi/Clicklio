@@ -85,7 +85,7 @@ function Room({ room, currUser, roomUser, events }: RoomProps) {
     return (
         <>
             <RoomNavbar {...{ room, canvasRef, setIsGuideModalOpen }} />
-            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room: room.id }} />
+            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room: room.id, device: null }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
         </>
