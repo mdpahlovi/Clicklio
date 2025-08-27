@@ -201,8 +201,8 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                     rtpCapabilities: router.rtpCapabilities,
                 },
             };
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
+            console.log(error);
             return { success: false, message: "Failed to create router" };
         }
     }

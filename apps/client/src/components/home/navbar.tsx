@@ -6,6 +6,7 @@ import { useAuthState } from "@/stores/auth/useAuthStore";
 import { socket, type SocketResponse } from "@/utils/socket";
 import { Button, IconButton, Sheet, styled, Tooltip } from "@mui/joy";
 import { Device, types } from "mediasoup-client";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 type NavbarProps = {
@@ -32,12 +33,16 @@ export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModal
                     <Tooltip title="Chat">
                         <IconButton
                             onClick={async () => {
-                                socket.emit("create:router", { room }, async (response: CreateRouterResponse) => {
-                                    const device = new Device();
-                                    await device.load({ routerRtpCapabilities: response.data.rtpCapabilities });
+                                try {
+                                    socket.emit("create:router", { room }, async (response: CreateRouterResponse) => {
+                                        const device = new Device();
+                                        await device.load({ routerRtpCapabilities: response.data.rtpCapabilities });
 
-                                    setDevice(device);
-                                });
+                                        setDevice(device);
+                                    });
+                                } catch (error) {
+                                    toast.error("Failed to create router");
+                                }
                             }}
                             disabled={device !== null}
                         >
