@@ -201,8 +201,10 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
     };
 
     const handleStartVideoChat = async () => {
+        let stream: MediaStream | null = null;
+
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
+            stream = await navigator.mediaDevices.getUserMedia({
                 video: true,
                 audio: true,
             });
@@ -258,6 +260,9 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             sendTransportRef.current = sendTransport;
             setIsStarted(true);
         } catch (error) {
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+            }
             toast.error((error as Error)?.message || "Failed to join conference");
         }
     };

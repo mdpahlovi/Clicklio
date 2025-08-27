@@ -1,8 +1,6 @@
 import { ConsoleLogger, ValidationPipe, VersioningType } from "@nestjs/common";
-// import { HttpsOptions } from "@nestjs/common/interfaces/external/https-options.interface";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-// import * as fs from "fs";
 import helmet from "helmet";
 import { AppModule } from "./app.module";
 
@@ -12,11 +10,6 @@ async function bootstrap() {
         prefix: "Clicklio",
         timestamp: true,
     });
-
-    // const httpsOptions: HttpsOptions = {
-    //     key: fs.readFileSync("ssl/localhost+2-key.pem"),
-    //     cert: fs.readFileSync("ssl/localhost+2.pem"),
-    // };
 
     const app = await NestFactory.create(AppModule, { logger });
     const configService = app.get(ConfigService);

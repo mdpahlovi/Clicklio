@@ -10,6 +10,7 @@ type Consumer = mediasoup.types.Consumer<AppData>;
 
 type RouterInfo = {
     router: mediasoup.types.Router;
+    webRtcServer: mediasoup.types.WebRtcServer;
     transports: Map<string, TransportInfo>;
     producers: Map<string, ProducerInfo>;
     consumers: Map<string, ConsumerInfo>;
@@ -166,8 +167,24 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                     ],
                 });
 
+                const webRtcServer = await this.worker.createWebRtcServer({
+                    listenInfos: [
+                        {
+                            protocol: "udp",
+                            ip: this.configService.get("serverIp")!,
+                            port: 44444,
+                        },
+                        {
+                            protocol: "tcp",
+                            ip: this.configService.get("serverIp")!,
+                            port: 44444,
+                        },
+                    ],
+                });
+
                 this.routers.set(room, {
                     router,
+                    webRtcServer,
                     transports: new Map(),
                     producers: new Map(),
                     consumers: new Map(),
@@ -184,8 +201,8 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                     rtpCapabilities: router.rtpCapabilities,
                 },
             };
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
+            console.log(error);
             return { success: false, message: "Failed to create router" };
         }
     }
@@ -196,18 +213,9 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
 
         try {
             const transport: Transport = await router.createWebRtcTransport({
-                listenInfos: [
-                    {
-                        protocol: "udp",
-                        ip: this.configService.get("serverIp")!,
-                        portRange: { min: 40000, max: 49999 },
-                    },
-                    {
-                        protocol: "tcp",
-                        ip: this.configService.get("serverIp")!,
-                        portRange: { min: 40000, max: 49999 },
-                    },
-                ],
+                webRtcServer: this.routers.get(room)!.webRtcServer,
+                enableUdp: true,
+                enableTcp: false,
             });
 
             transport.on("dtlsstatechange", (dtlsState) => {
@@ -306,18 +314,9 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
 
         try {
             const transport: Transport = await router.createWebRtcTransport({
-                listenInfos: [
-                    {
-                        protocol: "udp",
-                        ip: this.configService.get("serverIp")!,
-                        portRange: { min: 40000, max: 49999 },
-                    },
-                    {
-                        protocol: "tcp",
-                        ip: this.configService.get("serverIp")!,
-                        portRange: { min: 40000, max: 49999 },
-                    },
-                ],
+                webRtcServer: this.routers.get(room)!.webRtcServer,
+                enableUdp: true,
+                enableTcp: false,
             });
 
             transport.on("dtlsstatechange", (dtlsState) => {
