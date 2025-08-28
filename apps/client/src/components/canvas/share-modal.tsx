@@ -47,12 +47,12 @@ export default function ShareModal({ isOpen, setIsOpen }: ShareModalProps) {
                             Copy Link
                         </Button>
                     </Stack>
-                    <Divider sx={{ mt: 2.75, mb: 1.75 }} />
+                    <Divider sx={{ mt: 2, mb: 1.25 }} />
                     <Typography level="body-sm">
                         Stopping the session will disconnect you from the room, but you'll be able to continue working with the scene,
                         locally. Note that this won't affect other people, and they'll still be able to collaborate on their version.
                     </Typography>
-                    <Stack mt={1.75} flexDirection="row" justifyContent="center">
+                    <Stack mt={1} flexDirection="row" justifyContent="center">
                         <Button
                             startDecorator={<SquareFillIcon />}
                             color="danger"

@@ -62,6 +62,7 @@ export default extendTheme({
         JoyMenuButton: { styleOverrides: { root: { borderRadius: 99 } } },
         JoySnackbar: { defaultProps: { anchorOrigin: { vertical: "top", horizontal: "right" } } },
         JoyModal: { defaultProps: { sx: { display: "flex", justifyContent: "center", alignItems: "center" } } },
+        JoyModalClose: { styleOverrides: { root: { borderRadius: 99 } } },
         JoySlider: {
             styleOverrides: {
                 thumb: {

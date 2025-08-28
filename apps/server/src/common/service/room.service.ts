@@ -26,7 +26,7 @@ export class RoomService {
     }
 
     private getRoomExistsKey(room: string): string {
-        return `room:${room}:exists`;
+        return `room:${room}:exist`;
     }
 
     private async roomExists(room: string): Promise<string | null> {

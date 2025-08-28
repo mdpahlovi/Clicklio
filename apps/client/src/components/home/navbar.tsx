@@ -3,7 +3,7 @@ import { ChattingIcon, ShareIcon, SigninIcon } from "@/components/icons";
 import AuthDropdown from "@/components/ui/auth-dropdown";
 import Menubar from "@/components/ui/menubar";
 import { useAuthState } from "@/stores/auth/useAuthStore";
-import { socket, type SocketResponse } from "@/utils/socket";
+import { socketResponse } from "@/utils/socket";
 import { Button, IconButton, Sheet, styled, Tooltip } from "@mui/joy";
 import { Device, types } from "mediasoup-client";
 import toast from "react-hot-toast";
@@ -18,7 +18,7 @@ type NavbarProps = {
     setDevice: React.Dispatch<React.SetStateAction<Device | null>>;
 };
 
-type CreateRouterResponse = SocketResponse<{ rtpCapabilities: types.RtpCapabilities }>;
+type CreateRouterResponse = { rtpCapabilities: types.RtpCapabilities };
 
 export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModalOpen, room, device, setDevice }: NavbarProps) {
     const { user } = useAuthState();
@@ -34,12 +34,12 @@ export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModal
                         <IconButton
                             onClick={async () => {
                                 try {
-                                    socket.emit("create:router", { room }, async (response: CreateRouterResponse) => {
-                                        const device = new Device();
-                                        await device.load({ routerRtpCapabilities: response.data.rtpCapabilities });
+                                    const createRouterResponse = await socketResponse<CreateRouterResponse>("create:router", { room });
 
-                                        setDevice(device);
-                                    });
+                                    const device = new Device();
+                                    await device.load({ routerRtpCapabilities: createRouterResponse.data.rtpCapabilities });
+
+                                    setDevice(device);
                                 } catch (error) {
                                     toast.error("Failed to create router");
                                 }
@@ -53,8 +53,13 @@ export default function Navbar({ canvasRef, setIsGuideModalOpen, setIsShareModal
                 </NavbarSheet>
             ) : null}
             <NavbarSheet position="right">
-                <Button color="neutral" variant="plain" startDecorator={<ShareIcon />} onClick={() => setIsShareModalOpen(true)}>
-                    Share
+                <Button
+                    variant={room ? "solid" : "plain"}
+                    color={room ? "success" : "neutral"}
+                    startDecorator={<ShareIcon />}
+                    onClick={() => setIsShareModalOpen(true)}
+                >
+                    {room ? "Sharing" : "Share"}
                 </Button>
                 {user && user?.id ? (
                     <AuthDropdown />

@@ -24,6 +24,11 @@ type CreateConsumePayload = {
     rtpCapabilities: mediasoup.types.RtpCapabilities;
 };
 
+type DeleteProducerPayload = {
+    room: string;
+    producers: string[];
+};
+
 @WebSocketGateway({ cors: { origin: "*" } })
 export class ConferenceGateway {
     private readonly logger = new Logger(ConferenceGateway.name);
@@ -92,7 +97,14 @@ export class ConferenceGateway {
     }
 
     @SubscribeMessage("delete:producer")
-    handleDeleteProducer(@ConnectedSocket() client: Socket, @MessageBody() { room }: { room: string }) {
+    handleDeleteProducer(@ConnectedSocket() client: Socket, @MessageBody() { room, producers }: DeleteProducerPayload) {
+        if (!room) return { success: false, message: "Room is required" };
+
+        return this.mediasoupService.deleteProducer(client, room, producers);
+    }
+
+    @SubscribeMessage("remove:client")
+    handleRemoveClient(@ConnectedSocket() client: Socket, @MessageBody() { room }: { room: string }) {
         if (!room) return { success: false, message: "Room is required" };
 
         return this.mediasoupService.removeClient(room, client);
