@@ -21,10 +21,6 @@ type CreateTransportResponse = {
     producers: { id: string; kind: types.MediaKind }[];
 };
 
-type ConnectTransportResponse = {
-    producers: { id: string; kind: types.MediaKind }[];
-};
-
 type CreateProducerResponse = {
     id: string;
 };
@@ -46,9 +42,10 @@ type RemoteStream = {
 type ProducerData = { id: string };
 
 export default function VideoChatUI({ room, device }: { room: string; device: Device }) {
+    const [isStarted, setIsStarted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const sendTransportRef = useRef<types.Transport | null>(null);
     const recvTransportRef = useRef<types.Transport | null>(null);
-    const pendingConsumersRef = useRef<Set<string>>(new Set());
     const producersRef = useRef<Map<keyof LocalStreams, ProducerData>>(new Map());
 
     const [localStreams, setLocalStreams] = useState<LocalStreams>({
@@ -57,7 +54,6 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
         screen: null,
     });
     const [remoteStreams, setRemoteStreams] = useState<Map<string, RemoteStream>>(new Map());
-    const [isStarted, setIsStarted] = useState(false);
 
     const cleanUp = () => {
         Object.values(localStreams).forEach((track) => {
@@ -78,13 +74,13 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             recvTransportRef.current.close();
             recvTransportRef.current = null;
         }
-
-        pendingConsumersRef.current.clear();
     };
 
     useEffect(() => {
-        const handleCreateProducer = ({ id, kind }: { id: string; kind: types.MediaKind }) => {
-            createConsumer(device, id, kind);
+        if (!isStarted) return;
+
+        const handleCreateProducer = async ({ id, kind }: { id: string; kind: types.MediaKind }) => {
+            await createConsumer(device, id, kind);
         };
 
         const handleDeleteProducer = ({ producers }: { producers: string[] }) => {
@@ -119,7 +115,7 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             socket.off("delete:producer", handleDeleteProducer);
             cleanUp();
         };
-    }, [device]);
+    }, [device, isStarted]);
 
     const createReceiveTransport = async (device: Device): Promise<types.Transport> => {
         if (recvTransportRef.current) return recvTransportRef.current;
@@ -156,10 +152,6 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
     };
 
     const createConsumer = async (device: Device, producerId: string, kind: types.MediaKind) => {
-        if (pendingConsumersRef.current.has(producerId)) return;
-
-        pendingConsumersRef.current.add(producerId);
-
         try {
             const recvTransport = await createReceiveTransport(device);
             if (!recvTransport) return;
@@ -200,8 +192,6 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             });
         } catch (error) {
             toast.error((error as Error)?.message || "Failed to create consumer");
-        } finally {
-            pendingConsumersRef.current.delete(producerId);
         }
     };
 
@@ -239,6 +229,7 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
     };
 
     const handleStartVideoChat = async () => {
+        setIsLoading(true);
         let stream: MediaStream | null = null;
 
         try {
@@ -248,6 +239,13 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             });
 
             const transportResponse = await socketResponse<CreateTransportResponse>("create:send:transport", { room });
+
+            // consume existing producers tracks
+            if (transportResponse.data.producers.length > 0) {
+                for (const producer of transportResponse.data.producers) {
+                    await createConsumer(device, producer.id, producer.kind);
+                }
+            }
 
             const sendTransport = device.createSendTransport({
                 id: transportResponse.data.id,
@@ -259,17 +257,12 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
 
             sendTransport.on("connect", async ({ dtlsParameters }, callback, errBack) => {
                 try {
-                    const connectResponse = await socketResponse<ConnectTransportResponse>("connect:send:transport", {
+                    await socketResponse("connect:send:transport", {
                         room,
                         transportId: sendTransport.id,
                         dtlsParameters,
                     });
-
                     callback();
-
-                    connectResponse.data.producers.forEach((producer) => {
-                        createConsumer(device, producer.id, producer.kind);
-                    });
                 } catch (error) {
                     errBack(error as Error);
                 }
@@ -300,6 +293,8 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                 stream.getTracks().forEach((track) => track.stop());
             }
             toast.error((error as Error)?.message || "Failed to join conference");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -400,6 +395,7 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             </TabPanel>
             <VideoControllers
                 isStarted={isStarted}
+                isLoading={isLoading}
                 localStreams={localStreams}
                 sendTransportRef={sendTransportRef}
                 createProducer={createProducer}

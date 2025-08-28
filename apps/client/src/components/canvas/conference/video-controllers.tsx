@@ -1,5 +1,5 @@
 import { MicIcon, MicOffIcon, ScreenShareIcon, ScreenShareOffIcon, VideoIcon, VideoOffIcon } from "@/components/icons";
-import { Box, Button, Divider, IconButton, Stack } from "@mui/joy";
+import { Box, Button, CircularProgress, Divider, IconButton, Stack } from "@mui/joy";
 import { types } from "mediasoup-client";
 import { handleMediaError } from "../../../utils/utils";
 
@@ -11,6 +11,7 @@ type LocalStreams = {
 
 type VideoControllersProps = {
     isStarted: boolean;
+    isLoading: boolean;
     localStreams: LocalStreams;
     sendTransportRef: React.RefObject<types.Transport | null>;
     createProducer: (sendTransport: types.Transport, track: MediaStreamTrack, mediaType: keyof LocalStreams) => void;
@@ -21,6 +22,7 @@ type VideoControllersProps = {
 
 export default function VideoControllers({
     isStarted,
+    isLoading,
     localStreams,
     createProducer,
     deleteProducer,
@@ -123,8 +125,14 @@ export default function VideoControllers({
                         </IconButton>
                     </Stack>
                 ) : (
-                    <Button onClick={() => handleStartVideoChat()} sx={{ borderRadius: 8 }} startDecorator={<VideoIcon />} fullWidth>
-                        Start Video
+                    <Button
+                        onClick={() => handleStartVideoChat()}
+                        sx={{ borderRadius: 8 }}
+                        startDecorator={isLoading ? <CircularProgress /> : <VideoIcon />}
+                        fullWidth
+                        disabled={isLoading}
+                    >
+                        {isLoading ? "Loading..." : "Start Video"}
                     </Button>
                 )}
             </Box>

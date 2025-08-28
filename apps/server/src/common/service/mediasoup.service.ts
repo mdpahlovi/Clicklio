@@ -14,7 +14,7 @@ type RouterInfo = {
     transports: Map<string, TransportInfo>;
     producers: Map<string, ProducerInfo>;
     consumers: Map<string, ConsumerInfo>;
-    participantCount: number;
+    clients: Map<string, ClientInfo>;
 };
 
 type TransportInfo = {
@@ -32,6 +32,11 @@ type ConsumerInfo = {
     consumer: Consumer;
     producerId: string;
     kind: mediasoup.types.MediaKind;
+};
+
+type ClientInfo = {
+    transports: Set<string>;
+    producers: Set<string>;
 };
 
 @Injectable()
@@ -112,13 +117,18 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
         this.logger.debug(`Cleaned up router for room: ${room}`);
     }
 
-    async createRouter(room: string) {
+    async createRouter(client: Socket, room: string) {
         if (!this.worker) return { success: false, message: "Worker not initialized" };
 
         try {
-            let router = this.routers.get(room)?.router;
-            if (!router) {
-                router = await this.worker.createRouter({
+            const routerInfo = this.routers.get(room);
+            const clientInfo: ClientInfo = {
+                transports: new Set(),
+                producers: new Set(),
+            };
+
+            if (!routerInfo) {
+                const router = await this.worker.createRouter({
                     mediaCodecs: [
                         {
                             kind: "audio",
@@ -191,32 +201,45 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                     transports: new Map(),
                     producers: new Map(),
                     consumers: new Map(),
-                    participantCount: 0,
+                    clients: new Map([[client.id, clientInfo]]),
                 });
 
                 this.logger.debug(`Created new router for room: ${room}`);
-            }
 
-            return {
-                success: true,
-                message: "Router created successfully",
-                data: {
-                    rtpCapabilities: router.rtpCapabilities,
-                },
-            };
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                return {
+                    success: true,
+                    message: "Router created successfully",
+                    data: {
+                        rtpCapabilities: router.rtpCapabilities,
+                    },
+                };
+            } else {
+                routerInfo.clients.set(client.id, clientInfo);
+
+                return {
+                    success: true,
+                    message: "Router created successfully",
+                    data: {
+                        rtpCapabilities: routerInfo.router.rtpCapabilities,
+                    },
+                };
+            }
         } catch (error) {
+            console.log(error);
             return { success: false, message: "Failed to create router" };
         }
     }
 
     async createSendTransport(client: Socket, room: string) {
-        const router = this.routers.get(room)?.router;
-        if (!router) return { success: false, message: "Router not found" };
+        const routerInfo = this.routers.get(room);
+        if (!routerInfo) return { success: false, message: "Router not found" };
+
+        const clientInfo = routerInfo.clients.get(client.id);
+        if (!clientInfo) return { success: false, message: "Client not found" };
 
         try {
-            const transport: Transport = await router.createWebRtcTransport({
-                webRtcServer: this.routers.get(room)!.webRtcServer,
+            const transport: Transport = await routerInfo.router.createWebRtcTransport({
+                webRtcServer: routerInfo.webRtcServer,
                 enableUdp: true,
                 enableTcp: false,
             });
@@ -232,12 +255,22 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
             });
 
             transport.appData = { clientId: client.id, room };
-            this.routers.get(room)?.transports.set(transport.id, {
+            routerInfo.transports.set(transport.id, {
                 transport,
                 type: "send",
                 connected: false,
             });
+            clientInfo.transports.add(transport.id);
 
+            // Send existing producers to the new client
+            const producers: { id: string; kind: mediasoup.types.MediaKind }[] = [];
+            routerInfo.producers.forEach(({ producer, kind }, id) => {
+                if (producer.appData.clientId !== client.id) {
+                    producers.push({ id, kind });
+                }
+            });
+
+            console.log(`${client.id} | SEND | ${transport.id}`);
             return {
                 success: true,
                 message: "Transport created successfully",
@@ -247,6 +280,7 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                     iceCandidates: transport.iceCandidates,
                     dtlsParameters: transport.dtlsParameters,
                     sctpParameters: transport.sctpParameters,
+                    producers,
                 },
             };
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -264,15 +298,9 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
 
         try {
             await transport.connect({ dtlsParameters });
-            this.routers.get(room)!.transports.get(transportId)!.connected = true;
+            routerData.transports.get(transportId)!.connected = true;
 
-            // Send existing producers to the new client
-            const producers: { id: string; kind: mediasoup.types.MediaKind }[] = [];
-            this.routers.get(room)!.producers.forEach(({ kind }, id) => {
-                producers.push({ id, kind });
-            });
-
-            return { success: true, message: "Transport connected successfully", data: { producers } };
+            return { success: true, message: "Transport connected successfully" };
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             return { success: false, message: "Failed to connect transport" };
@@ -288,6 +316,8 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
     ) {
         const routerData = this.routers.get(room);
         if (!routerData) return { success: false, message: "Router not found" };
+        const clientInfo = routerData.clients.get(client.id);
+        if (!clientInfo) return { success: false, message: "Client not found" };
 
         const transport = routerData.transports.get(transportId)?.transport;
         if (!transport) return { success: false, message: "Transport not found" };
@@ -298,8 +328,8 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                 rtpParameters,
                 appData: { clientId: client.id, room },
             });
-            this.routers.get(room)!.participantCount++;
-            this.routers.get(room)!.producers.set(producer.id, { producer, kind });
+            routerData.producers.set(producer.id, { producer, kind });
+            clientInfo.producers.add(producer.id);
 
             // Notify existing clients about the new producer
             client.to(room).emit("create:producer", { id: producer.id, kind });
@@ -312,12 +342,14 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
     }
 
     async createReceiveTransport(client: Socket, room: string) {
-        const router = this.routers.get(room)?.router;
-        if (!router) return { success: false, message: "Router not found" };
+        const routerData = this.routers.get(room);
+        if (!routerData) return { success: false, message: "Router not found" };
+        const clientInfo = routerData.clients.get(client.id);
+        if (!clientInfo) return { success: false, message: "Client not found" };
 
         try {
-            const transport: Transport = await router.createWebRtcTransport({
-                webRtcServer: this.routers.get(room)!.webRtcServer,
+            const transport: Transport = await routerData.router.createWebRtcTransport({
+                webRtcServer: routerData.webRtcServer,
                 enableUdp: true,
                 enableTcp: false,
             });
@@ -329,12 +361,14 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
             });
 
             transport.appData = { clientId: client.id, room };
-            this.routers.get(room)?.transports.set(transport.id, {
+            routerData.transports.set(transport.id, {
                 transport,
                 type: "receive",
                 connected: false,
             });
+            clientInfo.transports.add(transport.id);
 
+            console.log(`${client.id} | RECEIVE | ${transport.id}`);
             return {
                 success: true,
                 message: "Transport created successfully",
@@ -361,7 +395,7 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
 
         try {
             await transport.connect({ dtlsParameters });
-            this.routers.get(room)!.transports.get(transportId)!.connected = true;
+            routerData.transports.get(transportId)!.connected = true;
 
             return { success: true, message: "Transport connected successfully" };
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -379,6 +413,8 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
     ) {
         const routerData = this.routers.get(room);
         if (!routerData) return { success: false, message: "Router not found" };
+        const clientInfo = routerData.clients.get(client.id);
+        if (!clientInfo) return { success: false, message: "Client not found" };
 
         const transport = routerData.transports.get(transportId)?.transport;
         if (!transport) return { success: false, message: "Transport not found" };
@@ -393,7 +429,7 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                 rtpCapabilities,
                 appData: { clientId: client.id, room },
             });
-            this.routers.get(room)!.consumers.set(consumer.id, {
+            routerData.consumers.set(consumer.id, {
                 consumer,
                 producerId,
                 kind: consumer.kind,
@@ -418,69 +454,75 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
     deleteProducer(client: Socket, room: string, producers: string[]) {
         const routerInfo = this.routers.get(room);
         if (!routerInfo) return;
-
-        const { consumers } = routerInfo;
+        const clientInfo = routerInfo.clients.get(client.id);
+        if (!clientInfo) return;
 
         for (const producerId of producers) {
             const producerInfo = routerInfo.producers.get(producerId);
             if (producerInfo) {
                 producerInfo.producer.close();
                 routerInfo.producers.delete(producerId);
+                clientInfo.producers.delete(producerId);
             }
         }
 
-        for (const [consumerId, consumerInfo] of consumers) {
-            if (producers.includes(consumerInfo.producerId)) {
-                consumerInfo.consumer.close();
-                consumers.delete(consumerId);
+        for (const [consumerId, consumer] of routerInfo.consumers) {
+            if (producers.includes(consumer.producerId)) {
+                consumer.consumer.close();
+                routerInfo.consumers.delete(consumerId);
             }
         }
 
         if (producers.length > 0) {
-            client.to(room).emit("delete:producer", {
-                producers,
-            });
+            client.to(room).emit("delete:producer", { producers });
         }
     }
 
     removeClient(room: string, client: Socket) {
         const routerInfo = this.routers.get(room);
         if (!routerInfo) return;
+        const clientInfo = routerInfo.clients.get(client.id);
+        if (!clientInfo) return;
 
-        const { transports, producers, consumers } = routerInfo;
+        const { transports, producers } = clientInfo;
 
         const removedProducers: string[] = [];
 
-        for (const [transportId, transportInfo] of transports) {
-            if (transportInfo.transport.appData.clientId === client.id) {
+        for (const transportId of transports) {
+            const transportInfo = routerInfo.transports.get(transportId);
+            if (transportInfo) {
                 transportInfo.transport.close();
-                transports.delete(transportId);
+                routerInfo.transports.delete(transportId);
+                clientInfo.transports.delete(transportId);
             }
         }
 
-        for (const [producerId, producerInfo] of producers) {
-            if (producerInfo.producer.appData.clientId === client.id) {
+        for (const producerId of producers) {
+            const producerInfo = routerInfo.producers.get(producerId);
+            if (producerInfo) {
                 producerInfo.producer.close();
-                producers.delete(producerId);
+                routerInfo.producers.delete(producerId);
+                clientInfo.producers.delete(producerId);
                 removedProducers.push(producerId);
             }
         }
 
-        for (const [consumerId, consumerInfo] of consumers) {
-            if (consumerInfo.consumer.appData.clientId === client.id) {
-                consumerInfo.consumer.close();
-                consumers.delete(consumerId);
+        for (const [consumerId, { consumer, producerId }] of routerInfo.consumers) {
+            if (consumer.appData.clientId === client.id || removedProducers.includes(producerId)) {
+                consumer.close();
+                routerInfo.consumers.delete(consumerId);
             }
         }
 
         if (removedProducers.length > 0) {
-            client.to(room).emit("delete:producer", {
-                producers: removedProducers,
-            });
+            client.to(room).emit("delete:producer", { producers: removedProducers });
         }
 
-        routerInfo.participantCount = Math.max(0, routerInfo.participantCount - 1);
-
-        if (routerInfo.participantCount === 0) this.cleanupRouter(room);
+        routerInfo.clients.delete(client.id);
+        if (routerInfo.clients.size === 0) {
+            routerInfo.router.close();
+            routerInfo.webRtcServer.close();
+            this.routers.delete(room);
+        }
     }
 }

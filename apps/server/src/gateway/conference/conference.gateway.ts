@@ -39,7 +39,7 @@ export class ConferenceGateway {
     async handleCreateRouter(@ConnectedSocket() client: Socket, @MessageBody() { room }: { room: string }) {
         if (!room) return { success: false, message: "Room is required" };
 
-        return await this.mediasoupService.createRouter(room);
+        return await this.mediasoupService.createRouter(client, room);
     }
 
     @SubscribeMessage("create:send:transport")
