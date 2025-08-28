@@ -105,6 +105,7 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
         routerInfo.consumers.forEach((consumerInfo) => {
             consumerInfo.consumer.close();
         });
+        routerInfo.webRtcServer.close();
         routerInfo.router.close();
         this.routers.delete(room);
 
@@ -414,21 +415,46 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
         }
     }
 
+    deleteProducer(client: Socket, room: string, producers: string[]) {
+        const routerInfo = this.routers.get(room);
+        if (!routerInfo) return;
+
+        const { consumers } = routerInfo;
+
+        for (const producerId of producers) {
+            const producerInfo = routerInfo.producers.get(producerId);
+            if (producerInfo) {
+                producerInfo.producer.close();
+                routerInfo.producers.delete(producerId);
+            }
+        }
+
+        for (const [consumerId, consumerInfo] of consumers) {
+            if (producers.includes(consumerInfo.producerId)) {
+                consumerInfo.consumer.close();
+                consumers.delete(consumerId);
+            }
+        }
+
+        if (producers.length > 0) {
+            client.to(room).emit("delete:producer", {
+                producers,
+            });
+        }
+    }
+
     removeClient(room: string, client: Socket) {
         const routerInfo = this.routers.get(room);
         if (!routerInfo) return;
 
         const { transports, producers, consumers } = routerInfo;
 
-        const removedTransports: string[] = [];
         const removedProducers: string[] = [];
-        const removedConsumers: string[] = [];
 
         for (const [transportId, transportInfo] of transports) {
             if (transportInfo.transport.appData.clientId === client.id) {
                 transportInfo.transport.close();
                 transports.delete(transportId);
-                removedTransports.push(transportId);
             }
         }
 
@@ -444,15 +470,12 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
             if (consumerInfo.consumer.appData.clientId === client.id) {
                 consumerInfo.consumer.close();
                 consumers.delete(consumerId);
-                removedConsumers.push(consumerId);
             }
         }
 
-        if (removedTransports.length > 0 || removedProducers.length > 0 || removedConsumers.length > 0) {
+        if (removedProducers.length > 0) {
             client.to(room).emit("delete:producer", {
-                transports: removedTransports,
                 producers: removedProducers,
-                consumers: removedConsumers,
             });
         }
 

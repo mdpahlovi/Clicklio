@@ -1,10 +1,16 @@
+import { VideoOffIcon } from "@/components/icons";
 import { socket, socketResponse } from "@/utils/socket";
-import { Box, Divider, Stack, TabPanel, Typography } from "@mui/joy";
+import { Divider, Stack, TabPanel, Typography } from "@mui/joy";
 import { Device, type types } from "mediasoup-client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import StartVideoChat from "./start-video-chat";
-import VideoController from "./video-controller";
+import VideoControllers from "./video-controllers";
+
+type LocalStreams = {
+    audio: MediaStreamTrack | null;
+    camera: MediaStreamTrack | null;
+    screen: MediaStreamTrack | null;
+};
 
 type CreateTransportResponse = {
     id: string;
@@ -37,27 +43,26 @@ type RemoteStream = {
     consumer: types.Consumer;
 };
 
-type DeleteProducerPayload = {
-    transports: string[];
-    producers: string[];
-    consumers: string[];
-};
+type ProducerData = { id: string };
 
 export default function VideoChatUI({ room, device }: { room: string; device: Device }) {
     const sendTransportRef = useRef<types.Transport | null>(null);
     const recvTransportRef = useRef<types.Transport | null>(null);
     const pendingConsumersRef = useRef<Set<string>>(new Set());
+    const producersRef = useRef<Map<keyof LocalStreams, ProducerData>>(new Map());
 
-    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+    const [localStreams, setLocalStreams] = useState<LocalStreams>({
+        audio: null,
+        camera: null,
+        screen: null,
+    });
     const [remoteStreams, setRemoteStreams] = useState<Map<string, RemoteStream>>(new Map());
     const [isStarted, setIsStarted] = useState(false);
 
     const cleanUp = () => {
-        if (localStream) {
-            localStream.getTracks().forEach((track) => {
-                track.stop();
-            });
-        }
+        Object.values(localStreams).forEach((track) => {
+            if (track) track.stop();
+        });
 
         remoteStreams.forEach(({ stream, consumer }) => {
             stream.getTracks().forEach((track) => track.stop());
@@ -82,7 +87,7 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
             createConsumer(device, id, kind);
         };
 
-        const handleDeleteProducer = ({ producers }: DeleteProducerPayload) => {
+        const handleDeleteProducer = ({ producers }: { producers: string[] }) => {
             setRemoteStreams((prev) => {
                 const newMap = new Map(prev);
 
@@ -200,6 +205,39 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
         }
     };
 
+    const createProducer = async (sendTransport: types.Transport, track: MediaStreamTrack, mediaType: keyof LocalStreams) => {
+        let producer: types.Producer;
+        switch (mediaType) {
+            case "audio":
+                producer = await sendTransport.produce({ track });
+                break;
+            case "camera":
+                producer = await sendTransport.produce({ track, encodings: [{ maxBitrate: 500000 }] });
+                break;
+            case "screen":
+                producer = await sendTransport.produce({ track, encodings: [{ maxBitrate: 500000 }] });
+                break;
+        }
+
+        producersRef.current.set(mediaType, { id: producer.id });
+        setLocalStreams((prev) => ({ ...prev, [mediaType]: track }));
+    };
+
+    const deleteProducer = (mediaType: keyof LocalStreams) => {
+        const producer = producersRef.current.get(mediaType);
+
+        if (producer) {
+            producersRef.current.delete(mediaType);
+            setLocalStreams((prev) => {
+                const track = prev[mediaType];
+
+                track?.stop();
+                return { ...prev, [mediaType]: null };
+            });
+            socket.emit("delete:producer", { room, producers: [producer.id] });
+        }
+    };
+
     const handleStartVideoChat = async () => {
         let stream: MediaStream | null = null;
 
@@ -208,8 +246,6 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                 video: true,
                 audio: true,
             });
-
-            setLocalStream(stream);
 
             const transportResponse = await socketResponse<CreateTransportResponse>("create:send:transport", { room });
 
@@ -254,8 +290,8 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                 }
             });
 
-            await sendTransport.produce({ track: stream.getVideoTracks()[0], encodings: [{ maxBitrate: 500000 }] });
-            await sendTransport.produce({ track: stream.getAudioTracks()[0] });
+            await createProducer(sendTransport, stream.getVideoTracks()[0], "camera");
+            await createProducer(sendTransport, stream.getAudioTracks()[0], "audio");
 
             sendTransportRef.current = sendTransport;
             setIsStarted(true);
@@ -269,7 +305,7 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
 
     const handleStopVideoChat = () => {
         cleanUp();
-        socket.emit("delete:producer", { room });
+        socket.emit("remove:client", { room });
         setIsStarted(false);
     };
 
@@ -323,12 +359,13 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
         <>
             <TabPanel value={0} sx={{ p: 1, overflowY: "auto", display: "flex" }}>
                 {isStarted ? (
-                    <Stack width="100%" spacing={1.25}>
-                        <Stack position="sticky" top={0} bgcolor="background.surface" gap={2}>
+                    <Stack width="100%" spacing={1}>
+                        <Stack position="sticky" top={0} bgcolor="background.surface" gap={1}>
                             <video
                                 ref={(ref) => {
-                                    if (ref && localStream) {
-                                        ref.srcObject = localStream;
+                                    const streams = Object.values(localStreams).filter((track) => track !== null);
+                                    if (ref && streams.length > 0) {
+                                        ref.srcObject = new MediaStream(streams);
                                     }
                                 }}
                                 autoPlay
@@ -356,34 +393,20 @@ export default function VideoChatUI({ room, device }: { room: string; device: De
                     </Stack>
                 ) : (
                     <Stack width="100%" alignItems="center" justifyContent="center" gap={2}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none">
-                            <path d="M2.00189 1.99988L21.9772 21.9999" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                            <path
-                                d="M16.8516 16.8677C16.7224 17.8061 16.4665 18.4668 15.9595 18.9744C14.9356 19.9996 13.2877 19.9996 9.992 19.9996H8.99323C5.69749 19.9996 4.04961 19.9996 3.02575 18.9744C2.00189 17.9493 2.00189 16.2994 2.00189 12.9996V10.9996C2.00189 7.69971 2.00189 6.04979 3.02575 5.02466C3.36827 4.68172 3.78062 4.45351 4.30114 4.30164"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                            />
-                            <path
-                                d="M8.23627 4.0004C8.47815 3.99988 8.72995 3.99988 8.99217 3.99988H9.99093C13.2867 3.99988 14.9346 3.99988 15.9584 5.02501C16.9822 6.05013 16.9822 7.70005 16.9822 10.9999V12.7573M16.9822 9.2313L19.3018 7.52901C20.7729 6.54061 21.4489 7.17184 21.6674 7.64835C22.1191 8.92801 21.9768 11.3935 21.9768 14.5416C21.8703 16.5549 21.5952 16.7718 21.3137 16.9938L21.3107 16.9961"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
+                        <VideoOffIcon size={48} />
                         <Typography level="body-sm">No video available!...</Typography>
                     </Stack>
                 )}
             </TabPanel>
-            <Divider />
-            <Box sx={{ p: 1 }}>
-                {isStarted ? (
-                    <VideoController handleStopVideoChat={handleStopVideoChat} />
-                ) : (
-                    <StartVideoChat handleStartVideoChat={handleStartVideoChat} />
-                )}
-            </Box>
+            <VideoControllers
+                isStarted={isStarted}
+                localStreams={localStreams}
+                sendTransportRef={sendTransportRef}
+                createProducer={createProducer}
+                deleteProducer={deleteProducer}
+                handleStopVideoChat={handleStopVideoChat}
+                handleStartVideoChat={handleStartVideoChat}
+            />
         </>
     );
 }
