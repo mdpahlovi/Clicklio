@@ -31,8 +31,8 @@ services:
         image: mdpahlovi/clicklio:latest
         ports:
             - 5000:5000
-            - "44444:44444/udp"
-            - "44444:44444/tcp"
+            - "40000-40100:40000-40100/udp"
+            - "40000-40100:40000-40100/tcp"
         depends_on:
             - postgres
             - redis

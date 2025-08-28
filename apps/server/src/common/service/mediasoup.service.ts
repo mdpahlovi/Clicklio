@@ -183,13 +183,13 @@ export class MediasoupService implements OnModuleInit, OnApplicationShutdown {
                         {
                             protocol: "udp",
                             ip: "0.0.0.0",
-                            port: 44444,
+                            portRange: { min: 40000, max: 40100 },
                             announcedAddress: this.configService.get("serverIp")!,
                         },
                         {
                             protocol: "tcp",
                             ip: "0.0.0.0",
-                            port: 44444,
+                            portRange: { min: 40000, max: 40100 },
                             announcedAddress: this.configService.get("serverIp")!,
                         },
                     ],
