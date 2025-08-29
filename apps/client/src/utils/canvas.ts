@@ -417,8 +417,11 @@ export const handleCanvasDragEnd = ({ e, createEvent }: CanvasDragEnd) => {
 export const renderCanvas = ({ stageRef, shapes }: RenderCanvas) => {
     if (!stageRef.current) return;
 
-    // clear canvas
-    // stageRef.current.getLayers()[0].destroyChildren();
+    const layer = stageRef.current.getLayers()[0];
+
+    layer.find("Shape").forEach((shape) => {
+        if (shape.id()) shape.destroy();
+    });
 
     shapes.forEach((object, key) => {
         const shape = Konva.Node.create(object, undefined);
