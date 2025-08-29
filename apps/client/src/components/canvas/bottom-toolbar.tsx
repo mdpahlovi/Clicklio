@@ -15,12 +15,12 @@ import { downloadMedia } from "@/utils/download";
 import { handleCreateEvent } from "@/utils/event";
 import { handleMediaError } from "@/utils/utils";
 import { Button, Divider, IconButton, Sheet, styled, Tooltip } from "@mui/joy";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { ReactMediaRecorder } from "react-media-recorder";
 
-export default function BottomToolbar({ canvas }: { canvas: fabric.Canvas }) {
+export default function BottomToolbar({ stage }: { stage: Konva.Stage }) {
     const { zoom, setZoom, setUserMedia } = useCanvasState();
     const { createEvent, canUndo, canRedo } = useEventStore();
 
@@ -39,18 +39,16 @@ export default function BottomToolbar({ canvas }: { canvas: fabric.Canvas }) {
                                     webcam.srcObject = stream;
 
                                     webcam.onloadedmetadata = () => {
-                                        const object = new fabric.FabricImage(webcam, {
-                                            uid: "webcam",
-                                            objectCaching: false,
+                                        const image = new Konva.Image({
+                                            name: "Webcam",
+                                            image: webcam,
+                                            width: 160,
+                                            height: 160,
+                                            draggable: true,
                                         });
 
-                                        object.scaleToWidth(100);
-                                        canvas.add(object);
-
-                                        fabric.util.requestAnimFrame(function render() {
-                                            canvas.requestRenderAll();
-                                            fabric.util.requestAnimFrame(render);
-                                        });
+                                        const layer = stage.getLayers()[0];
+                                        layer.add(image);
                                     };
                                 })
                                 .catch((error) => handleMediaError(error));
@@ -101,7 +99,7 @@ export default function BottomToolbar({ canvas }: { canvas: fabric.Canvas }) {
                     onClick={() => {
                         if (Number(zoom.toFixed(1)) <= 10) {
                             setZoom(zoom + 0.1);
-                            canvas.setZoom(zoom + 0.1);
+                            stage.scale({ x: zoom + 0.1, y: zoom + 0.1 });
                         }
                     }}
                     disabled={Number(zoom.toFixed(1)) >= 10}
@@ -116,7 +114,7 @@ export default function BottomToolbar({ canvas }: { canvas: fabric.Canvas }) {
                     sx={{ display: { xs: "none", sm: "block" }, width: 96 }}
                     onClick={() => {
                         setZoom(2);
-                        canvas.setZoom(2);
+                        stage.scale({ x: 2, y: 2 });
                     }}
                 >
                     {Math.round(zoom * 100)}%
@@ -126,7 +124,7 @@ export default function BottomToolbar({ canvas }: { canvas: fabric.Canvas }) {
                     onClick={() => {
                         if (Number(zoom.toFixed(1)) >= 1) {
                             setZoom(zoom - 0.1);
-                            canvas.setZoom(zoom - 0.1);
+                            stage.scale({ x: zoom - 0.1, y: zoom - 0.1 });
                         }
                     }}
                     disabled={Number(zoom.toFixed(1)) <= 1}

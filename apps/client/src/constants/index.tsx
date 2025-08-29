@@ -15,6 +15,7 @@ import {
 } from "@/components/icons";
 import type { Tool } from "@/types";
 import { Divider } from "@mui/joy";
+import type Konva from "konva";
 
 export const navElements: {
     value?: Tool;
@@ -42,7 +43,7 @@ export const navElements: {
         ],
     },
     { icon: <PenIcon />, name: "Draw - P", value: "path", type: "tool" },
-    { icon: <TextIcon />, name: "Text - A", value: "i-text", type: "tool" },
+    { icon: <TextIcon />, name: "Text - A", value: "text", type: "tool" },
     { icon: <ImageAddIcon />, name: "Image - I", value: "image", type: "tool" },
     { icon: <Divider orientation="horizontal" />, type: "divider" },
     { icon: <EraserIcon />, name: "Eraser - E", value: "eraser", type: "tool" },
@@ -73,7 +74,7 @@ export const fontSizeOptions = [
     { value: "36", label: "36" },
 ];
 
-export const fontWeightOptions = [
+export const fontStyleOptions = [
     { value: "400", label: "Normal" },
     { value: "500", label: "Medium" },
     { value: "600", label: "Semibold" },
@@ -149,4 +150,39 @@ export const presetColors = {
         "#14B8A6",
         "#F43F5E",
     ],
+};
+
+export const transformerConfig: Konva.TransformerConfig = {
+    nodes: [],
+    anchorFill: "rgba(72, 130, 237, 1)",
+    anchorSize: 12,
+    anchorStrokeWidth: 0,
+    anchorCornerRadius: 6,
+    rotateAnchorOffset: 22,
+    anchorStyleFunc(anchor) {
+        if (anchor.name().includes("middle-")) {
+            anchor.x(anchor.x() + 2);
+            anchor.y(anchor.y() - 4);
+            anchor.width(8);
+            anchor.height(20);
+        }
+        if (anchor.name().includes("-center")) {
+            anchor.x(anchor.x() - 4);
+            anchor.y(anchor.y() + 2);
+            anchor.width(20);
+            anchor.height(8);
+        }
+    },
+};
+
+export const selectRectConfig: Konva.RectConfig = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    fill: "rgba(72, 130, 237, 0.3)",
+    stroke: "rgba(72, 130, 237, 1)",
+    strokeWidth: 1,
+    visible: false,
+    listening: false,
 };

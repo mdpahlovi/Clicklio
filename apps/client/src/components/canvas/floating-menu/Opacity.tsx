@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function Opacity({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
-    const [value, setValue] = useState<number>(currentObject?.opacity || 0);
+    const [value, setValue] = useState<number>(currentObject?.opacity() || 0);
 
     const debouncedUpdate = useDebouncedCallback((value: number) => {
         handleInputChange("opacity", String(value));

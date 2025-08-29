@@ -44,15 +44,15 @@ function Room({ room, currUser, roomUser, events }: RoomProps) {
     const { shapes, createEvent, resetEvent } = useEventStore();
     const { setInitialData, createUser, deleteUser, resetUser } = useUserStore();
 
-    const { canvasRef, fabricRef, selectedToolRef } = useCanvas();
+    const { stageRef, selectedToolRef } = useCanvas();
 
     // persist events
-    usePersist({ canvasRef });
+    usePersist({ stageRef });
 
     const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => renderCanvas({ shapes, fabricRef }), [refresh]);
+    useEffect(() => renderCanvas({ shapes, stageRef }), [refresh]);
 
     useEffect(() => {
         setInitialData({ currUser, roomUser });
@@ -84,8 +84,8 @@ function Room({ room, currUser, roomUser, events }: RoomProps) {
 
     return (
         <>
-            <RoomNavbar {...{ room, canvasRef, setIsGuideModalOpen }} />
-            <Canvas {...{ canvasRef, fabricRef, selectedToolRef, room: room.id, device: null }} />
+            <RoomNavbar {...{ room, setIsGuideModalOpen }} />
+            <Canvas {...{ stageRef, selectedToolRef, room: room.id, device: null }} />
 
             <GuideModal isOpen={isGuideModalOpen} setIsOpen={setIsGuideModalOpen} />
         </>

@@ -27,7 +27,7 @@
         "dotenv": "^17.2.1",
         "helmet": "^8.1.0",
         "ioredis": "^5.7.0",
-        "mediasoup": "^3.18.0",
+        "mediasoup": "^3.19.0",
         "pg": "^8.16.3",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.2",
@@ -40,7 +40,7 @@
         "@nestjs/cli": "^11.0.10",
         "@nestjs/schematics": "^11.0.7",
         "@swc/cli": "^0.7.8",
-        "@swc/core": "^1.13.4",
+        "@swc/core": "^1.13.5",
         "@types/bcryptjs": "^3.0.0",
         "@types/express": "^5.0.3",
         "@types/node": "^24.3.0",
@@ -49,10 +49,10 @@
         "eslint-plugin-prettier": "^5.5.4",
         "globals": "^16.3.0",
         "source-map-support": "^0.5.21",
-        "ts-loader": "^9.5.2",
+        "ts-loader": "^9.5.4",
         "ts-node": "^10.9.2",
         "tsconfig-paths": "^4.2.0",
         "typescript": "^5.9.2",
-        "typescript-eslint": "^8.40.0"
+        "typescript-eslint": "^8.41.0"
     }
 }

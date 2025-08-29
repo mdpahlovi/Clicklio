@@ -6,16 +6,15 @@ import { Sheet, styled } from "@mui/joy";
 
 type RoombarProps = {
     room: Room;
-    canvasRef: React.RefObject<HTMLCanvasElement | null>;
     setIsGuideModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function RoomNavbar({ room, canvasRef, setIsGuideModalOpen }: RoombarProps) {
+export default function RoomNavbar({ room, setIsGuideModalOpen }: RoombarProps) {
     console.log(room);
     return (
         <>
             <RoomNavbarSheet position="left">
-                <Menubar {...{ canvasRef, setIsGuideModalOpen }} />
+                <Menubar {...{ setIsGuideModalOpen }} />
             </RoomNavbarSheet>
             <RoomNavbarSheet position="right">
                 <RoomUsers />

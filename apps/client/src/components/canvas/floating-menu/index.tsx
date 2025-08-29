@@ -7,16 +7,16 @@ import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Attributes, FloatingMenuProps } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import { Divider, Sheet, styled } from "@mui/joy";
-import * as fabric from "fabric";
+import Konva from "konva";
 import { useCallback, useMemo, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function FloatingMenu({ canvas }: FloatingMenuProps) {
+export default function FloatingMenu({ stage }: FloatingMenuProps) {
     const { createEvent } = useEventStore();
     const { currentObject, openedFloatingMenu, setOpenedFloatingMenu } = useCanvasState();
     const floatingMenuRef = useRef<HTMLDivElement | null>(null);
 
-    const debouncedUpdate = useDebouncedCallback((object: fabric.Object) => {
+    const debouncedUpdate = useDebouncedCallback((object: Konva.Node) => {
         handleCreateEvent({
             action: "UPDATE",
             object,
@@ -24,54 +24,48 @@ export default function FloatingMenu({ canvas }: FloatingMenuProps) {
         });
     }, 150);
 
-    const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
-        const selectedElement = canvas.getActiveObject();
-        if (!selectedElement || selectedElement?.type === "activeSelection") return;
+    const handleInputChange = useCallback(
+        (property: keyof Attributes, value: string) => {
+            const selectedElement = stage.findOne("#" + currentObject?.id());
+            if (!selectedElement) return;
 
-        switch (property) {
-            case "fontSize":
-                selectedElement.set({ fontSize: Number(value) });
-                break;
-            case "fontFamily":
-                selectedElement.set({ fontFamily: value });
-                break;
-            case "fontWeight":
-                selectedElement.set({ fontWeight: value });
-                break;
-            case "fill":
-                selectedElement.set({ fill: value ? value : null });
-                break;
-            case "stroke":
-                selectedElement.set({ stroke: value ? value : null });
-                break;
-            case "strokeWidth":
-                selectedElement.set({ strokeWidth: Number(value) });
-                break;
-            case "opacity":
-                selectedElement.set({ opacity: Number(value) });
-                break;
-        }
+            switch (property) {
+                case "fontSize":
+                    (selectedElement as Konva.Text).fontSize(Number(value));
+                    break;
+                case "fontFamily":
+                    (selectedElement as Konva.Text).fontFamily(value);
+                    break;
+                case "fontStyle":
+                    (selectedElement as Konva.Text).fontStyle(value);
+                    break;
+                case "fill":
+                    (selectedElement as Konva.Rect).fill(value ? value : null);
+                    break;
+                case "stroke":
+                    (selectedElement as Konva.Rect).stroke(value ? value : null);
+                    break;
+                case "strokeWidth":
+                    (selectedElement as Konva.Rect).strokeWidth(Number(value));
+                    break;
+                case "opacity":
+                    (selectedElement as Konva.Rect).opacity(Number(value));
+                    break;
+            }
 
-        canvas.requestRenderAll();
-
-        if (selectedElement?.uid && selectedElement?.uid !== "webcam") {
-            debouncedUpdate(selectedElement);
-        }
-    }, []);
+            if (selectedElement.id()) debouncedUpdate(selectedElement);
+        },
+        [currentObject?.id()],
+    );
 
     const menuPosition = useMemo(() => {
         const floatingMenu = floatingMenuRef?.current;
         if (!currentObject || !floatingMenu) return;
 
-        const zoom = canvas.getZoom();
-        const viewTransform = canvas.viewportTransform;
+        const objBoundRect = currentObject.getClientRect();
 
-        const objectX = currentObject.left * zoom + viewTransform[4];
-        const objectY = currentObject.top * zoom + viewTransform[5];
-        const objectWidth = currentObject.width * zoom;
-
-        const absoluteX = objectX + objectWidth / 2;
-        const absoluteY = objectY - 48 - 37.6;
+        const absoluteX = objBoundRect.x + objBoundRect.width / 2;
+        const absoluteY = objBoundRect.y - 48 - 37.6;
 
         const menuHalfWidth = floatingMenu.clientWidth / 2 + 16;
 
@@ -79,13 +73,13 @@ export default function FloatingMenu({ canvas }: FloatingMenuProps) {
         const adjustedY = Math.max(16, absoluteY);
 
         return { left: adjustedX, top: adjustedY };
-    }, [currentObject?.top, currentObject?.left]);
+    }, [currentObject?.getClientRect()]);
 
     return (
         <FloatingMenuSheet ref={floatingMenuRef} sx={menuPosition || { display: "none" }} onClick={(e) => e.stopPropagation()}>
             {currentObject ? (
                 <>
-                    {currentObject?.type === "i-text" ? (
+                    {currentObject?.className === "Text" ? (
                         <Text
                             open={!!openedFloatingMenu["text"]}
                             onOpenChange={() => setOpenedFloatingMenu("text")}
@@ -110,7 +104,7 @@ export default function FloatingMenu({ canvas }: FloatingMenuProps) {
                         {...{ currentObject, handleInputChange }}
                     />
                     <Divider orientation="vertical" sx={{ mx: 0.5 }} />
-                    <Actions {...{ canvas, currentObject }} />
+                    <Actions {...{ stage, currentObject }} />
                 </>
             ) : null}
         </FloatingMenuSheet>
