@@ -13,6 +13,7 @@ export const createRectangle = (pointer: Vector2d, baseColor: string) => {
         fill: baseColor,
         id: uuid(),
         draggable: true,
+        perfectDrawEnabled: false,
     });
 };
 
@@ -25,6 +26,7 @@ export const createDiamond = (pointer: Vector2d, baseColor: string) => {
         fill: baseColor,
         id: uuid(),
         draggable: true,
+        perfectDrawEnabled: false,
     });
 };
 
@@ -139,30 +141,34 @@ export const createSpecificShape = (shape: Tool, pointer: Vector2d) => {
     }
 };
 
-export const updateSpecificShape = (shape: Tool, pointer: Vector2d, object: Konva.Node) => {
+export const updateSpecificShape = (shape: Tool, startPoint: Vector2d, pointer: Vector2d, object: Konva.Node) => {
+    const x = Math.min(startPoint.x, pointer.x);
+    const y = Math.min(startPoint.y, pointer.y);
+    const width = Math.abs(pointer.x - startPoint.x);
+    const height = Math.abs(pointer.y - startPoint.y);
+
     switch (shape) {
         case "rect": {
-            const { x, y } = object.attrs;
-            (object as Konva.Rect).width(pointer.x - x);
-            (object as Konva.Rect).height(pointer.y - y);
+            (object as Konva.Rect).setAttrs({
+                x,
+                y,
+                width,
+                height,
+            });
             break;
         }
-        case "diamond": {
-            const { x, y } = object.attrs;
-            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
-            (object as Konva.RegularPolygon).radius(radius);
-            break;
-        }
-        case "triangle": {
-            const { x, y } = object.attrs;
-            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
-            (object as Konva.RegularPolygon).radius(radius);
-            break;
-        }
+        case "diamond":
+        case "triangle":
         case "circle": {
-            const { x, y } = object.attrs;
-            const radius = Math.sqrt((pointer.x - x) ** 2 + (pointer.y - y) ** 2);
-            (object as Konva.Circle).radius(radius);
+            const centerX = x + width / 2;
+            const centerY = y + height / 2;
+            const radius = Math.max(width, height) / 2;
+
+            (object as Konva.RegularPolygon).setAttrs({
+                x: centerX,
+                y: centerY,
+                radius,
+            });
             break;
         }
         case "line":
@@ -192,6 +198,7 @@ export const handleImageUpload = ({ file, stage, createEvent }: ImageUpload) => 
             image.width(160);
             image.height(height);
             image.draggable(true);
+            image.perfectDrawEnabled(false);
 
             if (image?.id()) {
                 stage.getLayers()[0].add(image);

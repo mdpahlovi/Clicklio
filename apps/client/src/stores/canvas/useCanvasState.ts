@@ -9,13 +9,13 @@ type CanvasStateStore = {
     tool: Tool;
     zoom: number;
     refresh: number | null;
-    currentObject: Konva.Node | null;
+    currentObject: Konva.Shape | null;
     openedFloatingMenu: { [key: string]: boolean };
     userMedia: MediaStream | null;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
     setRefresh: () => void;
-    setCurrentObject: (object: Konva.Node | null) => void;
+    setCurrentObject: (object: Konva.Shape | null) => void;
     setOpenedFloatingMenu: (key: string) => void;
     setUserMedia: (media: MediaStream | null) => void;
 };

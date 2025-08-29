@@ -155,9 +155,24 @@ export const presetColors = {
 export const transformerConfig: Konva.TransformerConfig = {
     nodes: [],
     anchorFill: "rgba(72, 130, 237, 1)",
-    anchorStroke: "rgba(72, 130, 237, 1)",
     anchorSize: 12,
+    anchorStrokeWidth: 0,
     anchorCornerRadius: 6,
+    rotateAnchorOffset: 22,
+    anchorStyleFunc(anchor) {
+        if (anchor.name().includes("middle-")) {
+            anchor.x(anchor.x() + 2);
+            anchor.y(anchor.y() - 4);
+            anchor.width(8);
+            anchor.height(20);
+        }
+        if (anchor.name().includes("-center")) {
+            anchor.x(anchor.x() - 4);
+            anchor.y(anchor.y() + 2);
+            anchor.width(20);
+            anchor.height(8);
+        }
+    },
 };
 
 export const selectRectConfig: Konva.RectConfig = {
@@ -168,7 +183,6 @@ export const selectRectConfig: Konva.RectConfig = {
     fill: "rgba(72, 130, 237, 0.3)",
     stroke: "rgba(72, 130, 237, 1)",
     strokeWidth: 1,
-    name: "select-rect",
     visible: false,
     listening: false,
 };

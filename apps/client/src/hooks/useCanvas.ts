@@ -1,8 +1,4 @@
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
-import { handleKeyDown } from "@/utils/key-event";
-import Konva from "konva";
-import { useCallback, useEffect, useRef } from "react";
-
 import {
     handleCanvasClick,
     handleCanvasDoubleClick,
@@ -14,14 +10,16 @@ import {
     handleResize,
     initializeKonva,
 } from "@/utils/canvas";
+import { handleKeyDown } from "@/utils/key-event";
+import Konva from "konva";
+import { useEffect, useRef } from "react";
 
 import { useEventStore } from "@/stores/canvas/useEventStore";
 import type { Tool } from "@/types";
-import { useThrottledCallback } from "use-debounce";
 
 export function useCanvas() {
     const { createEvent } = useEventStore();
-    const { zoom, setTool, setZoom, setCurrentObject } = useCanvasState();
+    const { setTool, setZoom, setCurrentObject } = useCanvasState();
 
     const stageRef = useRef<Konva.Stage | null>(null);
 
@@ -29,49 +27,10 @@ export function useCanvas() {
     const shapeRef = useRef<Konva.Shape | null>(null);
 
     const selectedToolRef = useRef<Tool>("select");
-    const copiedObjectRef = useRef<Konva.Node[] | null>(null);
-    const deleteObjectRef = useRef<Map<string, Konva.Node> | null>(null);
+    const startPointRef = useRef<{ x: number; y: number } | null>(null);
     const lastPanPointRef = useRef<{ x: number; y: number } | null>(null);
-    const selectRPointRef = useRef<{ x: number; y: number } | null>(null);
-
-    const throttledMouseMove = useThrottledCallback((e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
-        if (!stageRef.current) return;
-        handleCanvasMouseMove({ e, stage: stageRef.current, shapeRef, selectedToolRef, deleteObjectRef });
-    }, 16);
-
-    const throttledZoom = useThrottledCallback((options: Konva.KonvaEventObject<WheelEvent>) => {
-        if (!stageRef.current) return;
-        handleCanvasZoom({ options, stage: stageRef.current, setZoom });
-    }, 16);
-
-    const throttledResize = useThrottledCallback(() => {
-        if (!stageRef.current) return;
-        handleResize({ stage: stageRef.current });
-    }, 100);
-
-    const handleKeyUp = useCallback(
-        (e: KeyboardEvent) => {
-            if (isEditing.current) return;
-            if (e.key === " " || e.keyCode === 32) setTool("select");
-        },
-        [setTool],
-    );
-
-    const handleKeyDownEvent = useCallback(
-        (e: KeyboardEvent) => {
-            if (!stageRef.current) return;
-            handleKeyDown({
-                e,
-                stage: stageRef.current,
-                isEditing,
-                copiedObjectRef,
-                createEvent,
-                setTool,
-                setZoom,
-            });
-        },
-        [createEvent, setTool, setZoom],
-    );
+    const copiedObjectRef = useRef<Konva.Shape[] | null>(null);
+    const deleteObjectRef = useRef<Map<string, Konva.Shape> | null>(null);
 
     useEffect(() => {
         const konva = initializeKonva({ stageRef });
@@ -80,11 +39,11 @@ export function useCanvas() {
             handleCanvasMouseDown({
                 e,
                 ...konva,
-                shapeRef,
+                startPointRef,
                 selectedToolRef,
-                deleteObjectRef,
+                shapeRef,
                 lastPanPointRef,
-                selectRPointRef,
+                deleteObjectRef,
             });
         });
 
@@ -92,11 +51,11 @@ export function useCanvas() {
             handleCanvasMouseMove({
                 e,
                 ...konva,
-                shapeRef,
+                startPointRef,
                 selectedToolRef,
-                deleteObjectRef,
+                shapeRef,
                 lastPanPointRef,
-                selectRPointRef,
+                deleteObjectRef,
             });
         });
 
@@ -104,11 +63,11 @@ export function useCanvas() {
             handleCanvasMouseUp({
                 e,
                 ...konva,
-                shapeRef,
+                startPointRef,
                 selectedToolRef,
-                deleteObjectRef,
+                shapeRef,
                 lastPanPointRef,
-                selectRPointRef,
+                deleteObjectRef,
                 setTool,
                 createEvent,
                 setCurrentObject,
@@ -147,7 +106,7 @@ export function useCanvas() {
                 handleKeyDown({ e, stage: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
             );
         };
-    }, [throttledMouseMove, throttledZoom, throttledResize, handleKeyUp, handleKeyDownEvent]);
+    }, []);
 
     return { stageRef, selectedToolRef };
 }

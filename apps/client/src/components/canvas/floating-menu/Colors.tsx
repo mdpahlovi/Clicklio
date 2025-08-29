@@ -29,7 +29,7 @@ export default function Colors({ name, open, onOpenChange, currentObject, handle
             <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }}>
                 {name === "stroke" ? <StrokeWidth {...{ currentObject, handleInputChange }} /> : null}
                 <ColorPicker
-                    value={currentObject?.[name] as string}
+                    value={name === "fill" ? (currentObject?.fill() as string) : (currentObject?.stroke() as string)}
                     onChange={(color) => handleInputChange(name, color)}
                     presetColors={presetColors[name]}
                 />

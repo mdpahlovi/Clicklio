@@ -154,6 +154,9 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
             case "r":
                 setTool("rect");
                 break;
+            case "d":
+                setTool("diamond");
+                break;
             case "t":
                 setTool("triangle");
                 break;

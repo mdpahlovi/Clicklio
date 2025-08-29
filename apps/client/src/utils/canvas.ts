@@ -11,7 +11,7 @@ import type {
     RenderCanvas,
 } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
-import { createSpecificShape } from "@/utils/shapes";
+import { createSpecificShape, updateSpecificShape } from "@/utils/shapes";
 import Konva from "konva";
 
 /**
@@ -52,14 +52,15 @@ export const handleCanvasMouseDown = ({
     stage,
     layer,
     sr,
+    startPointRef,
     selectedToolRef,
-    deleteObjectRef,
     shapeRef,
     lastPanPointRef,
-    selectRPointRef,
+    deleteObjectRef,
 }: CanvasMouseDown) => {
-    const pointer = stage.getPointerPosition();
+    const pointer = stage.getRelativePointerPosition();
     if (!pointer) return;
+    startPointRef.current = { x: pointer.x, y: pointer.y };
 
     if (selectedToolRef.current === "panning" && lastPanPointRef.current === null) {
         lastPanPointRef.current = { x: pointer.x, y: pointer.y };
@@ -67,9 +68,8 @@ export const handleCanvasMouseDown = ({
         return;
     }
 
-    if (selectedToolRef.current === "select" && selectRPointRef.current === null) {
+    if (selectedToolRef.current === "select") {
         if (e.target instanceof Konva.Shape) return;
-        selectRPointRef.current = { x: pointer.x, y: pointer.y };
 
         sr.setAttrs({
             x: pointer.x,
@@ -84,7 +84,7 @@ export const handleCanvasMouseDown = ({
     }
 
     if (selectedToolRef.current === "eraser" && deleteObjectRef.current === null) {
-        deleteObjectRef.current = new Map<string, Konva.Node>();
+        deleteObjectRef.current = new Map<string, Konva.Shape>();
         return;
     }
 
@@ -101,14 +101,14 @@ export const handleCanvasMouseMove = ({
     e,
     stage,
     sr,
+    startPointRef,
     selectedToolRef,
-    deleteObjectRef,
     shapeRef,
     lastPanPointRef,
-    selectRPointRef,
+    deleteObjectRef,
 }: CanvasMouseMove) => {
-    const pointer = stage.getPointerPosition();
-    if (!pointer) return;
+    const pointer = stage.getRelativePointerPosition();
+    if (!pointer || !startPointRef.current) return;
 
     if (selectedToolRef.current === "panning" && lastPanPointRef.current !== null) {
         const dx = pointer.x - lastPanPointRef.current.x;
@@ -125,14 +125,14 @@ export const handleCanvasMouseMove = ({
         return;
     }
 
-    if (selectedToolRef.current === "select" && selectRPointRef.current !== null) {
+    if (selectedToolRef.current === "select") {
         if (!sr.visible()) return;
 
         sr.setAttrs({
-            x: Math.min(selectRPointRef.current.x, pointer.x),
-            y: Math.min(selectRPointRef.current.y, pointer.y),
-            width: Math.abs(pointer.x - selectRPointRef.current.x),
-            height: Math.abs(pointer.y - selectRPointRef.current.y),
+            x: Math.min(startPointRef.current.x, pointer.x),
+            y: Math.min(startPointRef.current.y, pointer.y),
+            width: Math.abs(pointer.x - startPointRef.current.x),
+            height: Math.abs(pointer.y - startPointRef.current.y),
         });
 
         return;
@@ -147,6 +147,7 @@ export const handleCanvasMouseMove = ({
     }
 
     if (!shapeRef.current) return;
+    updateSpecificShape(selectedToolRef.current, startPointRef.current, pointer, shapeRef.current);
 };
 
 /**
@@ -159,11 +160,11 @@ export const handleCanvasMouseUp = ({
     stage,
     sr,
     tr,
-    shapeRef,
+    startPointRef,
     selectedToolRef,
-    deleteObjectRef,
+    shapeRef,
     lastPanPointRef,
-    selectRPointRef,
+    deleteObjectRef,
     setTool,
     createEvent,
 }: CanvasMouseUp) => {
@@ -173,19 +174,13 @@ export const handleCanvasMouseUp = ({
         return;
     }
 
-    if (selectedToolRef.current === "select" && selectRPointRef.current !== null) {
+    if (selectedToolRef.current === "select") {
         if (!sr.visible()) return;
 
         if (sr.width() > 5 || sr.height() > 5) {
             const cr = sr.getClientRect();
 
-            const allShapes = stage.find("Shape").filter((shape) => {
-                if (shape.name() === "select-rect") return false;
-                if (shape.getParent() && shape.getParent()?.className === "Transformer") return false;
-                if (shape.name() && shape.name().includes("utility")) return false;
-                return true;
-            });
-
+            const allShapes = stage.find("Shape").filter((shape) => !!shape.id());
             const fltShapes = allShapes.filter((shape) => {
                 const shapeBox = shape.getClientRect();
                 return Konva.Util.haveIntersection(cr, shapeBox);
@@ -196,7 +191,6 @@ export const handleCanvasMouseUp = ({
         }
 
         sr.visible(false);
-        selectRPointRef.current = null;
         return;
     }
 
@@ -221,17 +215,22 @@ export const handleCanvasMouseUp = ({
 
     // sync shape in storage
     if (shapeRef.current?.id()) {
-        tr.moveToTop();
-        tr.nodes([shapeRef.current]);
-        handleCreateEvent({
-            action: "CREATE",
-            object: shapeRef.current,
-            createEvent,
-        });
-
-        shapeRef.current = null;
+        if (shapeRef.current.width() > 5 && shapeRef.current.height() > 5) {
+            tr.moveToTop();
+            tr.nodes([shapeRef.current]);
+            handleCreateEvent({
+                action: "CREATE",
+                object: shapeRef.current,
+                createEvent,
+            });
+        } else {
+            shapeRef.current.destroy();
+        }
     }
 
+    startPointRef.current = null;
+    selectedToolRef.current = "select";
+    shapeRef.current = null;
     setTool("select");
 };
 
@@ -263,8 +262,11 @@ export const handleCanvasClick = ({ e, tr, setCurrentObject }: CanvasClick) => {
 
         tr.moveToTop();
         tr.nodes(nodes);
-        if (nodes.length === 1) setCurrentObject(nodes[0]);
-        else setCurrentObject(null);
+        if (nodes.length > 1) {
+            setCurrentObject(null);
+        } else {
+            setCurrentObject(nodes[0] as Konva.Shape);
+        }
     }
 };
 

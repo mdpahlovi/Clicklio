@@ -40,7 +40,7 @@ export default function BottomToolbar({ stage }: { stage: Konva.Stage }) {
 
                                     webcam.onloadedmetadata = () => {
                                         const image = new Konva.Image({
-                                            id: "webcam",
+                                            name: "Webcam",
                                             image: webcam,
                                             width: 160,
                                             height: 160,

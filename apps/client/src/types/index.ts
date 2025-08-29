@@ -52,18 +52,18 @@ export type FloatingMenuProps = {
 export type FloatingMenuItemProps = {
     open: boolean;
     onOpenChange: () => void;
-    currentObject: Konva.Node | null;
+    currentObject: Konva.Shape;
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
 export type FloatingMenuSubItemProps = {
-    currentObject: Konva.Node | null;
+    currentObject: Konva.Shape;
     handleInputChange: (property: keyof Attributes, value: string) => void;
 };
 
 export type ActionsProps = {
     stage: Konva.Stage;
-    currentObject: Konva.Node;
+    currentObject: Konva.Shape;
 };
 
 export type ToolbarProps = {
@@ -81,11 +81,11 @@ export type CanvasMouseDown = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
+    startPointRef: React.RefObject<{ x: number; y: number } | null>;
     selectedToolRef: React.RefObject<Tool>;
     shapeRef: React.RefObject<Konva.Shape | null>;
-    deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
     lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
-    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
+    deleteObjectRef: React.RefObject<Map<string, Konva.Shape> | null>;
 };
 
 export type CanvasMouseMove = {
@@ -94,11 +94,11 @@ export type CanvasMouseMove = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
+    startPointRef: React.RefObject<{ x: number; y: number } | null>;
     selectedToolRef: React.RefObject<Tool>;
     shapeRef: React.RefObject<Konva.Shape | null>;
-    deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
     lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
-    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
+    deleteObjectRef: React.RefObject<Map<string, Konva.Shape> | null>;
 };
 
 export type CanvasMouseUp = {
@@ -107,15 +107,14 @@ export type CanvasMouseUp = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
-    shapeRef: React.RefObject<Konva.Shape | null>;
+    startPointRef: React.RefObject<{ x: number; y: number } | null>;
     selectedToolRef: React.RefObject<Tool>;
-    deleteObjectRef: React.RefObject<Map<string, Konva.Node> | null>;
+    shapeRef: React.RefObject<Konva.Shape | null>;
     lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
-    selectRPointRef: React.RefObject<{ x: number; y: number } | null>;
-
+    deleteObjectRef: React.RefObject<Map<string, Konva.Shape> | null>;
     setTool: (tool: Tool) => void;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
-    setCurrentObject: (object: Konva.Node | null) => void;
+    setCurrentObject: (object: Konva.Shape | null) => void;
 };
 
 export type CanvasClick = {
@@ -124,7 +123,7 @@ export type CanvasClick = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
-    setCurrentObject: (object: Konva.Node | null) => void;
+    setCurrentObject: (object: Konva.Shape | null) => void;
 };
 
 export type CanvasDoubleClick = {
@@ -160,7 +159,7 @@ export type WindowKeyDown = {
     e: KeyboardEvent;
     stage: Konva.Stage | null;
     isEditing: React.RefObject<boolean>;
-    copiedObjectRef: React.RefObject<Konva.Node[] | null>;
+    copiedObjectRef: React.RefObject<Konva.Shape[] | null>;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;

@@ -24,51 +24,53 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
         });
     }, 150);
 
-    const handleInputChange = useCallback((property: keyof Attributes, value: string) => {
-        const selectedElement = stage.findOne("#" + currentObject?.id());
-        if (!selectedElement) return;
+    const handleInputChange = useCallback(
+        (property: keyof Attributes, value: string) => {
+            const selectedElement = stage.findOne("#" + currentObject?.id());
+            if (!selectedElement) return;
 
-        console.log(selectedElement);
+            switch (property) {
+                case "fontSize":
+                    (selectedElement as Konva.Text).fontSize(Number(value));
+                    break;
+                case "fontFamily":
+                    (selectedElement as Konva.Text).fontFamily(value);
+                    break;
+                case "fontStyle":
+                    (selectedElement as Konva.Text).fontStyle(value);
+                    break;
+                case "fill":
+                    (selectedElement as Konva.Rect).fill(value ? value : null);
+                    break;
+                case "stroke":
+                    (selectedElement as Konva.Rect).stroke(value ? value : null);
+                    break;
+                case "strokeWidth":
+                    (selectedElement as Konva.Rect).strokeWidth(Number(value));
+                    break;
+                case "opacity":
+                    (selectedElement as Konva.Rect).opacity(Number(value));
+                    break;
+            }
 
-        switch (property) {
-            case "fontSize":
-                (selectedElement as Konva.Text).fontSize(Number(value));
-                break;
-            case "fontFamily":
-                (selectedElement as Konva.Text).fontFamily(value);
-                break;
-            case "fontStyle":
-                (selectedElement as Konva.Text).fontStyle(value);
-                break;
-            case "fill":
-                (selectedElement as Konva.Rect).fill(value ? value : null);
-                break;
-            case "stroke":
-                (selectedElement as Konva.Rect).stroke(value ? value : null);
-                break;
-            case "strokeWidth":
-                (selectedElement as Konva.Rect).strokeWidth(Number(value));
-                break;
-            case "opacity":
-                (selectedElement as Konva.Rect).opacity(Number(value));
-                break;
-        }
-
-        if (selectedElement.id() && selectedElement.id() !== "webcam") {
-            debouncedUpdate(selectedElement);
-        }
-    }, []);
+            stage.batchDraw();
+            if (selectedElement.id()) debouncedUpdate(selectedElement);
+        },
+        [currentObject?.id()],
+    );
 
     const menuPosition = useMemo(() => {
         const floatingMenu = floatingMenuRef?.current;
         if (!currentObject || !floatingMenu) return;
 
-        const zoom = stage.getZoom();
-        const viewTransform = stage.viewportTransform;
+        const zoomX = stage.scaleX();
+        const zoomY = stage.scaleY();
 
-        const objectX = currentObject.left * zoom + viewTransform[4];
-        const objectY = currentObject.top * zoom + viewTransform[5];
-        const objectWidth = currentObject.width * zoom;
+        const viewTransform = stage.getPosition();
+
+        const objectX = currentObject.x() * zoomX + viewTransform.x;
+        const objectY = currentObject.y() * zoomY + viewTransform.y;
+        const objectWidth = currentObject.getSize().width * zoomX;
 
         const absoluteX = objectX + objectWidth / 2;
         const absoluteY = objectY - 48 - 37.6;
@@ -79,13 +81,13 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
         const adjustedY = Math.max(16, absoluteY);
 
         return { left: adjustedX, top: adjustedY };
-    }, [currentObject?.top, currentObject?.left]);
+    }, [stage.scaleX(), stage.scaleY(), stage.getPosition(), currentObject?.x(), currentObject?.y(), currentObject?.getSize()]);
 
     return (
         <FloatingMenuSheet ref={floatingMenuRef} sx={menuPosition || { display: "none" }} onClick={(e) => e.stopPropagation()}>
             {currentObject ? (
                 <>
-                    {currentObject?.type === "i-text" ? (
+                    {currentObject?.className === "Text" ? (
                         <Text
                             open={!!openedFloatingMenu["text"]}
                             onOpenChange={() => setOpenedFloatingMenu("text")}
