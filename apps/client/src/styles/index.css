@@ -1,12 +1,9 @@
-@import "tailwindcss";
-
 body {
     background-color: var(--joy-palette-background-body);
     color: var(--joy-palette-text-primary);
 }
 
-@layer base {
-    ::-webkit-scrollbar {
-        @apply w-0 h-0;
-    }
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
