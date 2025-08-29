@@ -1,5 +1,6 @@
 import type { ImageUpload, Tool } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
+import { getVisibleCenter } from "@/utils/utils";
 import Konva from "konva";
 import type { Vector2d } from "konva/lib/types";
 import { v4 as uuid } from "uuid";
@@ -227,11 +228,15 @@ export const handleImageUpload = ({ file, stage, createEvent }: ImageUpload) => 
 
     reader.onload = () => {
         Konva.Image.fromURL(reader.result as string, (image) => {
+            const canvasCenter = getVisibleCenter(stage);
+
             const height = 160 * (image.height() / image.width());
 
-            image.id(uuid());
+            image.x(canvasCenter.x - 160 / 2);
+            image.y(canvasCenter.y - height / 2);
             image.width(160);
             image.height(height);
+            image.id(uuid());
             image.draggable(true);
             image.perfectDrawEnabled(false);
 

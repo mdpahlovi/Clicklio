@@ -186,3 +186,13 @@ export const selectRectConfig: Konva.RectConfig = {
     visible: false,
     listening: false,
 };
+
+export const anchorConfig: Konva.CircleConfig = {
+    x: 0,
+    y: 0,
+    radius: 6,
+    fill: "rgba(72, 130, 237, 1)",
+    strokeWidth: 0,
+    draggable: true,
+    visible: false,
+};

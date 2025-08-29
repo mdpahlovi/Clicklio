@@ -1,3 +1,4 @@
+import Konva from "konva";
 import toast from "react-hot-toast";
 
 export function getRandomName() {
@@ -98,5 +99,65 @@ export const handleMediaError = (error: { name: string; message: string; constra
             break;
         default:
             toast.error(`Something went wrong! ${error.message}`);
+    }
+};
+
+export const getVisibleCenter = (stage: Konva.Stage) => {
+    const stageCenterScreen = {
+        x: stage.width() / 2,
+        y: stage.height() / 2,
+    };
+
+    const stageTransform = stage.getAbsoluteTransform().copy().invert();
+    return stageTransform.point(stageCenterScreen);
+};
+
+export const setTransformer = (
+    tr: Konva.Transformer,
+    a1: Konva.Circle,
+    a2: Konva.Circle,
+    nodes: Konva.Node[],
+    setCurrentObject: (object: Konva.Shape | null) => void,
+) => {
+    if (nodes.length > 1) {
+        tr.moveToTop();
+        tr.nodes(nodes);
+        a1.setAttrs({ shapeId: null, visible: false });
+        a2.setAttrs({ shapeId: null, visible: false });
+
+        setCurrentObject(null);
+    } else {
+        const node = nodes[0];
+
+        if ((node instanceof Konva.Line || node instanceof Konva.Arrow) && node.points().length === 4) {
+            const points = node.points();
+
+            tr.nodes([]);
+
+            a1.moveToTop();
+            a1.setAttrs({
+                x: points[0] + node.x(),
+                y: points[1] + node.y(),
+                shapeId: node.id(),
+                visible: true,
+            });
+
+            a2.moveToTop();
+            a2.setAttrs({
+                x: points[2] + node.x(),
+                y: points[3] + node.y(),
+                shapeId: node.id(),
+                visible: true,
+            });
+
+            setCurrentObject(node as Konva.Shape);
+        } else {
+            tr.moveToTop();
+            tr.nodes(nodes);
+            a1.setAttrs({ shapeId: null, visible: false });
+            a2.setAttrs({ shapeId: null, visible: false });
+
+            setCurrentObject(nodes[0] as Konva.Shape);
+        }
     }
 };

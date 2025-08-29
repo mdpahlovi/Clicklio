@@ -114,7 +114,7 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
 const FloatingMenuSheet = styled(Sheet)(() => ({
     position: "fixed",
     overflow: "hidden",
-    zIndex: 10,
+    zIndex: 20,
     borderRadius: 99,
     display: "flex",
     transform: "translateX(-50%)",

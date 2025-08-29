@@ -3,6 +3,7 @@ import {
     handleCanvasClick,
     handleCanvasDoubleClick,
     handleCanvasDragEnd,
+    handleCanvasDragMove,
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
@@ -28,7 +29,6 @@ export function useCanvas() {
 
     const selectedToolRef = useRef<Tool>("select");
     const startPointRef = useRef<{ x: number; y: number } | null>(null);
-    const lastPanPointRef = useRef<{ x: number; y: number } | null>(null);
     const copiedObjectRef = useRef<Konva.Shape[] | null>(null);
     const deleteObjectRef = useRef<Map<string, Konva.Shape> | null>(null);
 
@@ -42,7 +42,6 @@ export function useCanvas() {
                 startPointRef,
                 selectedToolRef,
                 shapeRef,
-                lastPanPointRef,
                 deleteObjectRef,
             });
         });
@@ -54,7 +53,6 @@ export function useCanvas() {
                 startPointRef,
                 selectedToolRef,
                 shapeRef,
-                lastPanPointRef,
                 deleteObjectRef,
             });
         });
@@ -66,7 +64,6 @@ export function useCanvas() {
                 startPointRef,
                 selectedToolRef,
                 shapeRef,
-                lastPanPointRef,
                 deleteObjectRef,
                 setTool,
                 createEvent,
@@ -84,6 +81,10 @@ export function useCanvas() {
 
         konva.stage.on("dragend", (e) => {
             handleCanvasDragEnd({ e, createEvent });
+        });
+
+        konva.stage.on("dragmove", (e) => {
+            handleCanvasDragMove({ e, ...konva });
         });
 
         konva.tr.on("transformend", (e) => {

@@ -1,6 +1,7 @@
 import type { WindowKeyDown } from "@/types";
 import type { ShapeEvent } from "@/types/event";
 import { handleCreateEvent } from "@/utils/event";
+import { setTransformer } from "@/utils/utils";
 import Konva from "konva";
 import { v4 as uuid } from "uuid";
 
@@ -18,8 +19,9 @@ export const handlePaste = async (
     setCurrentObject: (object: Konva.Shape | null) => void,
 ) => {
     const tr = stage.findOne("Transformer") as Konva.Transformer | null;
-    if (!tr || tr.nodes().length === 0) return;
-    if (!copiedObjectRef.current?.length) return;
+    const a1 = stage.findOne("Anchor_1") as Konva.Circle | null;
+    const a2 = stage.findOne("Anchor_2") as Konva.Circle | null;
+    if (!tr || !a1 || !a2 || !copiedObjectRef.current?.length) return;
 
     const clonedObjs: Konva.Node[] = [];
     copiedObjectRef.current.forEach((node) => {
@@ -41,13 +43,7 @@ export const handlePaste = async (
 
     copiedObjectRef.current = null;
 
-    tr.moveToTop();
-    tr.nodes(clonedObjs);
-    if (clonedObjs.length > 1) {
-        setCurrentObject(null);
-    } else {
-        setCurrentObject(clonedObjs[0] as Konva.Shape);
-    }
+    setTransformer(tr, a1, a2, clonedObjs, setCurrentObject);
 };
 
 export const handleDuplicate = async (
@@ -56,7 +52,9 @@ export const handleDuplicate = async (
     setCurrentObject: (object: Konva.Shape | null) => void,
 ) => {
     const tr = stage.findOne("Transformer") as Konva.Transformer | null;
-    if (!tr || tr.nodes().length === 0) return;
+    const a1 = stage.findOne("Anchor_1") as Konva.Circle | null;
+    const a2 = stage.findOne("Anchor_2") as Konva.Circle | null;
+    if (!tr || !a1 || !a2 || tr.nodes().length === 0) return;
 
     const clonedObjs: Konva.Node[] = [];
     tr.nodes().forEach((node) => {
@@ -76,16 +74,14 @@ export const handleDuplicate = async (
         });
     });
 
-    tr.moveToTop();
-    tr.nodes(clonedObjs);
-    if (clonedObjs.length > 1) {
-        setCurrentObject(null);
-    } else {
-        setCurrentObject(clonedObjs[0] as Konva.Shape);
-    }
+    setTransformer(tr, a1, a2, clonedObjs, setCurrentObject);
 };
 
-export const handleDelete = (stage: Konva.Stage, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
+export const handleDelete = (
+    stage: Konva.Stage,
+    createEvent: (event: ShapeEvent, isPrivate: boolean) => void,
+    setCurrentObject: (object: Konva.Shape | null) => void,
+) => {
     const tr = stage.findOne("Transformer") as Konva.Transformer | null;
     if (!tr || tr.nodes().length === 0) return;
 
@@ -101,6 +97,7 @@ export const handleDelete = (stage: Konva.Stage, createEvent: (event: ShapeEvent
     });
 
     tr.nodes([]);
+    setCurrentObject(null);
 };
 
 // create a handleKeyDown function that listen to different keydown events
@@ -147,7 +144,7 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
             case "x":
                 e.preventDefault();
                 handleCopy(stage, copiedObjectRef);
-                handleDelete(stage, createEvent);
+                handleDelete(stage, createEvent, setCurrentObject);
                 break;
             case "z":
                 if (e.shiftKey) {
@@ -160,7 +157,7 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
     } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
         switch (key) {
             case "delete":
-                handleDelete(stage, createEvent);
+                handleDelete(stage, createEvent, setCurrentObject);
                 break;
             case " ":
             case "h":

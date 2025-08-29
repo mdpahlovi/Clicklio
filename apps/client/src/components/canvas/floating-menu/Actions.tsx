@@ -29,7 +29,7 @@ export default function Actions({ stage, currentObject }: ActionsProps) {
                     color="danger"
                     variant="soft"
                     onClick={() => {
-                        handleDelete(stage, createEvent);
+                        handleDelete(stage, createEvent, setCurrentObject);
                         if (currentObject?.name() === "Webcam" && userMedia) {
                             userMedia.getTracks().forEach((track) => track.stop());
                         }

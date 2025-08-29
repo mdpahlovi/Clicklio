@@ -1,8 +1,9 @@
-import { selectRectConfig, transformerConfig } from "@/constants";
+import { anchorConfig, selectRectConfig, transformerConfig } from "@/constants";
 import type {
     CanvasClick,
     CanvasDoubleClick,
     CanvasDragEnd,
+    CanvasDragMove,
     CanvasMouseDown,
     CanvasMouseMove,
     CanvasMouseUp,
@@ -12,6 +13,7 @@ import type {
 } from "@/types";
 import { handleCreateEvent } from "@/utils/event";
 import { createSpecificShape, updateSpecificShape } from "@/utils/shapes";
+import { setTransformer } from "@/utils/utils";
 import Konva from "konva";
 
 /**
@@ -35,12 +37,16 @@ export const initializeKonva = ({ stageRef }: InitializeKonva) => {
     // Create select rect and transformer
     const sr = new Konva.Rect(selectRectConfig);
     const tr = new Konva.Transformer(transformerConfig);
+    const a1 = new Konva.Circle({ ...anchorConfig, name: "Anchor_1" });
+    const a2 = new Konva.Circle({ ...anchorConfig, name: "Anchor_2" });
 
     layer.add(sr);
     layer.add(tr);
+    layer.add(a1);
+    layer.add(a2);
     stage.add(layer);
 
-    return { stage, layer, sr, tr };
+    return { stage, layer, sr, tr, a1, a2 };
 };
 
 /**
@@ -55,15 +61,14 @@ export const handleCanvasMouseDown = ({
     startPointRef,
     selectedToolRef,
     shapeRef,
-    lastPanPointRef,
     deleteObjectRef,
 }: CanvasMouseDown) => {
     const pointer = stage.getRelativePointerPosition();
     if (!pointer) return;
     startPointRef.current = { x: pointer.x, y: pointer.y };
 
-    if (selectedToolRef.current === "panning" && lastPanPointRef.current === null) {
-        lastPanPointRef.current = { x: pointer.x, y: pointer.y };
+    if (selectedToolRef.current === "panning") {
+        stage.draggable(true);
         stage.container().style.cursor = "grabbing";
         return;
     }
@@ -97,31 +102,11 @@ export const handleCanvasMouseDown = ({
  * update shape position
  * update Konva layer
  */
-export const handleCanvasMouseMove = ({
-    e,
-    stage,
-    sr,
-    startPointRef,
-    selectedToolRef,
-    shapeRef,
-    lastPanPointRef,
-    deleteObjectRef,
-}: CanvasMouseMove) => {
+export const handleCanvasMouseMove = ({ e, stage, sr, startPointRef, selectedToolRef, shapeRef, deleteObjectRef }: CanvasMouseMove) => {
     const pointer = stage.getRelativePointerPosition();
     if (!pointer || !startPointRef.current) return;
 
-    if (selectedToolRef.current === "panning" && lastPanPointRef.current !== null) {
-        const dx = pointer.x - lastPanPointRef.current.x;
-        const dy = pointer.y - lastPanPointRef.current.y;
-
-        const newPos = {
-            x: stage.x() + dx,
-            y: stage.y() + dy,
-        };
-
-        stage.position(newPos);
-
-        lastPanPointRef.current = { x: pointer.x, y: pointer.y };
+    if (selectedToolRef.current === "panning") {
         return;
     }
 
@@ -160,17 +145,18 @@ export const handleCanvasMouseUp = ({
     stage,
     sr,
     tr,
+    a1,
+    a2,
     startPointRef,
     selectedToolRef,
     shapeRef,
-    lastPanPointRef,
     deleteObjectRef,
     setTool,
     createEvent,
     setCurrentObject,
 }: CanvasMouseUp) => {
-    if (selectedToolRef.current === "panning" && lastPanPointRef.current !== null) {
-        lastPanPointRef.current = null;
+    if (selectedToolRef.current === "panning") {
+        stage.draggable(false);
         stage.container().style.cursor = "grab";
         return;
     }
@@ -187,13 +173,7 @@ export const handleCanvasMouseUp = ({
                 return Konva.Util.haveIntersection(cr, shapeBox);
             });
 
-            tr.moveToTop();
-            tr.nodes(fltShapes);
-            if (fltShapes.length > 1) {
-                setCurrentObject(null);
-            } else {
-                setCurrentObject(fltShapes[0] as Konva.Shape);
-            }
+            setTransformer(tr, a1, a2, fltShapes, setCurrentObject);
         }
 
         sr.visible(false);
@@ -227,9 +207,7 @@ export const handleCanvasMouseUp = ({
                 createEvent,
             });
 
-            tr.moveToTop();
-            tr.nodes([shapeRef.current]);
-            setCurrentObject(shapeRef.current);
+            setTransformer(tr, a1, a2, [shapeRef.current], setCurrentObject);
         } else {
             shapeRef.current.destroy();
         }
@@ -241,10 +219,14 @@ export const handleCanvasMouseUp = ({
     setTool("select");
 };
 
-export const handleCanvasClick = ({ e, tr, setCurrentObject }: CanvasClick) => {
+export const handleCanvasClick = ({ e, tr, a1, a2, setCurrentObject }: CanvasClick) => {
+    // if (e.target.name().includes("Anchor")) return;
+
     // If clicking on empty area
     if (e.target instanceof Konva.Stage) {
         tr.nodes([]);
+        a1.visible(false);
+        a2.visible(false);
         setCurrentObject(null);
         return;
     }
@@ -267,13 +249,7 @@ export const handleCanvasClick = ({ e, tr, setCurrentObject }: CanvasClick) => {
             }
         }
 
-        tr.moveToTop();
-        tr.nodes(nodes);
-        if (nodes.length > 1) {
-            setCurrentObject(null);
-        } else {
-            setCurrentObject(nodes[0] as Konva.Shape);
-        }
+        setTransformer(tr, a1, a2, nodes, setCurrentObject);
     }
 };
 
@@ -410,6 +386,32 @@ export const handleCanvasDragEnd = ({ e, createEvent }: CanvasDragEnd) => {
                 createEvent,
             });
         }
+    }
+};
+
+export const handleCanvasDragMove = ({ e, layer, a1, a2 }: CanvasDragMove) => {
+    const node = e.target;
+
+    if (node.name() === "Anchor_1") {
+        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
+        if (shape) {
+            const [, , x2, y2] = (shape as Konva.Line).points();
+            (shape as Konva.Line).points([node.x(), node.y(), x2, y2]);
+        }
+    }
+
+    if (node.name() === "Anchor_2") {
+        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
+        if (shape) {
+            const [x1, y1, ,] = (shape as Konva.Line).points();
+            (shape as Konva.Line).points([x1, y1, node.x(), node.y()]);
+        }
+    }
+
+    if ((node instanceof Konva.Line || node instanceof Konva.Arrow) && node.points().length === 4) {
+        const points = node.points();
+        a1.setPosition({ x: points[0] + node.x(), y: points[1] + node.y() });
+        a2.setPosition({ x: points[2] + node.x(), y: points[3] + node.y() });
     }
 };
 

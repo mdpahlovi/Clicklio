@@ -81,10 +81,11 @@ export type CanvasMouseDown = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
+    a1: Konva.Circle;
+    a2: Konva.Circle;
     startPointRef: React.RefObject<{ x: number; y: number } | null>;
     selectedToolRef: React.RefObject<Tool>;
     shapeRef: React.RefObject<Konva.Shape | null>;
-    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Shape> | null>;
 };
 
@@ -94,10 +95,11 @@ export type CanvasMouseMove = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
+    a1: Konva.Circle;
+    a2: Konva.Circle;
     startPointRef: React.RefObject<{ x: number; y: number } | null>;
     selectedToolRef: React.RefObject<Tool>;
     shapeRef: React.RefObject<Konva.Shape | null>;
-    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Shape> | null>;
 };
 
@@ -107,10 +109,11 @@ export type CanvasMouseUp = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
+    a1: Konva.Circle;
+    a2: Konva.Circle;
     startPointRef: React.RefObject<{ x: number; y: number } | null>;
     selectedToolRef: React.RefObject<Tool>;
     shapeRef: React.RefObject<Konva.Shape | null>;
-    lastPanPointRef: React.RefObject<{ x: number; y: number } | null>;
     deleteObjectRef: React.RefObject<Map<string, Konva.Shape> | null>;
     setTool: (tool: Tool) => void;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
@@ -123,6 +126,8 @@ export type CanvasClick = {
     layer: Konva.Layer;
     sr: Konva.Rect;
     tr: Konva.Transformer;
+    a1: Konva.Circle;
+    a2: Konva.Circle;
     setCurrentObject: (object: Konva.Shape | null) => void;
 };
 
@@ -141,6 +146,13 @@ export type CanvasDragEnd = {
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
+export type CanvasDragMove = {
+    e: Konva.KonvaEventObject<DragEvent>;
+    layer: Konva.Layer;
+    a1: Konva.Circle;
+    a2: Konva.Circle;
+};
+
 export type RenderCanvas = {
     shapes: Map<string, Record<string, unknown>>;
     stageRef: React.RefObject<Konva.Stage | null>;
@@ -149,9 +161,6 @@ export type RenderCanvas = {
 export type CanvasZoom = {
     options: Konva.KonvaEventObject<WheelEvent>;
     stage: Konva.Stage;
-    layer: Konva.Layer;
-    sr: Konva.Rect;
-    tr: Konva.Transformer;
     setZoom: (zoom: number) => void;
 };
 
