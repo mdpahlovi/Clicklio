@@ -147,7 +147,7 @@ export const handleCanvasMouseMove = ({
     }
 
     if (!shapeRef.current) return;
-    updateSpecificShape(selectedToolRef.current, startPointRef.current, pointer, shapeRef.current);
+    updateSpecificShape(selectedToolRef.current, startPointRef.current, pointer, shapeRef.current, e.evt.shiftKey);
 };
 
 /**
@@ -167,6 +167,7 @@ export const handleCanvasMouseUp = ({
     deleteObjectRef,
     setTool,
     createEvent,
+    setCurrentObject,
 }: CanvasMouseUp) => {
     if (selectedToolRef.current === "panning" && lastPanPointRef.current !== null) {
         lastPanPointRef.current = null;
@@ -188,6 +189,11 @@ export const handleCanvasMouseUp = ({
 
             tr.moveToTop();
             tr.nodes(fltShapes);
+            if (fltShapes.length > 1) {
+                setCurrentObject(null);
+            } else {
+                setCurrentObject(fltShapes[0] as Konva.Shape);
+            }
         }
 
         sr.visible(false);
@@ -199,9 +205,8 @@ export const handleCanvasMouseUp = ({
 
         tr.nodes(tr.nodes().filter((node) => !deleteObjectRef.current!.has(node.id())));
         deleteObjectRef.current.forEach((object) => {
-            if (object?.id()) {
+            if (object.id()) {
                 object.destroy();
-
                 handleCreateEvent({
                     action: "DELETE",
                     object,
@@ -215,14 +220,16 @@ export const handleCanvasMouseUp = ({
 
     // sync shape in storage
     if (shapeRef.current?.id()) {
-        if (shapeRef.current.width() > 5 && shapeRef.current.height() > 5) {
-            tr.moveToTop();
-            tr.nodes([shapeRef.current]);
+        if (shapeRef.current.width() > 5 || shapeRef.current.height() > 5) {
             handleCreateEvent({
                 action: "CREATE",
                 object: shapeRef.current,
                 createEvent,
             });
+
+            tr.moveToTop();
+            tr.nodes([shapeRef.current]);
+            setCurrentObject(shapeRef.current);
         } else {
             shapeRef.current.destroy();
         }
@@ -392,11 +399,17 @@ export const handleCanvasDoubleClick = ({ e, stage, layer, tr, isEditing, create
 
 export const handleCanvasDragEnd = ({ e, createEvent }: CanvasDragEnd) => {
     if (e.target instanceof Konva.Shape) {
-        handleCreateEvent({
-            action: "UPDATE",
-            object: e.target,
-            createEvent,
-        });
+        e.target.width(e.target.width() * e.target.scaleX());
+        e.target.height(e.target.height() * e.target.scaleY());
+        e.target.scale({ x: 1, y: 1 });
+
+        if (e.target.id()) {
+            handleCreateEvent({
+                action: "UPDATE",
+                object: e.target,
+                createEvent,
+            });
+        }
     }
 };
 

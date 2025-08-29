@@ -18,40 +18,73 @@ export const createRectangle = (pointer: Vector2d, baseColor: string) => {
 };
 
 export const createDiamond = (pointer: Vector2d, baseColor: string) => {
-    return new Konva.RegularPolygon({
+    return new Konva.Shape({
         x: pointer.x,
         y: pointer.y,
-        sides: 4,
-        radius: 0,
+        width: 0,
+        height: 0,
         fill: baseColor,
         id: uuid(),
         draggable: true,
         perfectDrawEnabled: false,
+        sceneFunc: function (ctx, shape) {
+            const width = shape.width();
+            const height = shape.height();
+
+            ctx.beginPath();
+            ctx.moveTo(width / 2, 0);
+            ctx.lineTo(width, height / 2);
+            ctx.lineTo(width / 2, height);
+            ctx.lineTo(0, height / 2);
+            ctx.closePath();
+            ctx.fillStrokeShape(shape);
+        },
     });
 };
 
 export const createTriangle = (pointer: Vector2d, baseColor: string) => {
-    return new Konva.RegularPolygon({
+    return new Konva.Shape({
         x: pointer.x,
         y: pointer.y,
-        sides: 3,
-        radius: 0,
+        width: 0,
+        height: 0,
         fill: baseColor,
         id: uuid(),
         draggable: true,
         perfectDrawEnabled: false,
+        sceneFunc: function (ctx, shape) {
+            const width = shape.width();
+            const height = shape.height();
+
+            ctx.beginPath();
+            ctx.moveTo(width / 2, 0);
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            ctx.fillStrokeShape(shape);
+        },
     });
 };
 
 export const createCircle = (pointer: Vector2d, baseColor: string) => {
-    return new Konva.Circle({
+    return new Konva.Shape({
         x: pointer.x,
         y: pointer.y,
-        radius: 0,
+        width: 0,
+        height: 0,
         fill: baseColor,
         id: uuid(),
         draggable: true,
         perfectDrawEnabled: false,
+        sceneFunc: function (ctx, shape) {
+            const width = shape.width();
+            const height = shape.height();
+
+            ctx.beginPath();
+            ctx.ellipse(width / 2, height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fillStrokeShape(shape);
+        },
     });
 };
 
@@ -141,46 +174,48 @@ export const createSpecificShape = (shape: Tool, pointer: Vector2d) => {
     }
 };
 
-export const updateSpecificShape = (shape: Tool, startPoint: Vector2d, pointer: Vector2d, object: Konva.Node) => {
+export const updateSpecificShape = (shape: Tool, startPoint: Vector2d, pointer: Vector2d, object: Konva.Node, shiftKey: boolean) => {
     const x = Math.min(startPoint.x, pointer.x);
     const y = Math.min(startPoint.y, pointer.y);
     const width = Math.abs(pointer.x - startPoint.x);
     const height = Math.abs(pointer.y - startPoint.y);
 
     switch (shape) {
-        case "rect": {
-            (object as Konva.Rect).setAttrs({
-                x,
-                y,
-                width,
-                height,
-            });
-            break;
-        }
+        case "rect":
         case "diamond":
         case "triangle":
         case "circle": {
-            const centerX = x + width / 2;
-            const centerY = y + height / 2;
-            const radius = Math.max(width, height) / 2;
-
-            (object as Konva.RegularPolygon).setAttrs({
-                x: centerX,
-                y: centerY,
-                radius,
+            (object as Konva.Rect).setAttrs({
+                x,
+                y,
+                width: shiftKey ? Math.max(width, height) : width,
+                height: shiftKey ? Math.max(width, height) : height,
             });
             break;
         }
         case "line":
         case "arrow": {
             const [...points] = (object as Konva.Line).points();
-            if (points.length === 0) break;
-            (object as Konva.Line).points([points[0], points[1], pointer.x, pointer.y]);
+
+            let endX = pointer.x;
+            let endY = pointer.y;
+
+            if (shiftKey) {
+                const deltaX = Math.abs(pointer.x - startPoint.x);
+                const deltaY = Math.abs(pointer.y - startPoint.y);
+
+                if (deltaX > deltaY) {
+                    endY = startPoint.y;
+                } else {
+                    endX = startPoint.x;
+                }
+            }
+
+            (object as Konva.Line).points([points[0], points[1], endX, endY]);
             break;
         }
         case "path": {
             const [...points] = (object as Konva.Line).points();
-            if (points.length === 0) break;
             (object as Konva.Line).points([...points, pointer.x, pointer.y]);
             break;
         }
@@ -200,15 +235,13 @@ export const handleImageUpload = ({ file, stage, createEvent }: ImageUpload) => 
             image.draggable(true);
             image.perfectDrawEnabled(false);
 
-            if (image?.id()) {
-                stage.getLayers()[0].add(image);
+            stage.getLayers()[0].add(image);
 
-                handleCreateEvent({
-                    action: "CREATE",
-                    object: image,
-                    createEvent,
-                });
-            }
+            handleCreateEvent({
+                action: "CREATE",
+                object: image,
+                createEvent,
+            });
         });
     };
 

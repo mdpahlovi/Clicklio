@@ -95,7 +95,16 @@ export function useCanvas() {
         window.addEventListener("resize", () => handleResize({ ...konva }));
         window.addEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
         window.addEventListener("keydown", (e) =>
-            handleKeyDown({ e, stage: konva.stage, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
+            handleKeyDown({
+                e,
+                stage: konva.stage,
+                isEditing,
+                copiedObjectRef,
+                createEvent,
+                setTool,
+                setZoom,
+                setCurrentObject,
+            }),
         );
 
         return () => {
@@ -103,7 +112,16 @@ export function useCanvas() {
             window.removeEventListener("resize", () => handleResize({ stage: null }));
             window.removeEventListener("keyup", (e) => e.keyCode === 32 && setTool("select"));
             window.removeEventListener("keydown", (e) =>
-                handleKeyDown({ e, stage: null, isEditing, copiedObjectRef, createEvent, setTool, setZoom }),
+                handleKeyDown({
+                    e,
+                    stage: null,
+                    isEditing,
+                    copiedObjectRef,
+                    createEvent,
+                    setTool,
+                    setZoom,
+                    setCurrentObject,
+                }),
             );
         };
     }, []);

@@ -163,6 +163,7 @@ export type WindowKeyDown = {
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
     setTool: (tool: Tool) => void;
     setZoom: (zoom: number) => void;
+    setCurrentObject: (object: Konva.Shape | null) => void;
 };
 
 export type StoreCreateEvent = {

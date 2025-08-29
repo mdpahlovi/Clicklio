@@ -53,7 +53,6 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
                     break;
             }
 
-            stage.batchDraw();
             if (selectedElement.id()) debouncedUpdate(selectedElement);
         },
         [currentObject?.id()],
@@ -63,17 +62,10 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
         const floatingMenu = floatingMenuRef?.current;
         if (!currentObject || !floatingMenu) return;
 
-        const zoomX = stage.scaleX();
-        const zoomY = stage.scaleY();
+        const objBoundRect = currentObject.getClientRect();
 
-        const viewTransform = stage.getPosition();
-
-        const objectX = currentObject.x() * zoomX + viewTransform.x;
-        const objectY = currentObject.y() * zoomY + viewTransform.y;
-        const objectWidth = currentObject.getSize().width * zoomX;
-
-        const absoluteX = objectX + objectWidth / 2;
-        const absoluteY = objectY - 48 - 37.6;
+        const absoluteX = objBoundRect.x + objBoundRect.width / 2;
+        const absoluteY = objBoundRect.y - 48 - 37.6;
 
         const menuHalfWidth = floatingMenu.clientWidth / 2 + 16;
 
@@ -81,7 +73,7 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
         const adjustedY = Math.max(16, absoluteY);
 
         return { left: adjustedX, top: adjustedY };
-    }, [stage.scaleX(), stage.scaleY(), stage.getPosition(), currentObject?.x(), currentObject?.y(), currentObject?.getSize()]);
+    }, [currentObject?.getClientRect()]);
 
     return (
         <FloatingMenuSheet ref={floatingMenuRef} sx={menuPosition || { display: "none" }} onClick={(e) => e.stopPropagation()}>

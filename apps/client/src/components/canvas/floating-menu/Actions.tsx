@@ -7,7 +7,7 @@ import { IconButton, Tooltip } from "@mui/joy";
 
 export default function Actions({ stage, currentObject }: ActionsProps) {
     const { createEvent } = useEventStore();
-    const { userMedia, setUserMedia } = useCanvasState();
+    const { userMedia, setCurrentObject, setUserMedia } = useCanvasState();
 
     return (
         <>
@@ -17,7 +17,7 @@ export default function Actions({ stage, currentObject }: ActionsProps) {
                         color="primary"
                         variant="soft"
                         onClick={() => {
-                            handleDuplicate(stage, createEvent);
+                            handleDuplicate(stage, createEvent, setCurrentObject);
                         }}
                     >
                         <CopyIcon />

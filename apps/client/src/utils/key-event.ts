@@ -15,6 +15,7 @@ export const handlePaste = async (
     stage: Konva.Stage,
     copiedObjectRef: React.RefObject<Konva.Node[] | null>,
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void,
+    setCurrentObject: (object: Konva.Shape | null) => void,
 ) => {
     const tr = stage.findOne("Transformer") as Konva.Transformer | null;
     if (!tr || tr.nodes().length === 0) return;
@@ -38,12 +39,22 @@ export const handlePaste = async (
         });
     });
 
+    copiedObjectRef.current = null;
+
     tr.moveToTop();
     tr.nodes(clonedObjs);
-    copiedObjectRef.current = null;
+    if (clonedObjs.length > 1) {
+        setCurrentObject(null);
+    } else {
+        setCurrentObject(clonedObjs[0] as Konva.Shape);
+    }
 };
 
-export const handleDuplicate = async (stage: Konva.Stage, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
+export const handleDuplicate = async (
+    stage: Konva.Stage,
+    createEvent: (event: ShapeEvent, isPrivate: boolean) => void,
+    setCurrentObject: (object: Konva.Shape | null) => void,
+) => {
     const tr = stage.findOne("Transformer") as Konva.Transformer | null;
     if (!tr || tr.nodes().length === 0) return;
 
@@ -67,6 +78,11 @@ export const handleDuplicate = async (stage: Konva.Stage, createEvent: (event: S
 
     tr.moveToTop();
     tr.nodes(clonedObjs);
+    if (clonedObjs.length > 1) {
+        setCurrentObject(null);
+    } else {
+        setCurrentObject(clonedObjs[0] as Konva.Shape);
+    }
 };
 
 export const handleDelete = (stage: Konva.Stage, createEvent: (event: ShapeEvent, isPrivate: boolean) => void) => {
@@ -74,19 +90,21 @@ export const handleDelete = (stage: Konva.Stage, createEvent: (event: ShapeEvent
     if (!tr || tr.nodes().length === 0) return;
 
     tr.nodes().forEach((node) => {
-        node.destroy();
-        handleCreateEvent({
-            action: "DELETE",
-            object: node,
-            createEvent,
-        });
+        if (node.id()) {
+            node.destroy();
+            handleCreateEvent({
+                action: "DELETE",
+                object: node,
+                createEvent,
+            });
+        }
     });
 
     tr.nodes([]);
 };
 
 // create a handleKeyDown function that listen to different keydown events
-export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEvent, setTool, setZoom }: WindowKeyDown) => {
+export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEvent, setTool, setZoom, setCurrentObject }: WindowKeyDown) => {
     if (!stage || isEditing.current) return;
 
     const zoom = stage.scaleX();
@@ -120,11 +138,11 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
                 handleCopy(stage, copiedObjectRef);
                 break;
             case "v":
-                handlePaste(stage, copiedObjectRef, createEvent);
+                handlePaste(stage, copiedObjectRef, createEvent, setCurrentObject);
                 break;
             case "d":
                 e.preventDefault();
-                handleDuplicate(stage, createEvent);
+                handleDuplicate(stage, createEvent, setCurrentObject);
                 break;
             case "x":
                 e.preventDefault();
