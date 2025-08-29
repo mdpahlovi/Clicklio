@@ -80,7 +80,7 @@ export function useCanvas() {
         });
 
         konva.stage.on("dragend", (e) => {
-            handleCanvasDragEnd({ e, createEvent });
+            handleCanvasDragEnd({ e, ...konva, createEvent, setCurrentObject });
         });
 
         konva.stage.on("dragmove", (e) => {
@@ -88,7 +88,7 @@ export function useCanvas() {
         });
 
         konva.tr.on("transformend", (e) => {
-            handleCanvasDragEnd({ e, createEvent });
+            handleCanvasDragEnd({ e, ...konva, createEvent, setCurrentObject });
         });
 
         konva.stage.on("wheel", (options) => handleCanvasZoom({ options, ...konva, setZoom }));

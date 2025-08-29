@@ -373,13 +373,33 @@ export const handleCanvasDoubleClick = ({ e, stage, layer, tr, isEditing, create
     }, 0);
 };
 
-export const handleCanvasDragEnd = ({ e, createEvent }: CanvasDragEnd) => {
-    if (e.target instanceof Konva.Shape) {
-        e.target.width(e.target.width() * e.target.scaleX());
-        e.target.height(e.target.height() * e.target.scaleY());
-        e.target.scale({ x: 1, y: 1 });
+export const handleCanvasDragEnd = ({ e, layer, createEvent, setCurrentObject }: CanvasDragEnd) => {
+    const node = e.target;
 
-        if (e.target.id()) {
+    if (node.name() === "Anchor_1") {
+        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
+        if (shape) {
+            setCurrentObject(shape as Konva.Shape);
+        }
+
+        return;
+    }
+
+    if (node.name() === "Anchor_2") {
+        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
+        if (shape) {
+            setCurrentObject(shape as Konva.Shape);
+        }
+
+        return;
+    }
+
+    if (node instanceof Konva.Shape) {
+        node.width(node.width() * node.scaleX());
+        node.height(node.height() * node.scaleY());
+        node.scale({ x: 1, y: 1 });
+
+        if (node.id()) {
             handleCreateEvent({
                 action: "UPDATE",
                 object: e.target,
@@ -396,15 +416,23 @@ export const handleCanvasDragMove = ({ e, layer, a1, a2 }: CanvasDragMove) => {
         const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
         if (shape) {
             const [, , x2, y2] = (shape as Konva.Line).points();
-            (shape as Konva.Line).points([node.x(), node.y(), x2, y2]);
+
+            const relativeX1 = node.x() - shape.x();
+            const relativeY1 = node.y() - shape.y();
+
+            (shape as Konva.Line).points([relativeX1, relativeY1, x2, y2]);
         }
     }
 
     if (node.name() === "Anchor_2") {
         const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
         if (shape) {
-            const [x1, y1, ,] = (shape as Konva.Line).points();
-            (shape as Konva.Line).points([x1, y1, node.x(), node.y()]);
+            const [x1, y1] = (shape as Konva.Line).points();
+
+            const relativeX2 = node.x() - shape.x();
+            const relativeY2 = node.y() - shape.y();
+
+            (shape as Konva.Line).points([x1, y1, relativeX2, relativeY2]);
         }
     }
 

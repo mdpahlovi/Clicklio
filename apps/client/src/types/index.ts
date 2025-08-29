@@ -143,11 +143,15 @@ export type CanvasDoubleClick = {
 
 export type CanvasDragEnd = {
     e: Konva.KonvaEventObject<DragEvent>;
+    stage: Konva.Stage;
+    layer: Konva.Layer;
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
+    setCurrentObject: (object: Konva.Shape | null) => void;
 };
 
 export type CanvasDragMove = {
     e: Konva.KonvaEventObject<DragEvent>;
+    stage: Konva.Stage;
     layer: Konva.Layer;
     a1: Konva.Circle;
     a2: Konva.Circle;
