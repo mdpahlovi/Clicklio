@@ -65,6 +65,7 @@ export default extendTheme({
         JoyModalClose: { styleOverrides: { root: { borderRadius: 99 } } },
         JoySlider: {
             styleOverrides: {
+                root: { height: 20, padding: 0 },
                 thumb: {
                     [`&::before`]: { border: "none !important" },
                 },

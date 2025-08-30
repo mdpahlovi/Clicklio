@@ -1,6 +1,6 @@
 import Actions from "@/components/canvas/floating-menu/Actions";
 import Colors from "@/components/canvas/floating-menu/Colors";
-import Opacity from "@/components/canvas/floating-menu/Opacity";
+import Properties from "@/components/canvas/floating-menu/Properties";
 import Text from "@/components/canvas/floating-menu/Text";
 import { useCanvasState } from "@/stores/canvas/useCanvasState";
 import { useEventStore } from "@/stores/canvas/useEventStore";
@@ -22,7 +22,7 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
             object,
             createEvent,
         });
-    }, 150);
+    }, 300);
 
     const handleInputChange = useCallback(
         (property: keyof Attributes, value: string) => {
@@ -47,6 +47,16 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
                     break;
                 case "strokeWidth":
                     (selectedElement as Konva.Rect).strokeWidth(Number(value));
+                    break;
+                case "strokeStyle":
+                    if (value === "solid") {
+                        (selectedElement as Konva.Rect).dash([]);
+                    } else {
+                        (selectedElement as Konva.Rect).dash([10, 5]);
+                    }
+                    break;
+                case "cornerRadius":
+                    (selectedElement as Konva.Rect).cornerRadius(Number(value));
                     break;
                 case "opacity":
                     (selectedElement as Konva.Rect).opacity(Number(value));
@@ -98,7 +108,7 @@ export default function FloatingMenu({ stage }: FloatingMenuProps) {
                         onOpenChange={() => setOpenedFloatingMenu("stroke")}
                         {...{ currentObject, handleInputChange }}
                     />
-                    <Opacity
+                    <Properties
                         open={!!openedFloatingMenu["opacity"]}
                         onOpenChange={() => setOpenedFloatingMenu("opacity")}
                         {...{ currentObject, handleInputChange }}

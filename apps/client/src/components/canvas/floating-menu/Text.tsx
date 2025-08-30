@@ -11,7 +11,7 @@ export default function Text({ open, onOpenChange, currentObject, handleInputCha
 
     const debouncedUpdate = useDebouncedCallback((property: "fontSize", value: string) => {
         handleInputChange(property, value);
-    }, 150);
+    }, 300);
 
     return (
         <Dropdown open={open} onOpenChange={onOpenChange}>

@@ -1,4 +1,4 @@
-import { Divider, Input, styled } from "@mui/joy";
+import { Divider, Input, Stack, styled } from "@mui/joy";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -431,13 +431,12 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ value = "#ff0000", onChange, 
     };
 
     return (
-        <>
+        <Stack gap={2}>
             {/* Saturation/Brightness Area */}
             <div
                 style={{
                     position: "relative",
                     aspectRatio: 16 / 9,
-                    marginBottom: 16,
                     borderRadius: SIZE.borderRadius,
                     overflow: "hidden",
                     cursor: "crosshair",
@@ -476,8 +475,8 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ value = "#ff0000", onChange, 
                 </div>
             </div>
 
-            {/* Hue Slider */}
-            <div style={{ marginBottom: 8 }}>
+            <Stack gap={1}>
+                {/* Hue Slider */}
                 <div
                     style={{
                         width: "100%",
@@ -522,10 +521,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ value = "#ff0000", onChange, 
                         />
                     </div>
                 </div>
-            </div>
-
-            {/* Opacity Slider */}
-            <div style={{ marginBottom: 16 }}>
+                {/* Opacity Slider */}
                 <div
                     style={{
                         width: "100%",
@@ -572,16 +568,15 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ value = "#ff0000", onChange, 
                         />
                     </div>
                 </div>
-            </div>
+            </Stack>
 
             {/* Color Preview and Input */}
-            <div style={{ display: "flex", alignItems: "center", marginBottom: 16, gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div
                     style={{
                         width: SIZE.previewSize,
                         height: SIZE.previewSize,
                         borderRadius: SIZE.borderRadius,
-                        border: "1px solid var(--joy-palette-neutral-outlinedBorder)",
                         backgroundColor: currentColor,
                         opacity: alpha / 100,
                         flexShrink: 0,
@@ -610,7 +605,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ value = "#ff0000", onChange, 
 
             {presetColors.length ? (
                 <>
-                    <Divider style={{ marginBottom: 16 }} />
+                    <Divider />
                     <div>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 36px)", gap: 8 }}>
                             {presetColors.map((color) => (
@@ -651,7 +646,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ value = "#ff0000", onChange, 
                     </div>
                 </>
             ) : null}
-        </>
+        </Stack>
     );
 };
 

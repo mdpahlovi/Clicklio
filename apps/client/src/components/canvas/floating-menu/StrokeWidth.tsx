@@ -1,30 +1,52 @@
 import type { FloatingMenuSubItemProps } from "@/types";
-import { Slider } from "@mui/joy";
+import { Button, Slider, Stack, ToggleButtonGroup, Typography } from "@mui/joy";
 import { useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
 
 export default function StrokeWidth({ currentObject, handleInputChange }: FloatingMenuSubItemProps) {
-    const [value, setValue] = useState<number>(currentObject?.strokeWidth() || 0);
-
-    const debouncedUpdate = useDebouncedCallback((value: number) => {
-        handleInputChange("strokeWidth", String(value));
-    }, 150);
+    const [value, setValue] = useState(currentObject?.strokeWidth() || 0);
 
     return (
-        <Slider
-            min={0}
-            max={20}
-            step={1}
-            valueLabelDisplay="on"
-            valueLabelFormat={(value) => `${value}px`}
-            style={{ marginTop: 18, marginBottom: 4 }}
-            value={value}
-            onChange={(_, value) => {
-                if (typeof value === "number") {
-                    setValue(value);
-                    debouncedUpdate(value);
-                }
-            }}
-        />
+        <>
+            <Stack gap={0.5}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography level="title-sm" textTransform="uppercase">
+                        Stroke Width
+                    </Typography>
+                    <Typography level="title-sm" textTransform="uppercase">
+                        {`${value}px`}
+                    </Typography>
+                </div>
+                <Slider
+                    min={0}
+                    max={20}
+                    step={1}
+                    defaultValue={value}
+                    onChange={(_, value) => {
+                        if (typeof value === "number") {
+                            setValue(value);
+                            handleInputChange("strokeWidth", String(value));
+                        }
+                    }}
+                />
+            </Stack>
+            <Stack gap={0.5}>
+                <Typography level="title-sm" textTransform="uppercase">
+                    Stroke Style
+                </Typography>
+                <ToggleButtonGroup
+                    variant="outlined"
+                    size="sm"
+                    value={currentObject?.dash()?.length ? "dashed" : "solid"}
+                    onChange={(_, value) => handleInputChange("strokeStyle", value as string)}
+                >
+                    <Button sx={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }} value="solid" fullWidth>
+                        Solid
+                    </Button>
+                    <Button sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }} value="dashed" fullWidth>
+                        Dashed
+                    </Button>
+                </ToggleButtonGroup>
+            </Stack>
+        </>
     );
 }

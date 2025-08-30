@@ -11,6 +11,8 @@ export type Attributes = {
     fill: string;
     stroke: string;
     strokeWidth: string;
+    strokeStyle: string;
+    cornerRadius: string;
     opacity: string;
 };
 
