@@ -7,6 +7,7 @@ import {
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
+    handleCanvasTransformEnd,
     handleCanvasZoom,
     handleResize,
     initializeKonva,
@@ -79,16 +80,24 @@ export function useCanvas() {
             handleCanvasDoubleClick({ e, ...konva, isEditing, createEvent });
         });
 
-        konva.stage.on("dragend", (e) => {
-            handleCanvasDragEnd({ e, ...konva, createEvent, setCurrentObject });
+        konva.stage.on("dragstart", () => {
+            setCurrentObject(null);
         });
 
         konva.stage.on("dragmove", (e) => {
             handleCanvasDragMove({ e, ...konva });
         });
 
-        konva.tr.on("transformend", (e) => {
+        konva.stage.on("dragend", (e) => {
             handleCanvasDragEnd({ e, ...konva, createEvent, setCurrentObject });
+        });
+
+        konva.tr.on("transformstart", () => {
+            setCurrentObject(null);
+        });
+
+        konva.tr.on("transformend", (e) => {
+            handleCanvasTransformEnd({ e, createEvent, setCurrentObject });
         });
 
         konva.stage.on("wheel", (options) => handleCanvasZoom({ options, ...konva, setZoom }));

@@ -7,6 +7,7 @@ import type {
     CanvasMouseDown,
     CanvasMouseMove,
     CanvasMouseUp,
+    CanvasTransformEnd,
     CanvasZoom,
     InitializeKonva,
     RenderCanvas,
@@ -373,42 +374,6 @@ export const handleCanvasDoubleClick = ({ e, stage, layer, tr, isEditing, create
     }, 0);
 };
 
-export const handleCanvasDragEnd = ({ e, layer, createEvent, setCurrentObject }: CanvasDragEnd) => {
-    const node = e.target;
-
-    if (node.name() === "Anchor_1") {
-        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
-        if (shape) {
-            setCurrentObject(shape as Konva.Shape);
-        }
-
-        return;
-    }
-
-    if (node.name() === "Anchor_2") {
-        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
-        if (shape) {
-            setCurrentObject(shape as Konva.Shape);
-        }
-
-        return;
-    }
-
-    if (node instanceof Konva.Shape) {
-        node.width(node.width() * node.scaleX());
-        node.height(node.height() * node.scaleY());
-        node.scale({ x: 1, y: 1 });
-
-        if (node.id()) {
-            handleCreateEvent({
-                action: "UPDATE",
-                object: e.target,
-                createEvent,
-            });
-        }
-    }
-};
-
 export const handleCanvasDragMove = ({ e, layer, a1, a2 }: CanvasDragMove) => {
     const node = e.target;
 
@@ -440,6 +405,63 @@ export const handleCanvasDragMove = ({ e, layer, a1, a2 }: CanvasDragMove) => {
         const points = node.points();
         a1.setPosition({ x: points[0] + node.x(), y: points[1] + node.y() });
         a2.setPosition({ x: points[2] + node.x(), y: points[3] + node.y() });
+    }
+};
+
+export const handleCanvasDragEnd = ({ e, layer, createEvent, setCurrentObject }: CanvasDragEnd) => {
+    const node = e.target;
+
+    if (node.name() === "Anchor_1") {
+        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
+        if (shape) {
+            setCurrentObject(shape as Konva.Shape);
+        }
+
+        return;
+    }
+
+    if (node.name() === "Anchor_2") {
+        const shape = layer.findOne(`#${node.getAttr("shapeId")}`);
+        if (shape) {
+            setCurrentObject(shape as Konva.Shape);
+        }
+
+        return;
+    }
+
+    if (node instanceof Konva.Shape) {
+        if (node.id()) {
+            handleCreateEvent({
+                action: "UPDATE",
+                object: e.target,
+                createEvent,
+            });
+        }
+
+        setCurrentObject(node);
+    }
+};
+
+export const handleCanvasTransformEnd = ({ e, createEvent, setCurrentObject }: CanvasTransformEnd) => {
+    const node = e.target;
+
+    if (node instanceof Konva.Shape) {
+        node.setAttrs({
+            width: node.width() * node.scaleX(),
+            height: node.height() * node.scaleY(),
+            scaleX: 1,
+            scaleY: 1,
+        });
+
+        if (node.id()) {
+            handleCreateEvent({
+                action: "UPDATE",
+                object: e.target,
+                createEvent,
+            });
+        }
+
+        setCurrentObject(node);
     }
 };
 

@@ -3,7 +3,7 @@ import { Button, Slider, Stack, ToggleButtonGroup, Typography } from "@mui/joy";
 import { useState } from "react";
 
 export default function StrokeWidth({ currentObject, handleInputChange }: FloatingMenuSubItemProps) {
-    const [value, setValue] = useState(currentObject?.strokeWidth() || 0);
+    const [value, setValue] = useState(currentObject?.strokeWidth ? Number(currentObject?.strokeWidth) : 0);
 
     return (
         <>
@@ -20,7 +20,7 @@ export default function StrokeWidth({ currentObject, handleInputChange }: Floati
                     min={0}
                     max={20}
                     step={1}
-                    defaultValue={value}
+                    value={value}
                     onChange={(_, value) => {
                         if (typeof value === "number") {
                             setValue(value);
@@ -36,7 +36,7 @@ export default function StrokeWidth({ currentObject, handleInputChange }: Floati
                 <ToggleButtonGroup
                     variant="outlined"
                     size="sm"
-                    value={currentObject?.dash()?.length ? "dashed" : "solid"}
+                    value={currentObject?.strokeStyle}
                     onChange={(_, value) => handleInputChange("strokeStyle", value as string)}
                 >
                     <Button sx={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }} value="solid" fullWidth>

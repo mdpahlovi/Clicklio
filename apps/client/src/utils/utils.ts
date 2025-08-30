@@ -157,7 +157,7 @@ export const setTransformer = (
             a1.setAttrs({ shapeId: null, visible: false });
             a2.setAttrs({ shapeId: null, visible: false });
 
-            setCurrentObject(nodes[0] as Konva.Shape);
+            setCurrentObject(node as Konva.Shape);
         }
     }
 };

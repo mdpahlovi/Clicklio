@@ -2,13 +2,9 @@ import { ParagraphIcon } from "@/components/icons";
 import { fontFamilyOptions } from "@/constants";
 import type { FloatingMenuItemProps } from "@/types";
 import { Dropdown, IconButton, Input, Menu, MenuButton, styled, Tooltip } from "@mui/joy";
-import Konva from "konva";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function Text({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
-    const fontFamily = currentObject ? (currentObject as Konva.Text).fontFamily() : "";
-    const fontSize = currentObject ? (currentObject as Konva.Text).fontSize() : "";
-
     const debouncedUpdate = useDebouncedCallback((property: "fontSize", value: string) => {
         handleInputChange(property, value);
     }, 300);
@@ -20,15 +16,21 @@ export default function Text({ open, onOpenChange, currentObject, handleInputCha
                     <ParagraphIcon />
                 </MenuButton>
             </Tooltip>
-            <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important" }} style={{ width: 205, display: "grid", gap: 10 }}>
-                <Select defaultValue={fontFamily} onChange={(e) => handleInputChange("fontFamily", e.target.value)}>
+            <Menu placement="bottom" sx={{ p: 2, m: "4px 0 !important", width: 256, gap: 1.5 }}>
+                <Select
+                    defaultValue={currentObject?.fontFamily ? currentObject?.fontFamily : ""}
+                    onChange={(e) => handleInputChange("fontFamily", e.target.value)}
+                >
                     {fontFamilyOptions.map((option) => (
                         <Option key={option.value} value={option.value} style={{ fontFamily: "Poppins" }}>
                             {option.label}
                         </Option>
                     ))}
                 </Select>
-                <Input defaultValue={fontSize} onChange={(e) => debouncedUpdate("fontSize", e.target.value)} />
+                <Input
+                    defaultValue={currentObject?.fontSize ? Number(currentObject?.fontSize) : 0}
+                    onChange={(e) => debouncedUpdate("fontSize", e.target.value)}
+                />
             </Menu>
         </Dropdown>
     );

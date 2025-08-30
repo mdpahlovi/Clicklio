@@ -138,11 +138,9 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
                 handlePaste(stage, copiedObjectRef, createEvent, setCurrentObject);
                 break;
             case "d":
-                e.preventDefault();
                 handleDuplicate(stage, createEvent, setCurrentObject);
                 break;
             case "x":
-                e.preventDefault();
                 handleCopy(stage, copiedObjectRef);
                 handleDelete(stage, createEvent, setCurrentObject);
                 break;
@@ -157,9 +155,13 @@ export const handleKeyDown = ({ e, stage, isEditing, copiedObjectRef, createEven
     } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
         switch (key) {
             case "delete":
+                e.preventDefault();
                 handleDelete(stage, createEvent, setCurrentObject);
                 break;
             case " ":
+                e.preventDefault();
+                setTool("panning");
+                break;
             case "h":
                 setTool("panning");
                 break;

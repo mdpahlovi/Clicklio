@@ -31,12 +31,34 @@ export const createDiamond = (pointer: Vector2d, baseColor: string) => {
         sceneFunc: function (ctx, shape) {
             const width = shape.width();
             const height = shape.height();
+            const cornerRadius = shape.getAttr("cornerRadius") || 0;
 
             ctx.beginPath();
-            ctx.moveTo(width / 2, 0);
-            ctx.lineTo(width, height / 2);
-            ctx.lineTo(width / 2, height);
-            ctx.lineTo(0, height / 2);
+
+            if (cornerRadius > 0) {
+                const top = { x: width / 2, y: 0 };
+                const right = { x: width, y: height / 2 };
+                const bottom = { x: width / 2, y: height };
+                const left = { x: 0, y: height / 2 };
+
+                const dx = right.x - top.x;
+                const dy = right.y - top.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const ratio = cornerRadius / dist;
+
+                ctx.moveTo(top.x + dx * ratio, top.y + dy * ratio);
+
+                ctx.arcTo(right.x, right.y, bottom.x, bottom.y, cornerRadius);
+                ctx.arcTo(bottom.x, bottom.y, left.x, left.y, cornerRadius);
+                ctx.arcTo(left.x, left.y, top.x, top.y, cornerRadius);
+                ctx.arcTo(top.x, top.y, right.x, right.y, cornerRadius);
+            } else {
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width, height / 2);
+                ctx.lineTo(width / 2, height);
+                ctx.lineTo(0, height / 2);
+            }
+
             ctx.closePath();
             ctx.fillStrokeShape(shape);
         },
@@ -56,11 +78,31 @@ export const createTriangle = (pointer: Vector2d, baseColor: string) => {
         sceneFunc: function (ctx, shape) {
             const width = shape.width();
             const height = shape.height();
+            const cornerRadius = shape.getAttr("cornerRadius") || 0;
 
             ctx.beginPath();
-            ctx.moveTo(width / 2, 0);
-            ctx.lineTo(width, height);
-            ctx.lineTo(0, height);
+
+            if (cornerRadius > 0) {
+                const top = { x: width / 2, y: 0 };
+                const bottomRight = { x: width, y: height };
+                const bottomLeft = { x: 0, y: height };
+
+                const dx = bottomRight.x - top.x;
+                const dy = bottomRight.y - top.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const ratio = cornerRadius / dist;
+
+                ctx.moveTo(top.x + dx * ratio, top.y + dy * ratio);
+
+                ctx.arcTo(bottomRight.x, bottomRight.y, bottomLeft.x, bottomLeft.y, cornerRadius);
+                ctx.arcTo(bottomLeft.x, bottomLeft.y, top.x, top.y, cornerRadius);
+                ctx.arcTo(top.x, top.y, bottomRight.x, bottomRight.y, cornerRadius);
+            } else {
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+            }
+
             ctx.closePath();
             ctx.fillStrokeShape(shape);
         },

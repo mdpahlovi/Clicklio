@@ -11,7 +11,7 @@ export default function Actions({ stage, currentObject }: ActionsProps) {
 
     return (
         <>
-            {currentObject?.name() !== "Webcam" ? (
+            {currentObject?.name !== "Webcam" ? (
                 <Tooltip title="Duplicate">
                     <IconButton
                         color="primary"
@@ -30,7 +30,7 @@ export default function Actions({ stage, currentObject }: ActionsProps) {
                     variant="soft"
                     onClick={() => {
                         handleDelete(stage, createEvent, setCurrentObject);
-                        if (currentObject?.name() === "Webcam" && userMedia) {
+                        if (currentObject?.name === "Webcam" && userMedia) {
                             userMedia.getTracks().forEach((track) => track.stop());
                         }
                         setUserMedia(null);

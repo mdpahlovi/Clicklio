@@ -4,15 +4,22 @@ import type { ShapeEvent } from "./event";
 
 type Action = "CREATE" | "UPDATE" | "DELETE" | "UNDO" | "REDO";
 
-export type Attributes = {
+export type CurrentObject = {
+    id: string;
+    name: string;
+    type: string;
+    x: string;
+    y: string;
+    width: string;
+    height: string;
     fontSize: string;
     fontFamily: string;
-    fontStyle: string;
     fill: string;
     stroke: string;
     strokeWidth: string;
     strokeStyle: string;
     cornerRadius: string;
+    maxCornerRadius: string;
     opacity: string;
 };
 
@@ -54,18 +61,18 @@ export type FloatingMenuProps = {
 export type FloatingMenuItemProps = {
     open: boolean;
     onOpenChange: () => void;
-    currentObject: Konva.Shape;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
+    currentObject: CurrentObject;
+    handleInputChange: (property: keyof CurrentObject, value: string) => void;
 };
 
 export type FloatingMenuSubItemProps = {
-    currentObject: Konva.Shape;
-    handleInputChange: (property: keyof Attributes, value: string) => void;
+    currentObject: CurrentObject;
+    handleInputChange: (property: keyof CurrentObject, value: string) => void;
 };
 
 export type ActionsProps = {
     stage: Konva.Stage;
-    currentObject: Konva.Shape;
+    currentObject: CurrentObject;
 };
 
 export type ToolbarProps = {
@@ -143,6 +150,14 @@ export type CanvasDoubleClick = {
     createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
 };
 
+export type CanvasDragMove = {
+    e: Konva.KonvaEventObject<any>;
+    stage: Konva.Stage;
+    layer: Konva.Layer;
+    a1: Konva.Circle;
+    a2: Konva.Circle;
+};
+
 export type CanvasDragEnd = {
     e: Konva.KonvaEventObject<DragEvent>;
     stage: Konva.Stage;
@@ -151,12 +166,14 @@ export type CanvasDragEnd = {
     setCurrentObject: (object: Konva.Shape | null) => void;
 };
 
-export type CanvasDragMove = {
-    e: Konva.KonvaEventObject<DragEvent>;
-    stage: Konva.Stage;
-    layer: Konva.Layer;
-    a1: Konva.Circle;
-    a2: Konva.Circle;
+export type CanvasTransformMove = {
+    e: Konva.KonvaEventObject<any>;
+};
+
+export type CanvasTransformEnd = {
+    e: Konva.KonvaEventObject<any>;
+    createEvent: (event: ShapeEvent, isPrivate: boolean) => void;
+    setCurrentObject: (object: Konva.Shape | null) => void;
 };
 
 export type RenderCanvas = {
