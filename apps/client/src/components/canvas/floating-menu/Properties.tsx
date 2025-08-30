@@ -5,7 +5,9 @@ import type Konva from "konva";
 import { useState } from "react";
 
 export default function Opacity({ open, onOpenChange, currentObject, handleInputChange }: FloatingMenuItemProps) {
-    const [cornerRadius, setCornerRadius] = useState((currentObject as Konva.Rect)?.cornerRadius() || 0);
+    const [cornerRadius, setCornerRadius] = useState(
+        (currentObject as Konva.Rect)?.cornerRadius ? (currentObject as Konva.Rect)?.cornerRadius() : 0,
+    );
     const [opacity, setOpacity] = useState(currentObject?.opacity() || 0);
 
     return (
